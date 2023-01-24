@@ -37,7 +37,7 @@ private Button signInActionButton;
 
                     @Override
                     public void onFailed(String errorMessage) {
-                        // account sign in failed
+                        // account sign in failed//
                     }
 
                     @Override

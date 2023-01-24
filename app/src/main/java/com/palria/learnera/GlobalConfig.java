@@ -35,6 +35,7 @@ public class GlobalConfig {
     private static String CURRENT_USER_TOKEN_ID;
 
     //FIRESTORE VARIABLE KEYS
+    //
     public static final String ALL_USERS_KEY = "ALL_USERS";
     public static final String USER_PROFILE_KEY = "USER_PROFILE";
     public static final String USER_DISPLAY_NAME_KEY = "USER_DISPLAY_NAME";

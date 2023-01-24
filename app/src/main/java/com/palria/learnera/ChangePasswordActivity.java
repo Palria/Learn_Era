@@ -44,7 +44,7 @@ Button sendEmailActionButton;
             }
         });
     }
-
+//
 
     private void initUI(){
 
