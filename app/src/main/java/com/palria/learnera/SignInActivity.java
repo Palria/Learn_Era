@@ -18,7 +18,8 @@ private Button signInActionButton;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
-
+        //initializes this activity's views
+        initUI();
         signInActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -34,8 +34,11 @@ public class GlobalConfig {
     private static String CURRENT_USER_ID;
     private static String CURRENT_USER_TOKEN_ID;
 
-    //FIRESTORE VARIABLE KEYS
-    //
+    /*FIRESTORE VARIABLE KEYS
+    These String keys which will be  unique in  the database
+    they are used to query a particular field within a document
+    they have to be unique in a particular document
+    */
     public static final String ALL_USERS_KEY = "ALL_USERS";
     public static final String USER_PROFILE_KEY = "USER_PROFILE";
     public static final String USER_ID_KEY = "USER_ID";
@@ -89,58 +92,112 @@ public class GlobalConfig {
 
 
 
-
+/**
+ * <p>This method performs a check to see whether a user is logged in or not</p>
+ * @return {@link boolean} denoting if a user is logged in or not
+ * */
     static boolean isUserLoggedIn(){
 
         return FirebaseAuth.getInstance().getCurrentUser() != null;
     }
 
-
+/**
+ * This method sets the current user's ID
+ * @param currentUserId  This parameter will be initialized from the {@link FirebaseAuth#getUid()}
+ *
+ *<p>It has to be first invoked from the {@link SignInActivity} context</p>
+ * */
    static void setCurrentUserId(@NonNull String currentUserId){
         GlobalConfig.CURRENT_USER_ID = currentUserId;
     }
-
+      /**
+       * This returns the unique ID of the current user
+       *
+       * @return {@link String} The unique ID of the current user
+       * */
     static String getCurrentUserId(){
        return GlobalConfig.CURRENT_USER_ID;
     }
 
+    /**
+     * This method sets the token of the current user
+     * <p>This token is initialized from {@link com.google.firebase.auth.FirebaseUser#getIdToken(boolean)}</p>
+     * This token is used for notification purpose
+     * */
    static void setCurrentUserTokenId(@NonNull String currentUserTokenId){
         GlobalConfig.CURRENT_USER_TOKEN_ID = currentUserTokenId;
     }
 
+    /**
+     * This returns the token of the current user
+     * @return {@link String} which will be used for some operations
+     * */
     static String getCurrentUserTokenId(){
        return GlobalConfig.CURRENT_USER_TOKEN_ID;
     }
 
-   static void setFirebaseFirestoreInstance(FirebaseFirestore firebaseFirestoreInstance){
-        GlobalConfig.firebaseFirestoreInstance = firebaseFirestoreInstance;
+    /**
+     * Sets the {@link FirebaseFirestore } instance
+     * <p>This instance is initialized from {@link FirebaseFirestore#getInstance()}</p>
+     * */
+   static void setFirebaseFirestoreInstance(){
+        GlobalConfig.firebaseFirestoreInstance = FirebaseFirestore.getInstance();
     }
-
+/**
+ * Returns the global instance of the {@link FirebaseFirestore} which will be used to perform actions in {@link FirebaseFirestore} database
+ * @return {@link FirebaseFirestore}
+ * */
     static FirebaseFirestore getFirebaseFirestoreInstance(){
        return GlobalConfig.firebaseFirestoreInstance;
     }
 
-   static void setFirebaseStorageInstance(FirebaseStorage firebaseStorageInstance){
-        GlobalConfig.firebaseStorageInstance = firebaseStorageInstance;
+    /**
+     * Sets the {@link FirebaseStorage } instance
+     * <p>This instance is initialized from {@link FirebaseStorage#getInstance()}</p>
+     * */
+   static void setFirebaseStorageInstance(){
+        GlobalConfig.firebaseStorageInstance = FirebaseStorage.getInstance();
     }
 
-    
+
+    /**
+     * Returns the global instance of the {@link FirebaseFirestore} which will be used to perform actions in {@link FirebaseStorage} database
+     * @return {@link FirebaseStorage}
+     * */
     static FirebaseStorage getFirebaseStorageInstance(){
        return GlobalConfig.firebaseStorageInstance;
     }
 
+    /**
+     * A callback method that tells when a user has either succeeded or failed in signing in to the platform
+     * <p>{@link SignInListener#onSuccess(String, String)} - this method is triggered when a user signs in successfully  </p>
+     * <p>{@link SignInListener#onFailed(String)} - this method is triggered when a user signs in process fails  </p>
+     * <p>{@link SignInListener#onEmptyInput(boolean, boolean)} - this method is triggered when a user has an empty input  </p>
+     * */
     interface SignInListener{
         void onSuccess(String email, String password);
         void onFailed(String errorMessage);
         void onEmptyInput(boolean isEmailEmpty, boolean isPasswordEmpty);
     }
+
+    /**
+     * A callback method that tells when a user has either succeeded or failed in signing in to the platform
+     * <p>{@link SignUpListener#onSuccess(String, String)} - this method is triggered when a user signs in successfully  </p>
+     * <p>{@link SignUpListener#onFailed(String)} - this method is triggered when a user signs in process fails  </p>
+     * <p>{@link SignUpListener#onEmptyInput(boolean, boolean)} - this method is triggered when a user has an empty input  </p>
+     * */
   interface SignUpListener{
         void onSuccess(String email, String password);
         void onFailed(String errorMessage);
         void onEmptyInput(boolean isEmailEmpty, boolean isPasswordEmpty);
     }
 
-
+/**
+ * Signs a user in to the platform
+ * @param email the email of the user
+ * @param password the password of the user
+ * @param signInListener a callback that tells when the sign in fails or succeeds
+ * */
     static void signInUserWithEmailAndPassword(@NonNull String email, @NonNull String password,SignInListener signInListener){
         if(email != null && password != null){
             if(email.isEmpty() && password.isEmpty()){
@@ -165,6 +222,13 @@ public class GlobalConfig {
 
         }
     }
+
+    /**
+     * Creates a user account
+     * @param email the email of the user
+     * @param password the password of the user
+     * @param signUpListener a callback that tells when the sign un fails or succeeds
+     * */
     static void signUpUserWithEmailAndPassword(@NonNull String email,@NonNull  String password,SignUpListener signUpListener){
         if(email != null && password != null){
             if(email.isEmpty() && password.isEmpty()){
@@ -191,7 +255,10 @@ public class GlobalConfig {
     }
 
 
-
+/**
+ * Checks if a user's device us connected to the internet or not
+ * @return  {@link boolean}
+ * */
     @SuppressLint("MissingPermission")
     static boolean isConnectedOnline(Context context) {
 
@@ -206,6 +273,13 @@ public class GlobalConfig {
         return false;
     }
 
+    /**
+     * Returns a random {@link String} as long as the length specified
+     * The purpose of the method is usually for unique ID generation
+     * It is recommended that the length be long
+     * @param length the length of the {@link String} that will be returned
+     * @return {@link String} the string value
+     * */
     public static String getRandomString(int length) {
         String[] characterArray = new String[]{
                 "a", "A", "1",
@@ -247,6 +321,12 @@ public class GlobalConfig {
         return randomString + "CJD";
     }
 
+    /**
+     * This method returns countries across the globe
+     * @return  {@link ArrayList} the list that contains the name of countries
+     * @param countryArrayList the arrayList that will hold the list of the countries, this is the same {@link Object} that will be returne
+     *
+     * */
     public static ArrayList getCountryArrayList(@Nullable ArrayList<String> countryArrayList){
         ArrayList<String> arrayList = null;
         if(countryArrayList == null){
@@ -509,6 +589,13 @@ public class GlobalConfig {
         });
     }
 
+    /**
+     * Inflates a menu from the resource folder
+     * @param context the context of the invocation
+     * @param menuRes the int that represents the menu to be inflated from the res folder
+     * @param anchorView the view that will be used to indicate the point to inflate the menu
+     * @param onMenuItemClickListener the listener that triggers when the menu is clicked
+     * */
     public static void createPopUpMenu(Context context, int menuRes, View anchorView, OnMenuItemClickListener onMenuItemClickListener) {
 
 
@@ -527,6 +614,12 @@ public class GlobalConfig {
 
     }
 
+    /**
+     * This method generates keywords which is used for performing search operation in the database, it trims the given {@link String}
+     * into words which enables us query and match each word for similarity in the database.
+     * @param itemName the {@link String} to be trimmed
+     * @return {@link ArrayList} the list that contains the keywords
+     * */
     static ArrayList<String> generateSearchVerbatimKeyWords(@NonNull String itemName){
         ArrayList<String> searchVerbatimKeywordsArrayList = null;
 
@@ -544,6 +637,12 @@ public class GlobalConfig {
         return searchVerbatimKeywordsArrayList;
     }
 
+    /**
+     * This method generates keywords which is used for performing search operation in the database, it trims the given {@link String}
+     * into {@link Character} which enables us query and match each word for similarity in the database.
+     * @param itemName the {@link String} to be trimmed
+     * @return {@link ArrayList} the list that contains the keywords
+     * */
     static ArrayList<String> generateSearchAnyMatchKeyWords(@NonNull String itemName) {
         ArrayList<String> searchAnyMatchKeywordsArrayList = new ArrayList<>();
 
@@ -581,6 +680,10 @@ public class GlobalConfig {
             return searchAnyMatchKeywordsArrayList;
         }
 
+        /**
+         * Returns the local date at when an action was performed
+         * @return {@link String} the string that represents the date value
+         * */
     static  public String getDate(){
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd', 'HH:mm:ss", Locale.US);
@@ -595,10 +698,16 @@ public class GlobalConfig {
      //
     //INTERFACES
     //
+    /**
+     * An interface for manipulatiing menu
+     * */
     public interface OnMenuItemClickListener {
+        /**triggered when menu is clicked*/
         boolean onMenuItemClicked(MenuItem item);
 
     }
+
+
     interface OnDocumentExistStatusCallback{
 
         void onExist();
