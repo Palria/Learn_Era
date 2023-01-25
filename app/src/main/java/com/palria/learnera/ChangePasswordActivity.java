@@ -20,6 +20,7 @@ Button sendEmailActionButton;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_password);
+        initUI();
         email = emailEditText.getText().toString();
         sendEmailActionButton.setOnClickListener(new View.OnClickListener() {
             @Override

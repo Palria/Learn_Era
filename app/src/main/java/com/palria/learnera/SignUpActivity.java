@@ -110,8 +110,10 @@ public class SignUpActivity extends AppCompatActivity {
         DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.USER_PROFILE_KEY).document(GlobalConfig.getCurrentUserId());
         HashMap<String,Object>userProfileDetails = new HashMap<>();
         userProfileDetails.put(GlobalConfig.USER_DISPLAY_NAME_KEY,userDisplayName);
-        userProfileDetails.put(GlobalConfig.USER_COUNTRY_OF_ORIGIN_KEY,userCountryOfOrigin);
+        userProfileDetails.put(GlobalConfig.USER_COUNTRY_OF_RESIDENCE_KEY,userCountryOfOrigin);
         userProfileDetails.put(GlobalConfig.USER_GENDER_TYPE_KEY,genderType);
+        userProfileDetails.put(GlobalConfig.USER_EMAIL_ADDRESS_KEY,email);
+        userProfileDetails.put(GlobalConfig.IS_USER_BLOCKED_KEY,false);
         userProfileDetails.put(GlobalConfig.USER_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(GlobalConfig.generateSearchVerbatimKeyWords(userDisplayName)));
         userProfileDetails.put(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(GlobalConfig.generateSearchAnyMatchKeyWords(userDisplayName)));
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_KEY,GlobalConfig.getDate());

@@ -38,12 +38,23 @@ public class GlobalConfig {
     //
     public static final String ALL_USERS_KEY = "ALL_USERS";
     public static final String USER_PROFILE_KEY = "USER_PROFILE";
+    public static final String USER_ID_KEY = "USER_ID";
+    public static final String IS_USER_BLOCKED_KEY = "IS_USER_BLOCKED";
     public static final String USER_DISPLAY_NAME_KEY = "USER_DISPLAY_NAME";
+    public static final String USER_IMAGES_KEY = "USER_IMAGES";
+    public static final String USER_PROFILE_PHOTO_KEY = "USER_PROFILE_PHOTO";
+    public static final String IS_USER_PROFILE_PHOTO_INCLUDED_KEY = "IS_USER_PROFILE_PHOTO_INCLUDED";
+    public static final String USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY = "USER_PROFILE_PHOTO_DOWNLOAD_URL";
     public static final String USER_PROFILE_DATE_CREATED_KEY = "USER_PROFILE_DATE_CREATED";
     public static final String USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY = "USER_PROFILE_DATE_CREATED_TIME_STAMP";
+    public static final String USER_PROFILE_DATE_EDITED_KEY = "USER_PROFILE_DATE_EDITED";
+    public static final String USER_PROFILE_DATE_EDITED_TIME_STAMP_KEY = "USER_PROFILE_DATE_EDITED_TIME_STAMP";
     public static final String USER_TOKEN_ID_KEY = "USER_TOKEN_ID";
     public static final String USER_GENDER_TYPE_KEY = "USER_GENDER_TYPE";
-    public static final String USER_COUNTRY_OF_ORIGIN_KEY = "USER_COUNTRY_OF_ORIGIN";
+    public static final String USER_EMAIL_ADDRESS_KEY = "USER_EMAIL_ADDRESS";
+    public static final String USER_CONTACT_PHONE_NUMBER_KEY = "USER_CONTACT_PHONE_NUMBER";
+    public static final String USER_CONTACT_EMAIL_ADDRESS_KEY = "USER_CONTACT_EMAIL_ADDRESS";
+    public static final String USER_COUNTRY_OF_RESIDENCE_KEY = "USER_COUNTRY_OF_RESIDENCE";
     public static final String USER_SEARCH_VERBATIM_KEYWORD_KEY = "USER_SEARCH_VERBATIM_KEYWORD";
     public static final String USER_SEARCH_ANY_MATCH_KEYWORD_KEY = "USER_SEARCH_ANY_MATCH_KEYWORD";
     public static final String IS_CREATE_NEW_LIBRARY_KEY = "ALL_LIBRARY";
