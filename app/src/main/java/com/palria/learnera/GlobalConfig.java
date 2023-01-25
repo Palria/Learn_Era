@@ -113,6 +113,7 @@ public class GlobalConfig {
         GlobalConfig.firebaseStorageInstance = firebaseStorageInstance;
     }
 
+    
     static FirebaseStorage getFirebaseStorageInstance(){
        return GlobalConfig.firebaseStorageInstance;
     }
