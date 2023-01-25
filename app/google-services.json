@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "859405861749",
+    "project_id": "palria-learnera",
+    "storage_bucket": "palria-learnera.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:859405861749:android:b457e8f601eacbd361493c",
+        "android_client_info": {
+          "package_name": "com.palria.learnera"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "859405861749-0hpn3190u6jd1lb62t5ph3kovs67mpfs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJugYBMx_F9BYA3UFI_zkMvfxZ4nyznRU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "859405861749-0hpn3190u6jd1lb62t5ph3kovs67mpfs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
