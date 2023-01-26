@@ -43,6 +43,7 @@ private TextView errorMessageTextView;
                 email = emailEditText.getText().toString();
                 password = passwordEditText.getText().toString();
                 Toast.makeText(getApplicationContext(), "Sign in progress...!", Toast.LENGTH_SHORT).show();
+                errorMessageTextView.setVisibility(View.VISIBLE);
                 errorMessageTextView.setText("Progress...");
                 GlobalConfig.signInUserWithEmailAndPassword(SignInActivity.this,email, password, new GlobalConfig.SignInListener() {
                     @Override
@@ -92,13 +93,7 @@ private TextView errorMessageTextView;
                 //forget password activity intent starts from here .
             }
         });
-        errorMessageTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                errorMessageTextView.setVisibility(View.GONE);
-
-            }
-        });
+      
 
     }
 
