@@ -14,6 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -198,10 +199,12 @@ public class GlobalConfig {
  * @param password the password of the user
  * @param signInListener a callback that tells when the sign in fails or succeeds
  * */
-    static void signInUserWithEmailAndPassword(@NonNull String email, @NonNull String password,SignInListener signInListener){
+    static void signInUserWithEmailAndPassword(Context context,@NonNull String email, @NonNull String password,SignInListener signInListener){
         if(email != null && password != null){
-            if(email.isEmpty() && password.isEmpty()){
-                FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+            if(!email.isEmpty() && !password.isEmpty()){
+             FirebaseAuth firebaseAuth =    FirebaseAuth.getInstance();
+
+                firebaseAuth.signInWithEmailAndPassword(email, password)
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
@@ -229,10 +232,12 @@ public class GlobalConfig {
      * @param password the password of the user
      * @param signUpListener a callback that tells when the sign un fails or succeeds
      * */
-    static void signUpUserWithEmailAndPassword(@NonNull String email,@NonNull  String password,SignUpListener signUpListener){
+    static void signUpUserWithEmailAndPassword(Context context,@NonNull String email,@NonNull  String password,SignUpListener signUpListener){
         if(email != null && password != null){
-            if(email.isEmpty() && password.isEmpty()){
-                FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+            if(!email.isEmpty() && !password.isEmpty()){
+                FirebaseAuth firebaseAuth =    FirebaseAuth.getInstance();
+
+               firebaseAuth.createUserWithEmailAndPassword(email, password)
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {

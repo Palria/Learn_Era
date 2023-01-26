@@ -45,11 +45,11 @@ public class SignUpActivity extends AppCompatActivity {
                 email = emailEditText.getText().toString();
                 password = passwordEditText.getText().toString();
                 if (userDisplayName != null && !userDisplayName.isEmpty()) {
-                    GlobalConfig.signUpUserWithEmailAndPassword(email, password, new GlobalConfig.SignUpListener() {
+                    GlobalConfig.signUpUserWithEmailAndPassword(SignUpActivity.this,email, password, new GlobalConfig.SignUpListener() {
                         @Override
                         public void onSuccess(String email, String password) {
                             //user has successfully signed in
-                            GlobalConfig.signInUserWithEmailAndPassword(email, password, new GlobalConfig.SignInListener() {
+                            GlobalConfig.signInUserWithEmailAndPassword(SignUpActivity.this,email, password, new GlobalConfig.SignInListener() {
                                 @Override
                                 public void onSuccess(String email, String password) {
                                     //user has signed in so can now write to the database, now create his first profile

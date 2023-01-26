@@ -59,6 +59,12 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
     int GALLERY_PERMISSION_REQUEST_CODE = 23;
 
     ImageView profilePhotoImageView;
+    /**
+     * This field will be initialized from the database
+     * It is the user's profile photo url which will be converted to a {@link Uri} when retrieved from the database
+     * when user edits the profile but did not make change on his profile, this value is still retained for downloading his
+     * profile photo else another value will fill it after changing his profile photo.
+     * */
     String retrievedProfilePictureDownloadUrl;
     Bitmap cameraImageBitmap;
     Uri galleryImageUri;
