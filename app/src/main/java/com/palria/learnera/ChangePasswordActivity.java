@@ -47,29 +47,46 @@ Button sendEmailActionButton;
     }
 //
 
+    /**
+     * Initializes the Activity's widgets
+     * */
     private void initUI(){
 
     }
 
 
-    private void sendEmailResetLink(SendLinkListener sendLinkListener){
-        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                sendLinkListener.onFailed(e.getMessage());
-            }
-        })
-        .addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                sendLinkListener.onSuccess();
-            }
-        });
+    private void sendEmailResetLink(SendLinkListener sendLinkListener) {
+        if (email != null && !email.isEmpty()) {
+            FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            sendLinkListener.onFailed(e.getMessage());
+                        }
+                    })
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            sendLinkListener.onSuccess();
+                        }
+                    });
+        }else{
+            //Tell the user to input his email address
+        }
     }
 
+    /**
+     * A callback triggered either if the link is successfully set or failed to send
+     * */
     interface SendLinkListener{
+        /**
+         * Triggered when the link is successfully sent to the given email address
+         * */
         void onSuccess();
+        /**
+         * Triggered when the link fails to send to the email address
+         * @param errorMessage the error message indicating the cause of the failure
+         * */
         void onFailed(String errorMessage);
     }
 }

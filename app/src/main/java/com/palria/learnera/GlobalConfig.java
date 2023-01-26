@@ -331,12 +331,12 @@ public class GlobalConfig {
     }
 
     /**
-     * This method returns countries across the globe
+     * This method returns the name of countries across the globe
      * @return  {@link ArrayList} the list that contains the name of countries
      * @param countryArrayList the arrayList that will hold the list of the countries, this is the same {@link Object} that will be returne
      *
      * */
-    public static ArrayList getCountryArrayList(@Nullable ArrayList<String> countryArrayList){
+    public static ArrayList<String> getCountryArrayList(@Nullable ArrayList<String> countryArrayList){
         ArrayList<String> arrayList = null;
         if(countryArrayList == null){
             arrayList = new ArrayList<>();

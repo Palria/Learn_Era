@@ -201,7 +201,7 @@ public class SignUpActivity extends AppCompatActivity {
      * Initializes the gender spinner for selection
      * */
     private void initGenderSpinner(){
-        String[] genderArray = {"MALE","FEMALE"};
+        String[] genderArray = {getResources().getString(R.string.male),getResources().getString(R.string.female)};
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this,R.layout.support_simple_spinner_dropdown_item,genderArray);
         genderTypeSpinner.setAdapter(arrayAdapter);
         genderTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -222,7 +222,7 @@ public class SignUpActivity extends AppCompatActivity {
      * Initializes the country spinner for selection
      * */
     private void initCountrySpinner(){
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this,R.layout.support_simple_spinner_dropdown_item,GlobalConfig.getCountryArrayList(new ArrayList<>()));
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,GlobalConfig.getCountryArrayList(new ArrayList<>()));
         countrySpinner.setAdapter(arrayAdapter);
         countrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
