@@ -60,10 +60,10 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
 
     ImageView profilePhotoImageView;
     /**
-     * This field will be initialized from the database
+     * This field will be initialized from the database if there has been a profile photo before trying to edit
      * It is the user's profile photo url which will be converted to a {@link Uri} when retrieved from the database
-     * when user edits the profile but did not make change on his profile, this value is still retained for downloading his
-     * profile photo else another value will fill it after changing his profile photo.
+     * When the user edits the profile but did not make change on his profile photo, this value is still retained for downloading his
+     * profile photo else ifn he changes the photo then another value will fill it after changing his profile photo.
      * */
     String retrievedProfilePictureDownloadUrl;
     Bitmap cameraImageBitmap;

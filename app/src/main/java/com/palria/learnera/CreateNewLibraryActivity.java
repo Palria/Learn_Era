@@ -51,20 +51,60 @@ EditText libraryNameEditText;
 EditText libraryCategoryEditText;
 EditText libraryDescriptionEditText;
 ImageView coverPhotoImageView;
+/**
+ * <p>Indicates whether the user is editing his library or creating a new library</p>
+ * The {@link boolean} value is initialized from {@link Intent} data
+ * */
 boolean isCreateNewLibrary = false;
+
 boolean isCameraImage = false;
+/**
+ * Indicates if the user makes change in his library's cover photo
+ * */
 boolean isLibraryCoverPhotoChanged;
+
+    /**
+     * Indicates if the library has a cover photo or the owner has selected from the library
+     * */
 boolean isLibraryCoverPhotoIncluded;
+
 int CAMERA_PERMISSION_REQUEST_CODE = 2002;
 int GALLERY_PERMISSION_REQUEST_CODE = 23;
-
+    /**
+     * This field will be initialized from the database if there has been a cover photo before trying to edit
+     * It is the library's photo url which will be converted to a {@link Uri} when retrieved from the database
+     * When the user edits the library but did not make change on the library's cover photo, this value is still retained for downloading his
+     * profile photo else if the cover photo is changed then another value will fill it after changing the photo.
+     * */
     String retrievedCoverPhotoDownloadUrl;
+    /**
+     * Initialized from the device camera's captured photo
+     * */
     Bitmap cameraImageBitmap;
+
+    /**
+     * Initialized from the device photo gallery
+     * */
     Uri galleryImageUri;
 
+    /**
+     * A {@link View} for performing the edition action
+     * */
 Button createLibraryActionButton;
-Button pickImageActionButton;
+
+    /**
+     * A {@link View} for performing the edition action
+     * */
+    Button pickImageActionButton;
+
+    /**
+     * A  variable for launching the gallery {@link Intent}
+     * */
     ActivityResultLauncher<Intent> openGalleryLauncher;
+
+    /**
+     * A  variable for launching the camera {@link Intent}
+     * */
     ActivityResultLauncher<Intent> openCameraLauncher;
 
     @Override
@@ -186,9 +226,17 @@ Button pickImageActionButton;
             }
         });
     }
+
+    /**
+     * Initializes the views
+     * */
     private void initUI(){
 
     }
+
+    /**
+     * Fetches the library's profile data and initializes the global variables before edition
+     * */
     private void fetchIntentData(){
 
         Intent intent = getIntent();
