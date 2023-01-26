@@ -27,6 +27,11 @@ private TextView register_link_view;
 private TextView forget_password_link;
 private TextView errorMessageTextView;
 
+    /**
+     * This is a flag indicating when the sign in process finishes
+     * */
+boolean isInProgress = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,40 +45,51 @@ private TextView errorMessageTextView;
         signInActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                email = emailEditText.getText().toString();
-                password = passwordEditText.getText().toString();
-                Toast.makeText(getApplicationContext(), "Sign in progress...!", Toast.LENGTH_SHORT).show();
-                errorMessageTextView.setVisibility(View.VISIBLE);
-                errorMessageTextView.setText("Progress...");
-                GlobalConfig.signInUserWithEmailAndPassword(SignInActivity.this,email, password, new GlobalConfig.SignInListener() {
-                    @Override
-                    public void onSuccess(String email, String password) {
-                        //user has successfully signed in
+                if(!isInProgress) {
+                    isInProgress = true;
 
-                        Intent intent = new Intent(SignInActivity.this,MainActivity.class);
-                        startActivity(intent);
-                        Toast.makeText(getApplicationContext(), "You successfully signed in, go learn more, it is era of learning", Toast.LENGTH_LONG).show();
-                        SignInActivity.this.finish();
+                    email = emailEditText.getText().toString();
+                    password = passwordEditText.getText().toString();
+                    Toast.makeText(getApplicationContext(), "Sign in progress...!", Toast.LENGTH_SHORT).show();
+                    errorMessageTextView.setVisibility(View.VISIBLE);
+                    errorMessageTextView.setText("Progress...");
+                    GlobalConfig.signInUserWithEmailAndPassword(SignInActivity.this, email, password, new GlobalConfig.SignInListener() {
+                        @Override
+                        public void onSuccess(String email, String password) {
+                            //user has successfully signed in
+                            isInProgress = false;
+
+                            Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            Toast.makeText(getApplicationContext(), "You successfully signed in, go learn more, it is era of learning", Toast.LENGTH_LONG).show();
+                            SignInActivity.this.finish();
 
 
-                    }
+                        }
 
-                    @Override
-                    public void onFailed(String errorMessage) {
-                        // account sign in failed//
+                        @Override
+                        public void onFailed(String errorMessage) {
+                            // account sign in failed//
 //                        Toast.makeText(getApplicationContext(), "Sign in failed: "+errorMessage+" please try again!", Toast.LENGTH_SHORT).show();
-                                errorMessageTextView.setText(errorMessage+ "  Please try again!");
-                                errorMessageTextView.setVisibility(View.VISIBLE);
-                    }
+                            isInProgress = false;
 
-                    @Override
-                    public void onEmptyInput(boolean isEmailEmpty, boolean isPasswordEmpty) {
-                        // Either email or password is empty
+                            errorMessageTextView.setText(errorMessage + "  Please try again!");
+                            errorMessageTextView.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onEmptyInput(boolean isEmailEmpty, boolean isPasswordEmpty) {
+                            // Either email or password is empty
 //                        Toast.makeText(getApplicationContext(), "All fields are required!", Toast.LENGTH_SHORT).show();
-                        errorMessageTextView.setText("All fields are required, fill the form and try again!");
-                        errorMessageTextView.setVisibility(View.VISIBLE);
-                    }
-                });
+                            isInProgress = false;
+
+                            errorMessageTextView.setText("All fields are required, fill the form and try again!");
+                            errorMessageTextView.setVisibility(View.VISIBLE);
+                        }
+                    });
+                }else{
+//                    sign in is in progress
+                }
             }
         });
 
@@ -97,6 +113,23 @@ private TextView errorMessageTextView;
 
     }
 
+    @Override
+    public void onBackPressed() {
+
+    if(!isInProgress){
+        SignInActivity.super.onBackPressed();
+    }else{
+        //process running...
+
+
+    }
+
+    }
+
+    /**
+     * Initializes the views
+     * Has to be called first before any other method
+     * */
     private void initUI(){
 
 

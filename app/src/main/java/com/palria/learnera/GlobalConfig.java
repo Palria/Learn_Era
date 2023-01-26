@@ -237,9 +237,11 @@ public class GlobalConfig {
     static void signUpUserWithEmailAndPassword(Context context,@NonNull String email,@NonNull  String password,SignUpListener signUpListener){
         if(email != null && password != null){
             if(!email.isEmpty() && !password.isEmpty()){
+                String  trimmedEmail = email.trim();
+                String trimmedPassword = password.trim();
                 FirebaseAuth firebaseAuth =    FirebaseAuth.getInstance();
 
-               firebaseAuth.createUserWithEmailAndPassword(email, password)
+               firebaseAuth.createUserWithEmailAndPassword(trimmedEmail, trimmedPassword)
                         .addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
@@ -249,7 +251,7 @@ public class GlobalConfig {
                         .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                             @Override
                             public void onSuccess(AuthResult authResult) {
-                                signUpListener.onSuccess(email, password);
+                                signUpListener.onSuccess(trimmedEmail, trimmedPassword);
                             }
                         });
             }else{
