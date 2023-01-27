@@ -114,9 +114,27 @@ Button createLibraryActionButton;
         initUI();
         fetchIntentData();
         if(isCreateNewLibrary){
+            //User is creating new library
             libraryId = GlobalConfig.getRandomString(100);
         }else{
-            initializeLibraryProfile();
+            //User is editing his library
+            initializeLibraryProfile(new ProfileInitializationListener() {
+                @Override
+                public void onSuccess(String tutorialName, String tutorialDescription, String libraryCategory, String retrievedCoverPhotoDownloadUrl, boolean isLibraryCoverPhotoIncluded) {
+
+                    libraryNameEditText.setText(libraryName);
+                    libraryDescriptionEditText.setText(libraryDescription);
+                    libraryCategoryEditText.setText(libraryCategory);
+                    CreateNewLibraryActivity.this.isLibraryCoverPhotoIncluded = isLibraryCoverPhotoIncluded;
+                    //Initialization succeeds, then start implementation
+
+                }
+
+                @Override
+                public void onFailed(String errorMessage) {
+
+                }
+            });
         }
 
         openGalleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -460,7 +478,7 @@ Button createLibraryActionButton;
                 });
     }
 
-    private void initializeLibraryProfile(){
+    private void initializeLibraryProfile(ProfileInitializationListener profileInitializationListener){
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_USERS_KEY)
                 .document(GlobalConfig.getCurrentUserId())
@@ -472,7 +490,7 @@ Button createLibraryActionButton;
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                    profileInitializationListener.onFailed(e.getMessage());
                     }
                 })
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -482,14 +500,13 @@ Button createLibraryActionButton;
                         String libraryDescription = documentSnapshot.getString(GlobalConfig.LIBRARY_DESCRIPTION_KEY);
                         String libraryCategory = documentSnapshot.getString(GlobalConfig.LIBRARY_CATEGORY_KEY);
                         retrievedCoverPhotoDownloadUrl = documentSnapshot.getString(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY);
-
-                        libraryNameEditText.setText(libraryName);
-                        libraryDescriptionEditText.setText(libraryDescription);
-                        libraryCategoryEditText.setText(libraryCategory);
+                        boolean isLibraryCoverPhotoIncluded = false;
 
                         if(documentSnapshot.getBoolean(GlobalConfig.IS_LIBRARY_COVER_PHOTO_INCLUDED_KEY)!= null){
                             isLibraryCoverPhotoIncluded = documentSnapshot.getBoolean(GlobalConfig.IS_LIBRARY_COVER_PHOTO_INCLUDED_KEY);
                         }
+                        profileInitializationListener.onSuccess(libraryName, libraryDescription,libraryCategory  , retrievedCoverPhotoDownloadUrl, isLibraryCoverPhotoIncluded);
+
                     }
                 });
 
@@ -498,6 +515,13 @@ Button createLibraryActionButton;
     interface CoverPhotoUploadListener{
      void onSuccess(String coverPhotoDownloadUrl);
      void onFailed(String errorMessage);
+
+    }
+
+
+    interface ProfileInitializationListener{
+        void onSuccess(String tutorialName,String tutorialDescription,String libraryCategory  ,String retrievedCoverPhotoDownloadUrl, boolean isLibraryCoverPhotoIncluded);
+        void onFailed(String errorMessage);
 
     }
 }

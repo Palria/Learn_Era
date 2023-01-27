@@ -40,6 +40,8 @@ public class GlobalConfig {
     they are used to query a particular field within a document
     they have to be unique in a particular document
     */
+
+    //USER FIELD KEYS BEGIN
     public static final String ALL_USERS_KEY = "ALL_USERS";
     public static final String USER_PROFILE_KEY = "USER_PROFILE";
     public static final String USER_ID_KEY = "USER_ID";
@@ -61,7 +63,10 @@ public class GlobalConfig {
     public static final String USER_COUNTRY_OF_RESIDENCE_KEY = "USER_COUNTRY_OF_RESIDENCE";
     public static final String USER_SEARCH_VERBATIM_KEYWORD_KEY = "USER_SEARCH_VERBATIM_KEYWORD";
     public static final String USER_SEARCH_ANY_MATCH_KEYWORD_KEY = "USER_SEARCH_ANY_MATCH_KEYWORD";
-    public static final String IS_CREATE_NEW_LIBRARY_KEY = "ALL_LIBRARY";
+    //USER FIELD KEYS END
+
+    //LIBRARY FIELD KEYS BEGIN
+    public static final String IS_CREATE_NEW_LIBRARY_KEY = "IS_CREATE_NEW_LIBRARY";
     public static final String ALL_LIBRARY_KEY = "ALL_LIBRARY";
     public static final String LIBRARY_PROFILE_KEY = "LIBRARY_PROFILE";
     public static final String LIBRARY_DISPLAY_NAME_KEY = "LIBRARY_DISPLAY_NAME";
@@ -83,6 +88,34 @@ public class GlobalConfig {
     public static final String IS_LIBRARY_COVER_PHOTO_INCLUDED_KEY = "IS_LIBRARY_COVER_PHOTO_INCLUDED";
     public static final String LIBRARY_COVER_PHOTO_KEY = "LIBRARY_COVER_PHOTO";
     public static final String LIBRARY_IMAGES_KEY = "LIBRARY_IMAGES";
+    //LIBRARY FIELD KEYS END
+
+
+  //TUTORIAL FIELD KEYS BEGIN
+    public static final String IS_CREATE_NEW_TUTORIAL_KEY = "IS_CREATE_NEW_TUTORIAL";
+    public static final String ALL_TUTORIAL_KEY = "ALL_TUTORIAL";
+    public static final String LIBRARY_CONTAINER_ID_KEY = "LIBRARY_CONTAINER_ID";
+    public static final String LIBRARY_CONTAINER_CATEGORY_KEY = "LIBRARY_CONTAINER_CATEGORY";
+    public static final String TUTORIAL_PROFILE_KEY = "TUTORIAL_PROFILE";
+    public static final String TUTORIAL_DISPLAY_NAME_KEY = "TUTORIAL_DISPLAY_NAME";
+    public static final String TUTORIAL_DESCRIPTION_KEY = "TUTORIAL_DESCRIPTION";
+    public static final String TUTORIAL_ID_KEY = "TUTORIAL_ID";
+    public static final String TUTORIAL_OWNER_ID_KEY = "TUTORIAL_OWNER_ID";
+    public static final String TUTORIAL_DATE_CREATED_KEY = "TUTORIAL_DATE_CREATED";
+    public static final String TUTORIAL_DATE_CREATED_TIME_STAMP_KEY = "TUTORIAL_DATE_CREATED_TIME_STAMP";
+    public static final String TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY = "TUTORIAL_SEARCH_VERBATIM_KEYWORD";
+    public static final String TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY = "TUTORIAL_SEARCH_ANY_MATCH_KEYWORD";
+    public static final String LAST_TUTORIAL_CREATED_ID_KEY = "LAST_TUTORIAL_CREATED_ID";
+    public static final String LAST_TUTORIAL_DATE_CREATED_KEY = "LAST_TUTORIAL_DATE_CREATED";
+    public static final String TUTORIAL_DATE_EDITED_KEY = "TUTORIAL_DATE_EDITED";
+    public static final String TUTORIAL_DATE_EDITED_TIME_STAMP_KEY = "TUTORIAL_DATE_EDITED_TIME_STAMP";
+    public static final String LAST_TUTORIAL_DATE_CREATED_TIME_STAMP_KEY = "LAST_TUTORIAL_DATE_CREATED_TIME_STAMP";
+    public static final String TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY = "TOTAL_NUMBER_OF_TUTORIAL_CREATED";
+    public static final String TUTORIAL_COVER_PHOTO_DOWNLOAD_URL_KEY = "TUTORIAL_COVER_PHOTO_DOWNLOAD_URL";
+    public static final String IS_TUTORIAL_COVER_PHOTO_INCLUDED_KEY = "IS_TUTORIAL_COVER_PHOTO_INCLUDED";
+    public static final String TUTORIAL_COVER_PHOTO_KEY = "TUTORIAL_COVER_PHOTO";
+    public static final String TUTORIAL_IMAGES_KEY = "TUTORIAL_IMAGES";
+    //TUTORIAL FIELD KEYS END
 
 
 

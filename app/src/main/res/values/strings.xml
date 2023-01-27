@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Learn Era</string>
+    <string name="male">MALE</string>
+    <string name="female">FEMALE</string>
 </resources>
