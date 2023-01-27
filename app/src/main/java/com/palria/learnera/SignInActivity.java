@@ -1,8 +1,10 @@
 package com.palria.learnera;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -27,6 +29,8 @@ private TextView register_link_view;
 private TextView forget_password_link;
 private TextView errorMessageTextView;
 
+AlertDialog alertDialog;
+
     /**
      * This is a flag indicating when the sign in process finishes
      * */
@@ -38,6 +42,7 @@ boolean isInProgress = false;
         if(getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
+        getWindow().setNavigationBarColor(getColor(R.color.teal_700));
         setContentView(R.layout.activity_sign_in);
         //initializes this activity's views
         initUI();
@@ -47,7 +52,8 @@ boolean isInProgress = false;
             public void onClick(View view) {
                 if(!isInProgress) {
                     isInProgress = true;
-
+                    //show logging in progress
+                    toggleProgress(true);
                     email = emailEditText.getText().toString();
                     password = passwordEditText.getText().toString();
                     Toast.makeText(getApplicationContext(), "Sign in progress...!", Toast.LENGTH_SHORT).show();
@@ -58,7 +64,8 @@ boolean isInProgress = false;
                         public void onSuccess(String email, String password) {
                             //user has successfully signed in
                             isInProgress = false;
-
+                            //hide progress
+                            toggleProgress(false);
                             Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                             startActivity(intent);
                             Toast.makeText(getApplicationContext(), "You successfully signed in, go learn more, it is era of learning", Toast.LENGTH_LONG).show();
@@ -72,7 +79,8 @@ boolean isInProgress = false;
                             // account sign in failed//
 //                        Toast.makeText(getApplicationContext(), "Sign in failed: "+errorMessage+" please try again!", Toast.LENGTH_SHORT).show();
                             isInProgress = false;
-
+                            //hide progress
+                            toggleProgress(false);
                             errorMessageTextView.setText(errorMessage + "  Please try again!");
                             errorMessageTextView.setVisibility(View.VISIBLE);
                         }
@@ -82,13 +90,15 @@ boolean isInProgress = false;
                             // Either email or password is empty
 //                        Toast.makeText(getApplicationContext(), "All fields are required!", Toast.LENGTH_SHORT).show();
                             isInProgress = false;
-
+                            //hide progress
+                            toggleProgress(false);
                             errorMessageTextView.setText("All fields are required, fill the form and try again!");
                             errorMessageTextView.setVisibility(View.VISIBLE);
                         }
                     });
                 }else{
 //                    sign in is in progress
+                    toggleProgress(true);
                 }
             }
         });
@@ -143,9 +153,24 @@ boolean isInProgress = false;
 
         forget_password_link = (TextView) findViewById(R.id.forget_password_link);
 
+        //init progress.
+    alertDialog = new AlertDialog.Builder(SignInActivity.this)
+            .setCancelable(false)
+            .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
+            .create();
+
 
 
     }
 
+
+    private void toggleProgress(boolean show)
+    {
+        if(show){
+            alertDialog.show();
+        }else{
+            alertDialog.hide();
+        }
+    }
 
 }

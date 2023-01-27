@@ -30,6 +30,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
@@ -67,6 +70,9 @@ dependencies {
     //implementation 'com.android.support:appcompat-v7:28.0.0'
     //implementation 'com.google.firebase:firebase-admin'
 
+    //splash screen de
+//    def splahScreenVersion = "1.0.0"
+    implementation("androidx.core:core-splashscreen:1.0.0")
 
 //    implementation 'com.google.android.gms:play-services-ads:21.1.0'
 
