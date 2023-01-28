@@ -12,9 +12,13 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.splashscreen.SplashScreen.Companion.*;
 
 public class SplashScrenActivity extends AppCompatActivity {
+
+    /**
+     * indicates to show welcome screen or not here
+     */
+    private boolean showWelcomeScreen = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,14 +36,21 @@ public class SplashScrenActivity extends AppCompatActivity {
         // HERE WE ARE TAKING THE REFERENCE OF OUR IMAGE
         // SO THAT WE CAN PERFORM ANIMATION USING THAT IMAGE
           TextView logo_text = findViewById(R.id.logo_text);
-         Animation slideAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up);
+         Animation slideAnimation = AnimationUtils.loadAnimation(this, R.anim.slide_up_slow);
         logo_text.startAnimation(slideAnimation);
 
         // we used the postDelayed(Runnable, time) method
         // to send a message with a delayed time.
         new Handler().postDelayed(() -> {
-                Intent intent = new Intent(SplashScrenActivity.this, MainActivity.class);
-        startActivity(intent);
+            Intent intent;
+            if(showWelcomeScreen) {
+
+
+               intent  = new Intent(SplashScrenActivity.this, WelcomeActivity.class);
+            }else{
+                 intent = new Intent(SplashScrenActivity.this, MainActivity.class);
+            }
+                startActivity(intent);
         finish();
         }, 3000);
 

@@ -4,11 +4,11 @@
 
     <!--THIS CODE IS FOR SIDE ANIMATION-->
     <translate
-        android:duration="700"
+        android:duration="1000"
         android:fromYDelta="160%" />
 
     <alpha
-        android:duration="700"
+        android:duration="1000"
         android:fromAlpha="0.1"
         android:toAlpha="1.0" />
 

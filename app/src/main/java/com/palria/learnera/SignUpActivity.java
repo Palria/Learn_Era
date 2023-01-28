@@ -1,10 +1,14 @@
 package com.palria.learnera;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
@@ -13,9 +17,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
@@ -31,6 +38,7 @@ public class SignUpActivity extends AppCompatActivity {
     private String userCountryOfResidence;
     private String email;
     private String password;
+    private String confirmPassword;
     private String genderType;
     private EditText userDisplayNameEditText;
     private EditText userCountryOfResidenceEditText;
@@ -40,7 +48,14 @@ public class SignUpActivity extends AppCompatActivity {
     private Button signUpActionButton;
     private Spinner genderTypeSpinner;
     private Spinner countrySpinner;
+    private EditText passwordConfirmEditText;
+    AlertDialog alertDialog;
+    //register and forget password link
+    private TextView login_link_view;
+    private TextView forget_password_link;
+    private TextView errorMessageTextView;
 
+    TextInputLayout passwordInputLayout;
     /**
      * This is a flag indicating when the sign up process finishes
      * */
@@ -49,24 +64,51 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(getSupportActionBar()!=null)getSupportActionBar().hide();
         setContentView(R.layout.activity_sign_up);
         initUI();
-//
+
 
         signUpActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                userDisplayName = userDisplayNameEditText.getText().toString();
+                //userCountryOfResidence = userCountryOfResidenceEditText.getText().toString();
+                email = emailEditText.getText().toString();
+                password = passwordEditText.getText().toString();
+                confirmPassword = passwordConfirmEditText.getText().toString();
+
+                Log.w("message", userDisplayName + " : " + email + " : " + genderType + " : " + userCountryOfResidence);
+
+                //validate confirm apssword
+                if(!password.equals(confirmPassword)){
+                    Toast.makeText(SignUpActivity.this, password+"="+confirmPassword, Toast.LENGTH_SHORT).show();
+                    errorMessageTextView.setText("Confirm password does not match the password!");
+                    errorMessageTextView.setVisibility(View.VISIBLE);
+                    return;
+                }
                 if(!isInProgress) {
                     isInProgress = true;
-                    userDisplayName = userDisplayNameEditText.getText().toString();
-                    userCountryOfResidence = userCountryOfResidenceEditText.getText().toString();
-                    email = emailEditText.getText().toString();
-                    password = passwordEditText.getText().toString();
-                    if (!userDisplayName.isEmpty() && !genderType.isEmpty()) {
+                   toggleProgress(true);
+                    if (!userDisplayName.isEmpty()) {
                         GlobalConfig.signUpUserWithEmailAndPassword(SignUpActivity.this, email, password, new GlobalConfig.SignUpListener() {
                             @Override
                             public void onSuccess(String email, String password) {
                                 //user has successfully signed up
+                                toggleProgress(false);
+
+                                GlobalHelpers.showAlertMessage("success",
+                                        SignUpActivity.this,
+                                        "Account Created Successfully.",
+                                        "we have successfully sent a confirmation email. please check your email now and verify before login.");
+
+                                emailEditText.setText("");
+                                passwordEditText.setText("");
+                                passwordConfirmEditText.setText("");
+                                userDisplayNameEditText.setText("");
+                                isInProgress=false;
+                                //--do not login user directly we need to confirm email before login--//.
+/**
                                 GlobalConfig.signInUserWithEmailAndPassword(SignUpActivity.this, email, password, new GlobalConfig.SignInListener() {
                                     @Override
                                     public void onSuccess(String email, String password) {
@@ -75,7 +117,7 @@ public class SignUpActivity extends AppCompatActivity {
                                             @Override
                                             public void onSuccess(String userName) {
                                                 isInProgress = false;
-
+                                                toggleProgress(false);
                                                 FirebaseAuth.getInstance().signOut();
                                                 Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
                                                 startActivity(intent);
@@ -85,7 +127,7 @@ public class SignUpActivity extends AppCompatActivity {
                                             @Override
                                             public void onFailed(String errorMessage) {
                                                 isInProgress = false;
-
+                                                toggleProgress(false);
                                             }
                                         });
                                     }
@@ -93,15 +135,20 @@ public class SignUpActivity extends AppCompatActivity {
                                     @Override
                                     public void onFailed(String errorMessage) {
                                         isInProgress = false;
-
+                                        toggleProgress(false);
+                                        errorMessageTextView.setText(errorMessage + "  Please try again!");
+                                        errorMessageTextView.setVisibility(View.VISIBLE);
                                     }
 
                                     @Override
                                     public void onEmptyInput(boolean isEmailEmpty, boolean isPasswordEmpty) {
                                         isInProgress = false;
+                                        toggleProgress(false);
 
                                     }
                                 });
+
+ */
 
                             }
 
@@ -109,6 +156,9 @@ public class SignUpActivity extends AppCompatActivity {
                             public void onFailed(String errorMessage) {
                                 // account sign in failed
                                 isInProgress = false;
+                                toggleProgress(false);
+                                errorMessageTextView.setText(errorMessage + "  Please try again!");
+                                errorMessageTextView.setVisibility(View.VISIBLE);
 
                             }
 
@@ -116,6 +166,9 @@ public class SignUpActivity extends AppCompatActivity {
                             public void onEmptyInput(boolean isEmailEmpty, boolean isPasswordEmpty) {
                                 // Either email or password is empty
                                 isInProgress = false;
+                                toggleProgress(false);
+                                errorMessageTextView.setText("All fields are required, fill the form and try again!");
+                                errorMessageTextView.setVisibility(View.VISIBLE);
 
                             }
                         });
@@ -123,11 +176,35 @@ public class SignUpActivity extends AppCompatActivity {
                         /*Take an action when a user has not filled in their user name and gender
                          *It is mandatory to fill in their user name and gender
                          */
+                        isInProgress=false;
+                        toggleProgress(false);
+                        errorMessageTextView.setText("All fields are required, fill the form and try again!");
+                        errorMessageTextView.setVisibility(View.VISIBLE);
                     }
                 }
                 else{
                     //Sign up in progress...
                 }
+            }
+        });
+
+
+        //register link button click listener
+        login_link_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               //register|sign up activity starts from here .
+                Intent i = new Intent(SignUpActivity.this, SignInActivity.class);
+                startActivity(i);
+            }
+        });
+
+        forget_password_link.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //forget password activity intent starts from here .
+                Intent i = new Intent(SignUpActivity.this, ChangePasswordActivity.class);
+                startActivity(i);
             }
         });
     }
@@ -177,6 +254,7 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
 
+
     }
 
     @Override
@@ -194,21 +272,49 @@ public class SignUpActivity extends AppCompatActivity {
 
     /**Initializes the activity's views*/
     private void initUI(){
+        userDisplayNameEditText = findViewById(R.id.nameInput);
+        emailEditText = (EditText) findViewById(R.id.emailInput);
+        passwordEditText = (EditText) findViewById(R.id.passwordInput);
+        passwordConfirmEditText = findViewById(R.id.passwordConfirmInput);
+        errorMessageTextView = (TextView) findViewById(R.id.errorMessage);
+        signUpActionButton = (Button) findViewById(R.id.startButton);
+        login_link_view = (TextView) findViewById(R.id.login_link);
+        forget_password_link = (TextView) findViewById(R.id.forget_password_link);
+        passwordInputLayout = findViewById(R.id.passwordInputLayout);
 
+        genderTypeSpinner = findViewById(R.id.genderSpinner);
+        countrySpinner = findViewById(R.id.countrySpinner);
+        //init progress.
+        alertDialog = new AlertDialog.Builder(SignUpActivity.this)
+                .setCancelable(false)
+                .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
+                .create();
+    initGenderSpinner();
+    initCountrySpinner();
+    }
+
+
+    private void toggleProgress(boolean show)
+    {
+        if(show){
+            alertDialog.show();
+        }else{
+            alertDialog.hide();
+        }
     }
 
     /**
      * Initializes the gender spinner for selection
      * */
     private void initGenderSpinner(){
-        String[] genderArray = {getResources().getString(R.string.male),getResources().getString(R.string.female)};
+        String[] genderArray = {getResources().getString(R.string.male),getResources().getString(R.string.female),getResources().getString(R.string.other) };
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this,R.layout.support_simple_spinner_dropdown_item,genderArray);
         genderTypeSpinner.setAdapter(arrayAdapter);
         genderTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 genderType = String.valueOf(genderTypeSpinner.getSelectedItem());
-                genderTypeEditText.setText(genderType);
+                //genderTypeEditText.setText(genderType);
             }
 
             @Override
@@ -228,7 +334,7 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 userCountryOfResidence = String.valueOf(countrySpinner.getSelectedItem());
-                userCountryOfResidenceEditText.setText(userCountryOfResidence);
+                //userCountryOfResidenceEditText.setText(userCountryOfResidence);
             }
 
             @Override
