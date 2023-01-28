@@ -42,7 +42,7 @@ boolean isInProgress = false;
         if(getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-        getWindow().setNavigationBarColor(getColor(R.color.teal_700));
+
         setContentView(R.layout.activity_sign_in);
         //initializes this activity's views
         initUI();
@@ -70,8 +70,6 @@ boolean isInProgress = false;
                             startActivity(intent);
                             Toast.makeText(getApplicationContext(), "You successfully signed in, go learn more, it is era of learning", Toast.LENGTH_LONG).show();
                             SignInActivity.this.finish();
-
-
                         }
 
                         @Override
@@ -117,6 +115,8 @@ boolean isInProgress = false;
             @Override
             public void onClick(View view) {
                 //forget password activity intent starts from here .
+                Intent i = new Intent(SignInActivity.this, ChangePasswordActivity.class);
+                startActivity(i);
             }
         });
       

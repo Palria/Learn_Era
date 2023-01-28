@@ -21,6 +21,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.palria.learnera.models.WelcomeScreenItemModal;
 
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
@@ -744,6 +745,15 @@ public class GlobalConfig {
     }
 
 
+    public static ArrayList<WelcomeScreenItemModal> getWelcomeScreenItemsList(){
+        ArrayList<WelcomeScreenItemModal> list = new ArrayList<>();
+        list.add(new WelcomeScreenItemModal(R.drawable.undraw_save_to_bookmarks, "Unlimited Personal Library","You can create infinite numbers of libraries for personal use"));
+        list.add(new WelcomeScreenItemModal(R.drawable.undraw_personal_notebook,"Bookmark your interestss","You can easily customize your favourite books and libraries."));
+        list.add(new WelcomeScreenItemModal(R.drawable.undraw_online_reading_np7n,"Experience of High level reading","Experience the reading high level of books from authors worldwide for free"));
+
+        return list;
+    }
+
      //
     //INTERFACES
     //
@@ -764,5 +774,7 @@ public class GlobalConfig {
         void onFailed(@NonNull String errorMessage);
 
     }
+
+
 
 }

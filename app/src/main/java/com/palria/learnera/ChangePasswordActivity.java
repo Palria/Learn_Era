@@ -1,12 +1,16 @@
 package com.palria.learnera;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -16,15 +20,29 @@ public class ChangePasswordActivity extends AppCompatActivity {
 String email;
 EditText emailEditText;
 Button sendEmailActionButton;
+AlertDialog alertDialog;
+TextView mLoginLink;
+private TextView errorMessageTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(getSupportActionBar() != null) getSupportActionBar().hide();
         setContentView(R.layout.activity_change_password);
         initUI();
-        email = emailEditText.getText().toString();
+
         sendEmailActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                email = emailEditText.getText().toString();
+              //check email not empty and valid?
+                if(email==null || email.trim().equals("")){
+
+
+                    errorMessageTextView.setText("Enter a valid email!");
+                    errorMessageTextView.setVisibility(View.VISIBLE);
+                    return;
+                }
+                toggleProgress(true);
                 sendEmailResetLink(new SendLinkListener() {
                     @Override
                     public void onSuccess() {
@@ -33,15 +51,37 @@ Button sendEmailActionButton;
                         *address, inform him to open his inbox and click on the link
                         * to proceed resetting his password
                         */
+                        toggleProgress(false);
+                        //show success
+
+                        GlobalHelpers.showAlertMessage("success",
+                                ChangePasswordActivity.this,
+                                "Password Reset Success",
+                                "we have successfully reset your password. check your email now.");
+
+
 
                     }
 
                     @Override
                     public void onFailed(String errorMessage) {
-
+                        toggleProgress(false);
                         //Take an action when the password reset process fails
+                        errorMessageTextView.setText(errorMessage + "  Please try again!");
+                        errorMessageTextView.setVisibility(View.VISIBLE);
                     }
+
+
                 });
+            }
+        });
+
+        //login link click listener
+        mLoginLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(ChangePasswordActivity.this, SignInActivity.class);
+                startActivity(i);
             }
         });
     }
@@ -52,6 +92,26 @@ Button sendEmailActionButton;
      * */
     private void initUI(){
 
+    emailEditText= findViewById(R.id.emailInput);
+    sendEmailActionButton = findViewById(R.id.resetButton);
+    mLoginLink = findViewById(R.id.login_link);
+    errorMessageTextView = findViewById(R.id.errorMessage);
+
+    alertDialog = new AlertDialog.Builder(ChangePasswordActivity.this)
+                .setCancelable(false)
+                .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
+                .create();
+
+    }
+
+
+    private void toggleProgress(boolean show)
+    {
+        if(show){
+            alertDialog.show();
+        }else{
+            alertDialog.hide();
+        }
     }
 
 
@@ -89,4 +149,7 @@ Button sendEmailActionButton;
          * */
         void onFailed(String errorMessage);
     }
+
+
+
 }
