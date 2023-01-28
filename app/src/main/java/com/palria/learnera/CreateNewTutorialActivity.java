@@ -390,7 +390,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
         tutorialProfileDetails.put(GlobalConfig.LIBRARY_CONTAINER_CATEGORY_KEY,libraryContainerCategory);
         tutorialProfileDetails.put(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryContainerId);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
-        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_OWNER_ID_KEY,GlobalConfig.getCurrentUserTokenId());
+        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserTokenId());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_KEY,GlobalConfig.getDate());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());
@@ -405,7 +405,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
         allTutorialDetails.put(GlobalConfig.LIBRARY_CONTAINER_CATEGORY_KEY,libraryContainerCategory);
         allTutorialDetails.put(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryContainerId);
         allTutorialDetails.put(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
-        allTutorialDetails.put(GlobalConfig.TUTORIAL_OWNER_ID_KEY,GlobalConfig.getCurrentUserTokenId());
+        allTutorialDetails.put(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserTokenId());
         allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_KEY,GlobalConfig.getDate());
         allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());

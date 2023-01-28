@@ -73,7 +73,7 @@ public class GlobalConfig {
     public static final String LIBRARY_DESCRIPTION_KEY = "LIBRARY_DESCRIPTION";
     public static final String LIBRARY_CATEGORY_KEY = "LIBRARY_CATEGORY";
     public static final String LIBRARY_ID_KEY = "LIBRARY_ID";
-    public static final String LIBRARY_OWNER_ID_KEY = "LIBRARY_OWNER_ID";
+    public static final String LIBRARY_AUTHOR_ID_KEY = "LIBRARY_AUTHOR_ID";
     public static final String LIBRARY_DATE_CREATED_KEY = "LIBRARY_DATE_CREATED";
     public static final String LIBRARY_DATE_CREATED_TIME_STAMP_KEY = "LIBRARY_DATE_CREATED_TIME_STAMP";
     public static final String LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY = "LIBRARY_SEARCH_VERBATIM_KEYWORD";
@@ -88,6 +88,13 @@ public class GlobalConfig {
     public static final String IS_LIBRARY_COVER_PHOTO_INCLUDED_KEY = "IS_LIBRARY_COVER_PHOTO_INCLUDED";
     public static final String LIBRARY_COVER_PHOTO_KEY = "LIBRARY_COVER_PHOTO";
     public static final String LIBRARY_IMAGES_KEY = "LIBRARY_IMAGES";
+    public static final String TOTAL_NUMBER_OF_LIBRARY_VIEWS_KEY = "TOTAL_NUMBER_OF_LIBRARY_VIEWS";
+    public static final String TOTAL_NUMBER_OF_LIBRARY_REACH_KEY = "TOTAL_NUMBER_OF_LIBRARY_REACH";
+    public static final String TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY = "TOTAL_NUMBER_OF_ONE_STAR_RATE";
+    public static final String TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY = "TOTAL_NUMBER_OF_TWO_STAR_RATE";
+    public static final String TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY = "TOTAL_NUMBER_OF_THREE_STAR_RATE";
+    public static final String TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY = "TOTAL_NUMBER_OF_FOUR_STAR_RATE";
+    public static final String TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY = "TOTAL_NUMBER_OF_FIVE_STAR_RATE";
     //LIBRARY FIELD KEYS END
 
 
@@ -100,7 +107,7 @@ public class GlobalConfig {
     public static final String TUTORIAL_DISPLAY_NAME_KEY = "TUTORIAL_DISPLAY_NAME";
     public static final String TUTORIAL_DESCRIPTION_KEY = "TUTORIAL_DESCRIPTION";
     public static final String TUTORIAL_ID_KEY = "TUTORIAL_ID";
-    public static final String TUTORIAL_OWNER_ID_KEY = "TUTORIAL_OWNER_ID";
+    public static final String TUTORIAL_AUTHOR_ID_KEY = "TUTORIAL_AUTHOR_ID";
     public static final String TUTORIAL_DATE_CREATED_KEY = "TUTORIAL_DATE_CREATED";
     public static final String TUTORIAL_DATE_CREATED_TIME_STAMP_KEY = "TUTORIAL_DATE_CREATED_TIME_STAMP";
     public static final String TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY = "TUTORIAL_SEARCH_VERBATIM_KEYWORD";
