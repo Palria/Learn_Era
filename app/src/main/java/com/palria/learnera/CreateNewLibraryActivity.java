@@ -385,10 +385,14 @@ Button createLibraryActionButton;
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_KEY,GlobalConfig.getDate());
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY,GlobalConfig.generateSearchVerbatimKeyWords(libraryName));
-        libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_ANY_MATCH_KEYWORD_KEY,GlobalConfig.generateSearchAnyMatchKeyWords(libraryName));
+        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(libraryName)) {
+            libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
+        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(libraryName)) {
+            libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
         writeBatch.set(libraryProfileDocumentReference,libraryProfileDetails, SetOptions.merge());
-
+//
 
         DocumentReference allLibraryProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
         HashMap<String,Object>allLibraryDetails  = new HashMap<>();
@@ -399,6 +403,14 @@ Button createLibraryActionButton;
         allLibraryDetails.put(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         allLibraryDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_KEY,GlobalConfig.getDate());
         allLibraryDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+
+        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(libraryName)) {
+            allLibraryDetails.put(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
+        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(libraryName)) {
+            allLibraryDetails.put(GlobalConfig.LIBRARY_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
+
         writeBatch.set(allLibraryProfileDocumentReference,allLibraryDetails, SetOptions.merge());
 
 
@@ -449,8 +461,14 @@ Button createLibraryActionButton;
         libraryProfileDetails.put(GlobalConfig.LIBRARY_CATEGORY_KEY,libraryCategory);
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_KEY,GlobalConfig.getDate());
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY,GlobalConfig.generateSearchVerbatimKeyWords(libraryName));
-        libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_ANY_MATCH_KEYWORD_KEY,GlobalConfig.generateSearchAnyMatchKeyWords(libraryName));
+
+        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(libraryName)) {
+            libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
+        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(libraryName)) {
+            libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
+
         writeBatch.set(libraryProfileDocumentReference,libraryProfileDetails, SetOptions.merge());
 
 
@@ -459,6 +477,13 @@ Button createLibraryActionButton;
         allLibraryDetails.put(GlobalConfig.LIBRARY_CATEGORY_KEY,libraryCategory);
         allLibraryDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_KEY,GlobalConfig.getDate());
         allLibraryDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+
+        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(libraryName)) {
+            allLibraryDetails.put(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
+        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(libraryName)) {
+            allLibraryDetails.put(GlobalConfig.LIBRARY_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
         writeBatch.set(allLibraryProfileDocumentReference,allLibraryDetails, SetOptions.merge());
 
 

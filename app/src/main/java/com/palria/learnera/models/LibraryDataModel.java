@@ -1,13 +1,4 @@
-package com.palria.learnera;
-
-
-
-
-
-
-
-
-
+package com.palria.learnera.models;
 
 /**
  *
@@ -16,61 +7,61 @@ package com.palria.learnera;
 public class LibraryDataModel {
 
 /**The library name*/
-    String libraryName;
+    private  String libraryName;
 /**The library Id*/
-    String libraryId;
+    private   String libraryId;
 /**The library category*/
-    String libraryCategory;
+    private   String libraryCategory;
     /**The date at which the library was created*/
-    String dateCreated;
+    private   String dateCreated;
     /**The number of books this library contains*/
-    long totalNumberOfTutorials;
+    private   long totalNumberOfTutorials;
     /**The numbers of time users viewed this library.
      * Each time a user views this library , this field is incremented is  the database
      * */
-    long totalNumberOfLibraryViews;
+    private   long totalNumberOfLibraryViews;
     /**The numbers of time this library appeared to users either in a list or somewhere else
      * Each time this library appears to a user, this field is incremented is  the database
      * */
-    long totalNumberOfLibraryReach;
+    private   long totalNumberOfLibraryReach;
     /**The name of the user who created this library*/
 //    String authorName;
     /**The ID of the author
      * This ID helps in case the user who is interacting with the library wants to know about the author
      * */
-    String authorUserId;
+    private   String authorUserId;
     /**The number of one star this library has
      * This variable is incremented each time a user rates the library one star
      * */
-    long totalNumberOfOneStarRate;
+    private   long totalNumberOfOneStarRate;
     /**The number of two star this library has
      * This variable is incremented each time a user rates the library two star
      * */
-    long totalNumberOfTwoStarRate;
+    private   long totalNumberOfTwoStarRate;
     /**The number of three star this library has
      * This variable is incremented each time a user rates the library three star
      * */
-    long totalNumberOfThreeStarRate;
+    private   long totalNumberOfThreeStarRate;
     /**The number of four star this library has
      * This variable is incremented each time a user rates the library four star
      * */
-    long totalNumberOfFourStarRate;
+    private   long totalNumberOfFourStarRate;
     /**The number of five star this library has
      * This variable is incremented each time a user rates the library five star
      * */
-    long totalNumberOfFiveStarRate;
+    private   long totalNumberOfFiveStarRate;
 
     /**Empty constructor may be used to instantiate the class object if it is not
      * necessary to instantiate the global variables through the constructor. In this way
      *Setters are used to as an alternative instantiate the global variables .
      * */
-    LibraryDataModel(){
+    public  LibraryDataModel(){
 
     }
 
     /**This parameterized Constructor helps us in initializing all the global variables
      * */
-    LibraryDataModel(
+   public LibraryDataModel(
             String libraryName,
             String libraryId,
             String libraryCategory,
@@ -109,21 +100,21 @@ public class LibraryDataModel {
         return libraryName;
     }
 
-     void setLibraryName(String libraryName) {
+    public void setLibraryName(String libraryName) {
         this.libraryName = libraryName;
     }
     public String getLibraryId() {
         return libraryId;
     }
 
-     void setLibraryId(String libraryId) {
+    public  void setLibraryId(String libraryId) {
         this.libraryId = libraryId;
     }
     public String getLibraryCategory() {
         return libraryCategory;
     }
 
-     void setLibraryCategory(String libraryCategory) {
+    public  void setLibraryCategory(String libraryCategory) {
         this.libraryCategory = libraryCategory;
     }
 
@@ -131,7 +122,7 @@ public class LibraryDataModel {
         return dateCreated;
     }
 
-     void setDateCreated(String dateCreated) {
+    public  void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -139,7 +130,7 @@ public class LibraryDataModel {
         return totalNumberOfTutorials;
     }
 
-     void setTotalNumberOfTutorials(long totalNumberOfTutorials) {
+    public   void setTotalNumberOfTutorials(long totalNumberOfTutorials) {
         this.totalNumberOfTutorials = totalNumberOfTutorials;
     }
 
@@ -147,7 +138,7 @@ public class LibraryDataModel {
         return totalNumberOfLibraryViews;
     }
 
-     void setTotalNumberOfLibraryViews(long totalNumberOfLibraryViews) {
+    public  void setTotalNumberOfLibraryViews(long totalNumberOfLibraryViews) {
         this.totalNumberOfLibraryViews = totalNumberOfLibraryViews;
     }
 
@@ -155,7 +146,7 @@ public class LibraryDataModel {
         return totalNumberOfLibraryReach;
     }
 
-     void setTotalNumberOfLibraryReach(long totalNumberOfLibraryReach) {
+    public  void setTotalNumberOfLibraryReach(long totalNumberOfLibraryReach) {
         this.totalNumberOfLibraryReach = totalNumberOfLibraryReach;
     }
     /*
@@ -172,7 +163,7 @@ public class LibraryDataModel {
         return authorUserId;
     }
 
-     void setAuthorUserId(String authorUserId) {
+    public  void setAuthorUserId(String authorUserId) {
         this.authorUserId = authorUserId;
     }
 
@@ -180,7 +171,7 @@ public class LibraryDataModel {
         return totalNumberOfOneStarRate;
     }
 
-     void setTotalNumberOfOneStarRate(long totalNumberOfOneStarRate) {
+    public  void setTotalNumberOfOneStarRate(long totalNumberOfOneStarRate) {
         this.totalNumberOfOneStarRate = totalNumberOfOneStarRate;
     }
 
@@ -188,7 +179,7 @@ public class LibraryDataModel {
         return totalNumberOfTwoStarRate;
     }
 
-     void setTotalNumberOfTwoStarRate(long totalNumberOfTwoStarRate) {
+    public  void setTotalNumberOfTwoStarRate(long totalNumberOfTwoStarRate) {
         this.totalNumberOfTwoStarRate = totalNumberOfTwoStarRate;
     }
 
@@ -196,7 +187,7 @@ public class LibraryDataModel {
         return totalNumberOfThreeStarRate;
     }
 
-     void setTotalNumberOfThreeStarRate(long totalNumberOfThreeStarRate) {
+    public  void setTotalNumberOfThreeStarRate(long totalNumberOfThreeStarRate) {
         this.totalNumberOfThreeStarRate = totalNumberOfThreeStarRate;
     }
 
@@ -204,7 +195,7 @@ public class LibraryDataModel {
         return totalNumberOfFourStarRate;
     }
 
-     void setTotalNumberOfFourStarRate(long totalNumberOfFourStarRate) {
+    public  void setTotalNumberOfFourStarRate(long totalNumberOfFourStarRate) {
         this.totalNumberOfFourStarRate = totalNumberOfFourStarRate;
     }
 
@@ -212,7 +203,7 @@ public class LibraryDataModel {
         return totalNumberOfFiveStarRate;
     }
 
-     void setTotalNumberOfFiveStarRate(long totalNumberOfFiveStarRate) {
+    public  void setTotalNumberOfFiveStarRate(long totalNumberOfFiveStarRate) {
         this.totalNumberOfFiveStarRate = totalNumberOfFiveStarRate;
     }
 }

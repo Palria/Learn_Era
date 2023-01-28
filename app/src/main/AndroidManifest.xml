@@ -32,6 +32,9 @@
             android:name=".EditCurrentUserProfileActivity"
             android:exported="true" />
         <activity
+            android:name=".WelcomeActivity"
+            android:exported="true" />
+        <activity
             android:name=".ChangePasswordActivity"
             android:exported="true" />
         <activity

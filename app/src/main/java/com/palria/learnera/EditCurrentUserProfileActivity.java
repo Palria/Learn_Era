@@ -328,11 +328,18 @@ private void initUI(){
         userProfileDetails.put(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY,userProfilePhotoDownloadUrl);
         userProfileDetails.put(GlobalConfig.IS_USER_PROFILE_PHOTO_INCLUDED_KEY,isProfilePhotoIncluded);
         userProfileDetails.put(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY,contactPhoneNumber);
-        userProfileDetails.put(GlobalConfig.USER_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(GlobalConfig.generateSearchVerbatimKeyWords(userDisplayName)));
-        userProfileDetails.put(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(GlobalConfig.generateSearchAnyMatchKeyWords(userDisplayName)));
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_KEY,GlobalConfig.getDate());
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         userProfileDetails.put(GlobalConfig.USER_TOKEN_ID_KEY,GlobalConfig.getCurrentUserTokenId());
+
+
+        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(userDisplayName)) {
+            userProfileDetails.put(GlobalConfig.USER_SEARCH_VERBATIM_KEYWORD_KEY, FieldValue.arrayUnion(searchKeyword));
+        }
+
+        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(userDisplayName)) {
+            userProfileDetails.put(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
         writeBatch.set(userProfileDocumentReference,userProfileDetails, SetOptions.merge());
 
 

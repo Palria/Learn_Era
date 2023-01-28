@@ -1,13 +1,4 @@
-package com.palria.learnera;
-
-
-
-
-
-
-
-
-
+package com.palria.learnera.models;
 
 
 /**This class model is necessary when listing out the authors*/
@@ -50,7 +41,7 @@ public class AuthorDataModel {
      * necessary to instantiate the global variables through the constructor. In this way
      *Setters are used to as an alternative instantiate the global variables .
      * */
-    AuthorDataModel(){
+    public  AuthorDataModel(){
 
     }
 

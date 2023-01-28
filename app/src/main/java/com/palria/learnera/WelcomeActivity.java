@@ -42,7 +42,7 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     /**
-     * initialized the ui for welcome screenhere
+     * initialized the ui for welcome screen here
      */
     private void initUI() {
 

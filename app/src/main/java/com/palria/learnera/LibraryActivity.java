@@ -8,14 +8,33 @@ import android.os.Bundle;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.palria.learnera.models.*;
+import com.squareup.picasso.Picasso;
 
 public class LibraryActivity extends AppCompatActivity {
 String libraryId;
 String authorId;
+String authorName;
+String authorProfilePhotoDownloadUrl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
+
+        fetchLibraryProfile(new ProfileFetchListener() {
+            @Override
+            public void onFailed(String errorMessage) {
+
+            }
+
+            @Override
+            public void onSuccess(LibraryDataModel libraryDataModel) {
+            //use this libraryDataModel object to access the public methods.
+
+            }
+        });
+        getAuthorProfile();
     }
 
     private void fetchLibraryProfile(ProfileFetchListener profileFetchListener){
@@ -91,6 +110,30 @@ String authorId;
                                                                              totalNumberOfFourStarRate,
                                                                              totalNumberOfFiveStarRate
                         ));
+                    }
+                });
+    }
+
+    private void getAuthorProfile(){
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_USERS_KEY)
+                .document(authorId)
+                .get()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    authorName =""+  documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+
+                    authorProfilePhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
+//USE THIS authorProfilePhotoDownloadUrl TO LOAD THE AUTHOR'S COVER PHOTO INTO IMAGE VIEW
+//                        Picasso.get().load(authorProfilePhotoDownloadUrl).into(/*put image view object here*/);
+
                     }
                 });
     }

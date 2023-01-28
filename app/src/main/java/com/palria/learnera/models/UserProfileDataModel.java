@@ -1,4 +1,4 @@
-package com.palria.learnera;
+package com.palria.learnera.models;
 
 
 /**This class is the user's data model*/
@@ -76,12 +76,12 @@ String userCountryOfResidence;
  * necessary to instantiate the global variables through the constructor. In this way
  *Setters are used to as an alternative instantiate the global variables .
  * */
-    UserProfileDataModel(){
+public  UserProfileDataModel(){
 
     }
 /**This parameterized Constructor helps us in initializing all the global variables
  * */
-    UserProfileDataModel(
+  public  UserProfileDataModel(
             String userName,
             String userId,
             String userProfileImageDownloadUrl,

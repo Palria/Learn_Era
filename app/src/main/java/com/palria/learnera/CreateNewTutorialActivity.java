@@ -395,8 +395,12 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY,GlobalConfig.generateSearchVerbatimKeyWords(tutorialName));
-        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY,GlobalConfig.generateSearchAnyMatchKeyWords(tutorialName));
+        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(tutorialName)) {
+            tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
+        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(tutorialName)) {
+            tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
         writeBatch.set(tutorialProfileDocumentReference,tutorialProfileDetails, SetOptions.merge());
 
 
@@ -410,6 +414,13 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
         allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());
         allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+
+        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(tutorialName)) {
+            allTutorialDetails.put(GlobalConfig.TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
+        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(tutorialName)) {
+            allTutorialDetails.put(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
         writeBatch.set(allTutorialProfileDocumentReference,allTutorialDetails, SetOptions.merge());
 
 
@@ -460,17 +471,27 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
         tutorialProfileDetails.put(GlobalConfig.LIBRARY_CONTAINER_CATEGORY_KEY,libraryContainerCategory);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY,GlobalConfig.generateSearchVerbatimKeyWords(tutorialName));
-        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY,GlobalConfig.generateSearchAnyMatchKeyWords(tutorialName));
+        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(tutorialName)) {
+            tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
+        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(tutorialName)) {
+            tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
         writeBatch.set(tutorialProfileDocumentReference,tutorialProfileDetails, SetOptions.merge());
 
 
         DocumentReference allLibraryProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
-        HashMap<String,Object>allLibraryDetails  = new HashMap<>();
-        allLibraryDetails.put(GlobalConfig.LIBRARY_CONTAINER_CATEGORY_KEY,libraryContainerCategory);
-        allLibraryDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());
-        allLibraryDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        writeBatch.set(allLibraryProfileDocumentReference,allLibraryDetails, SetOptions.merge());
+        HashMap<String,Object>allTutorialDetails  = new HashMap<>();
+        allTutorialDetails.put(GlobalConfig.LIBRARY_CONTAINER_CATEGORY_KEY,libraryContainerCategory);
+        allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());
+        allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(tutorialName)) {
+            allTutorialDetails.put(GlobalConfig.TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
+        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(tutorialName)) {
+            allTutorialDetails.put(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
+        writeBatch.set(allLibraryProfileDocumentReference,allTutorialDetails, SetOptions.merge());
 
 
 

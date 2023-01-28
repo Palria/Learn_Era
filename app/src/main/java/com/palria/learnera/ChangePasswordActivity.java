@@ -56,8 +56,8 @@ private TextView errorMessageTextView;
 
                         GlobalHelpers.showAlertMessage("success",
                                 ChangePasswordActivity.this,
-                                "Password Reset Success",
-                                "we have successfully reset your password. check your email now.");
+                                "Password Reset Link Sent",
+                                "we have successfully sent your password reset link. check your email now.");
 
 
 
@@ -117,7 +117,8 @@ private TextView errorMessageTextView;
 
     private void sendEmailResetLink(SendLinkListener sendLinkListener) {
         if (email != null && !email.isEmpty()) {
-            FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+            String trimmedEmail = email.trim();
+            FirebaseAuth.getInstance().sendPasswordResetEmail(trimmedEmail)
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {

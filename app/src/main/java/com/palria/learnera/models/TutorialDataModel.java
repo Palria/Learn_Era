@@ -1,4 +1,4 @@
-package com.palria.learnera;
+package com.palria.learnera.models;
 
 
 
@@ -68,14 +68,14 @@ public class TutorialDataModel {
      * necessary to instantiate the global variables through the constructor. In this way
      *Setters are used to as an alternative instantiate the global variables .
      * */
-    TutorialDataModel(){
+    public    TutorialDataModel(){
 
     }
 
 
     /**This parameterized Constructor helps us in initializing all the global variables
      * */
-    TutorialDataModel(
+   public  TutorialDataModel(
             String tutorialName,
             String tutorialId,
             String dateCreated,

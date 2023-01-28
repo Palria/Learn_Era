@@ -80,7 +80,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                 Log.w("message", userDisplayName + " : " + email + " : " + genderType + " : " + userCountryOfResidence);
 
-                //validate confirm apssword
+                //validate confirm password
                 if(!password.equals(confirmPassword)){
                     Toast.makeText(SignUpActivity.this, password+"="+confirmPassword, Toast.LENGTH_SHORT).show();
                     errorMessageTextView.setText("Confirm password does not match the password!");
@@ -90,32 +90,41 @@ public class SignUpActivity extends AppCompatActivity {
                 if(!isInProgress) {
                     isInProgress = true;
                    toggleProgress(true);
+                    errorMessageTextView.setText("Progress...");
+                    errorMessageTextView.setVisibility(View.VISIBLE);
                     if (!userDisplayName.isEmpty()) {
                         GlobalConfig.signUpUserWithEmailAndPassword(SignUpActivity.this, email, password, new GlobalConfig.SignUpListener() {
                             @Override
                             public void onSuccess(String email, String password) {
                                 //user has successfully signed up
-                                toggleProgress(false);
+//                                toggleProgress(false);
+//
+//                                GlobalHelpers.showAlertMessage("success",
+//                                        SignUpActivity.this,
+//                                        "Account Created Successfully.",
+//                                        "we have successfully sent a confirmation email. please check your email now and verify before login.");
+//
+//                                emailEditText.setText("");
+//                                passwordEditText.setText("");
+//                                passwordConfirmEditText.setText("");
+//                                userDisplayNameEditText.setText("");
+//                                isInProgress=false;
+//                                errorMessageTextView.setText("Success");
 
-                                GlobalHelpers.showAlertMessage("success",
-                                        SignUpActivity.this,
-                                        "Account Created Successfully.",
-                                        "we have successfully sent a confirmation email. please check your email now and verify before login.");
-
-                                emailEditText.setText("");
-                                passwordEditText.setText("");
-                                passwordConfirmEditText.setText("");
-                                userDisplayNameEditText.setText("");
-                                isInProgress=false;
                                 //--do not login user directly we need to confirm email before login--//.
-/**
+//                                Toast.makeText(SignUpActivity.this, "up sign success", Toast.LENGTH_SHORT).show();
+
                                 GlobalConfig.signInUserWithEmailAndPassword(SignUpActivity.this, email, password, new GlobalConfig.SignInListener() {
                                     @Override
                                     public void onSuccess(String email, String password) {
                                         //user has signed in so can now write to the database, now create his first profile
+//                                        Toast.makeText(SignUpActivity.this, "sign in success", Toast.LENGTH_SHORT).show();
+
                                         createUserProfileInDatabase(new ProfileCreationListener() {
                                             @Override
                                             public void onSuccess(String userName) {
+//                                                Toast.makeText(SignUpActivity.this, "profile success", Toast.LENGTH_SHORT).show();
+
                                                 isInProgress = false;
                                                 toggleProgress(false);
                                                 FirebaseAuth.getInstance().signOut();
@@ -148,7 +157,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     }
                                 });
 
- */
+
 
                             }
 
@@ -225,11 +234,18 @@ public class SignUpActivity extends AppCompatActivity {
         userProfileDetails.put(GlobalConfig.USER_GENDER_TYPE_KEY,genderType);
         userProfileDetails.put(GlobalConfig.USER_EMAIL_ADDRESS_KEY,email);
         userProfileDetails.put(GlobalConfig.IS_USER_BLOCKED_KEY,false);
-        userProfileDetails.put(GlobalConfig.USER_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(GlobalConfig.generateSearchVerbatimKeyWords(userDisplayName)));
-        userProfileDetails.put(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(GlobalConfig.generateSearchAnyMatchKeyWords(userDisplayName)));
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_KEY,GlobalConfig.getDate());
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         userProfileDetails.put(GlobalConfig.USER_TOKEN_ID_KEY,GlobalConfig.getCurrentUserTokenId());
+
+        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(userDisplayName)) {
+            userProfileDetails.put(GlobalConfig.USER_SEARCH_VERBATIM_KEYWORD_KEY, FieldValue.arrayUnion(searchKeyword));
+        }
+
+        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(userDisplayName)) {
+            userProfileDetails.put(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
+        }
+
         writeBatch.set(userProfileDocumentReference,userProfileDetails, SetOptions.merge());
 
 
