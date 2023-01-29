@@ -32,6 +32,12 @@
         android:text="Go to Register"
         android:layout_height="wrap_content"/>
 
+    <Button
+        android:id="@+id/profile_test_id"
+        android:layout_width="match_parent"
+        android:text="Go to Profile"
+        android:layout_height="wrap_content"/>
+
 </LinearLayout>
 
 

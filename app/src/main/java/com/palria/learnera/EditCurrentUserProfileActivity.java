@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.Manifest;
 import android.content.Intent;
@@ -14,13 +15,19 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -33,9 +40,11 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class EditCurrentUserProfileActivity extends AppCompatActivity {
@@ -51,6 +60,14 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
     private EditText genderTypeEditText;
     private EditText contactPhoneNumberEditText;
     private EditText userCountryOfResidenceEditText;
+
+    private Spinner genderTypeSpinner;
+    private Spinner countrySpinner;
+
+    TextView display_name;
+    TextView display_email;
+    RoundedImageView profile_image_view;
+
 
     boolean isProfilePhotoChanged;
     boolean isProfilePhotoIncluded;
@@ -70,7 +87,7 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
     Uri galleryImageUri;
 
     Button editProfileActionButton;
-    Button pickImageActionButton;
+    ImageView pickImageActionButton;
     ActivityResultLauncher<Intent> openGalleryLauncher;
     ActivityResultLauncher<Intent> openCameraLauncher;
 
@@ -82,16 +99,26 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
    initUserProfileValuesBeforeEdition(new ProfileValueInitListener() {
        @Override
        public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
+
            userDisplayNameEditText.setText(userDisplayName);
            contactEmailEditText.setText(contactEmail);
            contactPhoneNumberEditText.setText(contactPhoneNumber);
-           genderTypeEditText.setText(genderType);
+           //genderTypeEditText.setText(genderType);
            retrievedProfilePictureDownloadUrl = userProfilePhotoDownloadUrl;
            EditCurrentUserProfileActivity.this.isUserBlocked = isUserBlocked;
            EditCurrentUserProfileActivity.this.isProfilePhotoIncluded = isUserProfilePhotoIncluded;
 
 
+           display_name.setText(userDisplayName);
+           display_email.setText(contactEmail);
 
+           Log.w("success_tag",userDisplayName+"-"+contactEmail+"-"+genderType+"-"+userProfilePhotoDownloadUrl);
+
+
+//           Glide.with(EditCurrentUserProfileActivity.this)
+//                   .load(retrievedProfilePictureDownloadUrl)
+//                   .centerCrop()
+//                   .into(profile_image_view);
        }
 
        @Override
@@ -107,7 +134,12 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                 if (result.getData() != null) {
                     Intent data=result.getData();
                     galleryImageUri = data.getData();
-                    Picasso.get().load(galleryImageUri).into(profilePhotoImageView);
+                    Picasso.get().load(galleryImageUri).into(profile_image_view);
+//                    Glide.with(EditCurrentUserProfileActivity.this)
+//                            .load(data.toUri(Intent.URI_ALLOW_UNSAFE))
+//                            .load(galleryImageUri)
+//                            .centerCrop()
+//                            .into(profile_image_view);
                     isProfilePhotoIncluded = true;
                     isProfilePhotoChanged = true;
 
@@ -126,7 +158,12 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
 
                         if(bitmapFromCamera != null) {
                             cameraImageBitmap = bitmapFromCamera;
-                            profilePhotoImageView.setImageBitmap(cameraImageBitmap);
+                            //profilePhotoImageView.setImageBitmap(cameraImageBitmap);
+                            Glide.with(EditCurrentUserProfileActivity.this)
+                                    .asBitmap()
+                                    .load(cameraImageBitmap)
+                                    .centerCrop()
+                                    .into(profile_image_view);
                             isProfilePhotoIncluded = true;
                             isProfilePhotoChanged = true;
                         }
@@ -142,7 +179,7 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 userDisplayName = userDisplayNameEditText.getText().toString();
-                userCountryOfResidence = userCountryOfResidenceEditText.getText().toString();
+                userCountryOfResidence = countrySpinner.getSelectedItem().toString();
                 contactEmail = contactEmailEditText.getText().toString();
                 contactPhoneNumber = contactPhoneNumberEditText.getText().toString();
 
@@ -226,6 +263,38 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
     }
 private void initUI(){
 
+    Toolbar actionBar = (Toolbar)  findViewById(R.id.topBar);
+    setSupportActionBar(actionBar);
+
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    /**
+    *  private EditText userDisplayNameEditText;
+    private EditText contactEmailEditText;
+    private EditText genderTypeEditText;
+    private EditText contactPhoneNumberEditText;
+    private EditText userCountryOfResidenceEditText;
+    * */
+
+    userDisplayNameEditText = findViewById(R.id.nameInput);
+    contactEmailEditText = findViewById(R.id.emailInput);
+    contactPhoneNumberEditText = findViewById(R.id.contactInput);
+
+    //gender and country is spinner.
+    genderTypeSpinner = findViewById(R.id.genderSpinner);
+    countrySpinner = findViewById(R.id.countrySpinner);
+
+    pickImageActionButton = findViewById(R.id.photoSelectorButton);
+    editProfileActionButton = findViewById(R.id.update_button);
+    display_name = findViewById(R.id.current_name);
+    display_email = findViewById(R.id.current_email);
+    profile_image_view = findViewById(R.id.imageView1);
+
+
+    initCountrySpinner();
+    initGenderSpinner();
+
+
 }
 
     @Override
@@ -282,8 +351,8 @@ private void initUI(){
 
     private void uploadUserProfilePhoto(ProfilePhotoUploadListener profilePhotoUploadListener){
         StorageReference profilePhotoStorageReference  = GlobalConfig.getFirebaseStorageInstance().getReference().child(GlobalConfig.ALL_USERS_KEY+"/"+GlobalConfig.getCurrentUserId()+"/"+GlobalConfig.USER_IMAGES_KEY+"/"+GlobalConfig.USER_PROFILE_PHOTO_KEY+".PNG");
-        profilePhotoImageView.setDrawingCacheEnabled(true);
-        Bitmap profilePhotoBitmap = profilePhotoImageView.getDrawingCache();
+        profile_image_view.setDrawingCacheEnabled(true);
+        Bitmap profilePhotoBitmap = profile_image_view.getDrawingCache();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         profilePhotoBitmap.compress(Bitmap.CompressFormat.PNG,20,byteArrayOutputStream);
         byte[] bytes = byteArrayOutputStream.toByteArray();
@@ -397,6 +466,48 @@ private void initUI(){
 
                     }
                 });
+    }
+
+
+    /**
+     * Initializes the gender spinner for selection
+     * */
+    private void initGenderSpinner(){
+        String[] genderArray = {getResources().getString(R.string.male),getResources().getString(R.string.female),getResources().getString(R.string.other) };
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this,R.layout.support_simple_spinner_dropdown_item,genderArray);
+        genderTypeSpinner.setAdapter(arrayAdapter);
+        genderTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                genderType = String.valueOf(genderTypeSpinner.getSelectedItem());
+                //genderTypeEditText.setText(genderType);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
+
+    /**
+     * Initializes the country spinner for selection
+     * */
+    private void initCountrySpinner(){
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,GlobalConfig.getCountryArrayList(new ArrayList<>()));
+        countrySpinner.setAdapter(arrayAdapter);
+        countrySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                userCountryOfResidence = String.valueOf(countrySpinner.getSelectedItem());
+                //userCountryOfResidenceEditText.setText(userCountryOfResidence);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     interface ProfilePhotoUploadListener{

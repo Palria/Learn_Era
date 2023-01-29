@@ -1,9 +1,246 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".EditCurrentUserProfileActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+  <com.google.android.material.appbar.MaterialToolbar
+      android:id="@+id/topBar"
+      android:layout_width="match_parent"
+      app:titleCentered="true"
+      app:title="Edit Profile"
+      app:titleTextColor="@color/white"
+      android:theme="@style/ToolbarColoredBackArrow"
+      android:background="@color/teal_700"
+      android:layout_height="?attr/actionBarSize"/>
+
+    <TextView
+        android:layout_below="@+id/topBar"
+        android:id="@+id/bg"
+        android:background="@color/teal_700"
+        android:layout_width="match_parent"
+        android:layout_height="40pt"
+        />
+
+
+
+<ScrollView
+    android:layout_marginTop="-40pt"
+    android:layout_below="@+id/bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_marginTop="10pt"
+            android:layout_marginLeft="10pt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <com.makeramen.roundedimageview.RoundedImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/imageView1"
+                android:layout_marginTop="12pt"
+                android:src="@drawable/default_profile"
+                android:scaleType="fitCenter"
+                app:riv_corner_radius="30dip"
+                app:riv_border_width="4dip"
+                app:riv_border_color="#ffffff"
+                app:riv_mutate_background="true"
+                app:riv_oval="true"
+                android:layout_height="50pt"
+                android:layout_width="50pt"/>
+
+            <ImageView
+                android:padding="2dp"
+                android:id="@+id/photoSelectorButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/imageView1"
+                android:layout_marginLeft="34pt"
+                android:layout_marginTop="-45dp"
+                android:background="@drawable/rounded_white_bg"
+                android:layout_marginBottom="10pt"
+                android:src="@drawable/ic_baseline_photo_camera_24"
+                />
+
+            <LinearLayout
+                android:layout_toRightOf="@+id/imageView1"
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="6pt"
+                android:layout_marginTop="35pt"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/current_name"
+                    android:text="Sanjaya Gurung"
+                    android:textStyle="bold"
+                    android:textSize="9pt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/current_email"
+                    android:text="rasasha125@gmail.com"
+                    android:textSize="7pt"
+                    android:maxLines="1"
+                    android:layout_marginTop="3pt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:background="@drawable/rounded_white_bg"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:paddingHorizontal="10pt"
+                android:paddingVertical="15pt"
+                android:layout_height="match_parent">
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:hint="Full Name"
+                        android:inputType="text"
+                        android:textSize="16sp"
+                        android:text="Saugat Rana Magar"
+                        android:id="@+id/nameInput"
+                        android:background="@drawable/default_input_bg"
+                        android:layout_height="wrap_content"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10pt"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:hint="Email Address"
+                        android:inputType="textEmailAddress"
+                        android:textSize="16sp"
+                        android:enabled="false"
+                        android:text="rananir@gmail.com"
+                        android:id="@+id/emailInput"
+                        android:background="@drawable/default_input_bg"
+                        android:layout_height="wrap_content"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:id="@+id/passwordInputLayout"
+                    android:layout_marginTop="10pt"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:hint="Contact Number"
+                        android:inputType="number"
+                        android:textSize="16sp"
+
+android:text="9806455985"
+                        android:id="@+id/contactInput"
+                        android:background="@drawable/default_input_bg"
+                        android:layout_height="wrap_content"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+                <LinearLayout
+                    android:layout_marginTop="10pt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:text="Gender"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <Spinner
+                            android:layout_marginTop="1pt"
+                            android:id="@+id/genderSpinner"
+                            android:background="@drawable/default_input_bg"
+                            android:paddingVertical="3pt"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_marginLeft="5pt"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:text="Country"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <Spinner
+                            android:id="@+id/countrySpinner"
+                            android:background="@drawable/default_input_bg"
+                            android:paddingVertical="3pt"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+</ScrollView>
+
+    <LinearLayout
+        android:paddingHorizontal="10pt"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+
+<Button
+    android:background="@drawable/default_auth_btn"
+    android:id="@+id/update_button"
+    android:text="save"
+    android:paddingVertical="2pt"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+</RelativeLayout>

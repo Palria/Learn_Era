@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
         Button login_test = (Button) findViewById(R.id.login_test_id);
         Button register_test = (Button) findViewById(R.id.register_test_id);
+        Button profile_test = findViewById(R.id.profile_test_id);
+
 
         //set test login button click listener
 
@@ -62,6 +64,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(view.getContext(), SignUpActivity.class);
+                startActivity(i);
+
+
+            }
+        });
+
+        profile_test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(view.getContext(), EditCurrentUserProfileActivity.class);
                 startActivity(i);
 
 

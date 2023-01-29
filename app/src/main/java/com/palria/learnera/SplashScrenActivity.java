@@ -2,8 +2,10 @@ package com.palria.learnera;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +20,7 @@ public class SplashScrenActivity extends AppCompatActivity {
     /**
      * indicates to show welcome screen or not here
      */
+
     private boolean showWelcomeScreen = true;
 
     @Override
@@ -29,9 +32,12 @@ public class SplashScrenActivity extends AppCompatActivity {
 
         getWindow().setNavigationBarColor(getColor(R.color.teal_700));
         getWindow().setStatusBarColor(getColor(R.color.teal_700));
+
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash_scren);
+
+
 
         // HERE WE ARE TAKING THE REFERENCE OF OUR IMAGE
         // SO THAT WE CAN PERFORM ANIMATION USING THAT IMAGE
