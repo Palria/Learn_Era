@@ -82,6 +82,7 @@ public class UserProfileFragment extends Fragment {
     }
 
     private void initUI(View parentView){
+        //use the parentView to find the by Id as in : parentView.findViewById(...);
 
         alertDialog = new AlertDialog.Builder(getContext())
                 .setCancelable(false)

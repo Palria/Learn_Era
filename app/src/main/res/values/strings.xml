@@ -5,4 +5,16 @@
     <string name="other">OTHER</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="contact_information">Contact Information</string>
+    <string name="country">Country</string>
+    <string name="gender">Gender</string>
+    <string name="edit_display_name_caption">Your display full name. This is publicly visible to everyone .</string>
+    <string name="full_name">Full Name</string>
+    <string name="fetching">Fetching...</string>
+    <string name="basic_information">Basic Information</string>
+    <string name="fetching">Fetching...</string>
+    <string name="save">Save</string>
+    <string name="contact_number">Contact Number</string>
+    <string name="edit_email_caption">Provide a valid contact email address where we can send some updates about in future.</string>
+    <string name="email_address">Email Address</string>
 </resources>

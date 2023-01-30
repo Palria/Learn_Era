@@ -30,7 +30,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
-
+//authorId_libraryid_tutorialId
 public class GlobalConfig {
 
     private static String CURRENT_USER_ID;
@@ -49,6 +49,10 @@ public class GlobalConfig {
     public static final String IS_USER_BLOCKED_KEY = "IS_USER_BLOCKED";
     public static final String USER_DISPLAY_NAME_KEY = "USER_DISPLAY_NAME";
     public static final String USER_IMAGES_KEY = "USER_IMAGES";
+    public static final String LAST_SEEN_KEY = "LAST_SEEN";
+    public static final String IS_USER_AUTHOR_KEY = "IS_USER_AUTHOR";
+    public static final String TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY = "TOTAL_NUMBER_OF_USER_PROFILE_VISITORS";
+    public static final String TOTAL_NUMBER_OF_USER_PROFILE_REACH_KEY = "TOTAL_NUMBER_OF_USER_PROFILE_REACH";
     public static final String USER_PROFILE_PHOTO_KEY = "USER_PROFILE_PHOTO";
     public static final String IS_USER_PROFILE_PHOTO_INCLUDED_KEY = "IS_USER_PROFILE_PHOTO_INCLUDED";
     public static final String USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY = "USER_PROFILE_PHOTO_DOWNLOAD_URL";
@@ -65,6 +69,26 @@ public class GlobalConfig {
     public static final String USER_SEARCH_VERBATIM_KEYWORD_KEY = "USER_SEARCH_VERBATIM_KEYWORD";
     public static final String USER_SEARCH_ANY_MATCH_KEYWORD_KEY = "USER_SEARCH_ANY_MATCH_KEYWORD";
     //USER FIELD KEYS END
+
+
+    public static final String TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY = "TOTAL_NUMBER_OF_ONE_STAR_RATE";
+    public static final String TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY = "TOTAL_NUMBER_OF_TWO_STAR_RATE";
+    public static final String TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY = "TOTAL_NUMBER_OF_THREE_STAR_RATE";
+    public static final String TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY = "TOTAL_NUMBER_OF_FOUR_STAR_RATE";
+    public static final String TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY = "TOTAL_NUMBER_OF_FIVE_STAR_RATE";
+
+    public static final String BOOK_MARKS_KEY = "BOOK_MARKS";
+    public static final String IS_LIBRARY_BOOK_MARK_KEY = "IS_LIBRARY_BOOK_MARK";
+    public static final String IS_TUTORIAL_BOOK_MARK_KEY = "IS_TUTORIAL_BOOK_MARK";
+    public static final String AUTHOR_ID_KEY = "AUTHOR_ID";
+    public static final String DATE_BOOK_MARKED_KEY = "DATE_BOOK_MARKED";
+
+
+    public static final String REVIEWS_KEY = "REVIEWS";
+    public static final String REVIEW_COMMENT_KEY = "REVIEW_COMMENT";
+    public static final String STAR_LEVEL_KEY = "STAR_LEVEL";
+    public static final String DATE_REVIEWED_KEY = "DATE_REVIEWED";
+
 
     //LIBRARY FIELD KEYS BEGIN
     public static final String IS_CREATE_NEW_LIBRARY_KEY = "IS_CREATE_NEW_LIBRARY";
@@ -91,11 +115,6 @@ public class GlobalConfig {
     public static final String LIBRARY_IMAGES_KEY = "LIBRARY_IMAGES";
     public static final String TOTAL_NUMBER_OF_LIBRARY_VIEWS_KEY = "TOTAL_NUMBER_OF_LIBRARY_VIEWS";
     public static final String TOTAL_NUMBER_OF_LIBRARY_REACH_KEY = "TOTAL_NUMBER_OF_LIBRARY_REACH";
-    public static final String TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY = "TOTAL_NUMBER_OF_ONE_STAR_RATE";
-    public static final String TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY = "TOTAL_NUMBER_OF_TWO_STAR_RATE";
-    public static final String TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY = "TOTAL_NUMBER_OF_THREE_STAR_RATE";
-    public static final String TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY = "TOTAL_NUMBER_OF_FOUR_STAR_RATE";
-    public static final String TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY = "TOTAL_NUMBER_OF_FIVE_STAR_RATE";
     //LIBRARY FIELD KEYS END
 
 
