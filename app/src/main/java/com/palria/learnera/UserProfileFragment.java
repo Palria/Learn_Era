@@ -2,12 +2,14 @@ package com.palria.learnera;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,15 +22,27 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.models.LibraryDataModel;
 
 public class UserProfileFragment extends Fragment {
 
     AlertDialog alertDialog;
     LinearLayout containerLinearLayout;
+
+    //views
+    ImageView editProfileButton;
+    RoundedImageView profileImageView;
+    TextView currentDisplayNameView;
+    TextView currentEmailView;
+    TextView currentCountryOfResidence;
+
+
     public UserProfileFragment() {
         // Required empty public constructor
     }
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +71,18 @@ public class UserProfileFragment extends Fragment {
            public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
                toggleProgress(false);
 
+               Glide.with(getContext())
+                       .load(userProfilePhotoDownloadUrl)
+                       .centerCrop()
+                       .into(profileImageView);
+
+               currentEmailView.setText(Html.fromHtml("Contact Email <b>"+contactEmail+"</b> "));
+               currentDisplayNameView.setText(userDisplayName);
+
+               currentCountryOfResidence.setText(Html.fromHtml("From <b>"+userCountryOfResidence+"</b> "));
+
+
+
            }
 
            @Override
@@ -78,11 +104,31 @@ public class UserProfileFragment extends Fragment {
                displayLibrary(libraryDataModel);
            }
        });
+
+       editProfileButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+
+               Intent i = new Intent(getContext(), EditCurrentUserProfileActivity.class);
+               startActivity(i);
+
+           }
+       });
+
        return parentView;
     }
 
     private void initUI(View parentView){
         //use the parentView to find the by Id as in : parentView.findViewById(...);
+
+
+        //init views
+        editProfileButton = parentView.findViewById(R.id.editProfileIcon);
+        profileImageView = parentView.findViewById(R.id.imageView1);
+        currentDisplayNameView = parentView.findViewById(R.id.current_name);
+        currentEmailView = parentView.findViewById(R.id.current_email);
+        currentCountryOfResidence = parentView.findViewById(R.id.current_country);
+
 
         alertDialog = new AlertDialog.Builder(getContext())
                 .setCancelable(false)

@@ -2,14 +2,19 @@ package com.palria.learnera;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
@@ -17,14 +22,21 @@ import com.google.firebase.auth.GetTokenResult;
 import java.util.Objects;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+
+    BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if(getSupportActionBar() != null) {
-            getSupportActionBar().hide();
+
+        Toolbar tp = findViewById(R.id.topBar);
+        setSupportActionBar(tp);
+
+        if(getSupportActionBar()!=null){
+
+
         }
 
             initUI();
@@ -40,45 +52,10 @@ public class MainActivity extends AppCompatActivity {
      * */
     private void initUI(){
 
-        //get login and register test button by idj
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        bottomNavigationView.setSelectedItemId(R.id.home_item);
 
-        Button login_test = (Button) findViewById(R.id.login_test_id);
-        Button register_test = (Button) findViewById(R.id.register_test_id);
-        Button profile_test = findViewById(R.id.profile_test_id);
-
-
-        //set test login button click listener
-
-        login_test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(view.getContext(), SignInActivity.class);
-                startActivity(i);
-
-
-            }
-        });
-
-        //set test register button click listener.
-        register_test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(view.getContext(), SignUpActivity.class);
-                startActivity(i);
-
-
-            }
-        });
-
-        profile_test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(view.getContext(), EditCurrentUserProfileActivity.class);
-                startActivity(i);
-
-
-            }
-        });
 
 
     }
@@ -93,6 +70,30 @@ if(GlobalConfig.isUserLoggedIn()) {
     fetchToken();
 }
 
+
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.home_item:
+            case R.id.stats_item:
+            case R.id.library_item:
+                initFragment(new TestFragment());
+                return true;
+            case R.id.profile_item:
+                initFragment(new UserProfileFragment());
+                return true;
+        }
+        return false;
+    }
+
+    private void initFragment(Fragment fragment){
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.myFragment, fragment)
+                .commit();
 
     }
 
