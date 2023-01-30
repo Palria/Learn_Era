@@ -1,14 +1,351 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UserProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView
+        android:layout_marginTop="0pt"
+        android:layout_below="@+id/bg"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:paddingBottom="27pt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:scaleType="centerCrop"
+                android:src="@drawable/cover1"
+                android:layout_width="match_parent"
+                android:layout_height="45pt"/>
+
+            <RelativeLayout
+                android:paddingHorizontal="10pt"
+                android:layout_marginTop="-35pt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.makeramen.roundedimageview.RoundedImageView
+                    android:id="@+id/imageView1"
+                    android:layout_width="60pt"
+                    android:layout_height="60pt"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/default_profile"
+                    app:riv_border_color="@color/teal_700"
+                    app:riv_border_width="4dip"
+                    app:riv_corner_radius="30dip"
+                    app:riv_mutate_background="true"
+                    app:riv_oval="true" />
+
+
+                    <TextView
+                        android:background="@drawable/outlined_white_bg_button"
+                        android:text="Verified"
+                        android:layout_below="@id/imageView1"
+                        android:paddingVertical="1pt"
+                        android:paddingHorizontal="5pt"
+                        android:layout_marginLeft="16pt"
+                        android:layout_marginTop="-8pt"
+                        android:textSize="5pt"
+                        android:textColor="@color/teal_700"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+
+                <ImageView
+                    android:paddingVertical="3dp"
+                    android:paddingHorizontal="4pt"
+                    android:id="@+id/editProfileIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="-17pt"
+                    android:layout_marginTop="-32pt"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/imageView1"
+                    android:background="@drawable/rounded_white_bg"
+                    android:layout_marginBottom="10pt"
+                    android:src="@drawable/ic_baseline_edit_24"
+                    />
+
+                <LinearLayout
+                    android:layout_below="@+id/imageView1"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="3pt"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/current_name"
+                        android:text="Sanjaya Gurung"
+                        android:textAlignment="textStart"
+                        android:textStyle="bold"
+                        android:textSize="11pt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:layout_weight="1"
+        android:layout_marginTop="6pt"
+        android:background="@drawable/default_auth_btn"
+        android:text="Create Library"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_marginLeft="4pt"
+        android:paddingVertical="6pt"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:paddingHorizontal="5pt"
+        android:layout_weight="1"
+        android:textAllCaps="true"
+        android:layout_marginTop="6pt"
+        android:textColor="@color/teal_700"
+        android:background="@drawable/default_outlined_button"
+        android:text="Activity Log"
+        android:foreground="@android:color/transparent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
+</LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_marginTop="6pt"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            app:tint="@color/grayDark"
+                            android:src="@drawable/ic_baseline_location_on_24"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/current_country"
+                            android:text="From Kathmandu, Nepal"
+                            android:textSize="8pt"
+                            android:maxLines="1"
+                            android:layout_marginLeft="5pt"
+                            android:textAlignment="textStart"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_marginTop="6pt"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            app:tint="@color/grayDark"
+                            android:src="@drawable/ic_baseline_email_24"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/current_email"
+                            android:text="Contact Email rasasha125@gmail.com"
+                            android:textSize="8pt"
+                            android:maxLines="1"
+                            android:layout_marginLeft="5pt"
+                            android:textAlignment="textStart"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_marginTop="6pt"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            app:tint="@color/grayDark"
+                            android:src="@drawable/ic_baseline_access_time_filled_24"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/joined_date"
+                            android:text="Joined 17 February 2025"
+                            android:textSize="8pt"
+                            android:maxLines="1"
+                            android:layout_marginLeft="5pt"
+                            android:textAlignment="textStart"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+
+                    </LinearLayout>
+
+                   </LinearLayout>
+
+
+
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:background="@drawable/rounded_white_bg"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_marginTop="11pt"
+                    android:background="@color/gray"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+
+                <LinearLayout
+                    android:background="@color/teal_700"
+                    android:layout_marginTop="6pt"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:paddingHorizontal="1pt"
+                    android:paddingVertical="7pt"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:textColor="@color/gray"
+                            android:text="Libraries"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:textColor="@color/white"
+                            android:layout_marginTop="3pt"
+                            android:textSize="8pt"
+                            android:textStyle="bold"
+                             android:text="1250"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:textColor="@color/gray"
+
+                            android:text="Tutorials"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:textColor="@color/white"
+                            android:layout_marginTop="3pt"
+                            android:textSize="8pt"
+                            android:textStyle="bold"
+                            android:text="45"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:textColor="@color/gray"
+                            android:text="Rateings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:textColor="@color/white"
+                            android:layout_marginTop="3pt"
+                            android:textSize="8pt"
+                            android:textStyle="bold"
+                            android:text="455"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+            <TextView
+                android:layout_marginTop="6pt"
+                android:background="@color/gray"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+
+            <LinearLayout
+android:layout_marginTop="5pt"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:paddingHorizontal="10pt"
+                    android:textSize="9pt"
+                    android:textStyle="bold"
+                    android:text="Recently created Libraries"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <HorizontalScrollView
+                    android:layout_marginTop="5pt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/testLibrary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include layout="@layout/custom_library_card_view"/>
+                        <include layout="@layout/custom_library_card_view"/>
+                        <include layout="@layout/custom_library_card_view"/>
+                        <include layout="@layout/custom_library_card_view"/>
+                        <include layout="@layout/custom_library_card_view"/>
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
 
 </FrameLayout>

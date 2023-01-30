@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/teal_700"
+    android:gravity="center"
+    android:paddingRight="8pt"
+    android:layout_height="?attr/actionBarSize">
+
+
+    <TextView
+        android:textSize="9pt"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:text="@string/app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:layout_marginLeft="10pt"
+        android:layout_weight="1"
+        android:gravity="end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+
+        <Button
+            android:elevation="0sp"
+            android:id="@+id/menu_search_button"
+            android:foreground="@drawable/ic_baseline_search_24"
+            android:layout_width="13pt"
+            android:foregroundTint="@color/white"
+            android:layout_height="13pt"/>
+
+
+
+        <Button
+            android:elevation="0pt"
+            android:layout_marginLeft="5pt"
+            android:id="@+id/menu_action_button"
+            android:foreground="@drawable/ic_baseline_more_vert_24"
+           android:layout_width="13pt"
+            android:foregroundTint="@color/white"
+            android:layout_height="13pt"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,44 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        app:layout_constraintBaseline_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/topBar"
+        app:titleTextColor="@color/white"
+        android:background="@color/teal_700"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+        <include
+            layout="@layout/top_bar_custom_layout"/>
+    </androidx.appcompat.widget.Toolbar>
 
-<LinearLayout
-    android:layout_centerInParent="true"
+
+<FrameLayout
+    android:id="@+id/myFragment"
+    app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.5"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
     android:layout_width="match_parent"
-    android:paddingHorizontal="10pt"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_marginTop="?attr/actionBarSize"
+    android:layout_height="0dp" />
 
-    <TextView
-        android:text="Test Buttons"
-        android:layout_marginBottom="10pt"
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <Button
-        android:id="@+id/login_test_id"
-        android:layout_width="match_parent"
-        android:text="Go to Login"
-        android:layout_height="wrap_content"/>
-
-    <Button
-        android:id="@+id/register_test_id"
-        android:layout_width="match_parent"
-        android:text="Go to Register"
-        android:layout_height="wrap_content"/>
-
-    <Button
-        android:id="@+id/profile_test_id"
-        android:layout_width="match_parent"
-        android:text="Go to Profile"
-        android:layout_height="wrap_content"/>
-
-</LinearLayout>
+        android:background="@drawable/rounded_white_bg"
+        android:layout_height="75dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/home_bottom_nav_menu"/>
 
 
-</RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

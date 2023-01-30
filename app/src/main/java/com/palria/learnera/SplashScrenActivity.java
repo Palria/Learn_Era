@@ -21,7 +21,7 @@ public class SplashScrenActivity extends AppCompatActivity {
      * indicates to show welcome screen or not here
      */
 
-    private boolean showWelcomeScreen = true;
+    private boolean showWelcomeScreen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
