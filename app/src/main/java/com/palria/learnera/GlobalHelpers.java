@@ -22,7 +22,7 @@ public class GlobalHelpers {
      * @param message Alert body/message to show
      */
     public static void showAlertMessage(String type, Context c, String title, String message){
-
+        type = type.toLowerCase();
         LayoutInflater layoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View alert_view = layoutInflater.inflate(R.layout.custom_alert_box,null);
         ImageView iconView = alert_view.findViewById(R.id.icon);

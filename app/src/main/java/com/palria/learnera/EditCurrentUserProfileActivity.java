@@ -5,6 +5,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -90,12 +91,15 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
     ImageView pickImageActionButton;
     ActivityResultLauncher<Intent> openGalleryLauncher;
     ActivityResultLauncher<Intent> openCameraLauncher;
+    AlertDialog alertDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_current_user_profile);
         initUI();
+        toggleProgress(true);
    initUserProfileValuesBeforeEdition(new ProfileValueInitListener() {
        @Override
        public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
@@ -103,26 +107,27 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
            userDisplayNameEditText.setText(userDisplayName);
            contactEmailEditText.setText(contactEmail);
            contactPhoneNumberEditText.setText(contactPhoneNumber);
-           //genderTypeEditText.setText(genderType);
+//           genderTypeEditText.setText(genderType);
            retrievedProfilePictureDownloadUrl = userProfilePhotoDownloadUrl;
            EditCurrentUserProfileActivity.this.isUserBlocked = isUserBlocked;
            EditCurrentUserProfileActivity.this.isProfilePhotoIncluded = isUserProfilePhotoIncluded;
-
 
            display_name.setText(userDisplayName);
            display_email.setText(contactEmail);
 
            Log.w("success_tag",userDisplayName+"-"+contactEmail+"-"+genderType+"-"+userProfilePhotoDownloadUrl);
+           toggleProgress(false);
 
 
-//           Glide.with(EditCurrentUserProfileActivity.this)
-//                   .load(retrievedProfilePictureDownloadUrl)
-//                   .centerCrop()
-//                   .into(profile_image_view);
+           Glide.with(EditCurrentUserProfileActivity.this)
+                   .load(userProfilePhotoDownloadUrl)
+                   .centerCrop()
+                   .into(profile_image_view);
        }
 
        @Override
        public void onFailed(String errorMessage) {
+           toggleProgress(false);
 
        }
    });
@@ -178,11 +183,14 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
         editProfileActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                toggleProgress(true);
                 userDisplayName = userDisplayNameEditText.getText().toString();
                 userCountryOfResidence = countrySpinner.getSelectedItem().toString();
+                genderType = genderTypeSpinner.getSelectedItem().toString();
                 contactEmail = contactEmailEditText.getText().toString();
                 contactPhoneNumber = contactPhoneNumberEditText.getText().toString();
 
+                if(!userDisplayName.isEmpty()){
                 if(isProfilePhotoIncluded){
                     if(isProfilePhotoChanged){
                        uploadUserProfilePhoto(new ProfilePhotoUploadListener() {
@@ -192,20 +200,25 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                                    @Override
                                    public void onSuccess(String userName) {
                                        //succeed in editing profile
+                                       toggleProgress(false);
+
                                    }
 
                                    @Override
                                    public void onFailed(String errorMessage) {
 
                                        //failed to post new changes of user's profile
+                                       toggleProgress(false);
+
                                    }
                                });
                            }
 
                            @Override
                            public void onFailed(String errorMessage) {
-
                                //failed to upload user's profile photo
+                               toggleProgress(false);
+
                            }
                        });
                     }else{
@@ -213,30 +226,41 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(String userName) {
                                 //succeed in editing profile
+                                toggleProgress(false);
 
                             }
 
                             @Override
                             public void onFailed(String errorMessage) {
                                 //failed to post new changes of user's profile
+                                toggleProgress(false);
 
                             }
                         });
                     }
-                }else{
-                    editUserProfile("",new ProfileCreationListener() {
+                }else {
+                    editUserProfile("", new ProfileCreationListener() {
                         @Override
                         public void onSuccess(String userName) {
                             //succeed in editing profile
+                            toggleProgress(false);
+                            GlobalHelpers.showAlertMessage("success",
+                                        EditCurrentUserProfileActivity.this,
+                                        "Profile Edited Successfully.",
+                                        "You have successfully edited your profile, Learn Era has more knowledge to offer you, go ahead and learn more.");
 
                         }
 
                         @Override
                         public void onFailed(String errorMessage) {
                             //failed to post new changes of user's profile
+                            toggleProgress(false);
 
                         }
                     });
+                }
+                }else{
+                    Toast.makeText(getApplicationContext(), "Please enter your user name", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -295,7 +319,24 @@ private void initUI(){
     initGenderSpinner();
 
 
+    //init progress.
+    alertDialog = new AlertDialog.Builder(EditCurrentUserProfileActivity.this)
+            .setCancelable(false)
+            .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
+            .create();
 }
+
+
+    private void toggleProgress(boolean show)
+    {
+        if(show){
+            alertDialog.show();
+        }else{
+            alertDialog.hide();
+        }
+    }
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -324,7 +365,6 @@ private void initUI(){
     public void fireGalleryIntent(){
         Intent galleryIntent = new Intent();
         galleryIntent.setAction(Intent.ACTION_PICK);
-        galleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
         galleryIntent.setType("image/*");
         openGalleryLauncher.launch(galleryIntent);
     }

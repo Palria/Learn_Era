@@ -303,7 +303,6 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
     public void fireGalleryIntent(){
         Intent galleryIntent = new Intent();
         galleryIntent.setAction(Intent.ACTION_PICK);
-        galleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
         galleryIntent.setType("image/*");
         openGalleryLauncher.launch(galleryIntent);
     }

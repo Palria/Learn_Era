@@ -3,4 +3,6 @@
     <string name="male">MALE</string>
     <string name="female">FEMALE</string>
     <string name="other">OTHER</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

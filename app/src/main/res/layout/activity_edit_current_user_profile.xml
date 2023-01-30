@@ -140,7 +140,7 @@
                         android:hint="Email Address"
                         android:inputType="textEmailAddress"
                         android:textSize="16sp"
-                        android:enabled="false"
+                        android:enabled="true"
                         android:text="rananir@gmail.com"
                         android:id="@+id/emailInput"
                         android:background="@drawable/default_input_bg"
@@ -237,7 +237,7 @@ android:text="9806455985"
 <Button
     android:background="@drawable/default_auth_btn"
     android:id="@+id/update_button"
-    android:text="save"
+    android:text="Save"
     android:paddingVertical="2pt"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"/>

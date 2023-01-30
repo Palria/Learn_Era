@@ -12,6 +12,8 @@ public class LibraryDataModel {
     private   String libraryId;
 /**The library category*/
     private   String libraryCategory;
+    /**Cover photo download url from database*/
+    private   String libraryCoverPhotoDownloadUrl;
     /**The date at which the library was created*/
     private   String dateCreated;
     /**The number of books this library contains*/
@@ -65,6 +67,7 @@ public class LibraryDataModel {
             String libraryName,
             String libraryId,
             String libraryCategory,
+            String libraryCoverPhotoDownloadUrl,
             String dateCreated,
             long totalNumberOfTutorials,
             long totalNumberOfLibraryViews,
@@ -80,6 +83,7 @@ public class LibraryDataModel {
         this.libraryName = libraryName;
         this.libraryId = libraryId;
         this.libraryCategory = libraryCategory;
+        this.libraryCoverPhotoDownloadUrl = libraryCoverPhotoDownloadUrl;
         this.dateCreated = dateCreated;
         this.totalNumberOfTutorials = totalNumberOfTutorials;
         this.totalNumberOfLibraryViews = totalNumberOfLibraryViews;
@@ -116,6 +120,14 @@ public class LibraryDataModel {
 
     public  void setLibraryCategory(String libraryCategory) {
         this.libraryCategory = libraryCategory;
+    }
+
+    public String getLibraryCoverPhotoDownloadUrl() {
+        return libraryCoverPhotoDownloadUrl;
+    }
+
+    public  void setLibraryCoverPhotoDownloadUrl(String libraryCoverPhotoDownloadUrl) {
+        this.libraryCoverPhotoDownloadUrl = libraryCoverPhotoDownloadUrl;
     }
 
     public String getDateCreated() {
