@@ -115,7 +115,32 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
            display_name.setText(userDisplayName);
            display_email.setText(contactEmail);
 
-           Log.w("success_tag",userDisplayName+"-"+contactEmail+"-"+genderType+"-"+userProfilePhotoDownloadUrl);
+           ///gender auto select after info loaded
+           switch (genderType.toLowerCase()){
+               case "male":
+                   genderTypeSpinner.setSelection(0);
+                   break;
+               case "female":
+                   genderTypeSpinner.setSelection(1);
+                   break;
+               case "other":
+                   genderTypeSpinner.setSelection(2);
+                   break;
+               default:break;
+           }
+
+
+           //country auto select
+            ArrayList<String> countries = GlobalConfig.getCountryArrayList(null);
+           for(String country : countries){
+               if(country.toLowerCase().equals(userCountryOfResidence.toLowerCase())){
+                   countrySpinner.setSelection(countries.indexOf(country));
+                   break;
+               }
+           }
+
+
+           Log.w("success_tag",userCountryOfResidence);
            toggleProgress(false);
 
 
@@ -200,7 +225,15 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                                    @Override
                                    public void onSuccess(String userName) {
                                        //succeed in editing profile
+                                       display_name.setText(userDisplayNameEditText.getText().toString());
+                                       display_email.setText(contactEmailEditText.getText().toString());
                                        toggleProgress(false);
+
+                                       GlobalHelpers.showAlertMessage("success",
+                                               EditCurrentUserProfileActivity.this,
+                                               "Profile Edited Successfully.",
+                                               "You have successfully edited your profile, Learn Era has more knowledge to offer you, go ahead and learn more.");
+
 
                                    }
 
@@ -226,7 +259,13 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(String userName) {
                                 //succeed in editing profile
+                                display_name.setText(userDisplayNameEditText.getText().toString());
+                                display_email.setText(contactEmailEditText.getText().toString());
                                 toggleProgress(false);
+                                GlobalHelpers.showAlertMessage("success",
+                                        EditCurrentUserProfileActivity.this,
+                                        "Profile Edited Successfully.",
+                                        "You have successfully edited your profile, Learn Era has more knowledge to offer you, go ahead and learn more.");
 
                             }
 
@@ -244,6 +283,8 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                         public void onSuccess(String userName) {
                             //succeed in editing profile
                             toggleProgress(false);
+                            display_name.setText(userDisplayNameEditText.getText().toString());
+                            display_email.setText(contactEmailEditText.getText().toString());
                             GlobalHelpers.showAlertMessage("success",
                                         EditCurrentUserProfileActivity.this,
                                         "Profile Edited Successfully.",

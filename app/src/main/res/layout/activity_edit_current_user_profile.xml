@@ -34,6 +34,7 @@
     android:layout_height="match_parent">
     <LinearLayout
         android:orientation="vertical"
+        android:paddingBottom="27pt"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -111,6 +112,13 @@
                 android:layout_height="match_parent">
 
 
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_marginBottom="7pt"
+                    android:text="Basic Information"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -125,51 +133,12 @@
                         android:id="@+id/nameInput"
                         android:background="@drawable/default_input_bg"
                         android:layout_height="wrap_content"/>
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_marginTop="10pt"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_height="wrap_content">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:hint="Email Address"
-                        android:inputType="textEmailAddress"
-                        android:textSize="16sp"
-                        android:enabled="true"
-                        android:text="rananir@gmail.com"
-                        android:id="@+id/emailInput"
-                        android:background="@drawable/default_input_bg"
+                    <TextView
+                        android:textSize="5pt"
+                        android:text=" your display full name. This is publicly visible to everyone ."
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
-
                 </com.google.android.material.textfield.TextInputLayout>
-
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:id="@+id/passwordInputLayout"
-                    android:layout_marginTop="10pt"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_height="wrap_content">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:hint="Contact Number"
-                        android:inputType="number"
-                        android:textSize="16sp"
-
-android:text="9806455985"
-                        android:id="@+id/contactInput"
-                        android:background="@drawable/default_input_bg"
-                        android:layout_height="wrap_content"/>
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-
 
 
                 <LinearLayout
@@ -216,6 +185,69 @@ android:text="9806455985"
 
 
                 </LinearLayout>
+
+
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_marginTop="20pt"
+                    android:layout_marginBottom="7pt"
+                    android:text="Contact Information"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:hint="Email Address"
+                        android:inputType="textEmailAddress"
+                        android:textSize="16sp"
+                        android:enabled="true"
+                        android:text="rananir@gmail.com"
+                        android:id="@+id/emailInput"
+                        android:background="@drawable/default_input_bg"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:textSize="5pt"
+                        android:text="Provide a valid contact email address where we can send some updates about in future."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:id="@+id/passwordInputLayout"
+                    android:layout_marginTop="10pt"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:hint="Contact Number"
+                        android:inputType="number"
+                        android:textSize="16sp"
+
+android:text="9806455985"
+
+                        android:id="@+id/contactInput"
+                        android:background="@drawable/default_input_bg"
+                        android:layout_height="wrap_content"/>
+<TextView
+    android:textSize="5pt"
+    android:text="This is your primary phone number. this is use to contact you in the future for any needs."
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
 
             </LinearLayout>
 

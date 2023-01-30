@@ -29,7 +29,11 @@
         </activity>
         <activity
             android:name=".EditCurrentUserProfileActivity"
-            android:exported="true" />
+            android:exported="true">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.palria.learnera.MainActivity"/>
+        </activity>
         <activity
             android:name=".WelcomeActivity"
             android:exported="true" />
