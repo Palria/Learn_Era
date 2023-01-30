@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -106,8 +107,12 @@ LinearLayout containerLinearLayout;
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             String reviewerName =""+ documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                            String reviewerProfilePhotoDownloadUrl =""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
                             reviewerNameTextView.setText(reviewerName);
-
+                            Glide.with(getContext())
+                                    .load(reviewerProfilePhotoDownloadUrl)
+                                    .centerCrop()
+                                    .into(reviewerProfilePhoto);
                         }
                     });
 

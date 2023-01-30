@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 //authorId_libraryid_tutorialId
+//performance tag
 public class GlobalConfig {
 
     private static String CURRENT_USER_ID;
@@ -85,6 +86,10 @@ public class GlobalConfig {
 
 
     public static final String REVIEWS_KEY = "REVIEWS";
+    public static final String IS_AUTHOR_REVIEW_KEY = "IS_AUTHOR_REVIEW";
+    public static final String IS_LIBRARY_REVIEW_KEY = "IS_LIBRARY_REVIEW";
+    public static final String IS_TUTORIAL_REVIEW_KEY = "IS_TUTORIAL_REVIEW";
+    public static final String OTHER_REVIEWS_KEY = "OTHER_REVIEWS";
     public static final String REVIEW_COMMENT_KEY = "REVIEW_COMMENT";
     public static final String STAR_LEVEL_KEY = "STAR_LEVEL";
     public static final String DATE_REVIEWED_KEY = "DATE_REVIEWED";

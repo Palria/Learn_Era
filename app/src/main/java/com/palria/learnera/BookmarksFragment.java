@@ -100,6 +100,8 @@ fetchBookmarks(new BookmarkFetchListener() {
             ImageView library_tutorial_CoverPhoto =bookmarkView.findViewById(R.id.library_tutorial_CoverPhotoId);
             dateBookmarkedTextView.setText(dateBookmarked);
 if(isLibraryBookmark){
+viewTypeIndicatorTextView.setText("Library");
+
     GlobalConfig.getFirebaseFirestoreInstance()
             .collection(GlobalConfig.ALL_USERS_KEY)
             .document(authorId)
@@ -124,6 +126,7 @@ if(isLibraryBookmark){
 
 }
 else if(isTutorialBookmark){
+viewTypeIndicatorTextView.setText("Tutorial");
     GlobalConfig.getFirebaseFirestoreInstance()
             .collection(GlobalConfig.ALL_USERS_KEY)
             .document(authorId)

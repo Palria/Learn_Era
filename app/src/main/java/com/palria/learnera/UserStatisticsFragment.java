@@ -21,17 +21,19 @@ public class UserStatisticsFragment extends Fragment {
     public UserStatisticsFragment() {
         // Required empty public constructor
     }
+
 /*
- * Bookmarks tab  :                  (This tab shows other libraries and tutorials bookmarked by this user  which will be contained in a fragment),
+ *This fragment will also contain child fragments
+ * There should be three tabs which are: (Bookmarks tab, My reviews tab, and All reviews tab)
+ *
+ *  Bookmarks tab  :                  (This tab shows other libraries and tutorials bookmarked by this user  which will be contained in a fragment),
  * Total number of libraries :       (A view that reveals the number of libraries this author created),
  * is an author flag         :       (A view that reveals whether this user is an author or not),
  * Star rating chat layout   :       (This is a layout such like playstore review layout that shows the chat bars of star rating for this user.),
  * My reviews tab        :           (This tab shows a list of this user's reviews reviewed by other users which will be contained in a fragment),
- * Libraries reviewed tab   :        (This tab shows other libraries this user reviewed which will be contained in a fragment),
- * Tutorials reviewed tab    :       (This tab shows other tutorial this user reviewed which will be contained in a fragment),
+ * All reviews  tab   :              (This tab shows other authors, libraries and tutorials this user reviewed which will be contained in a fragment),
  * Total number of profile visitors: (The number of times users visited this user's profile),
  * Total number of profile reach:    (The number of times  this user's profile reached users),
- * //Performance tag//
  * Last seen                     :   (The last day this user visited the Learn Era platform)
  *
  *
