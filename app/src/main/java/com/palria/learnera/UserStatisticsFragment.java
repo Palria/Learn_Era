@@ -1,25 +1,48 @@
 package com.palria.learnera;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.palria.learnera.models.StatisticsDataModel;
 
+import java.util.ArrayList;
+
 public class UserStatisticsFragment extends Fragment {
     AlertDialog alertDialog;
+    // Initialize variables
+    TabLayout tabLayout;
+    ViewPager viewPager;
 
-    public UserStatisticsFragment() {
+    FragmentManager fragmentManager;
+
+    public UserStatisticsFragment(FragmentManager fm) {
         // Required empty public constructor
+        fragmentManager = fm;
     }
 
 /*
@@ -75,10 +98,144 @@ initStatistics(new InitStatsListener() {
     private void initUI(View parentView){
         //use the parentView to find the by Id as in : parentView.findViewById(...);
 
+        // assign variable
+        tabLayout=parentView.findViewById(R.id.tab_layout);
+        viewPager=parentView.findViewById(R.id.layout_view_pager);
+
+        // Initialize array list
+        ArrayList<String> arrayList=new ArrayList<>(0);
+
+        // Add title in array list
+        arrayList.add("Basic");
+        arrayList.add("Advance");
+        arrayList.add("Pro");
+
+        // Setup tab layout
+        tabLayout.setupWithViewPager(viewPager);
+
+        // Prepare view pager
+        prepareViewPager(viewPager,arrayList);
+
         alertDialog = new AlertDialog.Builder(getContext())
                 .setCancelable(false)
                 .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
                 .create();
+    }
+
+
+    private void prepareViewPager(ViewPager viewPager, ArrayList<String> arrayList) {
+        // Initialize main adapter
+        MainAdapter adapter=new MainAdapter(fragmentManager);
+
+        // Initialize main fragment
+        TestFragment mainFragment=new TestFragment();
+
+        // Use for loop
+        for(int i=0;i<arrayList.size();i++)
+        {
+            // Initialize bundle
+            Bundle bundle=new Bundle();
+
+            // Put title
+            bundle.putString("title",arrayList.get(i));
+
+            // set argument
+            mainFragment.setArguments(bundle);
+
+            // Add fragment
+            adapter.addFragment(mainFragment,arrayList.get(i));
+            mainFragment=new TestFragment();
+        }
+        // set adapter
+        viewPager.setAdapter(adapter);
+
+        tabLayout.setupWithViewPager(viewPager);
+
+        setupTabIcons();
+    }
+
+    private class MainAdapter extends PagerAdapter {
+        // Initialize arrayList
+        ArrayList<Fragment> fragmentArrayList= new ArrayList<>();
+        ArrayList<String> stringArrayList=new ArrayList<>();
+
+        int[] imageList={R.drawable.ic_baseline_bookmarks_24,R.drawable.ic_baseline_reviews_24,R.drawable.ic_baseline_photo_camera_24};
+
+        // Create constructor
+        public void addFragment(Fragment fragment,String s)
+        {
+            // Add fragment
+            fragmentArrayList.add(fragment);
+            // Add title
+            stringArrayList.add(s);
+        }
+
+        public MainAdapter(FragmentManager supportFragmentManager) {
+
+        }
+
+
+
+        @Override
+        public int getCount() {
+            // Return fragment array list size
+            return fragmentArrayList.size();
+        }
+
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View item_view = layoutInflater.inflate(R.layout.welcome_activity_vpadapter_layout_item,container,false);
+
+
+            ImageView imageView = item_view.findViewById(R.id.image);
+            TextView titleTextView = item_view.findViewById(R.id.title);
+            TextView contentTextView = item_view.findViewById(R.id.body);
+
+            titleTextView.setText("No Data Found");
+            contentTextView.setText(
+                    position==0?"Please add Bookmarks to see here." : (
+                            position == 1 ? "Please Submit your revices and visit again." :
+                                    "We cannot find any relating reviews for you at this time."
+                            )
+            );
+            imageView.setImageResource(R.drawable.undraw_no_data_re_kwbl);
+            imageView.getLayoutParams().height = 150;
+            imageView.requestLayout();
+            container.addView(item_view);
+            return item_view;
+
+        }
+
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            container.removeView((LinearLayout)object);
+        }
+
+        @Override
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+
+            return (LinearLayout) object == view;
+        }
+
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+
+            return "";
+
+        }
+
+
+    }
+
+
+    private void setupTabIcons() {
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_baseline_bookmarks_24);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_baseline_reviews_24);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_baseline_stars_24);
     }
 
     private void toggleProgress(boolean show)

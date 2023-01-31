@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/swiperRefreshLayout"
     android:layout_height="match_parent"
     tools:context=".UserProfileFragment">
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_marginTop="0pt"
         android:layout_below="@+id/bg"
         android:layout_width="match_parent"
@@ -80,6 +82,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:textColor="@color/black"
                         android:id="@+id/current_name"
                         android:text="Sanjaya Gurung"
                         android:textAlignment="textStart"
@@ -132,15 +135,16 @@
                             android:src="@drawable/ic_baseline_location_on_24"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
+
                         <TextView
                             android:id="@+id/current_country"
-                            android:text="From Kathmandu, Nepal"
-                            android:textSize="8pt"
-                            android:maxLines="1"
-                            android:layout_marginLeft="5pt"
-                            android:textAlignment="textStart"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"/>
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5pt"
+                            android:maxLines="1"
+                            android:text="From Kathmandu, Nepal"
+                            android:textAlignment="textStart"
+                            android:textSize="8pt" />
 
 
                     </LinearLayout>
@@ -344,8 +348,12 @@ android:layout_marginTop="5pt"
 
             </LinearLayout>
 
+            <TextView
+                android:text="dsfds"
+                android:layout_width="match_parent"
+                android:layout_height="150pt"/>
 
         </LinearLayout>
     </ScrollView>
 
-</FrameLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
