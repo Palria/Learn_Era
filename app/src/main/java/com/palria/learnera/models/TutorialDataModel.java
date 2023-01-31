@@ -19,58 +19,57 @@ public class TutorialDataModel {
     /**The date when this book was created*/
     String dateCreated;
     /**The number of pages this book contains*/
-    int totalNumberOfPages;
-    int totalNumberOfFolders;
+    long totalNumberOfPages;
+    long totalNumberOfFolders;
     /**The number of time a reader viewed this book*/
-    int totalNumberOfTutorialViews;
+    long totalNumberOfTutorialViews;
     /**The number of time this book appeared to users*/
-    int totalNumberOfTutorialReach;
-    /**The name of this book's author*/
-    String authorName;
+    long totalNumberOfTutorialReach;
     /**The author's id.
      * This is necessary if the reader wants to know about the author
      * */
     String authorId;
-    /**The name of this book's library*/
-    String libraryName;
     /**The id of the library
      * This is necessary if the reader wants to know more about the library
      * */
     String libraryId;
+    /**The download url  of the tutorial's cover photo
+     * */
+    String tutorialCoverPhotoDownloadUrl;
     /**The total number of this book's one star rating.
      * Each time a reader rates this book's a one star, this variable is incremented
      * in the database.
      * */
-    int totalNumberOfOneStarRate;
+    long totalNumberOfOneStarRate;
     /**The total number of this book's two star rating.
      * Each time a reader rates this book's a two star, this variable is incremented
      * in the database.
      * */
-    int totalNumberOfTwoStarRate;
+    long totalNumberOfTwoStarRate;
     /**The total number of this book's three star rating.
      * Each time a reader rates this book's a three star, this variable is incremented
      * in the database.
      * */
-    int totalNumberOfThreeStarRate;
+    long totalNumberOfThreeStarRate;
     /**The total number of this book's four star rating.
      * Each time a reader rates this book's a four star, this variable is incremented
      * in the database.
      * */
-    int totalNumberOfFourStarRate;
+    long totalNumberOfFourStarRate;
     /**The total number of this book's five star rating.
      * Each time a reader rates this book's a five star, this variable is incremented
      * in the database.
      * */
-    int totalNumberOfFiveStarRate;
+    long totalNumberOfFiveStarRate;
 
 
     /**Empty constructor may be used to instantiate the class object if it is not
      * necessary to instantiate the global variables through the constructor. In this way
      *Setters are used to as an alternative instantiate the global variables .
      * */
-    public    TutorialDataModel(){
-
-    }
+//    public    TutorialDataModel(){
+//
+//    }
 
 
     /**This parameterized Constructor helps us in initializing all the global variables
@@ -79,19 +78,18 @@ public class TutorialDataModel {
             String tutorialName,
             String tutorialId,
             String dateCreated,
-            int totalNumberOfPages,
-            int totalNumberOfFolders,
-            int totalNumberOfTutorialViews,
-            int totalNumberOfTutorialReach,
-            String authorName,
+            long totalNumberOfPages,
+            long totalNumberOfFolders,
+            long totalNumberOfTutorialViews,
+            long totalNumberOfTutorialReach,
             String authorId,
-            String libraryName,
             String libraryId,
-            int totalNumberOfOneStarRate,
-            int totalNumberOfTwoStarRate,
-            int totalNumberOfThreeStarRate,
-            int totalNumberOfFourStarRate,
-            int totalNumberOfFiveStarRate
+            String tutorialCoverPhotoDownloadUrl,
+            long totalNumberOfOneStarRate,
+            long totalNumberOfTwoStarRate,
+            long totalNumberOfThreeStarRate,
+            long totalNumberOfFourStarRate,
+            long totalNumberOfFiveStarRate
     ){
         this.tutorialName = tutorialName;
         this.tutorialId = tutorialId;
@@ -100,10 +98,9 @@ public class TutorialDataModel {
         this.totalNumberOfFolders = totalNumberOfFolders;
         this.totalNumberOfTutorialViews = totalNumberOfTutorialViews;
         this.totalNumberOfTutorialReach = totalNumberOfTutorialReach;
-        this.authorName = authorName;
         this.authorId = authorId;
-        this.libraryName = libraryName;
         this.libraryId = libraryId;
+        this.tutorialCoverPhotoDownloadUrl = tutorialCoverPhotoDownloadUrl;
         this.totalNumberOfOneStarRate = totalNumberOfOneStarRate;
         this.totalNumberOfTwoStarRate = totalNumberOfTwoStarRate;
         this.totalNumberOfThreeStarRate = totalNumberOfThreeStarRate;
@@ -138,7 +135,7 @@ public class TutorialDataModel {
         this.dateCreated = dateCreated;
     }
 
-    public int getTotalNumberOfPages() {
+    public long getTotalNumberOfPages() {
         return totalNumberOfPages;
     }
 
@@ -146,7 +143,7 @@ public class TutorialDataModel {
         this.totalNumberOfPages = totalNumberOfPages;
     }
 
-    public int getTotalNumberOfFolders() {
+    public long getTotalNumberOfFolders() {
         return totalNumberOfFolders;
     }
 
@@ -154,7 +151,7 @@ public class TutorialDataModel {
         this.totalNumberOfFolders = totalNumberOfFolders;
     }
 
-    public int getTotalNumberOfTutorialViews() {
+    public long getTotalNumberOfTutorialViews() {
         return totalNumberOfTutorialViews;
     }
 
@@ -162,7 +159,7 @@ public class TutorialDataModel {
         this.totalNumberOfTutorialViews = totalNumberOfTutorialViews;
     }
 
-    public int getTotalNumberOfTutorialReach() {
+    public long getTotalNumberOfTutorialReach() {
         return totalNumberOfTutorialReach;
     }
 
@@ -170,13 +167,6 @@ public class TutorialDataModel {
         this.totalNumberOfTutorialReach = totalNumberOfTutorialReach;
     }
 
-    public String getAuthorName() {
-        return authorName;
-    }
-
-    void setAuthorName(String authorName) {
-        this.authorName = authorName;
-    }
 
     public String getAuthorId() {
         return authorId;
@@ -185,14 +175,8 @@ public class TutorialDataModel {
     void setAuthorId(String authorId) {
         this.authorId = authorId;
     }
-   public String getLibraryName() {
-        return libraryName;
-    }
 
-    void setLibraryName(String libraryName) {
-        this.libraryName = libraryName;
-    }
- public String getLibraryId() {
+    public String getLibraryId() {
         return libraryId;
     }
 
@@ -200,7 +184,15 @@ public class TutorialDataModel {
         this.libraryId = libraryId;
     }
 
-    public int getTotalNumberOfOneStarRate() {
+    public String getTutorialCoverPhotoDownloadUrl() {
+        return tutorialCoverPhotoDownloadUrl;
+    }
+
+    void setTutorialCoverPhotoDownloadUrl(String tutorialCoverPhotoDownloadUrl) {
+        this.tutorialCoverPhotoDownloadUrl = tutorialCoverPhotoDownloadUrl;
+    }
+
+    public long getTotalNumberOfOneStarRate() {
         return totalNumberOfOneStarRate;
     }
 
@@ -208,7 +200,7 @@ public class TutorialDataModel {
         this.totalNumberOfOneStarRate = totalNumberOfOneStarRate;
     }
 
-    public int getTotalNumberOfTwoStarRate() {
+    public long getTotalNumberOfTwoStarRate() {
         return totalNumberOfTwoStarRate;
     }
 
@@ -216,7 +208,7 @@ public class TutorialDataModel {
         this.totalNumberOfTwoStarRate = totalNumberOfTwoStarRate;
     }
 
-    public int getTotalNumberOfThreeStarRate() {
+    public long getTotalNumberOfThreeStarRate() {
         return totalNumberOfThreeStarRate;
     }
 
@@ -224,7 +216,7 @@ public class TutorialDataModel {
         this.totalNumberOfThreeStarRate = totalNumberOfThreeStarRate;
     }
 
-    public int getTotalNumberOfFourStarRate() {
+    public long getTotalNumberOfFourStarRate() {
         return totalNumberOfFourStarRate;
     }
 
@@ -232,7 +224,7 @@ public class TutorialDataModel {
         this.totalNumberOfFourStarRate = totalNumberOfFourStarRate;
     }
 
-    public int getTotalNumberOfFiveStarRate() {
+    public long getTotalNumberOfFiveStarRate() {
         return totalNumberOfFiveStarRate;
     }
 

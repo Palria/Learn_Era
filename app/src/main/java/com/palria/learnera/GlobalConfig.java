@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Random;
 //authorId_libraryid_tutorialId
 //performance tag
+//load user profile once from here
 public class GlobalConfig {
 
     private static String CURRENT_USER_ID;
@@ -47,10 +48,15 @@ public class GlobalConfig {
     public static final String ALL_USERS_KEY = "ALL_USERS";
     public static final String USER_PROFILE_KEY = "USER_PROFILE";
     public static final String USER_ID_KEY = "USER_ID";
+    public static final String USER_DATE_OF_BIRTH_KEY = "USER_DATE_OF_BIRTH";
+    public static final String IS_USER_PROFILE_COMPLETED_KEY = "IS_USER_PROFILE_COMPLETED";
+    public static final String USER_RESIDENTIAL_ADDRESS_KEY = "USER_RESIDENTIAL_ADDRESS";
+    public static final String USER_AGE_KEY = "USER_AGE";
     public static final String IS_USER_BLOCKED_KEY = "IS_USER_BLOCKED";
     public static final String USER_DISPLAY_NAME_KEY = "USER_DISPLAY_NAME";
     public static final String USER_IMAGES_KEY = "USER_IMAGES";
     public static final String LAST_SEEN_KEY = "LAST_SEEN";
+    public static final String AUTHOR_CATEGORY_TAG_ARRAY_KEY = "AUTHOR_CATEGORY_TAG_ARRAY";
     public static final String IS_USER_AUTHOR_KEY = "IS_USER_AUTHOR";
     public static final String TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY = "TOTAL_NUMBER_OF_USER_PROFILE_VISITORS";
     public static final String TOTAL_NUMBER_OF_USER_PROFILE_REACH_KEY = "TOTAL_NUMBER_OF_USER_PROFILE_REACH";
@@ -118,7 +124,9 @@ public class GlobalConfig {
     public static final String IS_LIBRARY_COVER_PHOTO_INCLUDED_KEY = "IS_LIBRARY_COVER_PHOTO_INCLUDED";
     public static final String LIBRARY_COVER_PHOTO_KEY = "LIBRARY_COVER_PHOTO";
     public static final String LIBRARY_IMAGES_KEY = "LIBRARY_IMAGES";
+    //WILL REMOVE
     public static final String TOTAL_NUMBER_OF_LIBRARY_VIEWS_KEY = "TOTAL_NUMBER_OF_LIBRARY_VIEWS";
+    public static final String TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY = "TOTAL_NUMBER_OF_LIBRARY_VISITOR";
     public static final String TOTAL_NUMBER_OF_LIBRARY_REACH_KEY = "TOTAL_NUMBER_OF_LIBRARY_REACH";
     //LIBRARY FIELD KEYS END
 
@@ -147,6 +155,10 @@ public class GlobalConfig {
     public static final String IS_TUTORIAL_COVER_PHOTO_INCLUDED_KEY = "IS_TUTORIAL_COVER_PHOTO_INCLUDED";
     public static final String TUTORIAL_COVER_PHOTO_KEY = "TUTORIAL_COVER_PHOTO";
     public static final String TUTORIAL_IMAGES_KEY = "TUTORIAL_IMAGES";
+    public static final String TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY = "TOTAL_NUMBER_OF_TUTORIAL_VISITOR";
+    public static final String TOTAL_NUMBER_OF_TUTORIAL_REACH_KEY = "TOTAL_NUMBER_OF_TUTORIAL_REACH";
+    public static final String TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY = "TOTAL_NUMBER_OF_FOLDERS_CREATED";
+    public static final String TOTAL_NUMBER_OF_PAGES_CREATED_KEY = "TOTAL_NUMBER_OF_PAGES_CREATED";
     //TUTORIAL FIELD KEYS END
 
 
