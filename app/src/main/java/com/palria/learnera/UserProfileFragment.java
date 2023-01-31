@@ -8,18 +8,23 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -37,9 +42,16 @@ public class UserProfileFragment extends Fragment {
     TextView currentEmailView;
     TextView currentCountryOfResidence;
 
+    //parent swiper layout
+    SwipeRefreshLayout swipeRefreshLayout;
+    ScrollView parentScrollView;
+    BottomAppBar bottomAppBar;
 
-    public UserProfileFragment() {
+
+
+    public UserProfileFragment(BottomAppBar b) {
         // Required empty public constructor
+        bottomAppBar = b;
     }
 
 
@@ -66,31 +78,7 @@ public class UserProfileFragment extends Fragment {
        View parentView = inflater.inflate(R.layout.fragment_user_profile, container, false);
        initUI(parentView);
        toggleProgress(true);
-       getProfile(new ProfileValueLoadListener() {
-           @Override
-           public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
-               toggleProgress(false);
-
-               Glide.with(getContext())
-                       .load(userProfilePhotoDownloadUrl)
-                       .centerCrop()
-                       .into(profileImageView);
-
-               currentEmailView.setText(Html.fromHtml("Contact Email <b>"+contactEmail+"</b> "));
-               currentDisplayNameView.setText(userDisplayName);
-
-               currentCountryOfResidence.setText(Html.fromHtml("From <b>"+userCountryOfResidence+"</b> "));
-
-
-
-           }
-
-           @Override
-           public void onFailed(String errorMessage) {
-               toggleProgress(false);
-
-           }
-       });
+       loadCurrentUserProfile();
        fetchAllLibrary(new LibraryFetchListener() {
            @Override
            public void onFailed(String errorMessage) {
@@ -115,11 +103,64 @@ public class UserProfileFragment extends Fragment {
            }
        });
 
+       swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+           @Override
+           public void onRefresh() {
+               loadCurrentUserProfile();
+               swipeRefreshLayout.setRefreshing(false);
+           }
+       });
+
+       parentScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+           float y = 0;
+           @Override
+           public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+
+             if(scrollY > 30){
+                 bottomAppBar.performHide();
+             }else{
+                 bottomAppBar.performShow();
+             }
+
+           }
+       });
+
        return parentView;
+    }
+
+
+    private void loadCurrentUserProfile(){
+        getProfile(new ProfileValueLoadListener() {
+            @Override
+            public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
+                toggleProgress(false);
+
+                Glide.with(getContext())
+                        .load(userProfilePhotoDownloadUrl)
+                        .centerCrop()
+                        .into(profileImageView);
+
+                currentEmailView.setText(Html.fromHtml("Contact Email <b>"+contactEmail+"</b> "));
+                currentDisplayNameView.setText(userDisplayName);
+
+                currentCountryOfResidence.setText(Html.fromHtml("From <b>"+userCountryOfResidence+"</b> "));
+
+
+
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+                toggleProgress(false);
+
+            }
+        });
     }
 
     private void initUI(View parentView){
         //use the parentView to find the by Id as in : parentView.findViewById(...);
+
+        parentScrollView = parentView.findViewById(R.id.scrollView);
 
 
         //init views
@@ -129,6 +170,7 @@ public class UserProfileFragment extends Fragment {
         currentEmailView = parentView.findViewById(R.id.current_email);
         currentCountryOfResidence = parentView.findViewById(R.id.current_country);
 
+        swipeRefreshLayout = parentView.findViewById(R.id.swiperRefreshLayout);
 
         alertDialog = new AlertDialog.Builder(getContext())
                 .setCancelable(false)

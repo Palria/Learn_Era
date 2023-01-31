@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/inria_sans</item>
+        <item>@font/inria_sans_bold</item>
+        <item>@font/source_sans_pro_black</item>
+    </array>
+</resources>

@@ -1,27 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:icon="@drawable/ic_baseline_home_24"
         android:id="@+id/home_item"
         android:title="Home"
+        app:showAsAction="always"
         />
 
     <item
+        app:showAsAction="always"
         android:id="@+id/library_item"
-        android:title="Camera"
+        android:title="Library"
         android:icon="@drawable/ic_baseline_library_books_24"
         />
 
+
+
+
+
     <item
+        app:showAsAction="always"
         android:id="@+id/stats_item"
         android:title="Stats"
         android:icon="@drawable/ic_baseline_bar_chart_24"
         />
 
     <item
+        app:showAsAction="always"
         android:id="@+id/profile_item"
         android:title="Profile"
         android:icon="@drawable/ic_baseline_person_24"
+        />
+    <item
+
+        android:id="@+id/placeholder"
+        android:title=""
         />
 </menu>
