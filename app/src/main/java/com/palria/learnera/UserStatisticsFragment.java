@@ -196,7 +196,7 @@ initStatistics(new InitStatsListener() {
             titleTextView.setText("No Data Found");
             contentTextView.setText(
                     position==0?"Please add Bookmarks to see here." : (
-                            position == 1 ? "Please Submit your revices and visit again." :
+                            position == 1 ? "Please Submit your reviews and visit again." :
                                     "We cannot find any relating reviews for you at this time."
                             )
             );

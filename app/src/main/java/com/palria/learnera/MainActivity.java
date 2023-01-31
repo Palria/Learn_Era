@@ -84,9 +84,10 @@ GlobalConfig.setFirebaseStorageInstance();
 if(GlobalConfig.isUserLoggedIn()) {
     GlobalConfig.setCurrentUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
     fetchToken();
+    initUserProfileData();
+
 }
 
-initUserProfileData();
     }
 
     @Override
