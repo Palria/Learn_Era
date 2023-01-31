@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +25,7 @@ import com.palria.learnera.models.TutorialDataModel;
 
 public class HomeFragment extends Fragment {
 
-    public HomeFragment() {
+    public HomeFragment(FragmentManager fm) {
         // Required empty public constructor
             }
 String categorySelected = "";

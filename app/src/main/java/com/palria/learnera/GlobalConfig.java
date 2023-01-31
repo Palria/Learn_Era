@@ -222,7 +222,8 @@ public class GlobalConfig {
         GlobalConfig.firebaseFirestoreInstance = FirebaseFirestore.getInstance();
     }
 /**
- * Returns the global instance of the {@link FirebaseFirestore} which will be used to perform actions in {@link FirebaseFirestore} database
+ * Returns the global instance of the {@link FirebaseFirestore} which will be
+ * used to perform actions in {@link FirebaseFirestore} database
  * @return {@link FirebaseFirestore}
  * */
     static FirebaseFirestore getFirebaseFirestoreInstance(){
@@ -270,7 +271,7 @@ public class GlobalConfig {
         void onEmptyInput(boolean isEmailEmpty, boolean isPasswordEmpty);
     }
 
-/**
+    /**
  * Signs a user in to the platform
  * @param email the email of the user
  * @param password the password of the user

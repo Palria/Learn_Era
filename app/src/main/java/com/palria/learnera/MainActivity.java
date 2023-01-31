@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -34,8 +35,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     BottomNavigationView bottomNavigationView;
     BottomAppBar bottomAppBar;
-
-
+    boolean isHomeFragmentOpen = false;
+    boolean isLibraryFragmentOpen = false;
+    boolean isUserStatisticsFragmentOpen = false;
+    boolean isUserProfileFragmentOpen = false;
+    FrameLayout homeFrameLayout;
+    FrameLayout libraryFrameLayout;
+    FrameLayout userStatisticsFrameLayout;
+    FrameLayout userProfileFrameLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,9 +52,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         Toolbar tp = findViewById(R.id.topBar);
         setSupportActionBar(tp);
-
-
-
             initUI();
             initializeApp();
 
@@ -69,7 +73,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.home_item);
 
-
+            homeFrameLayout = findViewById(R.id.homeFragment);
+            libraryFrameLayout = findViewById(R.id.libraryFragment);
+            userStatisticsFrameLayout = findViewById(R.id.statisticsFragment);
+            userProfileFrameLayout = findViewById(R.id.userProfileFragment);
 
 
 
@@ -96,25 +103,65 @@ if(GlobalConfig.isUserLoggedIn()) {
 
         switch (item.getItemId()) {
             case R.id.stats_item:
-                initFragment(new UserStatisticsFragment(getSupportFragmentManager()));
+                if(isUserStatisticsFragmentOpen){
+                    //Just set the frame layout visibility
+                    setFrameLayoutVisibility(userStatisticsFrameLayout);
+
+                }else {
+                    isUserStatisticsFragmentOpen =true;
+                    initFragment(new UserStatisticsFragment(getSupportFragmentManager()), userStatisticsFrameLayout);
+                }
                 return true;
             case R.id.home_item:
+                if(isHomeFragmentOpen){
+                    //Just set the frame layout visibility
+                    setFrameLayoutVisibility(homeFrameLayout);
+
+                }else {
+                    isHomeFragmentOpen =true;
+
+                    initFragment(new HomeFragment(getSupportFragmentManager()), homeFrameLayout);
+                }
+                return true;
             case R.id.library_item:
-                initFragment(new TestFragment());
+                if(isLibraryFragmentOpen){
+                    //Just set the frame layout visibility
+                    setFrameLayoutVisibility(libraryFrameLayout);
+
+                }else {
+                    isLibraryFragmentOpen =true;
+
+                    initFragment(new TestFragment(), libraryFrameLayout);
+                }
                 return true;
             case R.id.profile_item:
-                initFragment(new UserProfileFragment(bottomAppBar));
+                if(isUserProfileFragmentOpen){
+                    //Just set the frame layout visibility
+    setFrameLayoutVisibility(userProfileFrameLayout);
+                }else {
+                    isUserProfileFragmentOpen =true;
+
+                    initFragment(new UserProfileFragment(bottomAppBar), userProfileFrameLayout);
+                }
                 return true;
         }
         return false;
     }
 
-    private void initFragment(Fragment fragment){
+    private void initFragment(Fragment fragment,FrameLayout frameLayout){
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.myFragment, fragment)
+                .replace(fragment.getId(), fragment)
                 .commit();
 
+    }
+
+    private void setFrameLayoutVisibility(FrameLayout frameLayoutToSetVisible){
+        homeFrameLayout.setVisibility(View.GONE);
+        userStatisticsFrameLayout.setVisibility(View.GONE);
+        libraryFrameLayout.setVisibility(View.GONE);
+        userProfileFrameLayout.setVisibility(View.GONE);
+        frameLayoutToSetVisible.setVisibility(View.VISIBLE);
     }
 
 void fetchToken(){
