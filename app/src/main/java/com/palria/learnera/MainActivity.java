@@ -99,6 +99,8 @@ if(GlobalConfig.isUserLoggedIn()) {
                 initFragment(new UserStatisticsFragment(getSupportFragmentManager()));
                 return true;
             case R.id.home_item:
+                initFragment(new HomeFragment());
+                return true;
             case R.id.library_item:
                 initFragment(new TestFragment());
                 return true;

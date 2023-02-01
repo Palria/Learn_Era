@@ -3,12 +3,166 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_marginTop="0pt"
+        android:layout_below="@+id/bg"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:paddingBottom="27pt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:scaleType="centerCrop"
+                android:src="@drawable/auth_bg_top"
+                android:layout_width="match_parent"
+                android:layout_height="95pt"/>
+
+
+<LinearLayout
+    android:layout_marginTop="-75pt"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:textColor="@color/white"
+            android:layout_marginHorizontal="8pt"
+            android:textSize="7pt"
+            android:layout_marginTop="5pt"
+            android:text="Hello, User"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:textColor="@color/white"
+            android:layout_marginHorizontal="8pt"
+            android:textSize="12pt"
+            android:textStyle="bold"
+            android:layout_marginTop="1pt"
+            android:text="Good Morning"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_marginHorizontal="8pt"
+            android:textSize="7pt"
+            android:textStyle="bold"
+            android:layout_marginTop="5pt"
+            android:text="What are you thinking today?"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_weight="1"
+        android:scaleType="fitCenter"
+        android:src="@drawable/undraw_welcome_re_h3d9"
+        android:layout_width="45pt"
+        android:layout_height="45pt"/>
+
+</LinearLayout>
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_marginTop="15pt"
+                android:layout_marginHorizontal="8pt"
+                android:background="@drawable/auth_bg_top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </androidx.cardview.widget.CardView>
+
+
+
+
+
+            <androidx.cardview.widget.CardView
+                app:cardCornerRadius="6pt"
+                android:background="@drawable/rounded_white_bg"
+                android:layout_marginHorizontal="8pt"
+                android:layout_width="match_parent"
+                android:layout_height="65dp">
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_gravity="center_vertical"
+                        android:id="@+id/categoryTabContainer"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+
+              </androidx.cardview.widget.CardView>
+
+           <androidx.recyclerview.widget.RecyclerView
+               android:id="@+id/booksItemContainer"
+               android:layout_marginTop="5pt"
+               tools:listitem="@layout/home_single_library_item_layout"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"/>
+
+
+
+            <LinearLayout
+                android:layout_marginTop="10pt"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textSize="9pt"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="8pt"
+                    android:text="Popular Authors"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    tools:listitem="@layout/single_author_item_layout"
+                    android:layout_marginTop="5pt"
+                    android:id="@+id/popular_authors_listview"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/popularTutorialsContainer"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_marginTop="10pt"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
 
 </FrameLayout>

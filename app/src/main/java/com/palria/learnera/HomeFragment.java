@@ -5,10 +5,13 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,8 +22,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.palria.learnera.adapters.HomeAuthorListViewAdapter;
+import com.palria.learnera.adapters.HomeBooksRecyclerListViewAdapter;
+import com.palria.learnera.adapters.PopularTutorialsListViewAdapter;
+import com.palria.learnera.models.AuthorDataModel;
 import com.palria.learnera.models.LibraryDataModel;
 import com.palria.learnera.models.TutorialDataModel;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class HomeFragment extends Fragment {
 
@@ -31,6 +41,16 @@ String categorySelected = "";
         LinearLayout popularAuthorLinearLayout;
         LinearLayout libraryLinearLayout;
         LinearLayout tutorialLinearLayout;
+
+        LinearLayout categoryTabsContainer;
+
+        RecyclerView popularAuthorRecyclerView;
+        RecyclerView booksItemRecyclerListView;
+        RecyclerView popularTutorialsContainerRcv;
+
+    //test categories
+    final String[] categories = {"Java", "Android Dev", "Python", "Data Learning", "OOPs Concept", "Artificial Intelligence"};
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,11 +97,169 @@ String categorySelected = "";
 
             }
         });
+
+
+        initCategoriesTab(0);
+
        return parentView;
     }
 
 
+    class CategoryTabOnClickListener implements View.OnClickListener {
+
+        int position;
+
+        public CategoryTabOnClickListener(int position){
+            this.position = position;
+        }
+
+        @Override
+        public void onClick(View view) {
+            initCategoriesTab(position);
+            //reload all books and authors here
+//            fetchLibrary();
+//            fetchTutorial();
+//            fetchPopularAuthor();
+        }
+    }
+
+    private void initCategoriesTab(int currentActivePosition) {
+
+
+        //remove all views from the tab container
+        categoryTabsContainer.removeAllViews();
+        int j=0;
+        LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        for(String c : categories){
+
+            View category_tab_item = layoutInflater.inflate(R.layout.home_book_category_tab_item,null);
+            TextView category_name = category_tab_item.findViewById(R.id.categoryName);
+            TextView active_indicator = category_tab_item.findViewById(R.id.activeIndicator);
+            category_name.setText(c);
+            if(currentActivePosition==j){
+                //item is active now
+                active_indicator.setVisibility(View.VISIBLE);
+                category_name.setTextColor(getContext().getResources().getColor(R.color.teal_700));
+            }else{
+                //item is not active
+                active_indicator.setVisibility(View.INVISIBLE);
+            }
+                category_tab_item.setOnClickListener(new CategoryTabOnClickListener(j));
+            categoryTabsContainer.addView(category_tab_item);
+
+            j++;
+        }
+
+    }
+
+
     private void initUI(View parentView){
+        categoryTabsContainer = parentView.findViewById(R.id.categoryTabContainer);
+        booksItemRecyclerListView = parentView.findViewById(R.id.booksItemContainer);
+        popularAuthorRecyclerView = parentView.findViewById(R.id.popular_authors_listview);
+        popularTutorialsContainerRcv = parentView.findViewById(R.id.popularTutorialsContainer);
+
+        //init and show some dummny authors.
+        ArrayList<AuthorDataModel> modelArrayList = new ArrayList<AuthorDataModel>();
+        modelArrayList.add(new AuthorDataModel("Palria","lasdjf",0,0,0,0,0,0));
+        modelArrayList.add(new AuthorDataModel("Ramesh Yadav","lsd",0,0,0,0,0,0));
+        modelArrayList.add(new AuthorDataModel("Simran Sah","lsd",0,0,0,0,0,0));
+        modelArrayList.add(new AuthorDataModel("Kalidevi Man","lsd",0,0,0,0,0,0));
+        modelArrayList.add(new AuthorDataModel("Some longest name that trails","lsd",0,0,0,0,0,0));
+
+
+        HomeAuthorListViewAdapter adapter = new HomeAuthorListViewAdapter(modelArrayList,getContext());
+        popularAuthorRecyclerView.setHasFixedSize(true);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
+        popularAuthorRecyclerView.setLayoutManager(layoutManager);
+        popularAuthorRecyclerView.setAdapter(adapter);
+
+        //init and show some dummy libraries
+        ArrayList<LibraryDataModel> libraryArrayList = new ArrayList<>();
+        libraryArrayList.add(new LibraryDataModel("Chown Town","lasdjf","","","",0l,0l,0l,"",0l,0l,0l,0l,0l));
+        libraryArrayList.add(new LibraryDataModel("Palria The Learning way","lasdjf","","","",0l,0l,0l,"",0l,0l,0l,0l,0l));
+        libraryArrayList.add(new LibraryDataModel("Paraka Tendi","lasdjf","","","",0l,0l,0l,"",0l,0l,0l,0l,0l));
+
+        HomeBooksRecyclerListViewAdapter homeBooksRecyclerListViewAdapter = new HomeBooksRecyclerListViewAdapter(libraryArrayList,getContext());
+        booksItemRecyclerListView.setHasFixedSize(true);
+        booksItemRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
+        booksItemRecyclerListView.setAdapter(homeBooksRecyclerListViewAdapter);
+
+/**
+ *  String tutorialName,
+ *             String tutorialId,
+ *             String dateCreated,
+ *             long totalNumberOfPages,
+ *             long totalNumberOfFolders,
+ *             long totalNumberOfTutorialViews,
+ *             long totalNumberOfTutorialReach,
+ *             String authorId,
+ *             String libraryId,
+ *             String tutorialCoverPhotoDownloadUrl,
+ *             long totalNumberOfOneStarRate,
+ *             long totalNumberOfTwoStarRate,
+ *             long totalNumberOfThreeStarRate,
+ *             long totalNumberOfFourStarRate,
+ *             long totalNumberOfFiveStarRate
+ */
+
+        //init and show some dummy tutorials
+        ArrayList<TutorialDataModel> tutorialDataModels = new ArrayList<>();
+        tutorialDataModels.add(
+                new TutorialDataModel("How to connect to mysql database for free. in 2012 for Users to get it.",
+                        "__id__02151",
+                        "1 days ago",
+                        2l,
+                        1l,
+                        0l,
+                        0l,
+                        "Kamaensi",
+                        "",
+                        "__",
+                        0l,
+                        0l,
+                        0l,
+                        0l,
+                        0l));
+
+        tutorialDataModels.add(
+                new TutorialDataModel("The protest was organised against the Kathmandu Metropolitan City mayor’s recent move to demolish a part of private property in Sankhamul",
+                        "Jeevan",
+                        "32 mins ago",
+                        2l,
+                        1l,
+                        0l,
+                        0l,
+                        "Jeevan",
+                        "",
+                        "__",
+                        0l,
+                        0l,
+                        0l,
+                        0l,
+                        0l));
+
+        tutorialDataModels.add(
+                new TutorialDataModel("According to him, the metropolis demolished the house compound without any letter or notice.",
+                        "Palria",
+                        "32 mins ago",
+                        2l,
+                        1l,
+                        0l,
+                        0l,
+                        "Palria",
+                        "",
+                        "__",
+                        0l,
+                        0l,
+                        0l,
+                        0l,
+                        0l));
+
+        PopularTutorialsListViewAdapter popularTutorialsListViewAdapter = new PopularTutorialsListViewAdapter(tutorialDataModels,getContext());
+        popularTutorialsContainerRcv.setHasFixedSize(true);
+        popularTutorialsContainerRcv.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+        popularTutorialsContainerRcv.setAdapter(popularTutorialsListViewAdapter);
 
     }
 
