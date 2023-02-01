@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     FrameLayout libraryFrameLayout;
     FrameLayout userStatisticsFrameLayout;
     FrameLayout userProfileFrameLayout;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         Toolbar tp = findViewById(R.id.topBar);
         setSupportActionBar(tp);
+
+
+
             initUI();
             initializeApp();
 
@@ -73,10 +78,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.home_item);
 
-            homeFrameLayout = findViewById(R.id.homeFragment);
-            libraryFrameLayout = findViewById(R.id.libraryFragment);
-            userStatisticsFrameLayout = findViewById(R.id.statisticsFragment);
-            userProfileFrameLayout = findViewById(R.id.userProfileFragment);
+
+        homeFrameLayout = findViewById(R.id.homeFragment);
+        libraryFrameLayout = findViewById(R.id.libraryFragment);
+        userStatisticsFrameLayout = findViewById(R.id.statisticsFragment);
+        userProfileFrameLayout = findViewById(R.id.userProfileFragment);
+
 
 
 
@@ -99,7 +106,6 @@ if(GlobalConfig.isUserLoggedIn()) {
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
 
         switch (item.getItemId()) {
             case R.id.stats_item:
@@ -137,7 +143,7 @@ if(GlobalConfig.isUserLoggedIn()) {
             case R.id.profile_item:
                 if(isUserProfileFragmentOpen){
                     //Just set the frame layout visibility
-    setFrameLayoutVisibility(userProfileFrameLayout);
+                    setFrameLayoutVisibility(userProfileFrameLayout);
                 }else {
                     isUserProfileFragmentOpen =true;
 
@@ -163,7 +169,6 @@ if(GlobalConfig.isUserLoggedIn()) {
         userProfileFrameLayout.setVisibility(View.GONE);
         frameLayoutToSetVisible.setVisibility(View.VISIBLE);
     }
-
 void fetchToken(){
     FirebaseAuth.getInstance().getCurrentUser().getIdToken(false).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
         @Override

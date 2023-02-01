@@ -48,7 +48,7 @@ public class AuthorDataModel {
 
     /**This parameterized Constructor helps us in initializing all the global variables
      * */
-    AuthorDataModel(String authorName,String authorId, int totalNumberOfLibraries, int totalNumberOfOneStarRate, int totalNumberOfTwoStarRate, int totalNumberOfThreeStarRate, int totalNumberOfFourStarRate, int totalNumberOfFiveStarRate){
+    public AuthorDataModel(String authorName,String authorId, int totalNumberOfLibraries, int totalNumberOfOneStarRate, int totalNumberOfTwoStarRate, int totalNumberOfThreeStarRate, int totalNumberOfFourStarRate, int totalNumberOfFiveStarRate){
                     this.authorName = authorName;
                     this.authorId = authorId;
                     this.totalNumberOfLibraries = totalNumberOfLibraries;
