@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/parentItem"
+    android:orientation="horizontal"
+    android:paddingHorizontal="6pt"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:paddingHorizontal="8pt"
+        android:paddingVertical="10pt"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/avgRating"
+            android:textAlignment="center"
+            android:text="4.7"
+            android:textStyle="bold"
+            android:textSize="20pt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <RatingBar
+            style="?android:attr/ratingBarStyleSmall"
+            android:clickable="false"
+            android:focusable="false"
+            android:progressTint="@color/teal_700"
+            android:progress="3"
+            android:numStars="5"
+            android:max="5"
+            android:elevation="0pt"
+            android:stepSize="1"
+            android:layout_marginVertical="3pt"
+            android:id="@+id/ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/totalRatings"
+            android:textStyle="bold"
+            android:text="12501"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_marginBottom="1pt"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="5"
+                android:layout_marginRight="4pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:indeterminate="false"
+                app:trackThickness="10dp"
+                android:id="@+id/progressFive"
+                app:trackCornerRadius="4dp"
+                android:max="100"
+                android:progress="50"
+                android:progressTint="@color/teal_700"
+                android:layout_width="match_parent"
+                android:minHeight="5pt"
+                android:layout_height="9pt"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginBottom="1pt"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="4"
+                android:layout_marginRight="4pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:indeterminate="false"
+                app:trackThickness="10dp"
+                android:id="@+id/progressFour"
+                app:trackCornerRadius="4dp"
+                android:max="100"
+                android:progress="80"
+                android:progressTint="@color/teal_700"
+                android:layout_width="match_parent"
+                android:minHeight="5pt"
+                android:layout_height="9pt"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginBottom="1pt"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="3"
+                android:layout_marginRight="4pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:indeterminate="false"
+                app:trackThickness="10dp"
+                android:id="@+id/progressThree"
+                app:trackCornerRadius="4dp"
+                android:max="100"
+                android:progress="20"
+                android:progressTint="@color/teal_700"
+                android:layout_width="match_parent"
+                android:minHeight="5pt"
+                android:layout_height="9pt"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginBottom="1pt"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="2"
+                android:layout_marginRight="4pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:indeterminate="false"
+                app:trackThickness="10dp"
+                android:id="@+id/progressTwo"
+                app:trackCornerRadius="4dp"
+                android:max="100"
+                android:progress="40"
+                android:progressTint="@color/teal_700"
+                android:layout_width="match_parent"
+                android:minHeight="5pt"
+                android:layout_height="9pt"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="1"
+                android:layout_marginRight="4pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:indeterminate="false"
+                app:trackThickness="10dp"
+                android:id="@+id/progressOne"
+                app:trackCornerRadius="4dp"
+                android:max="100"
+                android:progress="80"
+                android:progressTint="@color/teal_700"
+                android:layout_width="match_parent"
+                android:minHeight="5pt"
+                android:layout_height="9pt"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

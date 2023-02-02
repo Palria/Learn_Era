@@ -44,11 +44,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     FrameLayout userProfileFrameLayout;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
 
         Toolbar tp = findViewById(R.id.topBar);

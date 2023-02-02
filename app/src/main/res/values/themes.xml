@@ -13,6 +13,8 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
         <item name="android:fontFamily">@font/inria_sans</item>
+
+       <item name="android:windowDisablePreview">true</item>
     </style>
 
     <style name="Theme.LearnEra.Fullscreen" parent="Theme.LearnEra">

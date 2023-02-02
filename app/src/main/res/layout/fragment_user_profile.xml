@@ -9,19 +9,11 @@
     tools:context=".UserProfileFragment">
 
     <!--Added this scrollView to enable swipeRefreshLayout function efficiently-->
-    <ScrollView
-        android:layout_marginTop="0pt"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+
         >
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
-        android:layout_marginTop="0pt"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
@@ -37,7 +29,7 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/cover1"
                 android:layout_width="match_parent"
-                android:layout_height="45pt"/>
+                android:layout_height="70pt"/>
 
             <RelativeLayout
                 android:paddingHorizontal="10pt"
@@ -367,7 +359,7 @@ android:layout_marginTop="5pt"
                 android:layout_height="150pt"/>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
         <TextView
             android:id="@+id/failureIndicatorTextViewId"
@@ -381,6 +373,5 @@ android:layout_marginTop="5pt"
             android:visibility="gone"
             />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

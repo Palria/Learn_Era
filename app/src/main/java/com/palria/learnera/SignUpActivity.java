@@ -28,9 +28,16 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
+import com.palria.learnera.network.CountryApiEndpoints;
+import com.palria.learnera.network.CountryNetworkApi;
+import com.palria.learnera.network.CountryResponseDataModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -68,6 +75,8 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
         initUI();
 
+
+        loadCurrentVisitorCountry();
 
         signUpActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -218,6 +227,44 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
+    private void loadCurrentVisitorCountry() {
+
+        /*Create handle for the RetrofitInstance interface*/
+        CountryApiEndpoints service = CountryNetworkApi.getRetrofitInstance().create(CountryApiEndpoints.class);
+        Call<CountryResponseDataModel> call = service.getCurrentCountry();
+
+
+        
+        call.enqueue(new Callback<CountryResponseDataModel>() {
+            @Override
+            public void onResponse(@NonNull Call<CountryResponseDataModel> call, Response<CountryResponseDataModel> response) {
+                Toast.makeText(SignUpActivity.this, "hey ther", Toast.LENGTH_SHORT).show();
+                Log.e("countryResponse", response.toString());
+
+
+                //choose current country from spinner.
+
+                //country auto select
+                ArrayList<String> countries = GlobalConfig.getCountryArrayList(null);
+                for(String country : countries){
+
+                    if(country.toLowerCase().equals(response.body().getCountry().toLowerCase())){
+                        countrySpinner.setSelection(countries.indexOf(country));
+                        break;
+                    }
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<CountryResponseDataModel> call, Throwable t) {
+                Log.e("err","err:"+t.getMessage(),t);
+                Toast.makeText(SignUpActivity.this, "Failed.", Toast.LENGTH_SHORT).show();
+              }
+        });
+
+    }
 
 
     /**

@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/topBar"
-        app:titleTextColor="@color/white"
-        android:background="@color/teal_700"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
-        <include
-            layout="@layout/top_bar_custom_layout"/>
-    </androidx.appcompat.widget.Toolbar>
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/topBar"
+            app:titleTextColor="@color/white"
+            android:background="@color/teal_700"
+            android:layout_width="match_parent"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            android:layout_height="?attr/actionBarSize">
+            <include
+                layout="@layout/top_bar_custom_layout"/>
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_area"
@@ -29,33 +41,33 @@
         android:padding="0dp">
 
         <!-- Fragments Container -->
+        <!-- Fragments Container -->
         <FrameLayout
             android:id="@+id/homeFragment"
             android:layout_width="match_parent"
-            android:layout_marginTop="?attr/actionBarSize"
             android:layout_height="match_parent"
             android:visibility="visible"
             />
         <FrameLayout
             android:id="@+id/libraryFragment"
             android:layout_width="match_parent"
-            android:layout_marginTop="?attr/actionBarSize"
             android:layout_height="match_parent"
             android:visibility="invisible"/>
         <FrameLayout
             android:id="@+id/statisticsFragment"
             android:layout_width="match_parent"
-            android:layout_marginTop="?attr/actionBarSize"
             android:layout_height="match_parent"
             android:visibility="invisible"/>
         <FrameLayout
             android:id="@+id/userProfileFragment"
             android:layout_width="match_parent"
-            android:layout_marginTop="?attr/actionBarSize"
             android:layout_height="match_parent"
             android:visibility="invisible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
@@ -89,5 +101,6 @@
         android:contentDescription="@string/app_name"
         android:src="@drawable/ic_baseline_add_24"
         app:layout_anchor="@id/bottomAppBar" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

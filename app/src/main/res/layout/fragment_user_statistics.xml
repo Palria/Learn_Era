@@ -12,12 +12,12 @@
     >
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
-        android:layout_marginTop="0pt"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"
+
         >
 
         <LinearLayout
@@ -30,7 +30,7 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/auth_bg_top"
                 android:layout_width="match_parent"
-                android:layout_height="35pt"/>
+                android:layout_height="60pt"/>
 
 
             <TextView
@@ -157,6 +157,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
+
+
+            <LinearLayout
+
+                android:orientation="vertical"
+                android:id="@+id/ratingBarContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
                <androidx.cardview.widget.CardView
                    android:layout_marginTop="10pt"
                    android:layout_marginHorizontal="8pt"
@@ -220,27 +229,27 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-<TextView
-    android:id="@+id/failureIndicatorTextViewId"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:text="Failed to get your activity statistics"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:visibility="gone"
-    />
-    <ProgressBar
-        android:id="@+id/progressBarId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:theme="@style/Theme.LearnEra"
-        />
+<!--<TextView-->
+<!--    android:id="@+id/failureIndicatorTextViewId"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:text="Failed to get your activity statistics"-->
+<!--    app:layout_constraintStart_toStartOf="parent"-->
+<!--    app:layout_constraintTop_toTopOf="parent"-->
+<!--    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--    app:layout_constraintEnd_toEndOf="parent"-->
+<!--    android:visibility="gone"-->
+<!--    />-->
+<!--    <ProgressBar-->
+<!--        android:id="@+id/progressBarId"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        android:theme="@style/Theme.LearnEra"-->
+<!--        />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

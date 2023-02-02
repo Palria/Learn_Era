@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -21,10 +20,8 @@ import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroupOverlay;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -32,6 +29,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.palria.learnera.models.StatisticsDataModel;
+import com.palria.learnera.widgets.RatingBarWidget;
 
 import java.util.ArrayList;
 
@@ -42,14 +40,10 @@ public class UserStatisticsFragment extends Fragment {
     ViewPager viewPager;
 
     FragmentManager fragmentManager;
-    NestedScrollView scrollView;
-    TextView   failureIndicatorTextView;
-    ProgressBar progressBar;
-    public UserStatisticsFragment() {
-        // Required empty public constructor
-    }
+    LinearLayout ratingContainer;
 
     public UserStatisticsFragment(FragmentManager fm) {
+        // Required empty public constructor
         fragmentManager = fm;
     }
 
@@ -83,22 +77,19 @@ public class UserStatisticsFragment extends Fragment {
         View parentView = inflater.inflate(R.layout.fragment_user_statistics, container, false);
         initUI(parentView);
 
-//        toggleProgress(true);
+        toggleProgress(true);
 initStatistics(new InitStatsListener() {
     @Override
     public void onSuccess(StatisticsDataModel statisticsDataModel) {
         //access the public methods of StatisticsDataModel class
-//        toggleProgress(false);
-scrollView.setVisibility(View.VISIBLE);
-progressBar.setVisibility(View.GONE);
+        toggleProgress(false);
+
     }
 
     @Override
     public void onFailed(String errorMessage) {
         //it failed to load the statistics
-//        toggleProgress(false);
-        progressBar.setVisibility(View.GONE);
-        failureIndicatorTextView.setVisibility(View.VISIBLE);
+        toggleProgress(false);
 
 
     }
@@ -112,9 +103,8 @@ progressBar.setVisibility(View.GONE);
         // assign variable
         tabLayout=parentView.findViewById(R.id.tab_layout);
         viewPager=parentView.findViewById(R.id.layout_view_pager);
-        scrollView = parentView.findViewById(R.id.scrollView);
-        failureIndicatorTextView = parentView.findViewById(R.id.failureIndicatorTextViewId);
-        progressBar = parentView.findViewById(R.id.progressBarId);
+
+        ratingContainer = parentView.findViewById(R.id.ratingBarContainer);
         // Initialize array list
         ArrayList<String> arrayList=new ArrayList<>(0);
 
@@ -133,6 +123,17 @@ progressBar.setVisibility(View.GONE);
                 .setCancelable(false)
                 .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
                 .create();
+
+        //load rating bar
+        int[] ratings = {0,12,55,1,250};
+
+        RatingBarWidget ratingBarWidget = new RatingBarWidget();
+        ratingBarWidget.setContainer(ratingContainer)
+                .setContext(getContext())
+                .setMax_value(5)
+                .setRatings(ratings)
+                .setText_color(R.color.teal_700)
+                .render();
     }
 
 
@@ -206,6 +207,7 @@ progressBar.setVisibility(View.GONE);
             TextView titleTextView = item_view.findViewById(R.id.title);
             TextView contentTextView = item_view.findViewById(R.id.body);
 
+
             titleTextView.setText("No Data Found");
             contentTextView.setText(
                     position==0?"Please add Bookmarks to see here." : (
@@ -256,7 +258,7 @@ progressBar.setVisibility(View.GONE);
         if(show){
             alertDialog.show();
         }else{
-            alertDialog.cancel();
+            alertDialog.hide();
         }
     }
 

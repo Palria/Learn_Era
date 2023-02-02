@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -45,7 +46,7 @@ public class UserProfileFragment extends Fragment {
 
     //parent swiper layout
     SwipeRefreshLayout swipeRefreshLayout;
-    ScrollView parentScrollView;
+    NestedScrollView parentScrollView;
     BottomAppBar bottomAppBar;
 
     TextView   failureIndicatorTextView;
