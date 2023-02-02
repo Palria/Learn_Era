@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
 //authorId_libraryid_tutorialId
@@ -785,12 +786,173 @@ public class GlobalConfig {
     public static ArrayList<WelcomeScreenItemModal> getWelcomeScreenItemsList(){
         ArrayList<WelcomeScreenItemModal> list = new ArrayList<>();
         list.add(new WelcomeScreenItemModal(R.drawable.undraw_save_to_bookmarks, "Unlimited Personal Library","You can create infinite numbers of libraries for personal use"));
-        list.add(new WelcomeScreenItemModal(R.drawable.undraw_personal_notebook,"Bookmark your interestss","You can easily customize your favourite books and libraries."));
+        list.add(new WelcomeScreenItemModal(R.drawable.undraw_personal_notebook,"Bookmark your interests","You can easily customize your favourite books and libraries."));
         list.add(new WelcomeScreenItemModal(R.drawable.undraw_online_reading_np7n,"Experience of High level reading","Experience the reading high level of books from authors worldwide for free"));
 
         return list;
     }
 
+    /**This method returns the average number of the item's star rating
+     *
+     * */
+    static float getStar(long fiveStar,long fourStar, long threeStar, long twoStar, long oneStar) {
+
+        if(fiveStar==fourStar && fiveStar==threeStar && fiveStar==twoStar && fiveStar==oneStar){
+            if(fiveStar==0){
+                return 0.0F;
+            }else {
+                return 3.0F;
+            }
+        }
+
+        if(fiveStar==fourStar && fiveStar==threeStar && fiveStar==twoStar && fiveStar>oneStar){
+            return 3.0F;
+        }
+
+        if(fiveStar==fourStar && fiveStar==threeStar && fiveStar>twoStar && fiveStar>oneStar){
+            return 3.5F;
+        }
+
+        if(fiveStar==fourStar && fiveStar>threeStar && fiveStar==twoStar && fiveStar>oneStar){
+            return 3.0F;
+        }
+        if(fiveStar>fourStar && fiveStar==threeStar && fiveStar>twoStar && fiveStar==oneStar){
+            return 2.5F;
+        }
+        if(threeStar>fiveStar && threeStar>fourStar && threeStar==twoStar && threeStar==oneStar){
+            return 2.0F;
+        }
+
+        if(fiveStar==fourStar && fiveStar==threeStar && fiveStar>twoStar && fiveStar==oneStar){
+            return 3.0F;
+        }
+
+        if(fiveStar==fourStar && fiveStar>threeStar && fiveStar==twoStar && fiveStar==oneStar){
+            return 2.0F;
+        }
+
+        if(fiveStar>fourStar && fiveStar==threeStar && fiveStar==twoStar && fiveStar==oneStar){
+            return 1.5F;
+        }
+        if(fourStar>fiveStar && fourStar==threeStar && fourStar==twoStar && fourStar==oneStar){
+                    return 2F;
+                }
+        if(fourStar>fiveStar && fourStar==threeStar && fourStar>twoStar && fourStar==oneStar){
+                    return 2.5F;
+                }
+
+        if(fiveStar>fourStar && fiveStar>threeStar && fiveStar>twoStar && fiveStar>oneStar){
+            return 5.0F;
+        }
+        if(fiveStar==fourStar && fiveStar>threeStar && fiveStar>twoStar && fiveStar>oneStar){
+            return 4.5F;
+        }
+        if(fiveStar>fourStar && fiveStar==threeStar && fiveStar>twoStar && fiveStar>oneStar){
+            return 4.0F;
+        }
+        if(fiveStar>fourStar && fiveStar>threeStar && fiveStar==twoStar && fiveStar>oneStar){
+            return 3.0F;
+        }
+        if(fiveStar>fourStar && fiveStar>threeStar && fiveStar>twoStar && fiveStar==oneStar){
+            return 2.5F;
+        }
+        if(fourStar>fiveStar && fourStar>threeStar && fourStar>twoStar && fourStar>oneStar){
+            return 4.0F;
+        }
+        if(fourStar>fiveStar && fourStar==threeStar && fourStar>twoStar && fourStar>oneStar){
+            return 3.5F;
+        }
+        if(fourStar>fiveStar && fourStar>threeStar && fourStar==twoStar && fourStar>oneStar){
+            return 2.5F;
+        }
+        if(fourStar>fiveStar && fourStar>threeStar && fourStar>twoStar && fourStar==oneStar){
+            return 1.5F;
+        }
+        if(threeStar>fiveStar && threeStar>fourStar && threeStar>twoStar && threeStar>oneStar){
+            return 3.0F;
+        }
+        if(threeStar>fiveStar && threeStar>fourStar && threeStar==twoStar && threeStar>oneStar){
+            return 2.5F;
+        }
+        if(threeStar>fiveStar && threeStar>fourStar && threeStar>twoStar && threeStar==oneStar){
+            return 2.0F;
+        }
+        if(twoStar>fiveStar && twoStar>fourStar && twoStar>threeStar && twoStar>oneStar){
+            return 2.0F;
+        }
+        if(twoStar>fiveStar && twoStar>fourStar && twoStar>threeStar && twoStar==oneStar){
+            return 1.5F;
+        }
+        if(oneStar>fiveStar && oneStar>fourStar && oneStar>threeStar && oneStar>twoStar){
+            return 1.0F;
+        }
+
+
+
+        return 0.0F;
+    }
+
+
+    /*
+        static HashMap<String,Double> getStarMap(int fiveStar,int fourStar, int threeStar, int twoStar, int oneStar){
+        HashMap<String,Double> starHashMap = new HashMap<>();
+        double fiveStar_2 = fiveStar * 4;
+        double fourStar_2 = fourStar * 4;
+        double threeStar_2 = threeStar * 4;
+        double twoStar_2 = twoStar * 4;
+        double oneStar_2 = oneStar * 4;
+
+        if(fiveStar!= 0) {
+            for (int i = 0; i < fiveStar; i++) {
+                fourStar_2 = fourStar_2 - 0.5;
+                threeStar_2 = threeStar_2 - 2;
+                twoStar_2 = twoStar_2 - 3;
+                oneStar_2 = oneStar_2 - 4;
+            }
+        }
+        if(fourStar!= 0){
+            for(int i=0; i<fourStar; i++){
+                fiveStar_2 = fiveStar_2-0.5;
+                threeStar_2 = threeStar_2-0.5;
+                twoStar_2 = twoStar_2-1.5;
+                oneStar_2 = oneStar_2-3;
+            }
+        }
+       if(threeStar!= 0){
+            for(int i=0; i<threeStar; i++){
+                fiveStar_2 = fiveStar_2-2.5;
+                fourStar_2 = fourStar_2-0.5;
+                twoStar_2 = twoStar_2-0.5;
+                oneStar_2 = oneStar_2-2;
+            }
+        }
+        if(twoStar!= 0){
+            for(int i=0; i<twoStar; i++){
+                fiveStar_2 = fiveStar_2-3;
+                fourStar_2 = fourStar_2-1.5;
+                threeStar_2 = threeStar_2-0.5;
+                oneStar_2 = oneStar_2-1;
+            }
+        }
+
+        if(oneStar!= 0) {
+            for (int i = 0; i < oneStar; i++) {
+                fiveStar_2 = fiveStar_2 - 4;
+                fourStar_2 = fourStar_2 - 2.5;
+                threeStar_2 = threeStar_2 - 1.5;
+                twoStar_2 = twoStar_2 - 0.5;
+            }
+        }
+
+
+        starHashMap.put("FIVE",fiveStar_2);
+        starHashMap.put("FOUR",fourStar_2);
+        starHashMap.put("THREE",threeStar_2);
+        starHashMap.put("TWO",twoStar_2);
+        starHashMap.put("ONE",oneStar_2);
+        return starHashMap;
+    }
+*/
      //
     //INTERFACES
     //

@@ -29,5 +29,9 @@
     <style name="ToolbarColoredBackArrow" parent="Theme.LearnEra">
         <item name="android:textColorSecondary">@color/white</item>
     </style>
-
+    
+    <style name="LowerCase" parent="Theme.LearnEra">
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

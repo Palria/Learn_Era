@@ -5,13 +5,20 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".UserStatisticsFragment">
-
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_marginTop="0pt"
-        android:layout_below="@+id/bg"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        >
 
         <LinearLayout
             android:orientation="vertical"
@@ -212,6 +219,30 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+<TextView
+    android:id="@+id/failureIndicatorTextViewId"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:text="Failed to get your activity statistics"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:visibility="gone"
+    />
+    <ProgressBar
+        android:id="@+id/progressBarId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:theme="@style/Theme.LearnEra"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 
 

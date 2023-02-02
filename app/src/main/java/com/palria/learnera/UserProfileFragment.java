@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -47,10 +48,14 @@ public class UserProfileFragment extends Fragment {
     ScrollView parentScrollView;
     BottomAppBar bottomAppBar;
 
+    TextView   failureIndicatorTextView;
 
 
-    public UserProfileFragment(BottomAppBar b) {
+
+    public UserProfileFragment() {
         // Required empty public constructor
+    }
+    public UserProfileFragment(BottomAppBar b) {
         bottomAppBar = b;
     }
 
@@ -77,19 +82,25 @@ public class UserProfileFragment extends Fragment {
         // Inflate the layout for this fragment
        View parentView = inflater.inflate(R.layout.fragment_user_profile, container, false);
        initUI(parentView);
-       toggleProgress(true);
-       loadCurrentUserProfile();
+//       toggleProgress(true);
+        swipeRefreshLayout.setRefreshing(true);
+
+        loadCurrentUserProfile();
        fetchAllLibrary(new LibraryFetchListener() {
            @Override
            public void onFailed(String errorMessage) {
-               toggleProgress(false);
+//               toggleProgress(false);
 
            }
 
            @Override
            public void onSuccess(LibraryDataModel libraryDataModel) {
-               toggleProgress(false);
+//               toggleProgress(false);
                displayLibrary(libraryDataModel);
+
+               parentScrollView.setVisibility(View.VISIBLE);
+               swipeRefreshLayout.setRefreshing(false);
+
            }
        });
 
@@ -107,7 +118,7 @@ public class UserProfileFragment extends Fragment {
            @Override
            public void onRefresh() {
                loadCurrentUserProfile();
-               swipeRefreshLayout.setRefreshing(false);
+               swipeRefreshLayout.setRefreshing(true);
            }
        });
 
@@ -146,12 +157,17 @@ public class UserProfileFragment extends Fragment {
                 currentCountryOfResidence.setText(Html.fromHtml("From <b>"+userCountryOfResidence+"</b> "));
 
 
+                parentScrollView.setVisibility(View.VISIBLE);
+                swipeRefreshLayout.setRefreshing(false);
 
             }
 
             @Override
             public void onFailed(String errorMessage) {
-                toggleProgress(false);
+//                toggleProgress(false);
+
+                failureIndicatorTextView.setVisibility(View.VISIBLE);
+                swipeRefreshLayout.setRefreshing(false);
 
             }
         });
@@ -162,7 +178,7 @@ public class UserProfileFragment extends Fragment {
 
         parentScrollView = parentView.findViewById(R.id.scrollView);
 
-
+        failureIndicatorTextView = parentView.findViewById(R.id.failureIndicatorTextViewId);
         //init views
         editProfileButton = parentView.findViewById(R.id.editProfileIcon);
         profileImageView = parentView.findViewById(R.id.imageView1);

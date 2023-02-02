@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -20,8 +21,10 @@ import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroupOverlay;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -39,9 +42,14 @@ public class UserStatisticsFragment extends Fragment {
     ViewPager viewPager;
 
     FragmentManager fragmentManager;
+    NestedScrollView scrollView;
+    TextView   failureIndicatorTextView;
+    ProgressBar progressBar;
+    public UserStatisticsFragment() {
+        // Required empty public constructor
+    }
 
     public UserStatisticsFragment(FragmentManager fm) {
-        // Required empty public constructor
         fragmentManager = fm;
     }
 
@@ -75,19 +83,22 @@ public class UserStatisticsFragment extends Fragment {
         View parentView = inflater.inflate(R.layout.fragment_user_statistics, container, false);
         initUI(parentView);
 
-        toggleProgress(true);
+//        toggleProgress(true);
 initStatistics(new InitStatsListener() {
     @Override
     public void onSuccess(StatisticsDataModel statisticsDataModel) {
         //access the public methods of StatisticsDataModel class
-        toggleProgress(false);
-
+//        toggleProgress(false);
+scrollView.setVisibility(View.VISIBLE);
+progressBar.setVisibility(View.GONE);
     }
 
     @Override
     public void onFailed(String errorMessage) {
         //it failed to load the statistics
-        toggleProgress(false);
+//        toggleProgress(false);
+        progressBar.setVisibility(View.GONE);
+        failureIndicatorTextView.setVisibility(View.VISIBLE);
 
 
     }
@@ -101,7 +112,9 @@ initStatistics(new InitStatsListener() {
         // assign variable
         tabLayout=parentView.findViewById(R.id.tab_layout);
         viewPager=parentView.findViewById(R.id.layout_view_pager);
-
+        scrollView = parentView.findViewById(R.id.scrollView);
+        failureIndicatorTextView = parentView.findViewById(R.id.failureIndicatorTextViewId);
+        progressBar = parentView.findViewById(R.id.progressBarId);
         // Initialize array list
         ArrayList<String> arrayList=new ArrayList<>(0);
 
@@ -243,7 +256,7 @@ initStatistics(new InitStatsListener() {
         if(show){
             alertDialog.show();
         }else{
-            alertDialog.hide();
+            alertDialog.cancel();
         }
     }
 

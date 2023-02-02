@@ -98,23 +98,43 @@
                 android:layout_width="match_parent"
                 android:layout_height="65dp">
 
-                <HorizontalScrollView
+<!--                <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <LinearLayout
                         android:layout_gravity="center_vertical"
-                        android:id="@+id/categoryTabContainer"
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
+                        <LinearLayout
+                            android:layout_gravity="center_vertical"
+                            android:id="@+id/categoryTabContainer"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone">
+
+                        </LinearLayout>
+                        -->
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/categoryTabLayoutId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:tabMode="scrollable"
+                        app:tabIndicator="@drawable/ic_baseline_minimize_24"
+                        app:tabIndicatorFullWidth="false"
+                        >
 
 
+                    </com.google.android.material.tabs.TabLayout>
+<!--
                     </LinearLayout>
 
-                </HorizontalScrollView>
 
+                </HorizontalScrollView>
+-->
               </androidx.cardview.widget.CardView>
 
            <androidx.recyclerview.widget.RecyclerView

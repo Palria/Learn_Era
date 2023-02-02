@@ -30,7 +30,6 @@ import com.palria.learnera.models.StatisticsDataModel;
 
 import java.util.Objects;
 
-
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     BottomNavigationView bottomNavigationView;
@@ -73,10 +72,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         bottomAppBar = findViewById(R.id.bottomAppBar);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setBackground(null);
-//        bottomNavigationView.getIt
-        bottomNavigationView.setOnNavigationItemSelectedListener(this);
-        bottomNavigationView.setSelectedItemId(R.id.home_item);
 
 
         homeFrameLayout = findViewById(R.id.homeFragment);
@@ -85,6 +80,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         userProfileFrameLayout = findViewById(R.id.userProfileFragment);
 
 
+        bottomNavigationView.setBackground(null);
+//        bottomNavigationView.getIt
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
+        bottomNavigationView.setSelectedItemId(R.id.home_item);
 
 
     }
@@ -115,6 +114,7 @@ if(GlobalConfig.isUserLoggedIn()) {
 
                 }else {
                     isUserStatisticsFragmentOpen =true;
+                    setFrameLayoutVisibility(userStatisticsFrameLayout);
                     initFragment(new UserStatisticsFragment(getSupportFragmentManager()), userStatisticsFrameLayout);
                 }
                 return true;
@@ -126,7 +126,8 @@ if(GlobalConfig.isUserLoggedIn()) {
                 }else {
                     isHomeFragmentOpen =true;
 
-                    initFragment(new HomeFragment(getSupportFragmentManager()), homeFrameLayout);
+                    setFrameLayoutVisibility(homeFrameLayout);
+                    initFragment(new HomeFragment(), homeFrameLayout);
                 }
                 return true;
             case R.id.library_item:
@@ -137,6 +138,7 @@ if(GlobalConfig.isUserLoggedIn()) {
                 }else {
                     isLibraryFragmentOpen =true;
 
+                    setFrameLayoutVisibility(libraryFrameLayout);
                     initFragment(new TestFragment(), libraryFrameLayout);
                 }
                 return true;
@@ -147,6 +149,7 @@ if(GlobalConfig.isUserLoggedIn()) {
                 }else {
                     isUserProfileFragmentOpen =true;
 
+                    setFrameLayoutVisibility(userProfileFrameLayout);
                     initFragment(new UserProfileFragment(bottomAppBar), userProfileFrameLayout);
                 }
                 return true;
@@ -157,7 +160,7 @@ if(GlobalConfig.isUserLoggedIn()) {
     private void initFragment(Fragment fragment,FrameLayout frameLayout){
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(fragment.getId(), fragment)
+                .replace(frameLayout.getId(), fragment)
                 .commit();
 
     }

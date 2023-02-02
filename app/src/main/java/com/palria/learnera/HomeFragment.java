@@ -15,10 +15,12 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -47,6 +49,7 @@ String categorySelected = "";
         RecyclerView popularAuthorRecyclerView;
         RecyclerView booksItemRecyclerListView;
         RecyclerView popularTutorialsContainerRcv;
+        TabLayout tabLayout;
 
     //test categories
     final String[] categories = {"Java", "Android Dev", "Python", "Data Learning", "OOPs Concept", "Artificial Intelligence"};
@@ -64,42 +67,48 @@ String categorySelected = "";
         // Inflate the layout for this fragment
        View parentView = inflater.inflate(R.layout.fragment_home, container, false);
         initUI(parentView);
-        fetchPopularAuthor(categorySelected, new PopularAuthorFetchListener() {
+        createTabLayout(new OnNewCategorySelectedListener() {
             @Override
-            public void onSuccess(String authorName, String authorProfilePhotoDownloadUrl, long totalNumberOfLibrary) {
-                displayPopularAuthor(authorName,authorProfilePhotoDownloadUrl,totalNumberOfLibrary);
-            }
+            public void onSelected(String categoryName) {
+                fetchPopularAuthor(categoryName, new PopularAuthorFetchListener() {
+                    @Override
+                    public void onSuccess(String authorName, String authorProfilePhotoDownloadUrl, long totalNumberOfLibrary) {
+                        displayPopularAuthor(authorName,authorProfilePhotoDownloadUrl,totalNumberOfLibrary);
+                    }
 
-            @Override
-            public void onFailed(String errorMessage) {
+                    @Override
+                    public void onFailed(String errorMessage) {
+
+                    }
+                });
+                fetchLibrary(categoryName, new LibraryFetchListener() {
+                    @Override
+                    public void onSuccess(LibraryDataModel libraryDataModel) {
+                        displayLibrary(libraryDataModel);
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+
+                    }
+                });
+                fetchTutorial(categoryName, new TutorialFetchListener() {
+                    @Override
+                    public void onSuccess(TutorialDataModel tutorialDataModel) {
+                        displayTutorial(tutorialDataModel);
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+
+                    }
+                });
+                Toast.makeText(getContext(), categoryName, Toast.LENGTH_SHORT).show();
 
             }
         });
-        fetchLibrary(categorySelected, new LibraryFetchListener() {
-            @Override
-            public void onSuccess(LibraryDataModel libraryDataModel) {
-                displayLibrary(libraryDataModel);
-            }
 
-            @Override
-            public void onFailed(String errorMessage) {
-
-            }
-        });
-        fetchTutorial(categorySelected, new TutorialFetchListener() {
-            @Override
-            public void onSuccess(TutorialDataModel tutorialDataModel) {
-                displayTutorial(tutorialDataModel);
-            }
-
-            @Override
-            public void onFailed(String errorMessage) {
-
-            }
-        });
-
-
-        initCategoriesTab(0);
+//        initCategoriesTab(0);
 
        return parentView;
     }
@@ -154,10 +163,11 @@ String categorySelected = "";
 
 
     private void initUI(View parentView){
-        categoryTabsContainer = parentView.findViewById(R.id.categoryTabContainer);
+//        categoryTabsContainer = parentView.findViewById(R.id.categoryTabContainer);
         booksItemRecyclerListView = parentView.findViewById(R.id.booksItemContainer);
         popularAuthorRecyclerView = parentView.findViewById(R.id.popular_authors_listview);
         popularTutorialsContainerRcv = parentView.findViewById(R.id.popularTutorialsContainer);
+        tabLayout = parentView.findViewById(R.id.categoryTabLayoutId);
 
         //init and show some dummny authors.
         ArrayList<AuthorDataModel> modelArrayList = new ArrayList<AuthorDataModel>();
@@ -260,6 +270,63 @@ String categorySelected = "";
         popularTutorialsContainerRcv.setHasFixedSize(true);
         popularTutorialsContainerRcv.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         popularTutorialsContainerRcv.setAdapter(popularTutorialsListViewAdapter);
+
+    }
+
+
+    /*Changes to be made when new category is selected is will be triggered in this method
+    Manipulate the changes here
+    */
+    public void createTabLayout(OnNewCategorySelectedListener onNewCategorySelectedListener){
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                //change categories here
+                onNewCategorySelectedListener.onSelected(tab.getText().toString());
+
+                 }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+
+
+        TabLayout.Tab javaTabItem= tabLayout.newTab();
+        javaTabItem.setText("Java");
+        tabLayout.addTab(javaTabItem,0,true);
+
+        TabLayout.Tab androidDevTabItem=tabLayout.newTab();
+        androidDevTabItem.setText("Android Dev");
+        tabLayout.addTab(androidDevTabItem,1);
+
+        TabLayout.Tab pythonTabItem=tabLayout.newTab();
+        pythonTabItem.setText("Python");
+        tabLayout.addTab(pythonTabItem,2);
+
+        TabLayout.Tab dataLearningTabItem =tabLayout.newTab();
+        dataLearningTabItem.setText("Data Learning");
+        tabLayout.addTab(dataLearningTabItem,3);
+
+
+        TabLayout.Tab OOPsConceptTabItem =tabLayout.newTab();
+        OOPsConceptTabItem.setText("OOPs Concept");
+        tabLayout.addTab(OOPsConceptTabItem,4);
+
+
+        TabLayout.Tab artificialIntelligenceTabItem =tabLayout.newTab();
+        artificialIntelligenceTabItem.setText("Artificial Intelligence");
+        tabLayout.addTab(artificialIntelligenceTabItem,5);
+
+
 
     }
 
@@ -624,6 +691,10 @@ private void changeCategory(String categorySelected){
     interface TutorialFetchListener{
         void onSuccess(TutorialDataModel tutorialDataModel);
         void onFailed(String errorMessage);
+    }
+
+    interface OnNewCategorySelectedListener{
+        void onSelected(String categoryName);
     }
 
 
