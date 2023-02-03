@@ -238,7 +238,7 @@ public class SignUpActivity extends AppCompatActivity {
         call.enqueue(new Callback<CountryResponseDataModel>() {
             @Override
             public void onResponse(@NonNull Call<CountryResponseDataModel> call, Response<CountryResponseDataModel> response) {
-                Toast.makeText(SignUpActivity.this, "hey ther", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignUpActivity.this, "hey there", Toast.LENGTH_SHORT).show();
                 Log.e("countryResponse", response.toString());
 
 
@@ -274,7 +274,7 @@ public class SignUpActivity extends AppCompatActivity {
     private void createUserProfileInDatabase(ProfileCreationListener profileCreationListener){
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
 
-        DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.USER_PROFILE_KEY).document(GlobalConfig.getCurrentUserId());
+        DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
         HashMap<String,Object>userProfileDetails = new HashMap<>();
         userProfileDetails.put(GlobalConfig.USER_DISPLAY_NAME_KEY,userDisplayName);
         userProfileDetails.put(GlobalConfig.USER_COUNTRY_OF_RESIDENCE_KEY,userCountryOfResidence);
@@ -295,12 +295,12 @@ public class SignUpActivity extends AppCompatActivity {
 
         writeBatch.set(userProfileDocumentReference,userProfileDetails, SetOptions.merge());
 
-
-        DocumentReference userDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
-        HashMap<String,Object>userDetails = new HashMap<>();
-        userDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_KEY,GlobalConfig.getDate());
-        userDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        writeBatch.set(userDocumentReference,userDetails, SetOptions.merge());
+//
+//        DocumentReference userDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
+//        HashMap<String,Object>userDetails = new HashMap<>();
+//        userDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_KEY,GlobalConfig.getDate());
+//        userDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+//        writeBatch.set(userDocumentReference,userDetails, SetOptions.merge());
 
         writeBatch.commit()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -362,7 +362,7 @@ public class SignUpActivity extends AppCompatActivity {
         if(show){
             alertDialog.show();
         }else{
-            alertDialog.hide();
+            alertDialog.cancel();
         }
     }
 

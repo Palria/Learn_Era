@@ -1,5 +1,6 @@
 package com.palria.learnera;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -33,7 +34,7 @@ public class TestFragment extends Fragment {
     public TestFragment() {
         // Required empty public constructor
     }
-
+Button signButton;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -67,10 +68,17 @@ public class TestFragment extends Fragment {
         // Inflate the layout for this fragment
   View parentView = inflater.inflate(R.layout.fragment_test, container, false);
 initUI(parentView);
+        signButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(),SignUpActivity.class));
+            }
+        });
         return parentView;
     }
 
     void initUI(View parentView){
+        signButton = parentView.findViewById(R.id.signButton);
     }
 
 

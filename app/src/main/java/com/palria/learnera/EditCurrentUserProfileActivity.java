@@ -84,6 +84,7 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
      * profile photo else ifn he changes the photo then another value will fill it after changing his profile photo.
      * */
     String retrievedProfilePictureDownloadUrl;
+    String retrievedProfilePhotoStorageReference;
     Bitmap cameraImageBitmap;
     Uri galleryImageUri;
 
@@ -102,13 +103,14 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
         toggleProgress(true);
    initUserProfileValuesBeforeEdition(new ProfileValueInitListener() {
        @Override
-       public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
+       public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, String profilePhotoStorageReference, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
 
            userDisplayNameEditText.setText(userDisplayName);
            contactEmailEditText.setText(contactEmail);
            contactPhoneNumberEditText.setText(contactPhoneNumber);
 //           genderTypeEditText.setText(genderType);
            retrievedProfilePictureDownloadUrl = userProfilePhotoDownloadUrl;
+           retrievedProfilePhotoStorageReference = profilePhotoStorageReference;
            EditCurrentUserProfileActivity.this.isUserBlocked = isUserBlocked;
            EditCurrentUserProfileActivity.this.isProfilePhotoIncluded = isUserProfilePhotoIncluded;
 
@@ -220,8 +222,8 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                     if(isProfilePhotoChanged){
                        uploadUserProfilePhoto(new ProfilePhotoUploadListener() {
                            @Override
-                           public void onSuccess(String profilePhotoDownloadUrl) {
-                               editUserProfile(profilePhotoDownloadUrl, new ProfileCreationListener() {
+                           public void onSuccess(String profilePhotoDownloadUrl,String profilePhotoStorageReference) {
+                               editUserProfile(profilePhotoDownloadUrl,profilePhotoStorageReference, new ProfileCreationListener() {
                                    @Override
                                    public void onSuccess(String userName) {
                                        //succeed in editing profile
@@ -255,7 +257,7 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                            }
                        });
                     }else{
-                        editUserProfile(retrievedProfilePictureDownloadUrl, new ProfileCreationListener() {
+                        editUserProfile(retrievedProfilePictureDownloadUrl,retrievedProfilePhotoStorageReference, new ProfileCreationListener() {
                             @Override
                             public void onSuccess(String userName) {
                                 //succeed in editing profile
@@ -278,7 +280,7 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                         });
                     }
                 }else {
-                    editUserProfile("", new ProfileCreationListener() {
+                    editUserProfile("","", new ProfileCreationListener() {
                         @Override
                         public void onSuccess(String userName) {
                             //succeed in editing profile
@@ -373,7 +375,7 @@ private void initUI(){
         if(show){
             alertDialog.show();
         }else{
-            alertDialog.hide();
+            alertDialog.cancel();
         }
     }
 
@@ -456,7 +458,9 @@ private void initUI(){
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
                         String profilePhotoDownloadUrl = String.valueOf(task.getResult());
-                        profilePhotoUploadListener.onSuccess(profilePhotoDownloadUrl);
+                        String profilePhotoStorageReference_2 = profilePhotoStorageReference.getPath();
+
+                        profilePhotoUploadListener.onSuccess(profilePhotoDownloadUrl,profilePhotoStorageReference_2);
                     }
                 });
             }
@@ -464,10 +468,12 @@ private void initUI(){
 
     }
 
-    private void editUserProfile(String userProfilePhotoDownloadUrl, ProfileCreationListener profileCreationListener){
+    private void editUserProfile(String userProfilePhotoDownloadUrl,String profilePhotoStorageReference, ProfileCreationListener profileCreationListener){
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
 
-        DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.USER_PROFILE_KEY).document(GlobalConfig.getCurrentUserId());
+//        DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.USER_PROFILE_KEY).document(GlobalConfig.getCurrentUserId());
+        DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
+
         HashMap<String,Object>userProfileDetails = new HashMap<>();
         userProfileDetails.put(GlobalConfig.USER_DISPLAY_NAME_KEY,userDisplayName);
         userProfileDetails.put(GlobalConfig.USER_ID_KEY,GlobalConfig.getCurrentUserId());
@@ -476,11 +482,15 @@ private void initUI(){
         userProfileDetails.put(GlobalConfig.IS_USER_BLOCKED_KEY,isUserBlocked);
         userProfileDetails.put(GlobalConfig.USER_CONTACT_EMAIL_ADDRESS_KEY,contactEmail);
         userProfileDetails.put(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY,userProfilePhotoDownloadUrl);
+        userProfileDetails.put(GlobalConfig.USER_PROFILE_PHOTO_STORAGE_REFERENCE_KEY,profilePhotoStorageReference);
         userProfileDetails.put(GlobalConfig.IS_USER_PROFILE_PHOTO_INCLUDED_KEY,isProfilePhotoIncluded);
         userProfileDetails.put(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY,contactPhoneNumber);
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_KEY,GlobalConfig.getDate());
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         userProfileDetails.put(GlobalConfig.USER_TOKEN_ID_KEY,GlobalConfig.getCurrentUserTokenId());
+        userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_EDITED_KEY,GlobalConfig.getDate());
+        userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+//        userProfileDetails.put(GlobalConfig.DOCUMENT_CREATED_KEY, "DOCUMENT_CREATED");
 
 
         for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(userDisplayName)) {
@@ -490,14 +500,14 @@ private void initUI(){
         for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(userDisplayName)) {
             userProfileDetails.put(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
         }
-        writeBatch.set(userProfileDocumentReference,userProfileDetails, SetOptions.merge());
+        writeBatch.set(userProfileDocumentReference,userProfileDetails);
 
 
-        DocumentReference userDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
-        HashMap<String,Object>userDetails = new HashMap<>();
-        userDetails.put(GlobalConfig.USER_PROFILE_DATE_EDITED_KEY,GlobalConfig.getDate());
-        userDetails.put(GlobalConfig.USER_PROFILE_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        writeBatch.set(userDocumentReference,userDetails, SetOptions.merge());
+//        DocumentReference userDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
+//        HashMap<String,Object>userDetails = new HashMap<>();
+//        userDetails.put(GlobalConfig.USER_PROFILE_DATE_EDITED_KEY,GlobalConfig.getDate());
+//        userDetails.put(GlobalConfig.USER_PROFILE_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+//        writeBatch.set(userDocumentReference,userDetails, SetOptions.merge());
 
         writeBatch.commit()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -514,7 +524,7 @@ private void initUI(){
                 });
     }
     private void initUserProfileValuesBeforeEdition(ProfileValueInitListener profileValueInitListener){
-        GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.USER_PROFILE_KEY).document(GlobalConfig.getCurrentUserId())
+        GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId())
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -532,6 +542,7 @@ private void initUI(){
                         String contactPhoneNumber =""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY);
                         String genderType =""+ documentSnapshot.get(GlobalConfig.USER_GENDER_TYPE_KEY);
                         String userProfilePhotoDownloadUrl =""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
+                        String profilePhotoStorageReference =""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_STORAGE_REFERENCE_KEY);
                         boolean isUserBlocked = false;
                         boolean isUserProfilePhotoIncluded = false;
                         if(documentSnapshot.get(GlobalConfig.IS_USER_BLOCKED_KEY) != null){
@@ -543,7 +554,7 @@ private void initUI(){
 
                         }
 
-                        profileValueInitListener.onSuccess( userDisplayName, userCountryOfResidence, contactEmail, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl, isUserBlocked, isUserProfilePhotoIncluded);
+                        profileValueInitListener.onSuccess( userDisplayName, userCountryOfResidence, contactEmail, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl,  profilePhotoStorageReference, isUserBlocked, isUserProfilePhotoIncluded);
 
                     }
                 });
@@ -592,7 +603,7 @@ private void initUI(){
     }
 
     interface ProfilePhotoUploadListener{
-        void onSuccess(String profilePhotoDownloadUrl);
+        void onSuccess(String profilePhotoDownloadUrl,String profilePhotoStorageReference);
         void onFailed(String errorMessage);
 
     }
@@ -601,7 +612,7 @@ private void initUI(){
         void onFailed(String errorMessage);
     }
     interface ProfileValueInitListener{
-        void onSuccess(String userDisplayName,String userCountryOfResidence,String contactEmail,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,boolean isUserBlocked,boolean isUserProfilePhotoIncluded);
+        void onSuccess(String userDisplayName,String userCountryOfResidence,String contactEmail,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,String profilePhotoStorageReference,boolean isUserBlocked,boolean isUserProfilePhotoIncluded);
         void onFailed(String errorMessage);
     }
 

@@ -116,8 +116,6 @@ public class AllReviewsFragment extends Fragment {
                         .document(authorId)
                         .collection(GlobalConfig.ALL_LIBRARY_KEY)
                         .document(libraryId)
-                        .collection(GlobalConfig.LIBRARY_PROFILE_KEY)
-                        .document(libraryId)
                         .get()
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
@@ -141,8 +139,6 @@ public class AllReviewsFragment extends Fragment {
                         .document(libraryId)
                         .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                         .document(tutorialId)
-                        .collection(GlobalConfig.TUTORIAL_PROFILE_KEY)
-                        .document(tutorialId)
                         .get()
                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
@@ -159,8 +155,6 @@ public class AllReviewsFragment extends Fragment {
             }
             GlobalConfig.getFirebaseFirestoreInstance()
                     .collection(GlobalConfig.ALL_USERS_KEY)
-                    .document(authorId)
-                    .collection(GlobalConfig.USER_PROFILE_KEY)
                     .document(authorId)
                     .get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {

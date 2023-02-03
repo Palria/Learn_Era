@@ -84,6 +84,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
      * profile photo else if the cover photo is changed then another value will fill it after changing the photo.
      * */
     String retrievedCoverPhotoDownloadUrl;
+    String retrievedCoverPhotoStorageReference;
     /**
      * Initialized from the device camera's captured photo
      * */
@@ -193,8 +194,18 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                     if(isCreateNewTutorial){
                         uploadTutorialCoverPhoto(new CoverPhotoUploadListener() {
                             @Override
-                            public void onSuccess(String coverPhotoDownloadUrl) {
-                                createNewTutorial(coverPhotoDownloadUrl);
+                            public void onSuccess(String coverPhotoDownloadUrl,String coverPhotoStorageReference) {
+                                createNewTutorial(coverPhotoDownloadUrl,coverPhotoStorageReference, new OnTutorialEditionListener() {
+                                    @Override
+                                    public void onSuccess() {
+
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+
+                                    }
+                                });
                             }
 
                             @Override
@@ -207,8 +218,18 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                         if(isTutorialCoverPhotoChanged){
                             uploadTutorialCoverPhoto(new CoverPhotoUploadListener() {
                                 @Override
-                                public void onSuccess(String coverPhotoDownloadUrl) {
-                                    editTutorial(coverPhotoDownloadUrl);
+                                public void onSuccess(String coverPhotoDownloadUrl,String coverPhotoStorageReference) {
+                                    editTutorial(coverPhotoDownloadUrl,coverPhotoStorageReference, new OnTutorialEditionListener() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onFailed(String errorMessage) {
+
+                                        }
+                                    });
                                 }
 
                                 @Override
@@ -218,16 +239,46 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                             });
                         }
                         else{
-                            editTutorial(retrievedCoverPhotoDownloadUrl);
+                            editTutorial(retrievedCoverPhotoDownloadUrl,retrievedCoverPhotoStorageReference, new OnTutorialEditionListener() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onFailed(String errorMessage) {
+
+                                }
+                            });
                         }
                     }
                 }
                 else{
                     if(isCreateNewTutorial){
-                        createNewTutorial("");
+                        createNewTutorial("", "",new OnTutorialEditionListener() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+
+                            }
+                        });
                     }
                     else{
-                        editTutorial("");
+                        editTutorial("","" ,new OnTutorialEditionListener() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+
+                            }
+                        });
                     }
                 }
             }
@@ -353,7 +404,8 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
                         String coverPhotoDownloadUrl = String.valueOf(task.getResult());
-                        coverPhotoUploadListener.onSuccess(coverPhotoDownloadUrl);
+                        String tutorialCoverPhotoStorageReference = coverPhotoStorageReference.getPath();
+                        coverPhotoUploadListener.onSuccess(coverPhotoDownloadUrl,tutorialCoverPhotoStorageReference);
                     }
                 });
             }
@@ -361,22 +413,15 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
 
     }
 
-    private void createNewTutorial(String tutorialCoverPhotoDownloadUrl){
+    private void createNewTutorial(String tutorialCoverPhotoDownloadUrl,String tutorialCoverPhotoStorageReference,OnTutorialEditionListener onTutorialEditionListener){
 
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
 
-        DocumentReference userTutorialDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryContainerId).collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
-        HashMap<String,Object>userTutorialDetails  = new HashMap<>();
-        userTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_KEY,GlobalConfig.getDate());
-        userTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        userTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());
-        userTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        writeBatch.set(userTutorialDocumentReference,userTutorialDetails, SetOptions.merge());
-
-        DocumentReference tutorialProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryContainerId).collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.TUTORIAL_PROFILE_KEY).document(tutorialId);
+        DocumentReference allTutorialProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
         HashMap<String,Object>tutorialProfileDetails  = new HashMap<>();
         if(isTutorialCoverPhotoIncluded) {
             tutorialProfileDetails.put(GlobalConfig.TUTORIAL_COVER_PHOTO_DOWNLOAD_URL_KEY, tutorialCoverPhotoDownloadUrl);
+            tutorialProfileDetails.put(GlobalConfig.TUTORIAL_COVER_PHOTO_STORAGE_REFERENCE_KEY, tutorialCoverPhotoStorageReference);
             tutorialProfileDetails.put(GlobalConfig.IS_TUTORIAL_COVER_PHOTO_INCLUDED_KEY, true);
 
         }else{
@@ -400,31 +445,10 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
         for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(tutorialName)) {
             tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
         }
-        writeBatch.set(tutorialProfileDocumentReference,tutorialProfileDetails, SetOptions.merge());
+        writeBatch.set(allTutorialProfileDocumentReference,tutorialProfileDetails, SetOptions.merge());
 
 
-        DocumentReference allTutorialProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
-        HashMap<String,Object>allTutorialDetails  = new HashMap<>();
-        allTutorialDetails.put(GlobalConfig.LIBRARY_CONTAINER_CATEGORY_KEY,libraryContainerCategory);
-        allTutorialDetails.put(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryContainerId);
-        allTutorialDetails.put(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
-        allTutorialDetails.put(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserTokenId());
-        allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_KEY,GlobalConfig.getDate());
-        allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());
-        allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-
-        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(tutorialName)) {
-            allTutorialDetails.put(GlobalConfig.TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
-        }
-        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(tutorialName)) {
-            allTutorialDetails.put(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
-        }
-        writeBatch.set(allTutorialProfileDocumentReference,allTutorialDetails, SetOptions.merge());
-
-
-
-        DocumentReference userDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryContainerId);
+        DocumentReference userDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
         HashMap<String,Object>userDetails  = new HashMap<>();
         userDetails.put(GlobalConfig.LAST_TUTORIAL_CREATED_ID_KEY,tutorialId);
         userDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY,FieldValue.increment(1L));
@@ -437,13 +461,13 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        onTutorialEditionListener.onFailed(e.getMessage());
                     }
                 })
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-
+                        onTutorialEditionListener.onSuccess();
                     }
                 });
 
@@ -451,16 +475,20 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
 
     }
 
-    private void editTutorial(String tutorialCoverPhotoDownloadUrl){
+    private void editTutorial(String tutorialCoverPhotoDownloadUrl,String tutorialCoverPhotoStorageReference,OnTutorialEditionListener onTutorialEditionListener){
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
 
-        DocumentReference tutorialProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryContainerId).collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.TUTORIAL_PROFILE_KEY).document(tutorialId);
+        DocumentReference allLibraryProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
+
         HashMap<String,Object>tutorialProfileDetails  = new HashMap<>();
         if(isTutorialCoverPhotoIncluded) {
             tutorialProfileDetails.put(GlobalConfig.TUTORIAL_COVER_PHOTO_DOWNLOAD_URL_KEY, tutorialCoverPhotoDownloadUrl);
+            tutorialProfileDetails.put(GlobalConfig.TUTORIAL_COVER_PHOTO_STORAGE_REFERENCE_KEY, tutorialCoverPhotoStorageReference);
             tutorialProfileDetails.put(GlobalConfig.IS_TUTORIAL_COVER_PHOTO_INCLUDED_KEY, true);
 
         }else{
+            tutorialProfileDetails.put(GlobalConfig.TUTORIAL_COVER_PHOTO_DOWNLOAD_URL_KEY, "");
+            tutorialProfileDetails.put(GlobalConfig.TUTORIAL_COVER_PHOTO_STORAGE_REFERENCE_KEY, "");
             tutorialProfileDetails.put(GlobalConfig.IS_LIBRARY_COVER_PHOTO_INCLUDED_KEY, false);
 
         }
@@ -476,21 +504,8 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
         for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(tutorialName)) {
             tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
         }
-        writeBatch.set(tutorialProfileDocumentReference,tutorialProfileDetails, SetOptions.merge());
+        writeBatch.update(allLibraryProfileDocumentReference,tutorialProfileDetails);
 
-
-        DocumentReference allLibraryProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
-        HashMap<String,Object>allTutorialDetails  = new HashMap<>();
-        allTutorialDetails.put(GlobalConfig.LIBRARY_CONTAINER_CATEGORY_KEY,libraryContainerCategory);
-        allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());
-        allTutorialDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(tutorialName)) {
-            allTutorialDetails.put(GlobalConfig.TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
-        }
-        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(tutorialName)) {
-            allTutorialDetails.put(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
-        }
-        writeBatch.set(allLibraryProfileDocumentReference,allTutorialDetails, SetOptions.merge());
 
 
 
@@ -498,26 +513,20 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        onTutorialEditionListener.onFailed(e.getMessage());
                     }
                 })
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-
+                        onTutorialEditionListener.onSuccess();
                     }
                 });
     }
 
     private void initializeTutorialProfile(ProfileInitializationListener profileInitializationListener){
         GlobalConfig.getFirebaseFirestoreInstance()
-                .collection(GlobalConfig.ALL_USERS_KEY)
-                .document(GlobalConfig.getCurrentUserId())
-                .collection(GlobalConfig.ALL_LIBRARY_KEY)
-                .document(tutorialId)
                 .collection(GlobalConfig.ALL_TUTORIAL_KEY)
-                .document(tutorialId)
-                .collection(GlobalConfig.TUTORIAL_PROFILE_KEY)
                 .document(tutorialId)
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
@@ -532,6 +541,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                         String tutorialName = documentSnapshot.getString(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
                         String tutorialDescription = documentSnapshot.getString(GlobalConfig.TUTORIAL_DESCRIPTION_KEY);
                         retrievedCoverPhotoDownloadUrl = documentSnapshot.getString(GlobalConfig.TUTORIAL_COVER_PHOTO_DOWNLOAD_URL_KEY);
+                        retrievedCoverPhotoStorageReference = documentSnapshot.getString(GlobalConfig.TUTORIAL_COVER_PHOTO_STORAGE_REFERENCE_KEY);
                         boolean isTutorialCoverPhotoIncluded = false;
                         if(documentSnapshot.getBoolean(GlobalConfig.IS_TUTORIAL_COVER_PHOTO_INCLUDED_KEY)!= null){
                             isTutorialCoverPhotoIncluded = documentSnapshot.getBoolean(GlobalConfig.IS_TUTORIAL_COVER_PHOTO_INCLUDED_KEY);
@@ -545,12 +555,18 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
     }
 
     interface CoverPhotoUploadListener{
-        void onSuccess(String coverPhotoDownloadUrl);
+        void onSuccess(String coverPhotoDownloadUrl,String coverPhotoStorageReference);
         void onFailed(String errorMessage);
 
     }
     interface ProfileInitializationListener{
         void onSuccess(String tutorialName,String tutorialDescription  ,String retrievedCoverPhotoDownloadUrl, boolean isTutorialCoverPhotoIncluded);
+        void onFailed(String errorMessage);
+
+    }
+
+    interface OnTutorialEditionListener{
+        void onSuccess();
         void onFailed(String errorMessage);
 
     }

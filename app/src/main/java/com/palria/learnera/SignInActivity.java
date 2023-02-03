@@ -169,7 +169,7 @@ boolean isInProgress = false;
         if(show){
             alertDialog.show();
         }else{
-            alertDialog.hide();
+            alertDialog.cancel();
         }
     }
 

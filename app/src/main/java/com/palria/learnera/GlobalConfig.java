@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.palria.learnera.models.WelcomeScreenItemModal;
 
@@ -59,11 +60,15 @@ public class GlobalConfig {
     public static final String LAST_SEEN_KEY = "LAST_SEEN";
     public static final String AUTHOR_CATEGORY_TAG_ARRAY_KEY = "AUTHOR_CATEGORY_TAG_ARRAY";
     public static final String IS_USER_AUTHOR_KEY = "IS_USER_AUTHOR";
+    static final String USER_ACTIVITY_LOG_KEY = "USER_ACTIVITY_LOG";
+
     public static final String TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY = "TOTAL_NUMBER_OF_USER_PROFILE_VISITORS";
     public static final String TOTAL_NUMBER_OF_USER_PROFILE_REACH_KEY = "TOTAL_NUMBER_OF_USER_PROFILE_REACH";
+
     public static final String USER_PROFILE_PHOTO_KEY = "USER_PROFILE_PHOTO";
     public static final String IS_USER_PROFILE_PHOTO_INCLUDED_KEY = "IS_USER_PROFILE_PHOTO_INCLUDED";
     public static final String USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY = "USER_PROFILE_PHOTO_DOWNLOAD_URL";
+    public static final String USER_PROFILE_PHOTO_STORAGE_REFERENCE_KEY = "USER_PROFILE_PHOTO_STORAGE_REFERENCE";
     public static final String USER_PROFILE_DATE_CREATED_KEY = "USER_PROFILE_DATE_CREATED";
     public static final String USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY = "USER_PROFILE_DATE_CREATED_TIME_STAMP";
     public static final String USER_PROFILE_DATE_EDITED_KEY = "USER_PROFILE_DATE_EDITED";
@@ -78,6 +83,8 @@ public class GlobalConfig {
     public static final String USER_SEARCH_ANY_MATCH_KEYWORD_KEY = "USER_SEARCH_ANY_MATCH_KEYWORD";
     //USER FIELD KEYS END
 
+
+    public static final String DOCUMENT_CREATED_KEY = "DOCUMENT_CREATED";
 
     public static final String TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY = "TOTAL_NUMBER_OF_ONE_STAR_RATE";
     public static final String TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY = "TOTAL_NUMBER_OF_TWO_STAR_RATE";
@@ -106,6 +113,7 @@ public class GlobalConfig {
     public static final String IS_CREATE_NEW_LIBRARY_KEY = "IS_CREATE_NEW_LIBRARY";
     public static final String ALL_LIBRARY_KEY = "ALL_LIBRARY";
     public static final String LIBRARY_PROFILE_KEY = "LIBRARY_PROFILE";
+
     public static final String LIBRARY_DISPLAY_NAME_KEY = "LIBRARY_DISPLAY_NAME";
     public static final String LIBRARY_DESCRIPTION_KEY = "LIBRARY_DESCRIPTION";
     public static final String LIBRARY_CATEGORY_KEY = "LIBRARY_CATEGORY";
@@ -122,6 +130,7 @@ public class GlobalConfig {
     public static final String LAST_LIBRARY_DATE_CREATED_TIME_STAMP_KEY = "LAST_LIBRARY_DATE_CREATED_TIME_STAMP";
     public static final String TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY = "TOTAL_NUMBER_OF_LIBRARY_CREATED";
     public static final String LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY = "LIBRARY_COVER_PHOTO_DOWNLOAD_URL";
+    public static final String LIBRARY_COVER_PHOTO_STORAGE_REFERENCE_KEY = "LIBRARY_COVER_PHOTO_STORAGE_REFERENCE";
     public static final String IS_LIBRARY_COVER_PHOTO_INCLUDED_KEY = "IS_LIBRARY_COVER_PHOTO_INCLUDED";
     public static final String LIBRARY_COVER_PHOTO_KEY = "LIBRARY_COVER_PHOTO";
     public static final String LIBRARY_IMAGES_KEY = "LIBRARY_IMAGES";
@@ -153,6 +162,7 @@ public class GlobalConfig {
     public static final String LAST_TUTORIAL_DATE_CREATED_TIME_STAMP_KEY = "LAST_TUTORIAL_DATE_CREATED_TIME_STAMP";
     public static final String TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY = "TOTAL_NUMBER_OF_TUTORIAL_CREATED";
     public static final String TUTORIAL_COVER_PHOTO_DOWNLOAD_URL_KEY = "TUTORIAL_COVER_PHOTO_DOWNLOAD_URL";
+    public static final String TUTORIAL_COVER_PHOTO_STORAGE_REFERENCE_KEY = "TUTORIAL_COVER_PHOTO_STORAGE_REFERENCE";
     public static final String IS_TUTORIAL_COVER_PHOTO_INCLUDED_KEY = "IS_TUTORIAL_COVER_PHOTO_INCLUDED";
     public static final String TUTORIAL_COVER_PHOTO_KEY = "TUTORIAL_COVER_PHOTO";
     public static final String TUTORIAL_IMAGES_KEY = "TUTORIAL_IMAGES";
@@ -892,7 +902,25 @@ public class GlobalConfig {
         return 0.0F;
     }
 
-
+    static void updateUserActivityLog(HashMap<String,Object> logDataMap,ActionCallback actionCallback){
+        getFirebaseFirestoreInstance().collection(ALL_USERS_KEY)
+                .document(getCurrentUserId())
+                .collection(USER_ACTIVITY_LOG_KEY)
+                .document(USER_ACTIVITY_LOG_KEY)
+                .set(logDataMap, SetOptions.merge())
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                actionCallback.onSuccess();
+            }
+        });
+    }
     /*
         static HashMap<String,Double> getStarMap(int fiveStar,int fourStar, int threeStar, int twoStar, int oneStar){
         HashMap<String,Double> starHashMap = new HashMap<>();
@@ -965,7 +993,6 @@ public class GlobalConfig {
 
     }
 
-
     interface OnDocumentExistStatusCallback{
 
         void onExist();
@@ -974,6 +1001,9 @@ public class GlobalConfig {
 
     }
 
-
+interface ActionCallback{
+        void onSuccess();
+        void onFailed(String errorMessage);
+}
 
 }

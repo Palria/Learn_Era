@@ -77,6 +77,7 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
      * profile photo else if the cover photo is changed then another value will fill it after changing the photo.
      * */
     String retrievedCoverPhotoDownloadUrl;
+    String retrievedCoverPhotoStorageReference;
     /**
      * Initialized from the device camera's captured photo
      * */
@@ -120,7 +121,7 @@ Button createLibraryActionButton;
             //User is editing his library
             initializeLibraryProfile(new ProfileInitializationListener() {
                 @Override
-                public void onSuccess(String tutorialName, String tutorialDescription, String libraryCategory, String retrievedCoverPhotoDownloadUrl, boolean isLibraryCoverPhotoIncluded) {
+                public void onSuccess(String tutorialName, String tutorialDescription, String libraryCategory, String retrievedCoverPhotoDownloadUrl, String retrievedCoverPhotoStorageReference, boolean isLibraryCoverPhotoIncluded) {
 
                     libraryNameEditText.setText(libraryName);
                     libraryDescriptionEditText.setText(libraryDescription);
@@ -185,8 +186,18 @@ Button createLibraryActionButton;
                     if(isCreateNewLibrary){
                         uploadLibraryCoverPhoto(new CoverPhotoUploadListener() {
                             @Override
-                            public void onSuccess(String coverPhotoDownloadUrl) {
-                                createNewLibrary(coverPhotoDownloadUrl);
+                            public void onSuccess(String coverPhotoDownloadUrl,String coverPhotoStorageReference) {
+                                createNewLibrary(coverPhotoDownloadUrl, coverPhotoStorageReference,new OnLibraryEditionListener() {
+                                    @Override
+                                    public void onSuccess() {
+
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+
+                                    }
+                                });
                             }
 
                             @Override
@@ -199,8 +210,18 @@ Button createLibraryActionButton;
                         if(isLibraryCoverPhotoChanged){
                             uploadLibraryCoverPhoto(new CoverPhotoUploadListener() {
                                 @Override
-                                public void onSuccess(String coverPhotoDownloadUrl) {
-                                    editLibrary(coverPhotoDownloadUrl);
+                                public void onSuccess(String coverPhotoDownloadUrl,String coverPhotoStorageReference) {
+                                    editLibrary(coverPhotoDownloadUrl, coverPhotoStorageReference,new OnLibraryEditionListener() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onFailed(String errorMessage) {
+
+                                        }
+                                    });
                                 }
 
                                 @Override
@@ -210,16 +231,46 @@ Button createLibraryActionButton;
                             });
                         }
                         else{
-                            editLibrary(retrievedCoverPhotoDownloadUrl);
+                            editLibrary(retrievedCoverPhotoDownloadUrl,retrievedCoverPhotoStorageReference, new OnLibraryEditionListener() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onFailed(String errorMessage) {
+
+                                }
+                            });
                         }
                     }
                 }
                 else{
                     if(isCreateNewLibrary){
-                        createNewLibrary("");
+                        createNewLibrary("","", new OnLibraryEditionListener() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+
+                            }
+                        });
                     }
                     else{
-                        editLibrary("");
+                        editLibrary("","", new OnLibraryEditionListener() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+
+                            }
+                        });
                     }
                 }
             }
@@ -344,7 +395,8 @@ Button createLibraryActionButton;
                     @Override
                     public void onComplete(@NonNull Task<Uri> task) {
                         String coverPhotoDownloadUrl = String.valueOf(task.getResult());
-                        coverPhotoUploadListener.onSuccess(coverPhotoDownloadUrl);
+                        String coverPhotoStorageReference_2 = coverPhotoStorageReference.getPath();
+                        coverPhotoUploadListener.onSuccess(coverPhotoDownloadUrl,coverPhotoStorageReference_2);
                     }
                 });
             }
@@ -352,25 +404,22 @@ Button createLibraryActionButton;
 
     }
 
-    private void createNewLibrary(String libraryCoverPhotoDownloadUrl){
+    private void createNewLibrary(String libraryCoverPhotoDownloadUrl, String libraryCoverPhotoStorageReference, OnLibraryEditionListener onLibraryEditionListener){
 
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
 
-        DocumentReference userLibraryDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
-        HashMap<String,Object>userLibraryDetails  = new HashMap<>();
-        userLibraryDetails.put(GlobalConfig.LIBRARY_DATE_CREATED_KEY,GlobalConfig.getDate());
-        userLibraryDetails.put(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        userLibraryDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_KEY,GlobalConfig.getDate());
-        userLibraryDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        writeBatch.set(userLibraryDocumentReference,userLibraryDetails, SetOptions.merge());
+        DocumentReference libraryProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
 
-        DocumentReference libraryProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId).collection(GlobalConfig.LIBRARY_PROFILE_KEY).document(libraryId);
         HashMap<String,Object>libraryProfileDetails  = new HashMap<>();
         if(isLibraryCoverPhotoIncluded) {
             libraryProfileDetails.put(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY, libraryCoverPhotoDownloadUrl);
+            libraryProfileDetails.put(GlobalConfig.LIBRARY_COVER_PHOTO_STORAGE_REFERENCE_KEY, libraryCoverPhotoStorageReference);
             libraryProfileDetails.put(GlobalConfig.IS_LIBRARY_COVER_PHOTO_INCLUDED_KEY, true);
 
         }else{
+
+            libraryProfileDetails.put(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY, "");
+            libraryProfileDetails.put(GlobalConfig.LIBRARY_COVER_PHOTO_STORAGE_REFERENCE_KEY, "");
             libraryProfileDetails.put(GlobalConfig.IS_LIBRARY_COVER_PHOTO_INCLUDED_KEY, false);
 
         }
@@ -393,25 +442,6 @@ Button createLibraryActionButton;
         writeBatch.set(libraryProfileDocumentReference,libraryProfileDetails, SetOptions.merge());
 //
 
-        DocumentReference allLibraryProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
-        HashMap<String,Object>allLibraryDetails  = new HashMap<>();
-        allLibraryDetails.put(GlobalConfig.LIBRARY_CATEGORY_KEY,libraryCategory);
-        allLibraryDetails.put(GlobalConfig.LIBRARY_ID_KEY,libraryId);
-        allLibraryDetails.put(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserTokenId());
-        allLibraryDetails.put(GlobalConfig.LIBRARY_DATE_CREATED_KEY,GlobalConfig.getDate());
-        allLibraryDetails.put(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        allLibraryDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_KEY,GlobalConfig.getDate());
-        allLibraryDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-
-        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(libraryName)) {
-            allLibraryDetails.put(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
-        }
-        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(libraryName)) {
-            allLibraryDetails.put(GlobalConfig.LIBRARY_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
-        }
-
-        writeBatch.set(allLibraryProfileDocumentReference,allLibraryDetails, SetOptions.merge());
-
 
 
         DocumentReference userDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
@@ -427,13 +457,13 @@ Button createLibraryActionButton;
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        onLibraryEditionListener.onFailed(e.getMessage());
                     }
                 })
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-
+                        onLibraryEditionListener.onSuccess();
                     }
                 });
 
@@ -441,16 +471,21 @@ Button createLibraryActionButton;
 
     }
 
-    private void editLibrary(String libraryCoverPhotoDownloadUrl){
+    private void editLibrary(String libraryCoverPhotoDownloadUrl,String libraryCoverPhotoStorageReference, OnLibraryEditionListener onLibraryEditionListener){
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
 
-        DocumentReference libraryProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId).collection(GlobalConfig.LIBRARY_PROFILE_KEY).document(libraryId);
+        DocumentReference libraryProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
+
         HashMap<String,Object>libraryProfileDetails  = new HashMap<>();
         if(isLibraryCoverPhotoIncluded) {
             libraryProfileDetails.put(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY, libraryCoverPhotoDownloadUrl);
+            libraryProfileDetails.put(GlobalConfig.LIBRARY_COVER_PHOTO_STORAGE_REFERENCE_KEY, libraryCoverPhotoStorageReference);
             libraryProfileDetails.put(GlobalConfig.IS_LIBRARY_COVER_PHOTO_INCLUDED_KEY, true);
 
         }else{
+
+            libraryProfileDetails.put(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY, "");
+            libraryProfileDetails.put(GlobalConfig.LIBRARY_COVER_PHOTO_STORAGE_REFERENCE_KEY, "");
             libraryProfileDetails.put(GlobalConfig.IS_LIBRARY_COVER_PHOTO_INCLUDED_KEY, false);
 
         }
@@ -471,44 +506,25 @@ Button createLibraryActionButton;
         writeBatch.set(libraryProfileDocumentReference,libraryProfileDetails, SetOptions.merge());
 
 
-        DocumentReference allLibraryProfileDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
-        HashMap<String,Object>allLibraryDetails  = new HashMap<>();
-        allLibraryDetails.put(GlobalConfig.LIBRARY_CATEGORY_KEY,libraryCategory);
-        allLibraryDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_KEY,GlobalConfig.getDate());
-        allLibraryDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-
-        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(libraryName)) {
-            allLibraryDetails.put(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
-        }
-        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(libraryName)) {
-            allLibraryDetails.put(GlobalConfig.LIBRARY_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
-        }
-        writeBatch.set(allLibraryProfileDocumentReference,allLibraryDetails, SetOptions.merge());
-
-
 
         writeBatch.commit()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        onLibraryEditionListener.onFailed(e.getMessage());
                     }
                 })
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-
+                        onLibraryEditionListener.onSuccess();
                     }
                 });
     }
 
     private void initializeLibraryProfile(ProfileInitializationListener profileInitializationListener){
         GlobalConfig.getFirebaseFirestoreInstance()
-                .collection(GlobalConfig.ALL_USERS_KEY)
-                .document(GlobalConfig.getCurrentUserId())
                 .collection(GlobalConfig.ALL_LIBRARY_KEY)
-                .document(libraryId)
-                .collection(GlobalConfig.LIBRARY_PROFILE_KEY)
                 .document(libraryId)
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
@@ -524,12 +540,13 @@ Button createLibraryActionButton;
                         String libraryDescription = documentSnapshot.getString(GlobalConfig.LIBRARY_DESCRIPTION_KEY);
                         String libraryCategory = documentSnapshot.getString(GlobalConfig.LIBRARY_CATEGORY_KEY);
                         retrievedCoverPhotoDownloadUrl = documentSnapshot.getString(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY);
+                        retrievedCoverPhotoStorageReference = documentSnapshot.getString(GlobalConfig.LIBRARY_COVER_PHOTO_STORAGE_REFERENCE_KEY);
                         boolean isLibraryCoverPhotoIncluded = false;
 
                         if(documentSnapshot.getBoolean(GlobalConfig.IS_LIBRARY_COVER_PHOTO_INCLUDED_KEY)!= null){
                             isLibraryCoverPhotoIncluded = documentSnapshot.getBoolean(GlobalConfig.IS_LIBRARY_COVER_PHOTO_INCLUDED_KEY);
                         }
-                        profileInitializationListener.onSuccess(libraryName, libraryDescription,libraryCategory  , retrievedCoverPhotoDownloadUrl, isLibraryCoverPhotoIncluded);
+                        profileInitializationListener.onSuccess(libraryName, libraryDescription,libraryCategory  , retrievedCoverPhotoDownloadUrl,retrievedCoverPhotoStorageReference, isLibraryCoverPhotoIncluded);
 
                     }
                 });
@@ -537,14 +554,19 @@ Button createLibraryActionButton;
     }
 
     interface CoverPhotoUploadListener{
-     void onSuccess(String coverPhotoDownloadUrl);
+     void onSuccess(String coverPhotoDownloadUrl,String coverPhotoStorageReference);
      void onFailed(String errorMessage);
 
     }
 
 
     interface ProfileInitializationListener{
-        void onSuccess(String tutorialName,String tutorialDescription,String libraryCategory  ,String retrievedCoverPhotoDownloadUrl, boolean isLibraryCoverPhotoIncluded);
+        void onSuccess(String tutorialName,String tutorialDescription,String libraryCategory  ,String retrievedCoverPhotoDownloadUrl,String retrievedCoverPhotoStorageReference, boolean isLibraryCoverPhotoIncluded);
+        void onFailed(String errorMessage);
+
+    }
+    interface OnLibraryEditionListener{
+        void onSuccess();
         void onFailed(String errorMessage);
 
     }

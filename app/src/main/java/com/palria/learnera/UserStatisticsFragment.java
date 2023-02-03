@@ -258,7 +258,7 @@ initStatistics(new InitStatsListener() {
         if(show){
             alertDialog.show();
         }else{
-            alertDialog.hide();
+            alertDialog.cancel();
         }
     }
 
@@ -284,38 +284,22 @@ initStatistics(new InitStatsListener() {
                         long totalNumberOfFourStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY) : 0L;
                         long totalNumberOfFiveStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY) : 0L;
 
+                        String lastSeen = documentSnapshot.getString(GlobalConfig.LAST_SEEN_KEY);
+                        long totalNumberOfLibraries = (documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)!= null) ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY) : 0L;
+                        boolean isAnAuthor = (documentSnapshot.get(GlobalConfig.IS_USER_AUTHOR_KEY)!=null )? (documentSnapshot.getBoolean(GlobalConfig.IS_USER_AUTHOR_KEY)) : false;
 
-                                         documentSnapshot.getReference()
-                                                 .collection(GlobalConfig.USER_PROFILE_KEY)
-                                                 .document(GlobalConfig.getCurrentUserId())
-                                                 .get()
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                  @Override
-                                                  public void onFailure(@NonNull Exception e) {
-                                                      initStatsListener.onFailed(e.getMessage());
-                                                 }
-                                                })
-                                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                 @Override
-                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                     String lastSeen = documentSnapshot.getString(GlobalConfig.LAST_SEEN_KEY);
-                                                     long totalNumberOfLibraries = (documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)!= null) ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY) : 0L;
-                                                     boolean isAnAuthor = (documentSnapshot.get(GlobalConfig.IS_USER_AUTHOR_KEY)!=null )? (documentSnapshot.getBoolean(GlobalConfig.IS_USER_AUTHOR_KEY)) : false;
-
-                                                     initStatsListener.onSuccess(new StatisticsDataModel(
-                                                                                                          totalNumberOfLibraries,
-                                                                                                          totalNumberOfProfileVisitor,
-                                                                                                          totalNumberOfProfileReach,
-                                                                                                          isAnAuthor,
-                                                                                                          lastSeen,
-                                                                                                          totalNumberOfOneStarRate,
-                                                                                                          totalNumberOfTwoStarRate,
-                                                                                                          totalNumberOfThreeStarRate,
-                                                                                                          totalNumberOfFourStarRate,
-                                                                                                          totalNumberOfFiveStarRate
-                                                                                                         ));
-                                                 }
-                           });
+                        initStatsListener.onSuccess(new StatisticsDataModel(
+                                totalNumberOfLibraries,
+                                totalNumberOfProfileVisitor,
+                                totalNumberOfProfileReach,
+                                isAnAuthor,
+                                lastSeen,
+                                totalNumberOfOneStarRate,
+                                totalNumberOfTwoStarRate,
+                                totalNumberOfThreeStarRate,
+                                totalNumberOfFourStarRate,
+                                totalNumberOfFiveStarRate
+                        ));
                     }
                 });
     }
