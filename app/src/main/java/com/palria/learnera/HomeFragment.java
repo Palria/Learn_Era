@@ -217,6 +217,7 @@ String categorySelected = "";
         ArrayList<TutorialDataModel> tutorialDataModels = new ArrayList<>();
         tutorialDataModels.add(
                 new TutorialDataModel("How to connect to mysql database for free. in 2012 for Users to get it.",
+                        "category",
                         "__id__02151",
                         "1 days ago",
                         2l,
@@ -234,6 +235,7 @@ String categorySelected = "";
 
         tutorialDataModels.add(
                 new TutorialDataModel("The protest was organised against the Kathmandu Metropolitan City mayor’s recent move to demolish a part of private property in Sankhamul",
+                        "Category",
                         "Jeevan",
                         "32 mins ago",
                         2l,
@@ -251,6 +253,7 @@ String categorySelected = "";
 
         tutorialDataModels.add(
                 new TutorialDataModel("According to him, the metropolis demolished the house compound without any letter or notice.",
+                        "Category",
                         "Palria",
                         "32 mins ago",
                         2l,
@@ -554,6 +557,8 @@ private void changeCategory(String categorySelected){
 
                                                     tutorialFetchListener.onSuccess(new TutorialDataModel(
                                                                                      tutorialName,
+
+        tutorialCategory,
                                                                                      tutorialId,
                                                                                      dateCreated,
                                                                                      totalNumberOfPages,

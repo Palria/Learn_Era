@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.FrameLayout;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -22,7 +23,7 @@ String authorId;
 String authorName;
 String authorProfilePhotoDownloadUrl;
 AlertDialog alertDialog;
-
+FrameLayout tutorialsFrameLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +58,7 @@ AlertDialog alertDialog;
 
             }
         });
+        openAllTutorialFragment();
     }
 
     private void initUI(){
@@ -82,7 +84,9 @@ AlertDialog alertDialog;
         libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
         authorId = intent.getStringExtra(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
 
-    }    private void fetchLibraryProfile(LibraryProfileFetchListener libraryProfileFetchListener){
+    }
+
+    private void fetchLibraryProfile(LibraryProfileFetchListener libraryProfileFetchListener){
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_USERS_KEY)
                 .document(authorId)
@@ -162,6 +166,18 @@ AlertDialog alertDialog;
 
     }
 
+    private void openAllTutorialFragment(){
+        AllTutorialFragment tutorialsFragment = new AllTutorialFragment();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(GlobalConfig.IS_FROM_LIBRARY_ACTIVITY_CONTEXT_KEY,true);
+        bundle.putString(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+        tutorialsFragment.setArguments(bundle);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(tutorialsFrameLayout.getId(),tutorialsFragment)
+                .commit();
+    }
     interface LibraryProfileFetchListener{
         void onFailed(String errorMessage);
         void onSuccess(LibraryDataModel libraryDataModel);
@@ -170,4 +186,5 @@ AlertDialog alertDialog;
         void onFailed(String errorMessage);
         void onSuccess(String authorName,String authorProfilePhotoDownloadUrl);
     }
+
 }

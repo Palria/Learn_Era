@@ -77,6 +77,7 @@ public class TutorialDataModel {
      * */
    public  TutorialDataModel(
             String tutorialName,
+            String tutorialCategory,
             String tutorialId,
             String dateCreated,
             long totalNumberOfPages,
@@ -93,6 +94,7 @@ public class TutorialDataModel {
             long totalNumberOfFiveStarRate
     ){
         this.tutorialName = tutorialName;
+        this.tutorialCategory = tutorialCategory;
         this.tutorialId = tutorialId;
         this.dateCreated = dateCreated;
         this.totalNumberOfPages = totalNumberOfPages;
@@ -118,6 +120,14 @@ public class TutorialDataModel {
 
     void setTutorialName(String tutorialName) {
         this.tutorialName = tutorialName;
+    }
+
+    public String getTutorialCategory() {
+        return tutorialCategory;
+    }
+
+    void setTutorialCategory(String tutorialCategory) {
+        this.tutorialCategory = tutorialCategory;
     }
 
       public String getTutorialId() {

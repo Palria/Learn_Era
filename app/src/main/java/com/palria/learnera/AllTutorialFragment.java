@@ -23,11 +23,15 @@ public class AllTutorialFragment extends Fragment {
         // Required empty public constructor
     }
 String tutorialCategory = "";
-
+String libraryId = "";
+boolean isFromLibraryActivityContext = true;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+if(getArguments() != null){
+    isFromLibraryActivityContext =  getArguments().getBoolean(GlobalConfig.IS_FROM_LIBRARY_ACTIVITY_CONTEXT_KEY);
+    libraryId =  getArguments().getString(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
+}
     }
 
     @Override
@@ -50,7 +54,14 @@ String tutorialCategory = "";
     }
 
     private void fetchTutorial(String tutorialCategoryTag, TutorialFetchListener tutorialFetchListener){
-        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY);
+        Query libraryQuery =null;
+        if(isFromLibraryActivityContext){
+            libraryQuery =   GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.LIBRARY_CONTAINER_ID_KEY, libraryId).orderBy(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY);
+
+        }else {
+
+            libraryQuery =   GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY, tutorialCategoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY);
+        }
 
         libraryQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
@@ -111,6 +122,7 @@ String tutorialCategory = "";
 
                                                     tutorialFetchListener.onSuccess(new TutorialDataModel(
                                                             tutorialName,
+                                                            tutorialCategory,
                                                             tutorialId,
                                                             dateCreated,
                                                             totalNumberOfPages,

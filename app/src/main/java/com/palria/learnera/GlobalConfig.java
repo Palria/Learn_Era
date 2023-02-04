@@ -172,8 +172,18 @@ public class GlobalConfig {
     public static final String TOTAL_NUMBER_OF_TUTORIAL_REACH_KEY = "TOTAL_NUMBER_OF_TUTORIAL_REACH";
     public static final String TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY = "TOTAL_NUMBER_OF_FOLDERS_CREATED";
     public static final String TOTAL_NUMBER_OF_PAGES_CREATED_KEY = "TOTAL_NUMBER_OF_PAGES_CREATED";
+
+    public static final String ALL_TUTORIAL_FOLDERS_KEY = "ALL_TUTORIAL_FOLDERS";
+    public static final String FOLDER_NAME_KEY = "FOLDER_NAME";
+    public static final String PAGE_NAME_KEY = "PAGE_NAME";
+    public static final String FOLDER_ID_KEY = "FOLDER_ID";
+    public static final String IS_FOLDER_PAGE_KEY = "IS_FOLDER_PAGE";
+    public static final String ALL_TUTORIAL_PAGES_KEY = "ALL_TUTORIAL_PAGES";
+    public static final String ALL_FOLDER_PAGES_KEY = "ALL_FOLDER_PAGES";
+
     //TUTORIAL FIELD KEYS END
 
+    public static final String IS_FROM_LIBRARY_ACTIVITY_CONTEXT_KEY = "IS_FROM_LIBRARY_ACTIVITY_CONTEXT";
 
 
 
