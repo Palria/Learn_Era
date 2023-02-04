@@ -186,9 +186,9 @@ String categorySelected = "";
 
         //init and show some dummy libraries
         ArrayList<LibraryDataModel> libraryArrayList = new ArrayList<>();
-        libraryArrayList.add(new LibraryDataModel("Chown Town","lasdjf","","","",0l,0l,0l,"",0l,0l,0l,0l,0l));
-        libraryArrayList.add(new LibraryDataModel("Palria The Learning way","lasdjf","","","",0l,0l,0l,"",0l,0l,0l,0l,0l));
-        libraryArrayList.add(new LibraryDataModel("Paraka Tendi","lasdjf","","","",0l,0l,0l,"",0l,0l,0l,0l,0l));
+        libraryArrayList.add(new LibraryDataModel("Chown Town","lasdjf",null,"","",0l,0l,0l,"",0l,0l,0l,0l,0l));
+        libraryArrayList.add(new LibraryDataModel("Palria The Learning way","lasdjf",null,"","",0l,0l,0l,"",0l,0l,0l,0l,0l));
+        libraryArrayList.add(new LibraryDataModel("Paraka Tendi","lasdjf",null,"","",0l,0l,0l,"",0l,0l,0l,0l,0l));
 
         HomeBooksRecyclerListViewAdapter homeBooksRecyclerListViewAdapter = new HomeBooksRecyclerListViewAdapter(libraryArrayList,getContext());
         booksItemRecyclerListView.setHasFixedSize(true);
@@ -409,7 +409,7 @@ private void changeCategory(String categorySelected){
     }
 
     private void fetchLibrary(String categoryTag,LibraryFetchListener libraryFetchListener){
-        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereEqualTo(GlobalConfig.LIBRARY_CATEGORY_KEY,categoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY);
+        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,categoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY);
 
         libraryQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
@@ -456,7 +456,7 @@ private void changeCategory(String categorySelected){
 
 
                                                     String libraryName = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
-                                                    String libraryCategory = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_KEY);
+                                                    ArrayList<String> libraryCategoryArray = (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
                                                     String dateCreated = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_KEY);
                                                     String authorUserId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
                                                     String libraryCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY);
@@ -469,7 +469,7 @@ private void changeCategory(String categorySelected){
                                                     libraryFetchListener.onSuccess(new LibraryDataModel(
                                                             libraryName,
                                                             libraryId,
-                                                            libraryCategory,
+                                                            libraryCategoryArray,
                                                             libraryCoverPhotoDownloadUrl,
                                                             dateCreated,
                                                             totalNumberOfTutorials,
@@ -492,8 +492,8 @@ private void changeCategory(String categorySelected){
                 });
     }
 
-    private void fetchTutorial(String libraryCategoryTag,TutorialFetchListener tutorialFetchListener){
-        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.LIBRARY_CONTAINER_CATEGORY_KEY,libraryCategoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY);
+    private void fetchTutorial(String tutorialCategoryTag,TutorialFetchListener tutorialFetchListener){
+        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY);
 
         libraryQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
@@ -543,7 +543,7 @@ private void changeCategory(String categorySelected){
 
 
                                                     String tutorialName = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
-                                                    String libraryCategory = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_CONTAINER_CATEGORY_KEY);
+                                                    String tutorialCategory = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_CATEGORY_KEY);
                                                     String dateCreated = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DATE_CREATED_KEY);
                                                     String authorUserId = ""+ documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY);
                                                     long totalNumberOfPages = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY) :0L;

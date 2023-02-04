@@ -14,6 +14,7 @@ public class TutorialDataModel {
 
 /**The name of the tutorial*/
     String tutorialName;
+    String tutorialCategory;
     /**The id of the book*/
     String tutorialId;
     /**The date when this book was created*/

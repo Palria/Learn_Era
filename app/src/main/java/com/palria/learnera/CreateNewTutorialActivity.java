@@ -52,7 +52,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
     /**The library category that will contain this tutorial.
      * The value will be initialized from {@link Intent}
      * */
-    String libraryContainerCategory;
+    String tutorialCategory;
     String tutorialDescription;
 
     EditText tutorialNameEditText;
@@ -322,7 +322,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
             tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
         }
         libraryContainerId = intent.getStringExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
-        libraryContainerCategory = intent.getStringExtra(GlobalConfig.LIBRARY_CONTAINER_CATEGORY_KEY);
+        tutorialCategory = intent.getStringExtra(GlobalConfig.TUTORIAL_CATEGORY_KEY);
 
     }
 
@@ -431,20 +431,18 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
 
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY,tutorialName);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DESCRIPTION_KEY,tutorialDescription);
-        tutorialProfileDetails.put(GlobalConfig.LIBRARY_CONTAINER_CATEGORY_KEY,libraryContainerCategory);
+        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategory);
         tutorialProfileDetails.put(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryContainerId);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+        tutorialProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY,0L);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserTokenId());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_KEY,GlobalConfig.getDate());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(tutorialName)) {
-            tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
-        }
-        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(tutorialName)) {
-            tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
-        }
+        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY,GlobalConfig.generateSearchVerbatimKeyWords(tutorialName));
+        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY,GlobalConfig.generateSearchAnyMatchKeyWords(tutorialName));
+
         writeBatch.set(allTutorialProfileDocumentReference,tutorialProfileDetails, SetOptions.merge());
 
 
@@ -495,7 +493,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
 
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY,tutorialName);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DESCRIPTION_KEY,tutorialDescription);
-        tutorialProfileDetails.put(GlobalConfig.LIBRARY_CONTAINER_CATEGORY_KEY,libraryContainerCategory);
+        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategory);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(tutorialName)) {

@@ -27,10 +27,15 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.models.LibraryDataModel;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class UserProfileFragment extends Fragment {
 
@@ -286,7 +291,7 @@ public class UserProfileFragment extends Fragment {
                             long finalTotalNumberOfFiveStarRate = totalNumberOfFiveStarRate;
 
                             String libraryName = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
-                            String libraryCategory = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_KEY);
+                            ArrayList<String> libraryCategoryArray = (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
                             String dateCreated = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_KEY);
                             String authorUserId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
                             String libraryCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY);
@@ -299,7 +304,7 @@ public class UserProfileFragment extends Fragment {
                             libraryFetchListener.onSuccess(new LibraryDataModel(
                                     libraryName,
                                     libraryId,
-                                    libraryCategory,
+                                    libraryCategoryArray,
                                     libraryCoverPhotoDownloadUrl,
                                     dateCreated,
                                     totalNumberOfTutorials,
@@ -359,10 +364,36 @@ libraryView.setOnClickListener(new View.OnClickListener() {
         }
     }
 
+    private void becomeAnAuthor(ArrayList<String> categoryTagList, BecomeAuthorListener becomeAuthorListener){
+        DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
+        HashMap<String,Object> authorDetails = new HashMap<>();
+        authorDetails.put(GlobalConfig.AUTHOR_CATEGORY_TAG_ARRAY_KEY,categoryTagList);
+        authorDetails.put(GlobalConfig.IS_USER_AUTHOR_KEY,true);
+        authorDetails.put(GlobalConfig.AUTHOR_DATE_KEY,GlobalConfig.getDate());
+        authorDetails.put(GlobalConfig.AUTHOR_DATE_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+
+        userProfileDocumentReference.update(authorDetails)
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                becomeAuthorListener.onFailed(e.getMessage());
+            }
+        })
+        .addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                becomeAuthorListener.onSuccess();
+            }
+        });
+    }
 
     interface LibraryFetchListener{
         void onFailed(String errorMessage);
         void onSuccess(LibraryDataModel libraryDataModel);
+    }
+    interface BecomeAuthorListener{
+        void onFailed(String errorMessage);
+        void onSuccess();
     }
 
     interface OnUserProfileFetchListener{

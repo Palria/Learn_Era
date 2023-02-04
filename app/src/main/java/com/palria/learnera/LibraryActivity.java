@@ -13,6 +13,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.palria.learnera.models.*;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 public class LibraryActivity extends AppCompatActivity {
 
 String libraryId;
@@ -107,7 +109,7 @@ AlertDialog alertDialog;
 
 
                 String libraryName = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
-                String libraryCategory = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_KEY);
+                ArrayList<String> libraryCategoryArray = (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
                 String dateCreated = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_KEY);
                 String authorUserId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
                 String libraryCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY);
@@ -117,7 +119,7 @@ AlertDialog alertDialog;
                 libraryProfileFetchListener.onSuccess(new LibraryDataModel(
                         libraryName,
                         libraryId,
-                        libraryCategory,
+                        libraryCategoryArray,
                         libraryCoverPhotoDownloadUrl,
                         dateCreated,
                         totalNumberOfTutorials,

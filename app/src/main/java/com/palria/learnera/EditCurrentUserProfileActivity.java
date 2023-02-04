@@ -485,21 +485,15 @@ private void initUI(){
         userProfileDetails.put(GlobalConfig.USER_PROFILE_PHOTO_STORAGE_REFERENCE_KEY,profilePhotoStorageReference);
         userProfileDetails.put(GlobalConfig.IS_USER_PROFILE_PHOTO_INCLUDED_KEY,isProfilePhotoIncluded);
         userProfileDetails.put(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY,contactPhoneNumber);
-        userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_KEY,GlobalConfig.getDate());
-        userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         userProfileDetails.put(GlobalConfig.USER_TOKEN_ID_KEY,GlobalConfig.getCurrentUserTokenId());
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_EDITED_KEY,GlobalConfig.getDate());
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
 //        userProfileDetails.put(GlobalConfig.DOCUMENT_CREATED_KEY, "DOCUMENT_CREATED");
 
 
-        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(userDisplayName)) {
-            userProfileDetails.put(GlobalConfig.USER_SEARCH_VERBATIM_KEYWORD_KEY, FieldValue.arrayUnion(searchKeyword));
-        }
+                    userProfileDetails.put(GlobalConfig.USER_SEARCH_VERBATIM_KEYWORD_KEY, GlobalConfig.generateSearchVerbatimKeyWords(userDisplayName));
+                    userProfileDetails.put(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,GlobalConfig.generateSearchAnyMatchKeyWords(userDisplayName));
 
-        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(userDisplayName)) {
-            userProfileDetails.put(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
-        }
         writeBatch.set(userProfileDocumentReference,userProfileDetails);
 
 

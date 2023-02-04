@@ -58,7 +58,7 @@ public class HomeBooksRecyclerListViewAdapter extends RecyclerView.Adapter<HomeB
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(view.getContext(),"click on item: "+libraryDataModel.getLibraryCategory(),Toast.LENGTH_LONG).show();
+                Toast.makeText(view.getContext(),"click on item: "+libraryDataModel.getLibraryCategoryArrayList(),Toast.LENGTH_LONG).show();
             }
         });
 

@@ -1,5 +1,7 @@
 package com.palria.learnera.models;
 
+import java.util.ArrayList;
+
 /**
  *
  *
@@ -10,8 +12,8 @@ public class LibraryDataModel {
     private  String libraryName;
 /**The library Id*/
     private   String libraryId;
-/**The library category*/
-    private   String libraryCategory;
+/**The library category list*/
+    private   ArrayList<String> libraryCategoryArrayList;
     /**Cover photo download url from database*/
     private   String libraryCoverPhotoDownloadUrl;
     /**The date at which the library was created*/
@@ -66,7 +68,7 @@ public class LibraryDataModel {
    public LibraryDataModel(
             String libraryName,
             String libraryId,
-            String libraryCategory,
+            ArrayList<String> libraryCategoryArrayList,
             String libraryCoverPhotoDownloadUrl,
             String dateCreated,
             long totalNumberOfTutorials,
@@ -82,7 +84,7 @@ public class LibraryDataModel {
     ){
         this.libraryName = libraryName;
         this.libraryId = libraryId;
-        this.libraryCategory = libraryCategory;
+        this.libraryCategoryArrayList = libraryCategoryArrayList;
         this.libraryCoverPhotoDownloadUrl = libraryCoverPhotoDownloadUrl;
         this.dateCreated = dateCreated;
         this.totalNumberOfTutorials = totalNumberOfTutorials;
@@ -114,12 +116,12 @@ public class LibraryDataModel {
     public  void setLibraryId(String libraryId) {
         this.libraryId = libraryId;
     }
-    public String getLibraryCategory() {
-        return libraryCategory;
+    public ArrayList<String> getLibraryCategoryArrayList() {
+        return libraryCategoryArrayList;
     }
 
-    public  void setLibraryCategory(String libraryCategory) {
-        this.libraryCategory = libraryCategory;
+    public  void setLibraryCategoryArrayList(ArrayList<String> libraryCategoryArrayList) {
+        this.libraryCategoryArrayList = libraryCategoryArrayList;
     }
 
     public String getLibraryCoverPhotoDownloadUrl() {

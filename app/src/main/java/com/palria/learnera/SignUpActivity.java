@@ -283,6 +283,8 @@ public class SignUpActivity extends AppCompatActivity {
         userProfileDetails.put(GlobalConfig.IS_USER_BLOCKED_KEY,false);
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_KEY,GlobalConfig.getDate());
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_EDITED_KEY,GlobalConfig.getDate());
+        userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         userProfileDetails.put(GlobalConfig.USER_TOKEN_ID_KEY,GlobalConfig.getCurrentUserTokenId());
 
         for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(userDisplayName)) {
@@ -357,8 +359,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-    private void toggleProgress(boolean show)
-    {
+    private void toggleProgress(boolean show) {
         if(show){
             alertDialog.show();
         }else{

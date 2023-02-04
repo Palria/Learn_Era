@@ -15,6 +15,8 @@ package com.palria.learnera;
         import com.google.firebase.firestore.QuerySnapshot;
         import com.palria.learnera.models.LibraryDataModel;
 
+        import java.util.ArrayList;
+
 public class AllLibraryFragment extends Fragment {
 
     public AllLibraryFragment() {
@@ -80,7 +82,7 @@ fetchAllLibrary(new LibraryFetchListener() {
 
 
                             String libraryName = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
-                            String libraryCategory = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_KEY);
+                            ArrayList<String> libraryCategoryArray = (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
                             String dateCreated = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_KEY);
                             String authorUserId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
                             String libraryCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY);
@@ -90,7 +92,7 @@ fetchAllLibrary(new LibraryFetchListener() {
                             libraryFetchListener.onSuccess(new LibraryDataModel(
                                     libraryName,
                                     libraryId,
-                                    libraryCategory,
+                                    libraryCategoryArray,
                                     libraryCoverPhotoDownloadUrl,
                                     dateCreated,
                                     totalNumberOfTutorials,

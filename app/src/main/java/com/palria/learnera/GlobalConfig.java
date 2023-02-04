@@ -60,6 +60,8 @@ public class GlobalConfig {
     public static final String LAST_SEEN_KEY = "LAST_SEEN";
     public static final String AUTHOR_CATEGORY_TAG_ARRAY_KEY = "AUTHOR_CATEGORY_TAG_ARRAY";
     public static final String IS_USER_AUTHOR_KEY = "IS_USER_AUTHOR";
+    public static final String AUTHOR_DATE_KEY = "AUTHOR_DATE";
+    public static final String AUTHOR_DATE_TIME_STAMP_KEY = "AUTHOR_DATE_TIME_STAMP";
     static final String USER_ACTIVITY_LOG_KEY = "USER_ACTIVITY_LOG";
 
     public static final String TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY = "TOTAL_NUMBER_OF_USER_PROFILE_VISITORS";
@@ -116,7 +118,7 @@ public class GlobalConfig {
 
     public static final String LIBRARY_DISPLAY_NAME_KEY = "LIBRARY_DISPLAY_NAME";
     public static final String LIBRARY_DESCRIPTION_KEY = "LIBRARY_DESCRIPTION";
-    public static final String LIBRARY_CATEGORY_KEY = "LIBRARY_CATEGORY";
+    public static final String LIBRARY_CATEGORY_ARRAY_KEY = "LIBRARY_CATEGORY_ARRAY";
     public static final String LIBRARY_ID_KEY = "LIBRARY_ID";
     public static final String LIBRARY_AUTHOR_ID_KEY = "LIBRARY_AUTHOR_ID";
     public static final String LIBRARY_DATE_CREATED_KEY = "LIBRARY_DATE_CREATED";
@@ -145,7 +147,7 @@ public class GlobalConfig {
     public static final String IS_CREATE_NEW_TUTORIAL_KEY = "IS_CREATE_NEW_TUTORIAL";
     public static final String ALL_TUTORIAL_KEY = "ALL_TUTORIAL";
     public static final String LIBRARY_CONTAINER_ID_KEY = "LIBRARY_CONTAINER_ID";
-    public static final String LIBRARY_CONTAINER_CATEGORY_KEY = "LIBRARY_CONTAINER_CATEGORY";
+    public static final String TUTORIAL_CATEGORY_KEY = "TUTORIAL_CATEGORY";
     public static final String TUTORIAL_PROFILE_KEY = "TUTORIAL_PROFILE";
     public static final String TUTORIAL_DISPLAY_NAME_KEY = "TUTORIAL_DISPLAY_NAME";
     public static final String TUTORIAL_DESCRIPTION_KEY = "TUTORIAL_DESCRIPTION";
@@ -719,14 +721,13 @@ public class GlobalConfig {
      * @return {@link ArrayList} the list that contains the keywords
      * */
     static ArrayList<String> generateSearchVerbatimKeyWords(@NonNull String itemName){
-        ArrayList<String> searchVerbatimKeywordsArrayList = null;
+        ArrayList<String> searchVerbatimKeywordsArrayList = new ArrayList<>();
 
-        if(itemName != null && itemName.isEmpty()) {
+        if(itemName != null && !itemName.isEmpty()) {
             itemName = itemName.toLowerCase();
             int itemLength = itemName.length();
-
-            searchVerbatimKeywordsArrayList = (ArrayList<String>) Arrays.asList(itemName.split(" "));
             searchVerbatimKeywordsArrayList.add(itemName);
+            searchVerbatimKeywordsArrayList.addAll(Arrays.asList(itemName.split(" ")));
 
         }else{
             searchVerbatimKeywordsArrayList = new ArrayList<>();
@@ -741,10 +742,11 @@ public class GlobalConfig {
      * @param itemName the {@link String} to be trimmed
      * @return {@link ArrayList} the list that contains the keywords
      * */
+
     static ArrayList<String> generateSearchAnyMatchKeyWords(@NonNull String itemName) {
         ArrayList<String> searchAnyMatchKeywordsArrayList = new ArrayList<>();
 
-        if (itemName != null && itemName.isEmpty()) {
+        if (itemName != null && !itemName.isEmpty()) {
             itemName = itemName.toLowerCase();
             int itemLength = itemName.length();
 
