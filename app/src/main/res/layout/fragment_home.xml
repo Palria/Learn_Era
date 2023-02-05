@@ -94,9 +94,9 @@
             <androidx.cardview.widget.CardView
                 app:cardCornerRadius="6pt"
                 android:background="@drawable/rounded_white_bg"
-                android:layout_marginHorizontal="8pt"
+                android:layout_marginHorizontal="5pt"
                 android:layout_width="match_parent"
-                android:layout_height="65dp">
+                android:layout_height="60dp">
 
 <!--                <HorizontalScrollView
                     android:layout_width="match_parent"
@@ -123,6 +123,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:tabMode="scrollable"
+                        app:tabTextAppearance="@style/MyCustomTextAppearance"
                         app:tabIndicator="@drawable/ic_baseline_minimize_24"
                         app:tabIndicatorFullWidth="false"
                         >

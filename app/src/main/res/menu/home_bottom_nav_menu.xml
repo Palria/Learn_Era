@@ -22,9 +22,9 @@
 
     <item
         app:showAsAction="always"
-        android:id="@+id/stats_item"
-        android:title="Stats"
-        android:icon="@drawable/ic_baseline_bar_chart_24"
+        android:id="@+id/tutorials_item"
+        android:title="Tutorials"
+        android:icon="@drawable/ic_baseline_dynamic_feed_24"
         />
 
     <item

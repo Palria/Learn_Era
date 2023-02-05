@@ -14,11 +14,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,7 +29,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
 import com.palria.learnera.models.StatisticsDataModel;
+import com.palria.learnera.widgets.LEBottomSheetDialog;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -43,7 +48,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     FrameLayout userStatisticsFrameLayout;
     FrameLayout userProfileFrameLayout;
 
+    FloatingActionButton fab;
 
+    //learn era bottom sheet dialog
+    LEBottomSheetDialog leBottomSheetDialog;
 
 
     @Override
@@ -59,6 +67,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             initUI();
             initializeApp();
+
+
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    leBottomSheetDialog.show();
+
+                }
+            });
 
     }
 
@@ -80,11 +99,36 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         userStatisticsFrameLayout = findViewById(R.id.statisticsFragment);
         userProfileFrameLayout = findViewById(R.id.userProfileFragment);
 
+        fab = findViewById(R.id.fab);
 
         bottomNavigationView.setBackground(null);
 //        bottomNavigationView.getIt
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.home_item);
+
+        leBottomSheetDialog = new LEBottomSheetDialog(this);
+
+        leBottomSheetDialog.addOptionItem("New Library", R.drawable.ic_baseline_library_add_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(MainActivity.this, "lbrary", Toast.LENGTH_SHORT).show();
+                    }
+                },0)
+                .addOptionItem("New Tutorial", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(MainActivity.this, "tutorial", Toast.LENGTH_SHORT).show();
+                    }
+                }, 0)
+                .addOptionItem("New Post", R.drawable.ic_baseline_add_circle_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        
+                    }
+                }, 0)
+
+                .render();
+
 
 
     }
@@ -108,7 +152,7 @@ if(GlobalConfig.isUserLoggedIn()) {
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.stats_item:
+            case R.id.tutorials_item:
                 if(isUserStatisticsFragmentOpen){
                     //Just set the frame layout visibility
                     setFrameLayoutVisibility(userStatisticsFrameLayout);

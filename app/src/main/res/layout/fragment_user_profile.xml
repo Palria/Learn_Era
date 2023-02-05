@@ -16,7 +16,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
+        android:visibility="visible"
         >
 
         <LinearLayout
@@ -32,7 +32,7 @@
                 android:layout_height="70pt"/>
 
             <RelativeLayout
-                android:paddingHorizontal="10pt"
+                android:paddingHorizontal="5pt"
                 android:layout_marginTop="-35pt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -101,15 +101,17 @@
     android:layout_height="wrap_content">
 
     <Button
+        android:id="@+id/statsButton"
         android:layout_weight="1"
         android:layout_marginTop="6pt"
         android:background="@drawable/default_auth_btn"
-        android:text="Create Library"
+        android:text="View Stats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:layout_marginLeft="4pt"
+        android:id="@+id/logButton"
+        android:layout_marginHorizontal="4pt"
         android:paddingVertical="6pt"
         android:textStyle="bold"
         android:textAlignment="center"
@@ -122,6 +124,16 @@
         android:text="Activity Log"
         android:foreground="@android:color/transparent"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/profileMoreIcon"
+        android:drawableEnd="@drawable/ic_baseline_more_vert_24"
+        android:layout_weight="1"
+        android:drawableTint="@color/white"
+        android:layout_marginTop="6pt"
+        android:background="@drawable/default_auth_btn"
+        android:layout_width="8pt"
         android:layout_height="wrap_content"/>
 
 
