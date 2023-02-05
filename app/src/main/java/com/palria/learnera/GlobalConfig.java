@@ -102,6 +102,9 @@ public class GlobalConfig {
 
 
     public static final String REVIEWS_KEY = "REVIEWS";
+    public static final String TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY = "TOTAL_NUMBER_OF_AUTHOR_REVIEWS";
+    public static final String TOTAL_NUMBER_OF_LIBRARY_REVIEWS_KEY = "TOTAL_NUMBER_OF_LIBRARY_REVIEWS";
+    public static final String TOTAL_NUMBER_OF_TUTORIAL_REVIEWS_KEY = "TOTAL_NUMBER_OF_TUTORIAL_REVIEWS";
     public static final String IS_AUTHOR_REVIEW_KEY = "IS_AUTHOR_REVIEW";
     public static final String IS_LIBRARY_REVIEW_KEY = "IS_LIBRARY_REVIEW";
     public static final String IS_TUTORIAL_REVIEW_KEY = "IS_TUTORIAL_REVIEW";
@@ -109,6 +112,9 @@ public class GlobalConfig {
     public static final String REVIEW_COMMENT_KEY = "REVIEW_COMMENT";
     public static final String STAR_LEVEL_KEY = "STAR_LEVEL";
     public static final String DATE_REVIEWED_KEY = "DATE_REVIEWED";
+    public static final String REVIEWER_ID_KEY = "REVIEWER_ID";
+    public static final String DATE_REVIEWED_TIME_STAMP_KEY = "DATE_REVIEWED_TIME_STAMP";
+    public static final String PERFORMANCE_TAG_KEY = "PERFORMANCE_TAG";
 
 
     //LIBRARY FIELD KEYS BEGIN

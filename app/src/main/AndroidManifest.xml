@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LearnEra">
         <activity
+            android:name=".CreateNewReviewActivity"
+            android:exported="true" />
+        <activity
             android:name=".TutorialFolderActivity"
             android:exported="true" />
         <activity
