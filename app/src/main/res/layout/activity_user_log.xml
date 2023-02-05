@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".UserStatisticsFragment">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        app:titleCentered="true"
+        app:title="Activity Logs"
+        app:titleTextColor="@color/white"
+        android:theme="@style/ToolbarColoredBackArrow"
+        android:background="@color/teal_700"
+        android:layout_height="?attr/actionBarSize"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+
+            >
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/auth_bg_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="30pt"/>
+
+                <androidx.cardview.widget.CardView
+                    app:cardCornerRadius="6pt"
+                    android:background="@drawable/rounded_white_bg"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="-15pt"
+                    android:layout_marginHorizontal="5pt"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:paddingHorizontal="4pt"
+                        android:paddingVertical="7pt"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:textSize="8pt"
+                            android:textStyle="bold"
+                            android:text="My Activity History"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+
+                        <Button
+                            android:id="@+id/filterButton"
+                            android:drawableTint="@color/white"
+                            android:text=""
+                            android:background="@drawable/default_auth_btn"
+                            android:drawableEnd="@drawable/ic_baseline_filter_alt_24"
+                            android:layout_width="25pt"
+                            android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_marginTop="5pt"
+                android:id="@+id/activityLogContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+        <!--<TextView-->
+        <!--    android:id="@+id/failureIndicatorTextViewId"-->
+        <!--    android:layout_width="match_parent"-->
+        <!--    android:layout_height="match_parent"-->
+        <!--    android:text="Failed to get your activity statistics"-->
+        <!--    app:layout_constraintStart_toStartOf="parent"-->
+        <!--    app:layout_constraintTop_toTopOf="parent"-->
+        <!--    app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--    app:layout_constraintEnd_toEndOf="parent"-->
+        <!--    android:visibility="gone"-->
+        <!--    />-->
+        <!--    <ProgressBar-->
+        <!--        android:id="@+id/progressBarId"-->
+        <!--        android:layout_width="wrap_content"-->
+        <!--        android:layout_height="wrap_content"-->
+        <!--        app:layout_constraintStart_toStartOf="parent"-->
+        <!--        app:layout_constraintTop_toTopOf="parent"-->
+        <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--        app:layout_constraintEnd_toEndOf="parent"-->
+        <!--        android:theme="@style/Theme.LearnEra"-->
+        <!--        />-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+</FrameLayout>

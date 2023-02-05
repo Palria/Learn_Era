@@ -1,6 +1,7 @@
 package com.palria.learnera;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
@@ -16,11 +17,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -33,8 +36,10 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.models.LibraryDataModel;
+import com.palria.learnera.widgets.LEBottomSheetDialog;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class UserProfileFragment extends Fragment {
@@ -55,8 +60,23 @@ public class UserProfileFragment extends Fragment {
     BottomAppBar bottomAppBar;
 
     TextView   failureIndicatorTextView;
+    Button profileMoreIconButton;
+    Button statsButton;
+
+    TextView logButton;
+
+    //learn era bottom sheet dialog
+    LEBottomSheetDialog leBottomSheetDialog;
+
+    boolean isUserAuthor = false;
+
+    //replace all catetoareis with categoreis from database
+    String[] categories = {"Software Development", "Ui Design", "Web Development", "Machine Learning",
+    "Database Design", "Furniture", "Internet", "Communication", "Story", "Drama", "Podcasts"};
 
 
+    boolean[] selectedCategories;
+    ArrayList<Integer> catsList = new ArrayList<>();
 
     public UserProfileFragment() {
         // Required empty public constructor
@@ -69,6 +89,8 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        selectedCategories = new boolean[categories.length];
+
         getProfile(new OnUserProfileFetchListener() {
             @Override
             public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
@@ -142,6 +164,39 @@ public class UserProfileFragment extends Fragment {
            }
        });
 
+        profileMoreIconButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                leBottomSheetDialog.show();
+
+            }
+        });
+
+
+        statsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(getContext(), UserStatsActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
+        logButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(getContext(), UserActivityLogActivity.class);
+                startActivity(intent);
+
+            }
+        });
+
+
+
+
        return parentView;
     }
 
@@ -191,13 +246,88 @@ public class UserProfileFragment extends Fragment {
         currentDisplayNameView = parentView.findViewById(R.id.current_name);
         currentEmailView = parentView.findViewById(R.id.current_email);
         currentCountryOfResidence = parentView.findViewById(R.id.current_country);
+        logButton=parentView.findViewById(R.id.logButton);
+        statsButton=parentView.findViewById(R.id.statsButton);
 
         swipeRefreshLayout = parentView.findViewById(R.id.swiperRefreshLayout);
+        profileMoreIconButton = parentView.findViewById(R.id.profileMoreIcon);
+
 
         alertDialog = new AlertDialog.Builder(getContext())
                 .setCancelable(false)
                 .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
                 .create();
+
+        leBottomSheetDialog = new LEBottomSheetDialog(getContext());
+
+        leBottomSheetDialog
+                .addOptionItem("My Tutorials", R.drawable.ic_baseline_dynamic_feed_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                }, 0)
+                .addOptionItem("My Libraries", R.drawable.ic_baseline_library_books_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                }, 0);
+
+
+
+        if(!isUserAuthor){
+            leBottomSheetDialog.addOptionItem("Become An Author", R.drawable.ic_baseline_edit_24, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //show they are going to become an author
+                    leBottomSheetDialog.hide();
+                    Toast.makeText(getContext(), "author not", Toast.LENGTH_SHORT).show();
+                    showPromptToBeAnAuthor();
+
+                }
+            },0);
+        }
+        leBottomSheetDialog.render();
+
+    }
+
+    private void showPromptToBeAnAuthor() {
+
+        // Initialize alert dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        // set title
+        builder.setTitle("Choose Prefered Categories for Your Library.");
+
+        // set dialog non cancelable
+        builder.setCancelable(false);
+        builder.setTitle("Are you sure to become an author in "+getString(R.string.app_name)+" ?")
+                .setMessage("When you become an author you are abale to create your own libraryes and tutorials." +
+                        "Click Yes to be Author.");
+
+
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //make a user as a author here
+
+                isUserAuthor = !isUserAuthor;
+
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+
+        builder.show();
+
     }
 
     private  void getProfile(OnUserProfileFetchListener onUserProfileFetchListener){
