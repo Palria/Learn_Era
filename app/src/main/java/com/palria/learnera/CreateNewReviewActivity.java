@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -32,6 +34,7 @@ long starLevel = 1;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_review);
+
     }
 
     private void reviewAuthor(OnReviewListener onReviewListener){
@@ -87,7 +90,7 @@ long starLevel = 1;
         .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
-                onReviewListener.onSuccess();
+                onReviewListener.onSuccess(true,false,false);
             }
         });
 
@@ -144,7 +147,7 @@ long starLevel = 1;
         .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
-                onReviewListener.onSuccess();
+                onReviewListener.onSuccess(false,true,false);
             }
         });
 
@@ -204,14 +207,14 @@ long starLevel = 1;
         .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
-                onReviewListener.onSuccess();
+                onReviewListener.onSuccess(false,false,true);
             }
         });
 
     }
 
     interface OnReviewListener{
-        void onSuccess();
+        void onSuccess(boolean isReviewAuthor,boolean isReviewLibrary,boolean isReviewTutorial);
         void onFailed(String errorMessage);
     }
 }

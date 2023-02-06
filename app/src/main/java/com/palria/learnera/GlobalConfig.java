@@ -15,12 +15,16 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ServerTimestamp;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.model.ServerTimestamps;
 import com.google.firebase.storage.FirebaseStorage;
 import com.palria.learnera.models.WelcomeScreenItemModal;
 
@@ -28,13 +32,16 @@ import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
+
 //authorId_libraryid_tutorialId
 //performance tag
 //load user profile once from here
+//RULE ADD NUMBER OFF BOOK-MARKS
 public class GlobalConfig {
 
     private static String CURRENT_USER_ID;
@@ -186,10 +193,81 @@ public class GlobalConfig {
     public static final String IS_FOLDER_PAGE_KEY = "IS_FOLDER_PAGE";
     public static final String ALL_TUTORIAL_PAGES_KEY = "ALL_TUTORIAL_PAGES";
     public static final String ALL_FOLDER_PAGES_KEY = "ALL_FOLDER_PAGES";
+    public static final String TUTORIAL_PAGE_ID_KEY = "TUTORIAL_PAGE_ID";
+    public static final String FOLDER_PAGE_ID_KEY = "FOLDER_PAGE_ID";
 
     //TUTORIAL FIELD KEYS END
 
     public static final String IS_FROM_LIBRARY_ACTIVITY_CONTEXT_KEY = "IS_FROM_LIBRARY_ACTIVITY_CONTEXT";
+
+
+    public static final String ACTION_DOER_ID_KEY = "ACTION_DOER_ID";
+
+    public static final String EVENT_SECONDS_KEY = "EVENT_SECONDS";
+    public static final String EVENT_MINUTE_KEY = "EVENT_MINUTE";
+    public static final String EVENT_HOUR_KEY = "EVENT_HOUR";
+    public static final String EVENT_DAY_KEY = "EVENT_DAY";
+    public static final String EVENT_WEEK_KEY = "EVENT_WEEK";
+    public static final String EVENT_MONTH_KEY = "EVENT_MONTH";
+    public static final String EVENT_YEAR_KEY = "EVENT_YEAR";
+
+
+    public static final String ACTIVITY_LOG_TYPE_KEY = "ACTIVITY_LOG_TYPE";
+    public static final String LOG_TIME_STAMP_KEY = "LOG_TIME_STAMP";
+
+    public static final String IS_AUTHOR_AFFECTED_KEY = "IS_AUTHOR_AFFECTED";
+    public static final String IS_LIBRARY_AFFECTED_KEY = "IS_LIBRARY_AFFECTED";
+    public static final String IS_TUTORIAL_AFFECTED_KEY = "IS_TUTORIAL_AFFECTED";
+    public static final String IS_TUTORIAL_FOLDER_AFFECTED_KEY = "IS_TUTORIAL_FOLDER_AFFECTED";
+    public static final String IS_TUTORIAL_PAGE_AFFECTED_KEY = "IS_TUTORIAL_PAGE_AFFECTED";
+    public static final String IS_FOLDER_PAGE_AFFECTED_KEY = "IS_FOLDER_PAGE_AFFECTED";
+
+    public static final String ACTIVITY_LOG_USER_REVIEW_AUTHOR_TYPE_KEY = "ACTIVITY_LOG_USER_REVIEW_AUTHOR_TYPE";
+    public static final String ACTIVITY_LOG_USER_SIGN_UP_TYPE_KEY = "ACTIVITY_LOG_USER_SIGN_UP_TYPE";
+    public static final String ACTIVITY_LOG_USER_SIGN_IN_TYPE_KEY = "ACTIVITY_LOG_USER_SIGN_IN_TYPE";
+    public static final String ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE";
+    public static final String ACTIVITY_LOG_USER_DELETE_AUTHOR_REVIEW_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_AUTHOR_REVIEW_TYPE";
+    public static final String ACTIVITY_LOG_USER_EDIT_AUTHOR_REVIEW_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_AUTHOR_REVIEW_TYPE";
+    public static final String ACTIVITY_LOG_USER_VISIT_AUTHOR_TYPE_KEY = "ACTIVITY_LOG_USER_VISIT_AUTHOR_TYPE";
+
+
+    public static final String ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY = "ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE";
+    public static final String ACTIVITY_LOG_USER_DELETE_LIBRARY_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_LIBRARY_TYPE";
+    public static final String ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE";
+    public static final String ACTIVITY_LOG_USER_REVIEW_LIBRARY_TYPE_KEY = "ACTIVITY_LOG_USER_REVIEW_LIBRARY_TYPE";
+    public static final String ACTIVITY_LOG_USER_DELETE_LIBRARY_REVIEW_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_LIBRARY_REVIEW_TYPE";
+    public static final String ACTIVITY_LOG_USER_EDIT_LIBRARY_REVIEW_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_LIBRARY_REVIEW_TYPE";
+    public static final String ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY = "ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE";
+    public static final String ACTIVITY_LOG_USER_BOOK_MARK_LIBRARY_TYPE_KEY = "ACTIVITY_LOG_USER_BOOK_MARK_LIBRARY_TYPE";
+    public static final String ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_LIBRARY_TYPE_KEY = "ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_LIBRARY_TYPE";
+
+
+    public static final String ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY = "ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE";
+    public static final String ACTIVITY_LOG_USER_DELETE_TUTORIAL_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_TUTORIAL_TYPE";
+    public static final String ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE";
+    public static final String ACTIVITY_LOG_USER_REVIEW_TUTORIAL_TYPE_KEY = "ACTIVITY_LOG_USER_REVIEW_TUTORIAL_TYPE";
+    public static final String ACTIVITY_LOG_USER_DELETE_TUTORIAL_REVIEW_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_TUTORIAL_REVIEW_TYPE";
+    public static final String ACTIVITY_LOG_USER_EDIT_TUTORIAL_REVIEW_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_TUTORIAL_REVIEW_TYPE";
+    public static final String ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY = "ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE";
+    public static final String ACTIVITY_LOG_USER_BOOK_MARK_TUTORIAL_TYPE_KEY = "ACTIVITY_LOG_USER_BOOK_MARK_TUTORIAL_TYPE";
+    public static final String ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_TUTORIAL_TYPE_KEY = "ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_TUTORIAL_TYPE";
+
+
+    public static final String ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_FOLDER_TYPE_KEY = "ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_FOLDER_TYPE";
+    public static final String ACTIVITY_LOG_USER_EDIT_TUTORIAL_FOLDER_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_TUTORIAL_FOLDER_TYPE";
+    public static final String ACTIVITY_LOG_USER_DELETE_TUTORIAL_FOLDER_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_TUTORIAL_FOLDER_TYPE";
+
+
+    public static final String ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE";
+    public static final String ACTIVITY_LOG_USER_EDIT_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_TUTORIAL_PAGE_TYPE";
+    public static final String ACTIVITY_LOG_USER_DELETE_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_TUTORIAL_PAGE_TYPE";
+
+
+    public static final String ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE";
+    public static final String ACTIVITY_LOG_USER_EDIT_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_FOLDER_PAGE_TYPE";
+    public static final String ACTIVITY_LOG_USER_DELETE_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_FOLDER_PAGE_TYPE";
+
+
 
 
 
@@ -800,7 +878,8 @@ public class GlobalConfig {
          * Returns the local date at when an action was performed
          * @return {@link String} the string that represents the date value
          * */
-    static  public String getDate(){
+        @Deprecated
+      static  public String getDate(){
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd', 'HH:mm:ss", Locale.US);
         Date date = new Date();
@@ -808,6 +887,40 @@ public class GlobalConfig {
 
 
         return formattedDate;
+    }
+
+      static  public int getEventSeconds(){
+        return  Integer.parseInt(new SimpleDateFormat("ss", Locale.US).format(new Date()));
+        }
+      static  public int getEventMinute(){
+            return  Integer.parseInt(new SimpleDateFormat("mm", Locale.US).format(new Date()));
+        }
+      static  public int getEventHour(){
+          return  Integer.parseInt(new SimpleDateFormat("HH", Locale.US).format(new Date()));
+
+        }
+      static  public int getEventDay(){
+          return  Integer.parseInt(new SimpleDateFormat("dd", Locale.US).format(new Date()));
+
+        }
+      static  public int getEventWeek(){
+//          return  Integer.parseInt(new SimpleDateFormat("dd", Locale.US).format(new Date()));
+          return  Calendar.getInstance().get(Calendar.WEEK_OF_YEAR);
+
+        }
+      static  public int getEventMonth(){
+          return  Integer.parseInt(new SimpleDateFormat("MM", Locale.US).format(new Date()));
+
+        }
+      static  public int getEventYear(){
+        return  Integer.parseInt(new SimpleDateFormat("yyyy", Locale.US).format(new Date()));
+
+    }
+
+
+    static  public FieldValue getServerTimeStamp(){
+
+        return FieldValue.serverTimestamp();
     }
 
 
@@ -818,6 +931,56 @@ public class GlobalConfig {
         list.add(new WelcomeScreenItemModal(R.drawable.undraw_online_reading_np7n,"Experience of High level reading","Experience the reading high level of books from authors worldwide for free"));
 
         return list;
+    }
+//
+    public static void updateActivityLog(String activityLogType, String authorId, String libraryId, String tutorialId, boolean isAuthorAffected, boolean isLibraryAffected, boolean isTutorialAffected,String tutorialFolderId ,String tutorialPageId ,String folderPageId , boolean isTutorialFolderAffected, boolean isTutorialPageAffected, boolean isFolderPageAffected){
+            String activityLogId = getRandomString(10);
+            HashMap<String,Object> activityLogDetails = new HashMap<>();
+//            activityLogDetails.put(LOG_NOTE_KEY,);
+            activityLogDetails.put(ACTION_DOER_ID_KEY,getCurrentUserId());
+            activityLogDetails.put(EVENT_SECONDS_KEY,(long)getEventSeconds());
+            activityLogDetails.put(EVENT_MINUTE_KEY,(long)getEventMinute());
+            activityLogDetails.put(EVENT_HOUR_KEY,(long)getEventHour());
+            activityLogDetails.put(EVENT_DAY_KEY,(long)getEventDay());
+            activityLogDetails.put(EVENT_WEEK_KEY,(long)getEventWeek());
+            activityLogDetails.put(EVENT_MONTH_KEY,(long)getEventMonth());
+            activityLogDetails.put(EVENT_YEAR_KEY,(long)getEventYear());
+            activityLogDetails.put(LOG_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+            activityLogDetails.put(ACTIVITY_LOG_TYPE_KEY,activityLogType);
+            activityLogDetails.put(AUTHOR_ID_KEY,authorId);
+            activityLogDetails.put(LIBRARY_ID_KEY,libraryId);
+            activityLogDetails.put(TUTORIAL_ID_KEY,tutorialId);
+            activityLogDetails.put(FOLDER_ID_KEY,tutorialFolderId);
+            activityLogDetails.put(TUTORIAL_PAGE_ID_KEY,tutorialPageId);
+            activityLogDetails.put(FOLDER_PAGE_ID_KEY,folderPageId);
+            activityLogDetails.put(IS_AUTHOR_AFFECTED_KEY,isAuthorAffected);
+            activityLogDetails.put(IS_LIBRARY_AFFECTED_KEY,isLibraryAffected);
+            activityLogDetails.put(IS_TUTORIAL_AFFECTED_KEY,isTutorialAffected);
+            activityLogDetails.put(IS_TUTORIAL_FOLDER_AFFECTED_KEY,isTutorialFolderAffected);
+            activityLogDetails.put(IS_TUTORIAL_PAGE_AFFECTED_KEY,isTutorialPageAffected);
+            activityLogDetails.put(IS_FOLDER_PAGE_AFFECTED_KEY,isFolderPageAffected);
+
+
+        getFirebaseFirestoreInstance()
+                .collection(ALL_USERS_KEY)
+                .document(getCurrentUserId())
+                .collection(USER_ACTIVITY_LOG_KEY)
+                .document(activityLogId)
+                .set(activityLogDetails)
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+
+                    }
+                });
+
+
     }
 
     /**This method returns the average number of the item's star rating
@@ -920,25 +1083,7 @@ public class GlobalConfig {
         return 0.0F;
     }
 
-    static void updateUserActivityLog(HashMap<String,Object> logDataMap,ActionCallback actionCallback){
-        getFirebaseFirestoreInstance().collection(ALL_USERS_KEY)
-                .document(getCurrentUserId())
-                .collection(USER_ACTIVITY_LOG_KEY)
-                .document(USER_ACTIVITY_LOG_KEY)
-                .set(logDataMap, SetOptions.merge())
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        actionCallback.onFailed(e.getMessage());
-                    }
-                })
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                actionCallback.onSuccess();
-            }
-        });
-    }
+
     /*
         static HashMap<String,Double> getStarMap(int fiveStar,int fourStar, int threeStar, int twoStar, int oneStar){
         HashMap<String,Double> starHashMap = new HashMap<>();

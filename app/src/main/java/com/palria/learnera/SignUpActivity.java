@@ -126,9 +126,10 @@ public class SignUpActivity extends AppCompatActivity {
                                 GlobalConfig.signInUserWithEmailAndPassword(SignUpActivity.this, email, password, new GlobalConfig.SignInListener() {
                                     @Override
                                     public void onSuccess(String email, String password) {
+                                        String uid = FirebaseAuth.getInstance().getCurrentUser()!=null?FirebaseAuth.getInstance().getCurrentUser().getUid():"0";
                                         //user has signed in so can now write to the database, now create his first profile
 //                                        Toast.makeText(SignUpActivity.this, "sign in success", Toast.LENGTH_SHORT).show();
-
+                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_TYPE_KEY,uid,null,null, true,false,false,null,null,null,false,false,false);
                                         createUserProfileInDatabase(new ProfileCreationListener() {
                                             @Override
                                             public void onSuccess(String userName) {

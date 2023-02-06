@@ -41,6 +41,8 @@ FrameLayout tutorialsFrameLayout;
             @Override
             public void onSuccess(LibraryDataModel libraryDataModel) {
             //use this libraryDataModel object to access the public methods.
+                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY,authorId,libraryId,null,false,true,false,null,null,null,false,false,false);
+
                 toggleProgress(false);
 
             }

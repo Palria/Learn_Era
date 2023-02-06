@@ -63,6 +63,8 @@ boolean isInProgress = false;
                         @Override
                         public void onSuccess(String email, String password) {
                             //user has successfully signed in
+                            GlobalConfig.setCurrentUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_SIGN_IN_TYPE_KEY,GlobalConfig.getCurrentUserId(),null,null,true,false,false,null,null,null,false,false,false);
                             isInProgress = false;
                             //hide progress
                             toggleProgress(false);

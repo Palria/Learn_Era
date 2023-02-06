@@ -227,6 +227,8 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                                    @Override
                                    public void onSuccess(String userName) {
                                        //succeed in editing profile
+                                       GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY,GlobalConfig.getCurrentUserId(),null,null,true,false,false,null,null,null,false,false,false);
+
                                        display_name.setText(userDisplayNameEditText.getText().toString());
                                        display_email.setText(contactEmailEditText.getText().toString());
                                        toggleProgress(false);
@@ -261,6 +263,8 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(String userName) {
                                 //succeed in editing profile
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY,GlobalConfig.getCurrentUserId(),null,null,true,false,true,null,null,null,false,false,false);
+
                                 display_name.setText(userDisplayNameEditText.getText().toString());
                                 display_email.setText(contactEmailEditText.getText().toString());
                                 toggleProgress(false);
@@ -284,6 +288,8 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(String userName) {
                             //succeed in editing profile
+                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY,GlobalConfig.getCurrentUserId(),null,null,true,false,true,null,null,null,false,false,false);
+
                             toggleProgress(false);
                             display_name.setText(userDisplayNameEditText.getText().toString());
                             display_email.setText(contactEmailEditText.getText().toString());

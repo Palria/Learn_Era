@@ -15,12 +15,27 @@ import com.palria.learnera.models.TutorialDataModel;
 
 public class TutorialActivity extends AppCompatActivity {
 String tutorialId = "";
+String authorId = "";
+String libraryId = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial);
         iniUI();
         fetchIntentData();
+
+        fetchTutorial(new TutorialFetchListener() {
+            @Override
+            public void onSuccess(TutorialDataModel tutorialDataModel) {
+                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY,authorId,libraryId,tutorialId,false,false,true,null,null,null,false,false,false);
+
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+
+            }
+        });
     }
 
     private void iniUI(){

@@ -70,7 +70,7 @@ public class UserProfileFragment extends Fragment {
 
     boolean isUserAuthor = false;
 
-    //replace all catetoareis with categoreis from database
+    //replace all categories with categories from database
     String[] categories = {"Software Development", "Ui Design", "Web Development", "Machine Learning",
     "Database Design", "Furniture", "Internet", "Communication", "Story", "Drama", "Podcasts"};
 
@@ -298,23 +298,22 @@ public class UserProfileFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
         // set title
-        builder.setTitle("Choose Prefered Categories for Your Library.");
+        builder.setTitle("Choose Preferred Categories for Your Library.");
 
         // set dialog non cancelable
         builder.setCancelable(false);
-        builder.setTitle("Are you sure to become an author in "+getString(R.string.app_name)+" ?")
-                .setMessage("When you become an author you are abale to create your own libraryes and tutorials." +
-                        "Click Yes to be Author.");
+        builder.setTitle("Become an author in "+getString(R.string.app_name)+" ?")
+                .setMessage("When you become an author you are able to create your own libraries and tutorials." +
+                        "Click Yes to be an Author.");
 
 
 
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                //make a user as a author here
+                //make a user as an author here
 
                 isUserAuthor = !isUserAuthor;
-
             }
         });
 
@@ -361,7 +360,8 @@ public class UserProfileFragment extends Fragment {
                         }
 
                         onUserProfileFetchListener.onSuccess( userDisplayName, userCountryOfResidence, contactEmail, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl, isUserBlocked, isUserProfilePhotoIncluded);
-
+                        Toast.makeText(getContext(), ""+documentSnapshot.getTimestamp(GlobalConfig.USER_PROFILE_DATE_EDITED_TIME_STAMP_KEY).toDate(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), ""+documentSnapshot.getTimestamp(GlobalConfig.USER_PROFILE_DATE_EDITED_TIME_STAMP_KEY).getNanoseconds(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

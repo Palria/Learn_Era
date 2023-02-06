@@ -198,6 +198,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                                 createNewTutorial(coverPhotoDownloadUrl,coverPhotoStorageReference, new OnTutorialEditionListener() {
                                     @Override
                                     public void onSuccess() {
+                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryContainerId,tutorialId,false,false,true,null,null,null,false,false,false);
 
                                     }
 
@@ -222,6 +223,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                                     editTutorial(coverPhotoDownloadUrl,coverPhotoStorageReference, new OnTutorialEditionListener() {
                                         @Override
                                         public void onSuccess() {
+                                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryContainerId,tutorialId,false,false,true,null,null,null,false,false,false);
 
                                         }
 
@@ -242,6 +244,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                             editTutorial(retrievedCoverPhotoDownloadUrl,retrievedCoverPhotoStorageReference, new OnTutorialEditionListener() {
                                 @Override
                                 public void onSuccess() {
+                                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryContainerId,tutorialId,false,false,true,null,null,null,false,false,false);
 
                                 }
 
@@ -258,6 +261,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                         createNewTutorial("", "",new OnTutorialEditionListener() {
                             @Override
                             public void onSuccess() {
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryContainerId,tutorialId,false,false,true,null,null,null,false,false,false);
 
                             }
 
@@ -271,6 +275,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                         editTutorial("","" ,new OnTutorialEditionListener() {
                             @Override
                             public void onSuccess() {
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryContainerId,tutorialId,false,false,true,null,null,null,false,false,false);
 
                             }
 
