@@ -2,6 +2,7 @@ package com.palria.learnera;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -61,7 +63,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 
         Toolbar tp = findViewById(R.id.topBar);
+
         setSupportActionBar(tp);
+
 
 
 
@@ -111,7 +115,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         leBottomSheetDialog.addOptionItem("New Library", R.drawable.ic_baseline_library_add_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(MainActivity.this, "lbrary", Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(MainActivity.this, CreateNewLibraryActivity.class);
+                        //creating new
+
+                        i.putExtra(GlobalConfig.IS_CREATE_NEW_LIBRARY_KEY,true);
+                        leBottomSheetDialog.hide();
+                        startActivity(i);
                     }
                 },0)
                 .addOptionItem("New Tutorial", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
@@ -132,6 +141,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 
     }
+
+
+
+
     /**<p>Initializes global variables which will be shared across every activities</p>
      * This method has to be called immediately after the invocation of {@link MainActivity#initUI()}
      * */

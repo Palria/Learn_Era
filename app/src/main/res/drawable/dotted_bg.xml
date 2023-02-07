@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+<item >
+    <shape >
+        <stroke android:width="1pt"
+            android:dashGap="1pt"
+            android:dashWidth="2pt"
+            android:color="@color/gray"/>
+        <corners android:radius="4pt"/>
+
+    </shape>
+</item>
+
+
+    <item
+
+        android:drawable="@drawable/ic_baseline_cloud_upload_24"
+        android:gravity="center_horizontal|center_vertical"
+        android:width="30dp"
+        android:height="30dp"
+        />
+
+
+</layer-list>

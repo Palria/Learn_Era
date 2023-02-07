@@ -29,7 +29,7 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/cover1"
                 android:layout_width="match_parent"
-                android:layout_height="70pt"/>
+                android:layout_height="40pt"/>
 
             <RelativeLayout
                 android:paddingHorizontal="5pt"
