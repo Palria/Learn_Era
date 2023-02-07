@@ -17,6 +17,8 @@
     <string name="edit_email_caption">Provide a valid contact email address where we can send some updates about in future.</string>
     <string name="email_address">Email Address</string>
     <string name="contact_caution">This is your primary phone number. This is used to contact you in the future when needed.</string>
+    <string name="cancel">Cancel</string>
+    <string name="create">Create</string>
 
 
 </resources>

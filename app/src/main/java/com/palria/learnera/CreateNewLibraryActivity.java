@@ -5,30 +5,38 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.Manifest;
 import android.content.ClipData;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -36,27 +44,36 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class CreateNewLibraryActivity extends AppCompatActivity {
 String libraryName;
 String libraryId;
+String libraryCategory;
 ArrayList<String> libraryCategoryArrayList;
 String libraryDescription;
 
 EditText libraryNameEditText;
-EditText libraryCategoryEditText;
+TextView libraryCategoryEditText;
 EditText libraryDescriptionEditText;
 ImageView coverPhotoImageView;
-/**
+Button cancelButton;
+TextView chooseCategoryTextView;
+boolean[] selectedCategories;
+ArrayList<Integer> categoriesList = new ArrayList<>();
+
+
+    /**
  * <p>Indicates whether the user is editing his library or creating a new library</p>
  * The {@link boolean} value is initialized from {@link Intent} data
  * */
-boolean isCreateNewLibrary = false;
+boolean isCreateNewLibrary = true;
 
 boolean isCameraImage = false;
 /**
@@ -97,7 +114,7 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
     /**
      * A {@link View} for performing the edition action
      * */
-    Button pickImageActionButton;
+    RoundedImageView pickImageActionButton;
 
     /**
      * A  variable for launching the gallery {@link Intent}
@@ -109,15 +126,38 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
      * */
     ActivityResultLauncher<Intent> openCameraLauncher;
 
+    /**
+     * loading alert dialog
+     *
+     */
+    AlertDialog alertDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_library);
         initUI();
         fetchIntentData();
+
+
+
         if(isCreateNewLibrary){
             //User is creating new library
             libraryId = GlobalConfig.getRandomString(100);
+            libraryCategoryArrayList=new ArrayList<>();
+            libraryCategoryArrayList.add("Software Development");
+            libraryCategoryArrayList.add("Web Development");
+            libraryCategoryArrayList.add("Graphic Design");
+            libraryCategoryArrayList.add("Ui Design");
+            libraryCategoryArrayList.add("Ethical Hacking");
+            libraryCategoryArrayList.add("Game Development");
+            libraryCategoryArrayList.add("Prototyping");
+            libraryCategoryArrayList.add("SEO");
+
+            selectedCategories=new boolean[libraryCategoryArrayList.size()];
+
+
+
         }else{
             //User is editing his library
             initializeLibraryProfile(new ProfileInitializationListener() {
@@ -147,7 +187,13 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                 if (result.getData() != null) {
                     Intent data=result.getData();
                         galleryImageUri = data.getData();
-                        Picasso.get().load(galleryImageUri).into(coverPhotoImageView);
+//                        Picasso.get().load(galleryImageUri)
+//                                .centerCrop()
+//                                .into(pickImageActionButton);
+                    Glide.with(CreateNewLibraryActivity.this)
+                            .load(galleryImageUri)
+                            .centerCrop()
+                            .into(pickImageActionButton);
                         isLibraryCoverPhotoIncluded = true;
                         isLibraryCoverPhotoChanged = true;
 
@@ -166,7 +212,11 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
 
                         if(bitmapFromCamera != null) {
                         cameraImageBitmap = bitmapFromCamera;
-                        coverPhotoImageView.setImageBitmap(cameraImageBitmap);
+                        //coverPhotoImageView.setImageBitmap(cameraImageBitmap);
+                        Glide.with(CreateNewLibraryActivity.this)
+                                .load(cameraImageBitmap)
+                                .centerCrop()
+                                .into(pickImageActionButton);
                         isLibraryCoverPhotoIncluded = true;
                         isLibraryCoverPhotoChanged = true;
                         }
@@ -180,8 +230,13 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
         createLibraryActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                boolean hasErrors = validateForm();
+                if(hasErrors)return;
+                //show alert
+                toggleProgress(true);
                 libraryName = libraryNameEditText.getText().toString();
-//                libraryCategory = libraryCategoryEditText.getText().toString();
+                libraryCategory = chooseCategoryTextView.getText().toString();
                 libraryDescription = libraryDescriptionEditText.getText().toString();
 
                 if(isLibraryCoverPhotoIncluded){
@@ -193,7 +248,7 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                                     @Override
                                     public void onSuccess() {
                                         GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryId,null,false,true,false,null,null,null,false,false,false);
-
+toggleProgress(false);
                                     }
 
                                     @Override
@@ -301,6 +356,118 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                 });
             }
         });
+
+        chooseCategoryTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                // Initialize alert dialog
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(CreateNewLibraryActivity.this);
+
+                // set title
+                builder.setTitle("Select Categories for Library.");
+
+                // set dialog non cancelable
+                builder.setCancelable(false);
+
+                String[] arr = new String[libraryCategoryArrayList.size()];
+                for(int i=0; i<arr.length;i++){
+                    arr[i]=libraryCategoryArrayList.get(i);
+                }
+
+                builder.setMultiChoiceItems(arr, selectedCategories, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i, boolean isChecked) {
+                        if (isChecked) {
+                            categoriesList.add(i);
+                            Collections.sort(categoriesList);
+                        } else {
+                            categoriesList.remove(Integer.valueOf(i));
+                        }
+                    }
+                });
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Initialize string builder
+                        StringBuilder stringBuilder = new StringBuilder();
+                        // use for loop
+                        for (int j = 0; j < categoriesList.size(); j++) {
+                            // concat array value
+                            stringBuilder.append(libraryCategoryArrayList.get(categoriesList.get(j)));
+                            // check condition
+                            if (j != categoriesList.size() - 1) {
+                                // When j value  not equal
+                                // to lang list size - 1
+                                // add comma
+                                stringBuilder.append(", ");
+                            }
+                        }
+                        if(categoriesList.size()>0) chooseCategoryTextView.setError(null);
+                        // set text on textView
+                        chooseCategoryTextView.setText(stringBuilder.toString());
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+
+                // show dialog
+                builder.show();
+
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            onBackPressed();  return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private boolean validateForm() {
+
+        if(TextUtils.isEmpty(libraryNameEditText.getText().toString().trim())){
+
+        libraryNameEditText.setError("Please Enter a valid library name.");
+        libraryNameEditText.requestFocus();
+        return true;
+
+        }
+
+        if(TextUtils.isEmpty(libraryDescriptionEditText.getText().toString().trim())){
+            libraryDescriptionEditText.setError("This field is required.");
+            libraryDescriptionEditText.requestFocus();
+            return true;
+        }
+
+        if(TextUtils.isEmpty(chooseCategoryTextView.getText().toString().trim())){
+            chooseCategoryTextView.setError("Please choose at least one category.");
+            chooseCategoryTextView.requestFocus();
+            return true;
+        }
+
+        if(isCreateNewLibrary && !isLibraryCoverPhotoChanged){
+
+            GlobalHelpers.showAlertMessage("error",CreateNewLibraryActivity.this,
+                    "Oops error!","Please choose a cover for your library.");
+
+            return true;
+        }
+
+        return false;
+
     }
 
     /**
@@ -308,6 +475,45 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
      * */
     private void initUI(){
 
+        Toolbar actionBar = (Toolbar)  findViewById(R.id.topBar);
+        setSupportActionBar(actionBar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close_24);
+
+        libraryNameEditText=findViewById(R.id.nameInput);
+        libraryDescriptionEditText=findViewById(R.id.descriptionInput);
+        createLibraryActionButton=findViewById(R.id.createActionButton);
+        pickImageActionButton=findViewById(R.id.pickImageActionButton);
+        chooseCategoryTextView =findViewById(R.id.chooseCategory);
+
+        cancelButton = findViewById(R.id.cancelButton);
+
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                CreateNewLibraryActivity.this.onBackPressed();
+
+            }
+        });
+
+        //init progress.
+        alertDialog = new AlertDialog.Builder(CreateNewLibraryActivity.this)
+                .setCancelable(false)
+                .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
+                .create();
+    }
+
+
+    private void toggleProgress(boolean show)
+    {
+        if(show){
+            alertDialog.show();
+        }else{
+            alertDialog.cancel();
+        }
     }
 
     /**
@@ -378,8 +584,8 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
     private void uploadLibraryCoverPhoto(CoverPhotoUploadListener coverPhotoUploadListener){
 
         StorageReference coverPhotoStorageReference  = GlobalConfig.getFirebaseStorageInstance().getReference().child(GlobalConfig.ALL_USERS_KEY+"/"+GlobalConfig.getCurrentUserId()+"/"+GlobalConfig.ALL_LIBRARY_KEY+"/"+libraryId+"/"+GlobalConfig.LIBRARY_IMAGES_KEY+"/"+GlobalConfig.LIBRARY_COVER_PHOTO_KEY+".PNG");
-        coverPhotoImageView.setDrawingCacheEnabled(true);
-        Bitmap coverPhotoBitmap = coverPhotoImageView.getDrawingCache();
+        pickImageActionButton.setDrawingCacheEnabled(true);
+        Bitmap coverPhotoBitmap = pickImageActionButton.getDrawingCache();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         coverPhotoBitmap.compress(Bitmap.CompressFormat.PNG,20,byteArrayOutputStream);
         byte[] bytes = byteArrayOutputStream.toByteArray();

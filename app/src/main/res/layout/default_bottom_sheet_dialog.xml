@@ -5,7 +5,28 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
+    <LinearLayout
+        android:gravity="center"
+        android:paddingVertical="1pt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+
+            android:src="@drawable/ic_baseline_drag_handle_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <ImageView
+android:layout_marginLeft="-4pt"
+            android:src="@drawable/ic_baseline_drag_handle_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
     <androidx.cardview.widget.CardView
+        android:layout_marginTop="3pt"
         app:cardCornerRadius="8pt"
         android:elevation="2dp"
         app:contentPaddingBottom="5pt"

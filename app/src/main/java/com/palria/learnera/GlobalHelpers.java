@@ -10,9 +10,14 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.Map;
 
 public class GlobalHelpers {
+
+
+    static private AlertDialog loadingAlertDialog;
 
     /**
      *
@@ -21,6 +26,7 @@ public class GlobalHelpers {
      * @param title Alert title to show
      * @param message Alert body/message to show
      */
+
     public static void showAlertMessage(String type, Context c, String title, String message){
         type = type.toLowerCase();
         LayoutInflater layoutInflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -98,11 +104,13 @@ public class GlobalHelpers {
 
 
     //show mesage
-        AlertDialog dialog = new AlertDialog.Builder(c)
-                .setView(alert_view)
-                .create();
+        MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(c);
+        dialog.setView(alert_view);
+
 
         dialog.show();
     }
+
+
 
 }

@@ -28,6 +28,7 @@ public class SplashScrenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
+        if(getSupportActionBar()!=null)getSupportActionBar().hide();
 
 
         getWindow().setNavigationBarColor(getColor(R.color.teal_700));

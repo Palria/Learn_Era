@@ -41,11 +41,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     BottomAppBar bottomAppBar;
     boolean isHomeFragmentOpen = false;
     boolean isLibraryFragmentOpen = false;
-    boolean isAllTutorialsFragmentOpen = false;
+    boolean isUserStatisticsFragmentOpen = false;
     boolean isUserProfileFragmentOpen = false;
     FrameLayout homeFrameLayout;
     FrameLayout libraryFrameLayout;
-    FrameLayout allTutorialsFrameLayout;
+    FrameLayout userStatisticsFrameLayout;
     FrameLayout userProfileFrameLayout;
 
     FloatingActionButton fab;
@@ -59,11 +59,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         Toolbar tp = findViewById(R.id.topBar);
         setSupportActionBar(tp);
 
+
+
             initUI();
             initializeApp();
+
+
 
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -73,8 +78,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
                 }
             });
+
     }
 
+//
 
     /**<p>initializes this activity's views</p>
      * This method must be invoked first before any initializations
@@ -89,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         homeFrameLayout = findViewById(R.id.homeFragment);
         libraryFrameLayout = findViewById(R.id.libraryFragment);
-        allTutorialsFrameLayout = findViewById(R.id.allTutorialsFragment);
+        userStatisticsFrameLayout = findViewById(R.id.statisticsFragment);
         userProfileFrameLayout = findViewById(R.id.userProfileFragment);
 
         fab = findViewById(R.id.fab);
@@ -104,7 +111,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         leBottomSheetDialog.addOptionItem("New Library", R.drawable.ic_baseline_library_add_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(MainActivity.this, "lbrary", Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(MainActivity.this, CreateNewLibraryActivity.class);
+                        //creating new
+
+                        i.putExtra(GlobalConfig.IS_CREATE_NEW_LIBRARY_KEY,true);
+                        leBottomSheetDialog.hide();
+                        startActivity(i);
                     }
                 },0)
                 .addOptionItem("New Tutorial", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
@@ -146,14 +158,14 @@ if(GlobalConfig.isUserLoggedIn()) {
 
         switch (item.getItemId()) {
             case R.id.tutorials_item:
-                if(isAllTutorialsFragmentOpen){
+                if(isUserStatisticsFragmentOpen){
                     //Just set the frame layout visibility
-                    setFrameLayoutVisibility(allTutorialsFrameLayout);
+                    setFrameLayoutVisibility(userStatisticsFrameLayout);
 
                 }else {
-                    isAllTutorialsFragmentOpen =true;
-                    setFrameLayoutVisibility(allTutorialsFrameLayout);
-                    initFragment(new AllTutorialFragment(), allTutorialsFrameLayout);
+                    isUserStatisticsFragmentOpen =true;
+                    setFrameLayoutVisibility(userStatisticsFrameLayout);
+                    initFragment(new UserStatisticsFragment(getSupportFragmentManager()), userStatisticsFrameLayout);
                 }
                 return true;
             case R.id.home_item:
@@ -177,7 +189,7 @@ if(GlobalConfig.isUserLoggedIn()) {
                     isLibraryFragmentOpen =true;
 
                     setFrameLayoutVisibility(libraryFrameLayout);
-                    initFragment(new AllLibraryFragment(), libraryFrameLayout);
+                    initFragment(new TestFragment(), libraryFrameLayout);
                 }
                 return true;
             case R.id.profile_item:
@@ -205,7 +217,7 @@ if(GlobalConfig.isUserLoggedIn()) {
 
     private void setFrameLayoutVisibility(FrameLayout frameLayoutToSetVisible){
         homeFrameLayout.setVisibility(View.GONE);
-        allTutorialsFrameLayout.setVisibility(View.GONE);
+        userStatisticsFrameLayout.setVisibility(View.GONE);
         libraryFrameLayout.setVisibility(View.GONE);
         userProfileFrameLayout.setVisibility(View.GONE);
         frameLayoutToSetVisible.setVisibility(View.VISIBLE);

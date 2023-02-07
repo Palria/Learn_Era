@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:iconTint="@color/white"
+        android:id="@+id/edit"
+        android:icon="@drawable/ic_baseline_photo_camera_24"
+        android:title="Edit"
+        android:contentDescription="edit"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:iconTint="@color/white"
+        android:id="@+id/favorite"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="hello"
+        android:contentDescription="omg"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:iconTint="@color/white"
+        android:id="@+id/more"
+        android:title="more"
+        android:contentDescription="dami"
+        app:showAsAction="never" />
+
+</menu>

@@ -7,16 +7,16 @@
     android:focusable="true"
     android:clickable="true"
     android:paddingHorizontal="7pt"
-    android:paddingVertical="5pt"
     android:background="?attr/selectableItemBackground"
+    android:paddingVertical="5pt"
     android:layout_height="match_parent">
 
 
     <ImageView
         android:id="@+id/leadingIcon"
         android:src="@drawable/ic_baseline_photo_camera_24"
-        android:layout_width="15pt"
-        android:layout_height="15pt"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 
 
@@ -34,7 +34,7 @@
         android:visibility="invisible"
         android:id="@+id/trailingIcon"
         android:src="@drawable/ic_baseline_add_24"
-        android:layout_width="15pt"
+        android:layout_width="wrap_content"
         android:layout_height="15pt"/>
 
 </LinearLayout>
