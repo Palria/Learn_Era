@@ -13,6 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.palria.learnera.GlobalConfig;
 import com.palria.learnera.R;
 import com.palria.learnera.models.AuthorDataModel;
 import com.palria.learnera.models.LibraryDataModel;
@@ -50,12 +54,26 @@ public class HomeBooksRecyclerListViewAdapter extends RecyclerView.Adapter<HomeB
         holder.bookName.setText(libraryDataModel.getLibraryName());
 
         Glide.with(context)
-                .load(position%2==0?R.drawable.book_cover:R.drawable.book_cover2)
+                .load(libraryDataModel.getLibraryCoverPhotoDownloadUrl())
                 .centerCrop()
                 .placeholder(R.drawable.book_cover)
                 .into(holder.bookCover);
 
-        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_USERS_KEY)
+                .document(libraryDataModel.getAuthorUserId())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                          @Override
+                                          public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                                              String userDisplayName = "" + documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                                        holder.bookAuthor.setText(userDisplayName);
+                                          }
+                                      });
+
+
+       holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(view.getContext(),"click on item: "+libraryDataModel.getLibraryCategoryArrayList(),Toast.LENGTH_LONG).show();

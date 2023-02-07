@@ -26,6 +26,8 @@ import com.google.firebase.firestore.ServerTimestamp;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.model.ServerTimestamps;
 import com.google.firebase.storage.FirebaseStorage;
+import com.palria.learnera.models.CurrentUserProfileDataModel;
+import com.palria.learnera.models.UserProfileDataModel;
 import com.palria.learnera.models.WelcomeScreenItemModal;
 
 import java.lang.reflect.Array;
@@ -46,7 +48,7 @@ public class GlobalConfig {
 
     private static String CURRENT_USER_ID;
     private static String CURRENT_USER_TOKEN_ID;
-
+    static OnCurrentUserProfileFetchListener onCurrentUserProfileFetchListener;
     /*FIRESTORE VARIABLE KEYS
     These String keys which will be  unique in  the database
     they are used to query a particular field within a document
@@ -300,7 +302,7 @@ public class GlobalConfig {
        *
        * @return {@link String} The unique ID of the current user
        * */
-    static String getCurrentUserId(){
+   public static String getCurrentUserId(){
        return GlobalConfig.CURRENT_USER_ID;
     }
 
@@ -333,7 +335,7 @@ public class GlobalConfig {
  * used to perform actions in {@link FirebaseFirestore} database
  * @return {@link FirebaseFirestore}
  * */
-    static FirebaseFirestore getFirebaseFirestoreInstance(){
+   public static FirebaseFirestore getFirebaseFirestoreInstance(){
        return GlobalConfig.firebaseFirestoreInstance;
     }
 
@@ -1168,5 +1170,15 @@ interface ActionCallback{
         void onSuccess();
         void onFailed(String errorMessage);
 }
+interface OnCurrentUserProfileFetchListener{
+        void onSuccess(CurrentUserProfileDataModel currentUserProfileDataModel);
+        void onFailed(String errorMessage);
+}
+//public static void setOnCurrentUserProfileFetchListener(OnCurrentUserProfileFetchListener onCurrentUserProfileFetchListener){
+//    onCurrentUserProfileFetchListener = GlobalConfig.onCurrentUserProfileFetchListener ;
+//}
+//public static  OnCurrentUserProfileFetchListener getOnCurrentUserProfileFetchListener(){
+//        return     GlobalConfig.onCurrentUserProfileFetchListener;
+//}
 
 }

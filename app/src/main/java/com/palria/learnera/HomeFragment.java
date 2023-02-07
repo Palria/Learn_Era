@@ -28,6 +28,7 @@ import com.palria.learnera.adapters.HomeAuthorListViewAdapter;
 import com.palria.learnera.adapters.HomeBooksRecyclerListViewAdapter;
 import com.palria.learnera.adapters.PopularTutorialsListViewAdapter;
 import com.palria.learnera.models.AuthorDataModel;
+import com.palria.learnera.models.CurrentUserProfileDataModel;
 import com.palria.learnera.models.LibraryDataModel;
 import com.palria.learnera.models.TutorialDataModel;
 
@@ -39,6 +40,7 @@ public class HomeFragment extends Fragment {
     public HomeFragment() {
         // Required empty public constructor
             }
+            TextView helloUserTextView;
 String categorySelected = "";
         LinearLayout popularAuthorLinearLayout;
         LinearLayout libraryLinearLayout;
@@ -144,6 +146,9 @@ String categorySelected = "";
 
             }
         });
+        if(CurrentUserProfileDataModel.getUserName()!=null && !CurrentUserProfileDataModel.getUserName().equals("null") && !CurrentUserProfileDataModel.getUserName().isEmpty()) {
+            helloUserTextView.setText("Hello, "+CurrentUserProfileDataModel.getUserName());
+        }
 
 //        initCategoriesTab(0);
 
@@ -201,6 +206,7 @@ String categorySelected = "";
 
     private void initUI(View parentView){
 //        categoryTabsContainer = parentView.findViewById(R.id.categoryTabContainer);
+        helloUserTextView = parentView.findViewById(R.id.helloUserTextViewId);
         booksItemRecyclerListView = parentView.findViewById(R.id.booksItemContainer);
         popularAuthorRecyclerView = parentView.findViewById(R.id.popular_authors_listview);
         popularTutorialsContainerRcv = parentView.findViewById(R.id.popularTutorialsContainer);
@@ -224,9 +230,9 @@ String categorySelected = "";
         popularAuthorRecyclerView.setAdapter(popularAuthorAdapter);
 
         //init and show some dummy libraries
-        libraryArrayList.add(new LibraryDataModel("Chown Town","lasdjf",null,"","",0l,0l,0l,"",0l,0l,0l,0l,0l));
-        libraryArrayList.add(new LibraryDataModel("Palria The Learning way","lasdjf",null,"","",0l,0l,0l,"",0l,0l,0l,0l,0l));
-        libraryArrayList.add(new LibraryDataModel("Paraka Tendi","lasdjf",null,"","",0l,0l,0l,"",0l,0l,0l,0l,0l));
+//        libraryArrayList.add(new LibraryDataModel("Chown Town","lasdjf",null,"","",0l,0l,0l,"",0l,0l,0l,0l,0l));
+//        libraryArrayList.add(new LibraryDataModel("Palria The Learning way","lasdjf",null,"","",0l,0l,0l,"",0l,0l,0l,0l,0l));
+//        libraryArrayList.add(new LibraryDataModel("Paraka Tendi","lasdjf",null,"","",0l,0l,0l,"",0l,0l,0l,0l,0l));
 
 //        booksItemRecyclerListView.setHasFixedSize(true);
         booksItemRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
@@ -460,7 +466,7 @@ private void changeCategory(String categorySelected){
 
 
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                            String authorId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
+//                            String authorId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
                             String libraryId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
 
                                     long totalNumberOfLibraryVisitor = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY) : 0L;

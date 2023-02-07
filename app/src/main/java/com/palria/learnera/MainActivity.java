@@ -41,11 +41,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     BottomAppBar bottomAppBar;
     boolean isHomeFragmentOpen = false;
     boolean isLibraryFragmentOpen = false;
-    boolean isUserStatisticsFragmentOpen = false;
+    boolean isAllTutorialFragmentOpen = false;
     boolean isUserProfileFragmentOpen = false;
     FrameLayout homeFrameLayout;
     FrameLayout libraryFrameLayout;
-    FrameLayout userStatisticsFrameLayout;
+    FrameLayout allTutorialFrameLayout;
     FrameLayout userProfileFrameLayout;
 
     FloatingActionButton fab;
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     //learn era bottom sheet dialog
     LEBottomSheetDialog leBottomSheetDialog;
 
-
+    GlobalConfig.OnCurrentUserProfileFetchListener onCurrentUserProfileFetchListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             initUI();
             initializeApp();
-
 
 
             fab.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //
 
     /**<p>initializes this activity's views</p>
-     * This method must be invoked first before any initializations
+     * This method must be invoked first after the inVocation of {@link AppCompatActivity#setContentView(View)} and  before any initializations
      * to avoid null pointer exception.
      * */
     private void initUI(){
@@ -96,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         homeFrameLayout = findViewById(R.id.homeFragment);
         libraryFrameLayout = findViewById(R.id.libraryFragment);
-        userStatisticsFrameLayout = findViewById(R.id.statisticsFragment);
+        allTutorialFrameLayout = findViewById(R.id.allTutorialFragment);
         userProfileFrameLayout = findViewById(R.id.userProfileFragment);
 
         fab = findViewById(R.id.fab);
@@ -140,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     /**<p>Initializes global variables which will be shared across every activities</p>
      * This method has to be called immediately after the invocation of {@link MainActivity#initUI()}
      * */
-
     private void initializeApp(){
 GlobalConfig.setFirebaseFirestoreInstance();
 GlobalConfig.setFirebaseStorageInstance();
@@ -158,14 +156,14 @@ if(GlobalConfig.isUserLoggedIn()) {
 
         switch (item.getItemId()) {
             case R.id.tutorials_item:
-                if(isUserStatisticsFragmentOpen){
+                if(isAllTutorialFragmentOpen){
                     //Just set the frame layout visibility
-                    setFrameLayoutVisibility(userStatisticsFrameLayout);
+                    setFrameLayoutVisibility(allTutorialFrameLayout);
 
                 }else {
-                    isUserStatisticsFragmentOpen =true;
-                    setFrameLayoutVisibility(userStatisticsFrameLayout);
-                    initFragment(new UserStatisticsFragment(getSupportFragmentManager()), userStatisticsFrameLayout);
+                    isAllTutorialFragmentOpen =true;
+                    setFrameLayoutVisibility(allTutorialFrameLayout);
+                    initFragment(new AllTutorialFragment(), allTutorialFrameLayout);
                 }
                 return true;
             case R.id.home_item:
@@ -189,7 +187,7 @@ if(GlobalConfig.isUserLoggedIn()) {
                     isLibraryFragmentOpen =true;
 
                     setFrameLayoutVisibility(libraryFrameLayout);
-                    initFragment(new TestFragment(), libraryFrameLayout);
+                    initFragment(new AllLibraryFragment(), libraryFrameLayout);
                 }
                 return true;
             case R.id.profile_item:
@@ -217,7 +215,7 @@ if(GlobalConfig.isUserLoggedIn()) {
 
     private void setFrameLayoutVisibility(FrameLayout frameLayoutToSetVisible){
         homeFrameLayout.setVisibility(View.GONE);
-        userStatisticsFrameLayout.setVisibility(View.GONE);
+        allTutorialFrameLayout.setVisibility(View.GONE);
         libraryFrameLayout.setVisibility(View.GONE);
         userProfileFrameLayout.setVisibility(View.GONE);
         frameLayoutToSetVisible.setVisibility(View.VISIBLE);
@@ -245,6 +243,7 @@ if(GlobalConfig.isUserLoggedIn()) {
             .addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
+                    GlobalConfig.onCurrentUserProfileFetchListener.onFailed(e.getMessage());
                 }
             })
             .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -274,7 +273,8 @@ if(GlobalConfig.isUserLoggedIn()) {
                     long totalNumberOfLibraries = (documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)!= null) ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY) : 0L;
                     boolean isAnAuthor = (documentSnapshot.get(GlobalConfig.IS_USER_AUTHOR_KEY)!=null )? (documentSnapshot.getBoolean(GlobalConfig.IS_USER_AUTHOR_KEY)) : false;
 
-                    new CurrentUserProfileDataModel(
+
+                   new CurrentUserProfileDataModel(
                             userName,
                             userId,
                             userProfileImageDownloadUrl,

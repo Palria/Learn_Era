@@ -43,7 +43,7 @@
             android:visibility="invisible"/>
         <FrameLayout
             android:layout_marginTop="?attr/actionBarSize"
-            android:id="@+id/statisticsFragment"
+            android:id="@+id/allTutorialFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="invisible"/>

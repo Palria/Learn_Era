@@ -49,6 +49,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -238,28 +239,47 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                 libraryName = libraryNameEditText.getText().toString();
                 libraryCategory = chooseCategoryTextView.getText().toString();
                 libraryDescription = libraryDescriptionEditText.getText().toString();
+ArrayList<String> categoryList = new ArrayList<String>();
+                categoryList.addAll(Arrays.asList(chooseCategoryTextView.getText().toString().split(",")));
 
                 if(isLibraryCoverPhotoIncluded){
                     if(isCreateNewLibrary){
                         uploadLibraryCoverPhoto(new CoverPhotoUploadListener() {
                             @Override
                             public void onSuccess(String coverPhotoDownloadUrl,String coverPhotoStorageReference) {
-                                createNewLibrary(libraryCategoryArrayList,coverPhotoDownloadUrl, coverPhotoStorageReference,new OnLibraryEditionListener() {
+                                createNewLibrary(categoryList,coverPhotoDownloadUrl, coverPhotoStorageReference,new OnLibraryEditionListener() {
                                     @Override
                                     public void onSuccess() {
                                         GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryId,null,false,true,false,null,null,null,false,false,false);
-toggleProgress(false);
+                                        toggleProgress(false);
+
+                                        GlobalHelpers.showAlertMessage("success",
+                                                CreateNewLibraryActivity.this,
+                                                "Library Created Successfully.",
+                                                "You have successfully created your library,thanks and go ahead and contribute to Learn Era ");
+
                                     }
 
                                     @Override
                                     public void onFailed(String errorMessage) {
+                                        toggleProgress(false);
 
+                                        GlobalHelpers.showAlertMessage("error",
+                                                CreateNewLibraryActivity.this,
+                                                "Library Creation Failed.",
+                                                errorMessage);
                                     }
                                 });
                             }
 
                             @Override
                             public void onFailed(String errorMessage) {
+                                toggleProgress(false);
+
+                                GlobalHelpers.showAlertMessage("error",
+                                        CreateNewLibraryActivity.this,
+                                        "Library Creation Failed.",
+                                        errorMessage);
 
                             }
                         });
@@ -273,11 +293,25 @@ toggleProgress(false);
                                         @Override
                                         public void onSuccess() {
                                             GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryId,null,false,true,false,null,null,null,false,false,false);
+                                            toggleProgress(false);
+
+                                            GlobalHelpers.showAlertMessage("success",
+                                                    CreateNewLibraryActivity.this,
+                                                    "Library Edited Successfully.",
+                                                    "You have successfully edited your library,thanks and go ahead and contribute to Learn Era ");
+
 
                                         }
 
                                         @Override
                                         public void onFailed(String errorMessage) {
+                                            toggleProgress(false);
+
+                                            GlobalHelpers.showAlertMessage("error",
+                                                    CreateNewLibraryActivity.this,
+                                                    "Library Edition Failed.",
+                                                    errorMessage);
+
 
                                         }
                                     });
@@ -285,6 +319,13 @@ toggleProgress(false);
 
                                 @Override
                                 public void onFailed(String errorMessage) {
+                                    toggleProgress(false);
+
+                                    GlobalHelpers.showAlertMessage("error",
+                                            CreateNewLibraryActivity.this,
+                                            "Library Edition Failed.",
+                                            errorMessage);
+
 
                                 }
                             });
@@ -300,6 +341,11 @@ toggleProgress(false);
                                 @Override
                                 public void onFailed(String errorMessage) {
 
+                                    GlobalHelpers.showAlertMessage("error",
+                                            CreateNewLibraryActivity.this,
+                                            "Library Edition Failed.",
+                                            " Failed to edit library ");
+
                                 }
                             });
                         }
@@ -307,16 +353,27 @@ toggleProgress(false);
                 }
                 else{
                     if(isCreateNewLibrary){
-                        createNewLibrary(libraryCategoryArrayList,"","", new OnLibraryEditionListener() {
+                        createNewLibrary(categoryList,"","", new OnLibraryEditionListener() {
                             @Override
                             public void onSuccess() {
                                 GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryId,null,false,true,false,null,null,null,false,false,false);
+                                toggleProgress(false);
+
+                                GlobalHelpers.showAlertMessage("success",
+                                        CreateNewLibraryActivity.this,
+                                        "Library Created Successfully.",
+                                        "You have successfully created your library,thanks and go ahead and contribute to Learn Era ");
 
                             }
 
                             @Override
                             public void onFailed(String errorMessage) {
+                                toggleProgress(false);
 
+                                GlobalHelpers.showAlertMessage("error",
+                                        CreateNewLibraryActivity.this,
+                                        "Library Edition Failed.",
+                                        errorMessage);
                             }
                         });
                     }
@@ -326,10 +383,20 @@ toggleProgress(false);
                             public void onSuccess() {
                                 GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryId,null,false,true,false,null,null,null,false,false,false);
 
+                                GlobalHelpers.showAlertMessage("success",
+                                        CreateNewLibraryActivity.this,
+                                        "Library Edited Successfully.",
+                                        "You have successfully edited your library,thanks and go ahead and contribute to Learn Era ");
+
                             }
 
                             @Override
                             public void onFailed(String errorMessage) {
+
+                                GlobalHelpers.showAlertMessage("error",
+                                        CreateNewLibraryActivity.this,
+                                        "Library Edition Failed.",
+                                        errorMessage);
 
                             }
                         });
