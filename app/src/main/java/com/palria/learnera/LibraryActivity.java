@@ -70,8 +70,7 @@ FrameLayout tutorialsFrameLayout;
             .create();
 }
 
-    private void toggleProgress(boolean show)
-    {
+    private void toggleProgress(boolean show) {
         if(show){
             alertDialog.show();
         }else{
@@ -80,8 +79,7 @@ FrameLayout tutorialsFrameLayout;
     }
 
 
-    private void fetchIntentData()
-    {
+    private void fetchIntentData() {
         Intent intent = getIntent();
         libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
         authorId = intent.getStringExtra(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);

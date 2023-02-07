@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class HomeFragment extends Fragment {
-
+//going to add a category check flag to avoid multiple fetch
     public HomeFragment() {
         // Required empty public constructor
             }
@@ -50,7 +50,12 @@ String categorySelected = "";
         RecyclerView booksItemRecyclerListView;
         RecyclerView popularTutorialsContainerRcv;
         TabLayout tabLayout;
-
+    ArrayList<AuthorDataModel> modelArrayList = new ArrayList<AuthorDataModel>();
+    HomeAuthorListViewAdapter popularAuthorAdapter;
+    ArrayList<LibraryDataModel> libraryArrayList = new ArrayList<>();
+    HomeBooksRecyclerListViewAdapter homeBooksRecyclerListViewAdapter ;
+    ArrayList<TutorialDataModel> tutorialDataModels = new ArrayList<>();
+    PopularTutorialsListViewAdapter popularTutorialsListViewAdapter;
     //test categories
     final String[] categories = {"Java", "Android Dev", "Python", "Data Learning", "OOPs Concept", "Artificial Intelligence"};
 
@@ -70,10 +75,20 @@ String categorySelected = "";
         createTabLayout(new OnNewCategorySelectedListener() {
             @Override
             public void onSelected(String categoryName) {
+                modelArrayList.clear();
+                popularAuthorAdapter.notifyDataSetChanged();
+
+                libraryArrayList.clear();
+                homeBooksRecyclerListViewAdapter.notifyDataSetChanged();
+
+
                 fetchPopularAuthor(categoryName, new PopularAuthorFetchListener() {
                     @Override
-                    public void onSuccess(String authorName, String authorProfilePhotoDownloadUrl, long totalNumberOfLibrary) {
-                        displayPopularAuthor(authorName,authorProfilePhotoDownloadUrl,totalNumberOfLibrary);
+                    public void onSuccess(String authorName, String authorId, String authorProfilePhotoDownloadUrl, long totalNumberOfLibrary) {
+//                        displayPopularAuthor(authorName,authorProfilePhotoDownloadUrl,totalNumberOfLibrary);
+                        modelArrayList.add(new AuthorDataModel(authorName,authorId,authorProfilePhotoDownloadUrl, (int) totalNumberOfLibrary,0,0,0,0,0));
+                        popularAuthorAdapter.notifyItemChanged(modelArrayList.size());
+
                     }
 
                     @Override
@@ -84,7 +99,10 @@ String categorySelected = "";
                 fetchLibrary(categoryName, new LibraryFetchListener() {
                     @Override
                     public void onSuccess(LibraryDataModel libraryDataModel) {
-                        displayLibrary(libraryDataModel);
+//                        displayLibrary(libraryDataModel);
+                        libraryArrayList.add(new LibraryDataModel(libraryDataModel.getLibraryName(),libraryDataModel.getLibraryId(),libraryDataModel.getLibraryCategoryArrayList(),libraryDataModel.getLibraryCoverPhotoDownloadUrl(),libraryDataModel.getDateCreated(),libraryDataModel.getTotalNumberOfTutorials(),libraryDataModel.getTotalNumberOfLibraryViews(),libraryDataModel.getTotalNumberOfLibraryReach(),libraryDataModel.getAuthorUserId(),libraryDataModel.getTotalNumberOfOneStarRate(),libraryDataModel.getTotalNumberOfTwoStarRate(),libraryDataModel.getTotalNumberOfThreeStarRate(),libraryDataModel.getTotalNumberOfFourStarRate(),libraryDataModel.getTotalNumberOfFiveStarRate()));
+                        homeBooksRecyclerListViewAdapter.notifyItemChanged(libraryArrayList.size());
+//                        Toast.makeText(getContext(), libraryDataModel.getDateCreated()+"--"+libraryDataModel.getLibraryName()+"---"+libraryDataModel.getLibraryId(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -95,7 +113,26 @@ String categorySelected = "";
                 fetchTutorial(categoryName, new TutorialFetchListener() {
                     @Override
                     public void onSuccess(TutorialDataModel tutorialDataModel) {
-                        displayTutorial(tutorialDataModel);
+//                        displayTutorial(tutorialDataModel);
+                        tutorialDataModels.add(new TutorialDataModel(
+                                        tutorialDataModel.getTutorialName(),
+                                        tutorialDataModel.getTutorialCategory(),
+                                        tutorialDataModel.getTutorialId(),
+                                        tutorialDataModel.getDateCreated(),
+                                        tutorialDataModel.getTotalNumberOfPages(),
+                                        tutorialDataModel.getTotalNumberOfFolders(),
+                                        tutorialDataModel.getTotalNumberOfTutorialViews(),
+                                        tutorialDataModel.getTotalNumberOfTutorialReach(),
+                                        tutorialDataModel.getAuthorId(),
+                                        tutorialDataModel.getLibraryId(),
+                                        tutorialDataModel.getTutorialCoverPhotoDownloadUrl(),
+                                        tutorialDataModel.getTotalNumberOfOneStarRate(),
+                                        tutorialDataModel.getTotalNumberOfTwoStarRate(),
+                                        tutorialDataModel.getTotalNumberOfThreeStarRate(),
+                                        tutorialDataModel.getTotalNumberOfFourStarRate(),
+                                        tutorialDataModel.getTotalNumberOfFiveStarRate()));
+
+                        popularTutorialsListViewAdapter.notifyItemChanged(tutorialDataModels.size());
                     }
 
                     @Override
@@ -103,7 +140,7 @@ String categorySelected = "";
 
                     }
                 });
-                Toast.makeText(getContext(), categoryName, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), categoryName, Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -168,32 +205,33 @@ String categorySelected = "";
         popularAuthorRecyclerView = parentView.findViewById(R.id.popular_authors_listview);
         popularTutorialsContainerRcv = parentView.findViewById(R.id.popularTutorialsContainer);
         tabLayout = parentView.findViewById(R.id.categoryTabLayoutId);
+        popularAuthorAdapter = new HomeAuthorListViewAdapter(modelArrayList,getContext());
+        homeBooksRecyclerListViewAdapter = new HomeBooksRecyclerListViewAdapter(libraryArrayList,getContext());
+        popularTutorialsListViewAdapter = new PopularTutorialsListViewAdapter(tutorialDataModels,getContext());
 
+/*
         //init and show some dummny authors.
-        ArrayList<AuthorDataModel> modelArrayList = new ArrayList<AuthorDataModel>();
-        modelArrayList.add(new AuthorDataModel("Palria","lasdjf",0,0,0,0,0,0));
-        modelArrayList.add(new AuthorDataModel("Ramesh Yadav","lsd",0,0,0,0,0,0));
-        modelArrayList.add(new AuthorDataModel("Simran Sah","lsd",0,0,0,0,0,0));
-        modelArrayList.add(new AuthorDataModel("Kalidevi Man","lsd",0,0,0,0,0,0));
-        modelArrayList.add(new AuthorDataModel("Some longest name that trails","lsd",0,0,0,0,0,0));
+        modelArrayList.add(new AuthorDataModel("Palria","lasdjf","url",0,0,0,0,0,0));
+        modelArrayList.add(new AuthorDataModel("Ramesh Yadav","lsd","url",0,0,0,0,0,0));
+        modelArrayList.add(new AuthorDataModel("Simran Sah","lsd","url",0,0,0,0,0,0));
+        modelArrayList.add(new AuthorDataModel("Kalidevi Man","lsd","url",0,0,0,0,0,0));
+        modelArrayList.add(new AuthorDataModel("Some longest name that trails","lsd","url",0,0,0,0,0,0));
+*/
 
-
-        HomeAuthorListViewAdapter adapter = new HomeAuthorListViewAdapter(modelArrayList,getContext());
-        popularAuthorRecyclerView.setHasFixedSize(true);
+//        popularAuthorRecyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
         popularAuthorRecyclerView.setLayoutManager(layoutManager);
-        popularAuthorRecyclerView.setAdapter(adapter);
+        popularAuthorRecyclerView.setAdapter(popularAuthorAdapter);
 
         //init and show some dummy libraries
-        ArrayList<LibraryDataModel> libraryArrayList = new ArrayList<>();
         libraryArrayList.add(new LibraryDataModel("Chown Town","lasdjf",null,"","",0l,0l,0l,"",0l,0l,0l,0l,0l));
         libraryArrayList.add(new LibraryDataModel("Palria The Learning way","lasdjf",null,"","",0l,0l,0l,"",0l,0l,0l,0l,0l));
         libraryArrayList.add(new LibraryDataModel("Paraka Tendi","lasdjf",null,"","",0l,0l,0l,"",0l,0l,0l,0l,0l));
 
-        HomeBooksRecyclerListViewAdapter homeBooksRecyclerListViewAdapter = new HomeBooksRecyclerListViewAdapter(libraryArrayList,getContext());
-        booksItemRecyclerListView.setHasFixedSize(true);
+//        booksItemRecyclerListView.setHasFixedSize(true);
         booksItemRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
         booksItemRecyclerListView.setAdapter(homeBooksRecyclerListViewAdapter);
+
 
 /**
  *  String tutorialName,
@@ -214,7 +252,6 @@ String categorySelected = "";
  */
 
         //init and show some dummy tutorials
-        ArrayList<TutorialDataModel> tutorialDataModels = new ArrayList<>();
         tutorialDataModels.add(
                 new TutorialDataModel("How to connect to mysql database for free. in 2012 for Users to get it.",
                         "category",
@@ -269,15 +306,15 @@ String categorySelected = "";
                         0l,
                         0l));
 
-        PopularTutorialsListViewAdapter popularTutorialsListViewAdapter = new PopularTutorialsListViewAdapter(tutorialDataModels,getContext());
-        popularTutorialsContainerRcv.setHasFixedSize(true);
+//        popularTutorialsContainerRcv.setHasFixedSize(true);
         popularTutorialsContainerRcv.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         popularTutorialsContainerRcv.setAdapter(popularTutorialsListViewAdapter);
+
 
     }
 
 
-    /*Changes to be made when new category is selected is will be triggered in this method
+    /*Changes to be made when new category is selected will be triggered in this method.
     Manipulate the changes here
     */
     public void createTabLayout(OnNewCategorySelectedListener onNewCategorySelectedListener){
@@ -340,7 +377,7 @@ private void changeCategory(String categorySelected){
 
     fetchPopularAuthor(categorySelected, new PopularAuthorFetchListener() {
         @Override
-        public void onSuccess(String authorName, String authorProfilePhotoDownloadUrl, long totalNumberOfLibrary) {
+        public void onSuccess(String authorName,String authorId, String authorProfilePhotoDownloadUrl, long totalNumberOfLibrary) {
             displayPopularAuthor(authorName,authorProfilePhotoDownloadUrl,totalNumberOfLibrary);
         }
 
@@ -375,7 +412,8 @@ private void changeCategory(String categorySelected){
 }
 
     private void fetchPopularAuthor(String categoryTag, PopularAuthorFetchListener popularAuthorFetchListener){
-        Query authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereEqualTo(GlobalConfig.IS_USER_AUTHOR_KEY,true).whereArrayContains(GlobalConfig.AUTHOR_CATEGORY_TAG_ARRAY_KEY,categoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY);
+//        Query authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereEqualTo(GlobalConfig.IS_USER_AUTHOR_KEY,true).whereArrayContains(GlobalConfig.AUTHOR_CATEGORY_TAG_ARRAY_KEY,categoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY);
+        Query authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY);
         authorQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -386,25 +424,17 @@ private void changeCategory(String categorySelected){
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                        modelArrayList.clear();
+                        popularAuthorAdapter.notifyDataSetChanged();
+
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                            documentSnapshot.getReference()
-                                    .collection(GlobalConfig.USER_PROFILE_KEY)
-                                    .document(GlobalConfig.USER_ID_KEY)
-                                    .get()
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                        }
-                                    })
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                                            String authorId  = documentSnapshot.getId();
                                             final String authorName = ""+ documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
                                            final String authorProfilePhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
                                            final long totalNumberOfLibrary = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)!= null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)  :0L ;
-                                        popularAuthorFetchListener.onSuccess(authorName,authorProfilePhotoDownloadUrl,totalNumberOfLibrary );
-                                        }
-                                    });
+                                        popularAuthorFetchListener.onSuccess(authorName,authorId,authorProfilePhotoDownloadUrl,totalNumberOfLibrary );
 
                         }
                     }
@@ -412,8 +442,8 @@ private void changeCategory(String categorySelected){
     }
 
     private void fetchLibrary(String categoryTag,LibraryFetchListener libraryFetchListener){
-        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,categoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY);
-
+//        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,categoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY);
+        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY);
         libraryQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -424,23 +454,15 @@ private void changeCategory(String categorySelected){
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                            String authorId =""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
-                            String libraryId =""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
-                            GlobalConfig.getFirebaseFirestoreInstance()
-                                    .collection(GlobalConfig.ALL_USERS_KEY)
-                                    .document(authorId)
-                                    .collection(GlobalConfig.ALL_LIBRARY_KEY)
-                                    .document(libraryId)
-                                    .get()
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
 
-                                        }
-                                    }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        libraryArrayList.clear();
+                        homeBooksRecyclerListViewAdapter.notifyDataSetChanged();
+
+
+                        for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                            String authorId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
+                            String libraryId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
+
                                     long totalNumberOfLibraryVisitor = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY) : 0L;
                                     long totalNumberOfLibraryReach = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REACH_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REACH_KEY) : 0L;
                                     long totalNumberOfOneStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY) : 0L;
@@ -448,14 +470,6 @@ private void changeCategory(String categorySelected){
                                     long totalNumberOfThreeStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY) : 0L;
                                     long totalNumberOfFourStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY) : 0L;
                                     long totalNumberOfFiveStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY) : 0L;
-
-                                    documentSnapshot.getReference()
-                                            .collection(GlobalConfig.LIBRARY_PROFILE_KEY)
-                                            .document(libraryId)
-                                            .get()
-                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
 
 
                                                     String libraryName = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
@@ -485,10 +499,7 @@ private void changeCategory(String categorySelected){
                                                             totalNumberOfFourStarRate,
                                                             totalNumberOfFiveStarRate
                                                     ));
-                                                }
-                                            });
-                                }
-                            });
+
 
                         }
                     }
@@ -496,8 +507,8 @@ private void changeCategory(String categorySelected){
     }
 
     private void fetchTutorial(String tutorialCategoryTag,TutorialFetchListener tutorialFetchListener){
-        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY);
-
+//        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY);
+        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY);
         libraryQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -508,26 +519,22 @@ private void changeCategory(String categorySelected){
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//
+//                        tutorialDataModels.clear();
+//                        popularTutorialsListViewAdapter.notifyDataSetChanged();
+
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             String authorId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY);
                             String libraryId =""+ documentSnapshot.get(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
                             String tutorialId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
-                            GlobalConfig.getFirebaseFirestoreInstance()
-                                    .collection(GlobalConfig.ALL_USERS_KEY)
-                                    .document(authorId)
-                                    .collection(GlobalConfig.ALL_LIBRARY_KEY)
-                                    .document(libraryId)
-                                    .collection(GlobalConfig.ALL_TUTORIAL_KEY)
-                                    .document(tutorialId)
-                                    .get()
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
+                            String tutorialName = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
+                            String tutorialCategory = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_CATEGORY_KEY);
+                            String dateCreated = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DATE_CREATED_KEY);
+                            long  totalNumberOfFolders = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY) :0L;
+                            long totalNumberOfPages =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY) :0L;
+                            String tutorialCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_COVER_PHOTO_DOWNLOAD_URL_KEY);
 
-                                        }
-                                    }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+
                                     long totalNumberOfTutorialVisitor = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY) : 0L;
                                     long totalNumberOfTutorialReach = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_REACH_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_REACH_KEY) : 0L;
                                     long totalNumberOfOneStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY) : 0L;
@@ -536,36 +543,17 @@ private void changeCategory(String categorySelected){
                                     long totalNumberOfFourStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY) : 0L;
                                     long totalNumberOfFiveStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY) : 0L;
 
-                                    documentSnapshot.getReference()
-                                            .collection(GlobalConfig.TUTORIAL_PROFILE_KEY)
-                                            .document(tutorialId)
-                                            .get()
-                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-
-                                                    String tutorialName = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
-                                                    String tutorialCategory = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_CATEGORY_KEY);
-                                                    String dateCreated = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DATE_CREATED_KEY);
-                                                    String authorUserId = ""+ documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY);
-                                                    long totalNumberOfPages = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY) :0L;
-                                                    long totalNumberOfFolders =  documentSnapshot.get(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY) :0L;
-                                                    String tutorialCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_COVER_PHOTO_DOWNLOAD_URL_KEY);
-
-
 
                                                     tutorialFetchListener.onSuccess(new TutorialDataModel(
                                                                                      tutorialName,
-
-        tutorialCategory,
+                                                                                     tutorialCategory,
                                                                                      tutorialId,
                                                                                      dateCreated,
                                                                                      totalNumberOfPages,
                                                                                      totalNumberOfFolders,
                                                                                      totalNumberOfTutorialVisitor,
                                                                                      totalNumberOfTutorialReach,
-                                                                                     authorUserId,
+                                                                                     authorId,
                                                                                      libraryId,
                                                                                      tutorialCoverPhotoDownloadUrl,
                                                                                      totalNumberOfOneStarRate,
@@ -574,10 +562,8 @@ private void changeCategory(String categorySelected){
                                                                                      totalNumberOfFourStarRate,
                                                                                      totalNumberOfFiveStarRate
                                                                                      ));
-                                                }
-                                            });
-                                }
-                            });
+
+
 
                         }
                     }
@@ -684,7 +670,7 @@ private void changeCategory(String categorySelected){
     }
 
     interface PopularAuthorFetchListener{
-        void onSuccess(final String authorName,final String authorProfilePhotoDownloadUrl,final long totalNumberOfLibrary );
+        void onSuccess(final String authorName, final String authorId,final String authorProfilePhotoDownloadUrl,final long totalNumberOfLibrary );
         void onFailed(String errorMessage);
     }
 

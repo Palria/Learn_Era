@@ -440,10 +440,17 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
         tutorialProfileDetails.put(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryContainerId);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
         tutorialProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY,0L);
+        tutorialProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_REVIEWS_KEY,0L);
+        tutorialProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_REACH_KEY,0L);
+        tutorialProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY,0L);
+        tutorialProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,0L);
+        tutorialProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,0L);
+        tutorialProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY,0L);
+        tutorialProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY,0L);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserTokenId());
-        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_KEY,GlobalConfig.getDate());
+//        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_KEY,GlobalConfig.getDate());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());
+//        tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_KEY,GlobalConfig.getDate());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY,GlobalConfig.generateSearchVerbatimKeyWords(tutorialName));
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY,GlobalConfig.generateSearchAnyMatchKeyWords(tutorialName));
@@ -455,7 +462,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
         HashMap<String,Object>userDetails  = new HashMap<>();
         userDetails.put(GlobalConfig.LAST_TUTORIAL_CREATED_ID_KEY,tutorialId);
         userDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY,FieldValue.increment(1L));
-        userDetails.put(GlobalConfig.LAST_TUTORIAL_DATE_CREATED_KEY,GlobalConfig.getDate());
+//        userDetails.put(GlobalConfig.LAST_TUTORIAL_DATE_CREATED_KEY,GlobalConfig.getDate());
         userDetails.put(GlobalConfig.LAST_TUTORIAL_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         writeBatch.set(userDocumentReference,userDetails, SetOptions.merge());
 

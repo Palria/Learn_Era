@@ -41,7 +41,7 @@ public class UserStatisticsFragment extends Fragment {
 
     FragmentManager fragmentManager;
     LinearLayout ratingContainer;
-
+    public UserStatisticsFragment(){}
     public UserStatisticsFragment(FragmentManager fm) {
         // Required empty public constructor
         fragmentManager = fm;

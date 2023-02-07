@@ -10,7 +10,7 @@
 
     <!--Added this scrollView to enable swipeRefreshLayout function efficiently-->
 
-        >
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

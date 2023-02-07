@@ -54,7 +54,7 @@
             android:layout_height="match_parent"
             android:visibility="invisible"/>
         <FrameLayout
-            android:id="@+id/statisticsFragment"
+            android:id="@+id/allTutorialsFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="invisible"/>

@@ -92,7 +92,7 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
     /**
      * A {@link View} for performing the edition action
      * */
-Button createLibraryActionButton;
+    Button createLibraryActionButton;
 
     /**
      * A {@link View} for performing the edition action
@@ -435,10 +435,20 @@ Button createLibraryActionButton;
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DESCRIPTION_KEY,libraryDescription);
         libraryProfileDetails.put(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,libraryCategoryArray);
         libraryProfileDetails.put(GlobalConfig.LIBRARY_ID_KEY,libraryId);
-        libraryProfileDetails.put(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserTokenId());
-        libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_CREATED_KEY,GlobalConfig.getDate());
+        libraryProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY,0L);
+        libraryProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VIEWS_KEY,0L);
+        libraryProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY,0L);
+        libraryProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REVIEWS_KEY,0L);
+        libraryProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REACH_KEY,0L);
+        libraryProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY,0L);
+        libraryProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,0L);
+        libraryProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,0L);
+        libraryProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY,0L);
+        libraryProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY,0L);
+        libraryProfileDetails.put(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserId());
+//        libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_CREATED_KEY,GlobalConfig.getDate());
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_KEY,GlobalConfig.getDate());
+//        libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_KEY,GlobalConfig.getDate());
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY,GlobalConfig.generateSearchVerbatimKeyWords(libraryName));
         libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_ANY_MATCH_KEYWORD_KEY,GlobalConfig.generateSearchAnyMatchKeyWords(libraryName));
@@ -497,15 +507,10 @@ Button createLibraryActionButton;
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY,libraryName);
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DESCRIPTION_KEY,libraryDescription);
         libraryProfileDetails.put(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,libraryCategoryArray);
-        libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_KEY,GlobalConfig.getDate());
+//        libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_KEY,GlobalConfig.getDate());
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-
-        for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(libraryName)) {
-            libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
-        }
-        for(String searchKeyword: GlobalConfig.generateSearchAnyMatchKeyWords(libraryName)) {
-            libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_ANY_MATCH_KEYWORD_KEY,FieldValue.arrayUnion(searchKeyword));
-        }
+        libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY,GlobalConfig.generateSearchVerbatimKeyWords(libraryName));
+        libraryProfileDetails.put(GlobalConfig.LIBRARY_SEARCH_ANY_MATCH_KEYWORD_KEY,GlobalConfig.generateSearchAnyMatchKeyWords(libraryName));
 
         writeBatch.set(libraryProfileDocumentReference,libraryProfileDetails, SetOptions.merge());
 

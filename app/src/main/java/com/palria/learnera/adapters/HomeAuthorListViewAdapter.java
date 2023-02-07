@@ -44,7 +44,7 @@ public class HomeAuthorListViewAdapter extends RecyclerView.Adapter<HomeAuthorLi
 
         holder.textView.setText(authorDataModel.getAuthorName());
         Glide.with(context)
-                        .load("https://i.pravatar.cc/150?u="+authorDataModel.getAuthorName()+"@gmail.com")
+                        .load(authorDataModel.getAuthorProfilePhotoDownloadUrl())
                                 .centerCrop()
                 .placeholder(R.drawable.default_profile)
                                         .into(holder.imageView);

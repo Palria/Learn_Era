@@ -5,6 +5,7 @@ package com.palria.learnera.models;
 public class AuthorDataModel {
     /**The name of the author*/
     String authorName;
+    String authorProfilePhotoDownloadUrl;
     /**The author's id*/
     String authorId;
     /**The number of libraries this author has*/
@@ -48,9 +49,10 @@ public class AuthorDataModel {
 
     /**This parameterized Constructor helps us in initializing all the global variables
      * */
-    public AuthorDataModel(String authorName,String authorId, int totalNumberOfLibraries, int totalNumberOfOneStarRate, int totalNumberOfTwoStarRate, int totalNumberOfThreeStarRate, int totalNumberOfFourStarRate, int totalNumberOfFiveStarRate){
+    public AuthorDataModel(String authorName,String authorId,String authorProfilePhotoDownloadUrl, int totalNumberOfLibraries, int totalNumberOfOneStarRate, int totalNumberOfTwoStarRate, int totalNumberOfThreeStarRate, int totalNumberOfFourStarRate, int totalNumberOfFiveStarRate){
                     this.authorName = authorName;
                     this.authorId = authorId;
+                    this.authorProfilePhotoDownloadUrl = authorProfilePhotoDownloadUrl;
                     this.totalNumberOfLibraries = totalNumberOfLibraries;
                     this.totalNumberOfOneStarRate = totalNumberOfOneStarRate;
                     this.totalNumberOfTwoStarRate = totalNumberOfTwoStarRate;
@@ -75,6 +77,14 @@ public class AuthorDataModel {
 
     public void setAuthorId(String authorId) {
         this.authorId = authorId;
+    }
+
+    public String getAuthorProfilePhotoDownloadUrl() {
+        return authorProfilePhotoDownloadUrl;
+    }
+
+    public void setAuthorProfilePhotoDownloadUrl(String authorProfilePhotoDownloadUrl) {
+        this.authorProfilePhotoDownloadUrl = authorProfilePhotoDownloadUrl;
     }
 
     public int getTotalNumberOfLibraries() {

@@ -504,7 +504,7 @@ public class GlobalConfig {
                 "z", "Z", "6"
         };
 
-        StringBuilder randomString = new StringBuilder("AUN");
+        StringBuilder randomString = new StringBuilder("AUNS");
 
         for(int i=0; i<length; i++){
 
@@ -512,7 +512,7 @@ public class GlobalConfig {
 
             randomString.append(Array.get(characterArray, randomPosition));
         }
-        return randomString + "CJD";
+        return randomString + "CJDM";
     }
 
     /**
@@ -903,7 +903,7 @@ public class GlobalConfig {
           return  Integer.parseInt(new SimpleDateFormat("dd", Locale.US).format(new Date()));
 
         }
-      static  public int getEventWeek(){
+      static  public int getEventWeekOfYear(){
 //          return  Integer.parseInt(new SimpleDateFormat("dd", Locale.US).format(new Date()));
           return  Calendar.getInstance().get(Calendar.WEEK_OF_YEAR);
 
@@ -942,7 +942,7 @@ public class GlobalConfig {
             activityLogDetails.put(EVENT_MINUTE_KEY,(long)getEventMinute());
             activityLogDetails.put(EVENT_HOUR_KEY,(long)getEventHour());
             activityLogDetails.put(EVENT_DAY_KEY,(long)getEventDay());
-            activityLogDetails.put(EVENT_WEEK_KEY,(long)getEventWeek());
+            activityLogDetails.put(EVENT_WEEK_KEY,(long)getEventWeekOfYear());
             activityLogDetails.put(EVENT_MONTH_KEY,(long)getEventMonth());
             activityLogDetails.put(EVENT_YEAR_KEY,(long)getEventYear());
             activityLogDetails.put(LOG_TIME_STAMP_KEY,FieldValue.serverTimestamp());
