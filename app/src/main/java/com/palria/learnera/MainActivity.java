@@ -121,7 +121,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .addOptionItem("New Tutorial", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(MainActivity.this, "tutorial", Toast.LENGTH_SHORT).show();
+
+                        Intent i = new Intent(MainActivity.this, CreateNewTutorialActivity.class);
+                        //creating new
+
+                        i.putExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY,true);
+                        leBottomSheetDialog.hide();
+                        startActivity(i);
+
                     }
                 }, 0)
                 .addOptionItem("New Post", R.drawable.ic_baseline_add_circle_24, new View.OnClickListener() {

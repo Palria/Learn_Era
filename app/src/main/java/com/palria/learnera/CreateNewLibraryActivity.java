@@ -145,17 +145,9 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
         if(isCreateNewLibrary){
             //User is creating new library
             libraryId = GlobalConfig.getRandomString(100);
-            libraryCategoryArrayList=new ArrayList<>();
-            libraryCategoryArrayList.add("Software Development");
-            libraryCategoryArrayList.add("Web Development");
-            libraryCategoryArrayList.add("Graphic Design");
-            libraryCategoryArrayList.add("Ui Design");
-            libraryCategoryArrayList.add("Ethical Hacking");
-            libraryCategoryArrayList.add("Game Development");
-            libraryCategoryArrayList.add("Prototyping");
-            libraryCategoryArrayList.add("SEO");
 
-            selectedCategories=new boolean[libraryCategoryArrayList.size()];
+            //helps to load the categories from server/firebase
+            getDynamicCategories();
 
 
 
@@ -490,6 +482,21 @@ ArrayList<String> categoryList = new ArrayList<String>();
 
             }
         });
+    }
+
+    private void getDynamicCategories() {
+
+        libraryCategoryArrayList=new ArrayList<>();
+        libraryCategoryArrayList.add("Software Development");
+        libraryCategoryArrayList.add("Web Development");
+        libraryCategoryArrayList.add("Graphic Design");
+        libraryCategoryArrayList.add("Ui Design");
+        libraryCategoryArrayList.add("Ethical Hacking");
+        libraryCategoryArrayList.add("Game Development");
+        libraryCategoryArrayList.add("Prototyping");
+        libraryCategoryArrayList.add("SEO");
+
+        selectedCategories=new boolean[libraryCategoryArrayList.size()];
     }
 
     @Override
