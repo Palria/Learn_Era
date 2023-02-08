@@ -240,7 +240,11 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                 libraryCategory = chooseCategoryTextView.getText().toString();
                 libraryDescription = libraryDescriptionEditText.getText().toString();
 ArrayList<String> categoryList = new ArrayList<String>();
-                categoryList.addAll(Arrays.asList(chooseCategoryTextView.getText().toString().split(",")));
+if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
+    categoryList.addAll(Arrays.asList(chooseCategoryTextView.getText().toString().split(",")));
+}else{
+    categoryList.add(chooseCategoryTextView.getText().toString());
+}
 
                 if(isLibraryCoverPhotoIncluded){
                     if(isCreateNewLibrary){

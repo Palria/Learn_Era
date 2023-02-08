@@ -127,7 +127,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .addOptionItem("New Post", R.drawable.ic_baseline_add_circle_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        
+                        Intent intent = new Intent(getApplicationContext() , UploadPageActivity.class);
+                        startActivity(intent);
                     }
                 }, 0)
 

@@ -1,11 +1,18 @@
 package com.palria.learnera;
 
 
+import android.app.Service;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.ByteArrayOutputStream;
@@ -15,17 +22,36 @@ import java.util.ArrayList;
 public class UploadPageActivity extends AppCompatActivity {
 
 
-
-
     String pageId;
     String libraryId;
     String bookId;
+    LinearLayout containerLinearLayout;
+    Button btn ;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_upload_page);
+        initUI();
+        startForegroundService(new Intent(getApplicationContext(),UploadPageManagerService.class));
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                uploadPage();
+            }
+        });
 
-    void uploadPage(LinearLayout containerLinearLayout){
+    }
+private void initUI(){
+
+    containerLinearLayout = findViewById(R.id.containerLinearLayoutId);
+    btn = findViewById(R.id.btn);
+
+}
+    void uploadPage(){
         ArrayList<ArrayList<String>> allPageTextPartitionsDataDetailsArrayList = new ArrayList<>();
 
         for(int i=0; i<containerLinearLayout.getChildCount(); i++){
-            String partitionId = GlobalConfig.getRandomString(10) + "_IS_PARTITION_ID_IS_PARTITION_ID_";
+            String partitionId = GlobalConfig.getRandomString(10) + GlobalConfig._IS_PARTITION_ID_IS_FOR_IDENTIFYING_PARTITIONS_KEY;
             UploadPageManagerService.setInitialVariables(pageId);
             UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
                 @Override

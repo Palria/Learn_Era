@@ -15,6 +15,7 @@ public class TutorialDataModel {
 /**The name of the tutorial*/
     String tutorialName;
     String tutorialCategory;
+    String tutorialDescription;
     /**The id of the book*/
     String tutorialId;
     /**The date when this book was created*/
@@ -78,6 +79,7 @@ public class TutorialDataModel {
    public  TutorialDataModel(
             String tutorialName,
             String tutorialCategory,
+            String tutorialDescription,
             String tutorialId,
             String dateCreated,
             long totalNumberOfPages,
@@ -95,6 +97,7 @@ public class TutorialDataModel {
     ){
         this.tutorialName = tutorialName;
         this.tutorialCategory = tutorialCategory;
+        this.tutorialDescription = tutorialDescription;
         this.tutorialId = tutorialId;
         this.dateCreated = dateCreated;
         this.totalNumberOfPages = totalNumberOfPages;
@@ -128,6 +131,14 @@ public class TutorialDataModel {
 
     void setTutorialCategory(String tutorialCategory) {
         this.tutorialCategory = tutorialCategory;
+    }
+
+    public String getTutorialDescription() {
+        return tutorialDescription;
+    }
+
+    void setTutorialDescription(String tutorialDescription) {
+        this.tutorialDescription = tutorialDescription;
     }
 
       public String getTutorialId() {

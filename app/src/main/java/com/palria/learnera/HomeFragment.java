@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,8 @@ import com.palria.learnera.models.TutorialDataModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import io.grpc.okhttp.internal.framed.FrameReader;
 
 public class HomeFragment extends Fragment {
 //going to add a category check flag to avoid multiple fetch
@@ -116,23 +119,26 @@ String categorySelected = "";
                     @Override
                     public void onSuccess(TutorialDataModel tutorialDataModel) {
 //                        displayTutorial(tutorialDataModel);
-                        tutorialDataModels.add(new TutorialDataModel(
-                                        tutorialDataModel.getTutorialName(),
-                                        tutorialDataModel.getTutorialCategory(),
-                                        tutorialDataModel.getTutorialId(),
-                                        tutorialDataModel.getDateCreated(),
-                                        tutorialDataModel.getTotalNumberOfPages(),
-                                        tutorialDataModel.getTotalNumberOfFolders(),
-                                        tutorialDataModel.getTotalNumberOfTutorialViews(),
-                                        tutorialDataModel.getTotalNumberOfTutorialReach(),
-                                        tutorialDataModel.getAuthorId(),
-                                        tutorialDataModel.getLibraryId(),
-                                        tutorialDataModel.getTutorialCoverPhotoDownloadUrl(),
-                                        tutorialDataModel.getTotalNumberOfOneStarRate(),
-                                        tutorialDataModel.getTotalNumberOfTwoStarRate(),
-                                        tutorialDataModel.getTotalNumberOfThreeStarRate(),
-                                        tutorialDataModel.getTotalNumberOfFourStarRate(),
-                                        tutorialDataModel.getTotalNumberOfFiveStarRate()));
+                        tutorialDataModels.add(tutorialDataModel);
+
+//                        tutorialDataModels.add(new TutorialDataModel(
+//                                tutorialDataModel.getTutorialName(),
+//                                tutorialDataModel.getTutorialCategory(),
+//                                tutorialDataModel.getTutorialDescription(),
+//                                tutorialDataModel.getTutorialId(),
+//                                tutorialDataModel.getDateCreated(),
+//                                tutorialDataModel.getTotalNumberOfPages(),
+//                                tutorialDataModel.getTotalNumberOfFolders(),
+//                                tutorialDataModel.getTotalNumberOfTutorialViews(),
+//                                tutorialDataModel.getTotalNumberOfTutorialReach(),
+//                                tutorialDataModel.getAuthorId(),
+//                                tutorialDataModel.getLibraryId(),
+//                                tutorialDataModel.getTutorialCoverPhotoDownloadUrl(),
+//                                tutorialDataModel.getTotalNumberOfOneStarRate(),
+//                                tutorialDataModel.getTotalNumberOfTwoStarRate(),
+//                                tutorialDataModel.getTotalNumberOfThreeStarRate(),
+//                                tutorialDataModel.getTotalNumberOfFourStarRate(),
+//                                tutorialDataModel.getTotalNumberOfFiveStarRate()));
 
                         popularTutorialsListViewAdapter.notifyItemChanged(tutorialDataModels.size());
                     }
@@ -146,9 +152,15 @@ String categorySelected = "";
 
             }
         });
-        if(CurrentUserProfileDataModel.getUserName()!=null && !CurrentUserProfileDataModel.getUserName().equals("null") && !CurrentUserProfileDataModel.getUserName().isEmpty()) {
-            helloUserTextView.setText("Hello, "+CurrentUserProfileDataModel.getUserName());
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                if(CurrentUserProfileDataModel.getUserName()!=null && !CurrentUserProfileDataModel.getUserName().equals("null") && !CurrentUserProfileDataModel.getUserName().isEmpty()) {
+                    helloUserTextView.setText("Hello, "+CurrentUserProfileDataModel.getUserName());
+                }
+            }
+        },12000);
 
 //        initCategoriesTab(0);
 
@@ -261,6 +273,7 @@ String categorySelected = "";
         tutorialDataModels.add(
                 new TutorialDataModel("How to connect to mysql database for free. in 2012 for Users to get it.",
                         "category",
+                        "description",
                         "__id__02151",
                         "1 days ago",
                         2l,
@@ -279,6 +292,7 @@ String categorySelected = "";
         tutorialDataModels.add(
                 new TutorialDataModel("The protest was organised against the Kathmandu Metropolitan City mayor’s recent move to demolish a part of private property in Sankhamul",
                         "Category",
+                        "description",
                         "Jeevan",
                         "32 mins ago",
                         2l,
@@ -297,6 +311,7 @@ String categorySelected = "";
         tutorialDataModels.add(
                 new TutorialDataModel("According to him, the metropolis demolished the house compound without any letter or notice.",
                         "Category",
+                        "description",
                         "Palria",
                         "32 mins ago",
                         2l,
@@ -535,6 +550,7 @@ private void changeCategory(String categorySelected){
                             String tutorialId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
                             String tutorialName = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
                             String tutorialCategory = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_CATEGORY_KEY);
+                            String tutorialDescription = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DESCRIPTION_KEY);
                             String dateCreated = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DATE_CREATED_KEY);
                             long  totalNumberOfFolders = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY) :0L;
                             long totalNumberOfPages =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY) :0L;
@@ -553,6 +569,7 @@ private void changeCategory(String categorySelected){
                                                     tutorialFetchListener.onSuccess(new TutorialDataModel(
                                                                                      tutorialName,
                                                                                      tutorialCategory,
+                                                                                     tutorialDescription,
                                                                                      tutorialId,
                                                                                      dateCreated,
                                                                                      totalNumberOfPages,
