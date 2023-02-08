@@ -32,7 +32,7 @@ public class UploadPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_page);
         initUI();
-        startForegroundService(new Intent(getApplicationContext(),UploadPageManagerService.class));
+        startService(new Intent(getApplicationContext(),UploadPageManagerService.class));
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

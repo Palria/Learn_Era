@@ -116,6 +116,10 @@ fetchLogs(new OnLogFetchListener() {
                 ;
                 return;
             case GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY:
+                activityDataModelArrayList.add(new UserActivityDataModel("You created new tutorial.",
+                        eventDate, "...","null",1,"rating",false));
+                userActivityItemRCVAdapter.notifyItemChanged(activityDataModelArrayList.size());
+
                 ;
                 return;
             case GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY:
@@ -131,6 +135,10 @@ fetchLogs(new OnLogFetchListener() {
                 ;
                 return;
             case GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_REVIEW_TYPE_KEY:
+                activityDataModelArrayList.add(new UserActivityDataModel("You edited your tutorial.",
+                        eventDate, "...","null",1,"rating",false));
+                userActivityItemRCVAdapter.notifyItemChanged(activityDataModelArrayList.size());
+
                 ;
                 return;
             case GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY:

@@ -14,6 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.palria.learnera.GlobalConfig;
 import com.palria.learnera.R;
 import com.palria.learnera.models.AuthorDataModel;
 import com.palria.learnera.models.LibraryDataModel;
@@ -50,20 +53,35 @@ public class PopularTutorialsListViewAdapter extends RecyclerView.Adapter<Popula
         TutorialDataModel tutorialDataModel = tutorialDataModels.get(position);
 
       holder.tutorialName.setText(tutorialDataModel.getTutorialName());
-        holder.authorName.setText(tutorialDataModel.getAuthorId());
-        holder.tutorialCreatedDate.setText(tutorialDataModel.getDateCreated());
+      holder.tutorialCreatedDate.setText(tutorialDataModel.getDateCreated());
 
         Glide.with(context)
-                .load(position %2 !=0?"https://picsum.photos/400/200?random=1":"https://api.lorem.space/image/shoes?w=400&h=200")
+                .load(tutorialDataModel.getTutorialCoverPhotoDownloadUrl())
                 .centerCrop()
                 .placeholder(R.drawable.book_cover)
                 .into(holder.cover);
 
-        Glide.with(context)
-                        .load("https://i.pravatar.cc/150?u="+tutorialDataModel.getAuthorId()+"@gmail.com")
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_USERS_KEY)
+                .document(tutorialDataModel.getAuthorId())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                        String userDisplayName = "" + documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                        holder.authorName.setText(userDisplayName);
+                        String authorPhotoDownloadUrl = "" + documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
+
+
+                        Glide.with(context)
+                                .load(authorPhotoDownloadUrl)
                                 .placeholder(R.drawable.default_profile)
-                                        .centerCrop()
-                                                .into(holder.authorPicture);
+                                .centerCrop()
+                                .into(holder.authorPicture);
+
+                    }
+                });
 
 
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {

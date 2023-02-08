@@ -86,6 +86,9 @@ String categorySelected = "";
                 libraryArrayList.clear();
                 homeBooksRecyclerListViewAdapter.notifyDataSetChanged();
 
+                tutorialDataModels.clear();
+                popularTutorialsListViewAdapter.notifyDataSetChanged();
+
 
                 fetchPopularAuthor(categoryName, new PopularAuthorFetchListener() {
                     @Override
@@ -270,62 +273,62 @@ String categorySelected = "";
  */
 
         //init and show some dummy tutorials
-        tutorialDataModels.add(
-                new TutorialDataModel("How to connect to mysql database for free. in 2012 for Users to get it.",
-                        "category",
-                        "description",
-                        "__id__02151",
-                        "1 days ago",
-                        2l,
-                        1l,
-                        0l,
-                        0l,
-                        "Kamaensi",
-                        "",
-                        "__",
-                        0l,
-                        0l,
-                        0l,
-                        0l,
-                        0l));
-
-        tutorialDataModels.add(
-                new TutorialDataModel("The protest was organised against the Kathmandu Metropolitan City mayor’s recent move to demolish a part of private property in Sankhamul",
-                        "Category",
-                        "description",
-                        "Jeevan",
-                        "32 mins ago",
-                        2l,
-                        1l,
-                        0l,
-                        0l,
-                        "Jeevan",
-                        "",
-                        "__",
-                        0l,
-                        0l,
-                        0l,
-                        0l,
-                        0l));
-
-        tutorialDataModels.add(
-                new TutorialDataModel("According to him, the metropolis demolished the house compound without any letter or notice.",
-                        "Category",
-                        "description",
-                        "Palria",
-                        "32 mins ago",
-                        2l,
-                        1l,
-                        0l,
-                        0l,
-                        "Palria",
-                        "",
-                        "__",
-                        0l,
-                        0l,
-                        0l,
-                        0l,
-                        0l));
+//        tutorialDataModels.add(
+//                new TutorialDataModel("How to connect to mysql database for free. in 2012 for Users to get it.",
+//                        "category",
+//                        "description",
+//                        "__id__02151",
+//                        "1 days ago",
+//                        2l,
+//                        1l,
+//                        0l,
+//                        0l,
+//                        "Kamaensi",
+//                        "",
+//                        "__",
+//                        0l,
+//                        0l,
+//                        0l,
+//                        0l,
+//                        0l));
+//
+//        tutorialDataModels.add(
+//                new TutorialDataModel("The protest was organised against the Kathmandu Metropolitan City mayor’s recent move to demolish a part of private property in Sankhamul",
+//                        "Category",
+//                        "description",
+//                        "Jeevan",
+//                        "32 mins ago",
+//                        2l,
+//                        1l,
+//                        0l,
+//                        0l,
+//                        "Jeevan",
+//                        "",
+//                        "__",
+//                        0l,
+//                        0l,
+//                        0l,
+//                        0l,
+//                        0l));
+//
+//        tutorialDataModels.add(
+//                new TutorialDataModel("According to him, the metropolis demolished the house compound without any letter or notice.",
+//                        "Category",
+//                        "description",
+//                        "Palria",
+//                        "32 mins ago",
+//                        2l,
+//                        1l,
+//                        0l,
+//                        0l,
+//                        "Palria",
+//                        "",
+//                        "__",
+//                        0l,
+//                        0l,
+//                        0l,
+//                        0l,
+//                        0l));
 
 //        popularTutorialsContainerRcv.setHasFixedSize(true);
         popularTutorialsContainerRcv.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
@@ -543,6 +546,9 @@ private void changeCategory(String categorySelected){
 //
 //                        tutorialDataModels.clear();
 //                        popularTutorialsListViewAdapter.notifyDataSetChanged();
+
+                        tutorialDataModels.clear();
+                        popularTutorialsListViewAdapter.notifyDataSetChanged();
 
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             String authorId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY);
