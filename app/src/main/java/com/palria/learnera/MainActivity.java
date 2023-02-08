@@ -1,6 +1,7 @@
 package com.palria.learnera;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -20,6 +21,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,11 +33,13 @@ import com.palria.learnera.models.CurrentUserProfileDataModel;
 import com.palria.learnera.models.StatisticsDataModel;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, Serializable {
 
     BottomNavigationView bottomNavigationView;
     BottomAppBar bottomAppBar;
@@ -53,6 +57,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     //learn era bottom sheet dialog
     LEBottomSheetDialog leBottomSheetDialog;
 
+    /**
+     * loading alert dialog
+     *
+     */
+    AlertDialog alertDialog;
     GlobalConfig.OnCurrentUserProfileFetchListener onCurrentUserProfileFetchListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +91,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 //
 
+    private void toggleProgress(boolean show)
+    {
+        if(show){
+            alertDialog.show();
+        }else{
+            alertDialog.cancel();
+        }
+    }
+
     /**<p>initializes this activity's views</p>
      * This method must be invoked first after the inVocation of {@link AppCompatActivity#setContentView(View)} and  before any initializations
      * to avoid null pointer exception.
@@ -104,6 +122,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //        bottomNavigationView.getIt
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.home_item);
+        alertDialog = new AlertDialog.Builder(MainActivity.this)
+                .setCancelable(false)
+                .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
+                .create();
 
         leBottomSheetDialog = new LEBottomSheetDialog(this);
 
@@ -121,13 +143,69 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .addOptionItem("New Tutorial", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        toggleProgress(true);
 
-                        Intent i = new Intent(MainActivity.this, CreateNewTutorialActivity.class);
-                        //creating new
+                        GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY)
+                                .get()
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        toggleProgress(false);
 
-                        i.putExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY,true);
-                        leBottomSheetDialog.hide();
-                        startActivity(i);
+                                    }
+                                })
+                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                        toggleProgress(false);
+                                        ArrayList<String>libraryIdArrayList= new ArrayList<>();
+                                        ArrayList<String>libraryNameArrayList= new ArrayList<>();
+                                        ArrayList<ArrayList<String>>libraryCategoryArrayList = new ArrayList<>();
+                                    for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                                       String libraryId = documentSnapshot.getId();
+                                       String libraryName = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
+                                       ArrayList<String> libraryCategory = (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
+                                        libraryIdArrayList.add(libraryId);
+                                        libraryNameArrayList.add(libraryName);
+                                        libraryCategoryArrayList.add(libraryCategory);
+
+
+                                    }
+                                        // Initialize alert dialog
+                                        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
+
+                                        // set title
+                                        builder.setTitle("Select Library to add tutorial.");
+
+                                        // set dialog non cancelable
+                                        builder.setCancelable(false);
+
+                                        String[] arr = new String[libraryNameArrayList.size()];
+                                        for(int i=0; i<arr.length;i++){
+                                            arr[i]=libraryNameArrayList.get(i);
+                                        }
+
+                                        builder.setSingleChoiceItems(arr, 0, (dialog, which) -> {
+
+                                            Intent i = new Intent(MainActivity.this, CreateNewTutorialActivity.class);
+                                            //creating new
+
+                                            i.putExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY,true);
+                                            i.putExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,libraryCategoryArrayList.get(which));
+                                            i.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryIdArrayList.get(which));
+                                            leBottomSheetDialog.hide();
+                                            startActivity(i);
+                                            // when selected an item the dialog should be closed with the dismiss method
+                                            dialog.dismiss();
+                                        });
+
+                                        // show dialog
+                                        builder.show();
+
+                                    }
+
+                                });
+
 
                     }
                 }, 0)

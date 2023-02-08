@@ -233,6 +233,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                 toggleProgress(true);
 
                 tutorialName = tutorialNameEditText.getText().toString();
+                tutorialCategory = chooseCategoryTextView.getText().toString();
                 tutorialDescription = tutorialDescriptionEditText.getText().toString();
 
                 if(isTutorialCoverPhotoIncluded){
@@ -248,8 +249,8 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                                         toggleProgress(false);
                                         GlobalHelpers.showAlertMessage("success",
                                                 CreateNewTutorialActivity.this,
-                                                "Tutorial created sucessfully.",
-                                                "You have successfully created/updated your tutorial,thanks and go ahead and contribute to Learn Era ");
+                                                "Tutorial created successfully",
+                                                "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
 
 
                                     }
@@ -395,7 +396,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
 
                     // now also update the TextView which previews the selected item
                     chooseCategoryTextView.setText(categoryArrayList.get(which));
-                    //remove errors if that exists alrady.
+                    //remove errors if that exists already.
 
                     chooseCategoryTextView.setError(null);
                     // when selected an item the dialog should be closed with the dismiss method
@@ -410,16 +411,16 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
     }
 
     private void getDynamicCategories() {
-
-        categoryArrayList=new ArrayList<>();
-        categoryArrayList.add("Software Development");
-        categoryArrayList.add("Web Development");
-        categoryArrayList.add("Graphic Design");
-        categoryArrayList.add("Ui Design");
-        categoryArrayList.add("Ethical Hacking");
-        categoryArrayList.add("Game Development");
-        categoryArrayList.add("Prototyping");
-        categoryArrayList.add("SEO");
+//
+//        categoryArrayList=new ArrayList<>();
+//        categoryArrayList.add("Software Development");
+//        categoryArrayList.add("Web Development");
+//        categoryArrayList.add("Graphic Design");
+//        categoryArrayList.add("Ui Design");
+//        categoryArrayList.add("Ethical Hacking");
+//        categoryArrayList.add("Game Development");
+//        categoryArrayList.add("Prototyping");
+//        categoryArrayList.add("SEO");
 
     }
 
@@ -468,7 +469,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
         if(isCreateNewTutorial && !isTutorialCoverPhotoChanged){
 
             GlobalHelpers.showAlertMessage("error",CreateNewTutorialActivity.this,
-                    "Oops error!","Please choose a cover for your tutorial.");
+                    "Oops rejected!","Please choose a cover for your tutorial.");
 
             return true;
         }
@@ -524,10 +525,14 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
         isCreateNewTutorial = intent.getBooleanExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY,false);
         if(!isCreateNewTutorial){
             tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
-        }
-        libraryContainerId = intent.getStringExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
-        tutorialCategory = intent.getStringExtra(GlobalConfig.TUTORIAL_CATEGORY_KEY);
 
+        }else{
+            categoryArrayList = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
+
+        }
+
+        libraryContainerId = intent.getStringExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
+//        tutorialCategory = intent.getStringExtra(GlobalConfig.TUTORIAL_CATEGORY_KEY);
     }
 
     //
