@@ -664,7 +664,7 @@ toggleProgress(false);
 
         addTutorialDialog = new AlertDialog.Builder(CreateNewLibraryActivity.this)
                 .setCancelable(false)
-                .setTitle("Congrats,"+libraryName+" library created!")
+                .setTitle("Congrats,"+libraryNameEditText.getText()+" library created!")
                 .setMessage("Create first Tutorial under this library")
                 .setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     @Override
