@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -71,6 +72,9 @@ public class UserProfileFragment extends Fragment {
 
     boolean isUserAuthor = false;
 
+    //shimmer layout loading preloading effect container.
+    ShimmerFrameLayout shimmerLayout;
+
     //replace all categories with categories from database
     String[] categories = {"Software Development", "Ui Design", "Web Development", "Machine Learning",
     "Database Design", "Furniture", "Internet", "Communication", "Story", "Drama", "Podcasts"};
@@ -111,24 +115,27 @@ public class UserProfileFragment extends Fragment {
         // Inflate the layout for this fragment
        View parentView = inflater.inflate(R.layout.fragment_user_profile, container, false);
        initUI(parentView);
-//       toggleProgress(true);
-        swipeRefreshLayout.setRefreshing(true);
-
         loadCurrentUserProfile();
+        
        fetchAllLibrary(new LibraryFetchListener() {
            @Override
            public void onFailed(String errorMessage) {
 //               toggleProgress(false);
+               swipeRefreshLayout.setRefreshing(false);
+               Toast.makeText(getContext(), "failed to fetch library.", Toast.LENGTH_SHORT).show();
 
            }
 
            @Override
            public void onSuccess(LibraryDataModel libraryDataModel) {
 //               toggleProgress(false);
+               swipeRefreshLayout.setRefreshing(false);
                displayLibrary(libraryDataModel);
+               shimmerLayout.stopShimmer();
+               shimmerLayout.setVisibility(View.GONE);
 
                parentScrollView.setVisibility(View.VISIBLE);
-               swipeRefreshLayout.setRefreshing(false);
+               Toast.makeText(getContext(), "Libraries loaded.", Toast.LENGTH_SHORT).show();
 
            }
        });
@@ -206,40 +213,35 @@ public class UserProfileFragment extends Fragment {
         getProfile(new OnUserProfileFetchListener() {
             @Override
             public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
-                toggleProgress(false);
-
+                swipeRefreshLayout.setRefreshing(false);
                 Glide.with(getContext())
                         .load(userProfilePhotoDownloadUrl)
                         .centerCrop()
                         .into(profileImageView);
-
                 currentEmailView.setText(Html.fromHtml("Contact Email <b>"+contactEmail+"</b> "));
                 currentDisplayNameView.setText(userDisplayName);
-
                 currentCountryOfResidence.setText(Html.fromHtml("From <b>"+userCountryOfResidence+"</b> "));
 
+                shimmerLayout.stopShimmer();
+                shimmerLayout.setVisibility(View.GONE);
 
                 parentScrollView.setVisibility(View.VISIBLE);
-                swipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(getContext(), "Libraries loaded.", Toast.LENGTH_SHORT).show();
 
             }
 
             @Override
             public void onFailed(String errorMessage) {
 //                toggleProgress(false);
-
-                failureIndicatorTextView.setVisibility(View.VISIBLE);
                 swipeRefreshLayout.setRefreshing(false);
-
+                Toast.makeText(getContext(), "Failed to retrieve profile data.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void initUI(View parentView){
         //use the parentView to find the by Id as in : parentView.findViewById(...);
-
         parentScrollView = parentView.findViewById(R.id.scrollView);
-
         failureIndicatorTextView = parentView.findViewById(R.id.failureIndicatorTextViewId);
         //init views
         editProfileButton = parentView.findViewById(R.id.editProfileIcon);
@@ -252,6 +254,7 @@ public class UserProfileFragment extends Fragment {
 
         swipeRefreshLayout = parentView.findViewById(R.id.swiperRefreshLayout);
         profileMoreIconButton = parentView.findViewById(R.id.profileMoreIcon);
+        shimmerLayout = parentView.findViewById(R.id.shimmerLayout);
 
 
         alertDialog = new AlertDialog.Builder(getContext())
@@ -283,7 +286,7 @@ public class UserProfileFragment extends Fragment {
                 public void onClick(View view) {
                     //show they are going to become an author
                     leBottomSheetDialog.hide();
-                    Toast.makeText(getContext(), "author not", Toast.LENGTH_SHORT).show();
+
                     showPromptToBeAnAuthor();
 
                 }
@@ -361,9 +364,7 @@ public class UserProfileFragment extends Fragment {
                         }
 
                         onUserProfileFetchListener.onSuccess( userDisplayName, userCountryOfResidence, contactEmail, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl, isUserBlocked, isUserProfilePhotoIncluded);
-                        Toast.makeText(getContext(), ""+documentSnapshot.getTimestamp(GlobalConfig.USER_PROFILE_DATE_EDITED_TIME_STAMP_KEY).toDate(), Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getContext(), ""+documentSnapshot.getTimestamp(GlobalConfig.USER_PROFILE_DATE_EDITED_TIME_STAMP_KEY).getNanoseconds(), Toast.LENGTH_SHORT).show();
-                    }
+                        }
                 });
     }
 
