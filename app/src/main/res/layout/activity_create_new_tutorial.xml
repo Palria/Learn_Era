@@ -1,9 +1,209 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".CreateNewTutorialActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        app:titleCentered="true"
+        app:title="New Tutorial"
+        app:navigationIconTint="@color/white"
+        app:titleTextColor="@color/white"
+        android:theme="@style/ToolbarColoredBackArrow"
+        android:background="@color/teal_700"
+        android:layout_height="?attr/actionBarSize"/>
+
+
+    <ScrollView
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:paddingBottom="5pt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:paddingHorizontal="10pt"
+                    android:paddingVertical="15pt"
+                    android:layout_height="match_parent">
+
+
+                    <TextView
+                        android:textStyle="bold"
+                        android:layout_marginBottom="7pt"
+                        android:text="Tutorial Info"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:hint="Tutorial title"
+                            android:inputType="text"
+                            android:textSize="16sp"
+                            android:id="@+id/nameInput"
+                            android:background="@drawable/default_input_bg"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:textSize="5pt"
+                            android:text="Make a title clean, short and understandable."
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+                    <LinearLayout
+                        android:layout_marginTop="10pt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_marginBottom="2pt"
+                                android:text="Choose Categories"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                            <TextView
+                                android:id="@+id/chooseCategory"
+                                android:layout_gravity="fill_vertical"
+                                android:hint="Choose"
+                                android:paddingHorizontal="5pt"
+                                android:paddingVertical="7pt"
+                                android:background="@drawable/default_input_bg"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"/>
+
+                        </LinearLayout>
+
+
+
+                    </LinearLayout>
+                    <TextView
+                        android:textSize="5pt"
+                        android:text="Choose one or more categories for your library."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="10pt"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:hint="Tutorial short description"
+                            android:inputType="textMultiLine"
+                            android:textSize="16sp"
+                            android:height="45pt"
+                            android:lines="8"
+                            android:gravity="top"
+                            android:textDirection="ltr"
+                            android:layout_gravity="start"
+                            android:minLines="6"
+                            android:maxLines="8"
+                            android:id="@+id/descriptionInput"
+                            android:background="@drawable/default_input_bg"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:textSize="5pt"
+                            android:text="Please describe about your tutorial in 100 characters."
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <TextView
+                        android:textStyle="bold"
+                        android:layout_marginTop="20pt"
+                        android:layout_marginBottom="7pt"
+                        android:text="Tutorial Media"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        app:riv_corner_radius="4pt"
+                        android:id="@+id/pickImageActionButton"
+                        android:background="@drawable/dotted_bg"
+                        android:layout_width="match_parent"
+                        android:layout_height="45pt"/>
+                    <TextView
+                        android:layout_marginTop="2pt"
+                        android:textSize="5pt"
+                        android:text="tutorial cover picture."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:paddingHorizontal="10pt"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize">
+
+
+                <Button
+                    android:background="@drawable/default_auth_btn"
+                    style="@style/Widget.Material3.Button.ElevatedButton"
+                    android:layout_weight="1"
+                    android:backgroundTint="@null"
+                    android:id="@+id/cancelButton"
+                    android:text="@string/cancel"
+                    android:paddingVertical="2pt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+
+                <Button
+                    android:background="@drawable/default_auth_btn"
+                    android:layout_marginLeft="3pt"
+                    android:layout_weight="1"
+                    android:id="@+id/createActionButton"
+                    android:text="@string/create"
+                    android:paddingVertical="2pt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+
+
+</RelativeLayout>

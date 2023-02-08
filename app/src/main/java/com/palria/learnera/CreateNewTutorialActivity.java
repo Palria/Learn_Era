@@ -5,11 +5,14 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.Manifest;
 import android.content.ClipData;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -17,18 +20,22 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -36,9 +43,12 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class CreateNewTutorialActivity extends AppCompatActivity {
@@ -58,6 +68,9 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
     EditText tutorialNameEditText;
     EditText tutorialDescriptionEditText;
     ImageView coverPhotoImageView;
+    Button cancelButton;
+    TextView chooseCategoryTextView;
+    ArrayList<Integer> categoriesList = new ArrayList<>();
     /**
      * <p>Indicates whether the user is editing his tutorial or creating a new tutorial</p>
      * The {@link boolean} value is initialized from {@link Intent} data
@@ -103,7 +116,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
     /**
      * A {@link View} for performing the edition action
      * */
-    Button pickImageActionButton;
+    RoundedImageView pickImageActionButton;
 
     /**
      * A  variable for launching the gallery {@link Intent}
@@ -115,6 +128,18 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
      * */
     ActivityResultLauncher<Intent> openCameraLauncher;
 
+    /**
+     * loading alert dialog
+     *
+     */
+    AlertDialog alertDialog;
+
+    /**
+     * categories list containing only string values.
+     */
+    ArrayList<String> categoryArrayList;
+    final int[] checkedCategory = {-1};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +149,12 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
         if(isCreateNewTutorial){
             //User is creating new tutorial
             tutorialId = GlobalConfig.getRandomString(100);
+
+            //load the dynamic categories from server/firebase
+            getDynamicCategories();
+
+
+
         }else{
             //User is editing his tutorial
             initializeTutorialProfile(new ProfileInitializationListener() {
@@ -154,7 +185,11 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                 if (result.getData() != null) {
                     Intent data=result.getData();
                     galleryImageUri = data.getData();
-                    Picasso.get().load(galleryImageUri).into(coverPhotoImageView);
+                   // Picasso.get().load(galleryImageUri).into(pickImageActionButton);
+                    Glide.with(CreateNewTutorialActivity.this)
+                            .load(galleryImageUri)
+                            .centerCrop()
+                            .into(pickImageActionButton);
                     isTutorialCoverPhotoIncluded = true;
                     isTutorialCoverPhotoChanged = true;
 
@@ -173,7 +208,11 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
 
                         if(bitmapFromCamera != null) {
                             cameraImageBitmap = bitmapFromCamera;
-                            coverPhotoImageView.setImageBitmap(cameraImageBitmap);
+                            //coverPhotoImageView.setImageBitmap(cameraImageBitmap);
+                            Glide.with(CreateNewTutorialActivity.this)
+                                    .load(cameraImageBitmap)
+                                    .centerCrop()
+                                    .into(pickImageActionButton);
                             isTutorialCoverPhotoIncluded = true;
                             isTutorialCoverPhotoChanged = true;
                         }
@@ -187,6 +226,12 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
         createTutorialActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                boolean hasErrors = validateForm();
+                if(hasErrors)return;
+                //show alert
+                toggleProgress(true);
+
                 tutorialName = tutorialNameEditText.getText().toString();
                 tutorialDescription = tutorialDescriptionEditText.getText().toString();
 
@@ -200,18 +245,33 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                                     public void onSuccess() {
                                         GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryContainerId,tutorialId,false,false,true,null,null,null,false,false,false);
 
+                                        toggleProgress(false);
+                                        GlobalHelpers.showAlertMessage("success",
+                                                CreateNewTutorialActivity.this,
+                                                "Tutorial created sucessfully.",
+                                                "You have successfully created/updated your tutorial,thanks and go ahead and contribute to Learn Era ");
+
+
                                     }
 
                                     @Override
                                     public void onFailed(String errorMessage) {
-
+                                        toggleProgress(false);
+                                        GlobalHelpers.showAlertMessage("error",
+                                                CreateNewTutorialActivity.this,
+                                                "Error!",
+                                                errorMessage);
                                     }
                                 });
                             }
 
                             @Override
                             public void onFailed(String errorMessage) {
-
+                                toggleProgress(false);
+                                GlobalHelpers.showAlertMessage("error",
+                                        CreateNewTutorialActivity.this,
+                                        "Something went wrong. please try again.",
+                                        errorMessage);
                             }
                         });
                     }
@@ -307,12 +367,151 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                 });
             }
         });
+
+        // choose new category listener.
+        chooseCategoryTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                // Initialize alert dialog
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(CreateNewTutorialActivity.this);
+
+                // set title
+                builder.setTitle("Select categories for tutorial.");
+
+                // set dialog non cancelable
+                builder.setCancelable(false);
+
+                String[] arr = new String[categoryArrayList.size()];
+                for(int i=0; i<arr.length;i++){
+                    arr[i]=categoryArrayList.get(i);
+                }
+
+                builder.setSingleChoiceItems(arr, checkedCategory[0], (dialog, which) -> {
+                    // update the selected item which is selected by the user so that it should be selected
+                    // when user opens the dialog next time and pass the instance to setSingleChoiceItems method
+                    checkedCategory[0] = which;
+
+                    // now also update the TextView which previews the selected item
+                    chooseCategoryTextView.setText(categoryArrayList.get(which));
+                    //remove errors if that exists alrady.
+
+                    chooseCategoryTextView.setError(null);
+                    // when selected an item the dialog should be closed with the dismiss method
+                    dialog.dismiss();
+                });
+
+                // show dialog
+                builder.show();
+
+            }
+        });
     }
+
+    private void getDynamicCategories() {
+
+        categoryArrayList=new ArrayList<>();
+        categoryArrayList.add("Software Development");
+        categoryArrayList.add("Web Development");
+        categoryArrayList.add("Graphic Design");
+        categoryArrayList.add("Ui Design");
+        categoryArrayList.add("Ethical Hacking");
+        categoryArrayList.add("Game Development");
+        categoryArrayList.add("Prototyping");
+        categoryArrayList.add("SEO");
+
+    }
+
+    private void toggleProgress(boolean show)
+    {
+        if(show){
+            alertDialog.show();
+        }else{
+            alertDialog.cancel();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            onBackPressed();  return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private boolean validateForm() {
+
+        if(TextUtils.isEmpty(tutorialNameEditText.getText().toString().trim())){
+
+            tutorialNameEditText.setError("Please Enter a title for your tutorial.");
+            tutorialNameEditText.requestFocus();
+            return true;
+
+        }
+
+        if(TextUtils.isEmpty(tutorialDescriptionEditText.getText().toString().trim())){
+            tutorialDescriptionEditText.setError("This field is required.");
+            tutorialDescriptionEditText.requestFocus();
+            return true;
+        }
+
+        if(TextUtils.isEmpty(chooseCategoryTextView.getText().toString().trim())){
+            chooseCategoryTextView.setError("Please choose at least one category.");
+            chooseCategoryTextView.requestFocus();
+            return true;
+        }
+
+        if(isCreateNewTutorial && !isTutorialCoverPhotoChanged){
+
+            GlobalHelpers.showAlertMessage("error",CreateNewTutorialActivity.this,
+                    "Oops error!","Please choose a cover for your tutorial.");
+
+            return true;
+        }
+
+        return false;
+
+    }
+
 
     /**
      * Initializes the views
      * */
     private void initUI(){
+
+        Toolbar actionBar = (Toolbar)  findViewById(R.id.topBar);
+        setSupportActionBar(actionBar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_baseline_close_24);
+
+        tutorialNameEditText=findViewById(R.id.nameInput);
+        tutorialDescriptionEditText=findViewById(R.id.descriptionInput);
+        createTutorialActionButton=findViewById(R.id.createActionButton);
+        pickImageActionButton=findViewById(R.id.pickImageActionButton);
+        chooseCategoryTextView =findViewById(R.id.chooseCategory);
+
+        cancelButton = findViewById(R.id.cancelButton);
+
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                CreateNewTutorialActivity.this.onBackPressed();
+
+            }
+        });
+
+        //init progress.
+        alertDialog = new AlertDialog.Builder(CreateNewTutorialActivity.this)
+                .setCancelable(false)
+                .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
+                .create();
 
     }
 
@@ -385,8 +584,8 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
     private void uploadTutorialCoverPhoto(CoverPhotoUploadListener coverPhotoUploadListener){
 
         StorageReference coverPhotoStorageReference  = GlobalConfig.getFirebaseStorageInstance().getReference().child(GlobalConfig.ALL_USERS_KEY+"/"+GlobalConfig.getCurrentUserId()+"/"+GlobalConfig.ALL_LIBRARY_KEY+"/"+libraryContainerId+"/"+GlobalConfig.ALL_TUTORIAL_KEY+"/"+tutorialId+"/"+GlobalConfig.TUTORIAL_IMAGES_KEY+"/"+GlobalConfig.TUTORIAL_COVER_PHOTO_KEY+".PNG");
-        coverPhotoImageView.setDrawingCacheEnabled(true);
-        Bitmap coverPhotoBitmap = coverPhotoImageView.getDrawingCache();
+        pickImageActionButton.setDrawingCacheEnabled(true);
+        Bitmap coverPhotoBitmap = pickImageActionButton.getDrawingCache();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         coverPhotoBitmap.compress(Bitmap.CompressFormat.PNG,20,byteArrayOutputStream);
         byte[] bytes = byteArrayOutputStream.toByteArray();
