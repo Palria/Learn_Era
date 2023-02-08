@@ -132,7 +132,9 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
      *
      */
     AlertDialog alertDialog;
+    AlertDialog addTutorialDialog;
 
+    ArrayList<String> categoryList =  new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -231,7 +233,6 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                 libraryName = libraryNameEditText.getText().toString();
                 libraryCategory = chooseCategoryTextView.getText().toString();
                 libraryDescription = libraryDescriptionEditText.getText().toString();
-ArrayList<String> categoryList = new ArrayList<String>();
 if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
     categoryList.addAll(Arrays.asList(chooseCategoryTextView.getText().toString().split(",")));
 }else{
@@ -246,13 +247,31 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                                 createNewLibrary(categoryList,coverPhotoDownloadUrl, coverPhotoStorageReference,new OnLibraryEditionListener() {
                                     @Override
                                     public void onSuccess() {
-                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryId,null,false,true,false,null,null,null,false,false,false);
-                                        toggleProgress(false);
+                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null, false, true, false, null, null, null,null, false, false, false, new GlobalConfig.ActionCallback() {
+                                            @Override
+                                            public void onSuccess() {
+                                                toggleProgress(false);
+                                                showAddTutorialDialog();
+//
+//                                                GlobalHelpers.showAlertMessage("success",
+//                                                        CreateNewLibraryActivity.this,
+//                                                        "Library Created Successfully.",
+//                                                        "You have successfully created your library,thanks and go ahead and contribute to Learn Era ");
 
-                                        GlobalHelpers.showAlertMessage("success",
-                                                CreateNewLibraryActivity.this,
-                                                "Library Created Successfully.",
-                                                "You have successfully created your library,thanks and go ahead and contribute to Learn Era ");
+                                            }
+
+                                            @Override
+                                            public void onFailed(String errorMessage) {
+                                                toggleProgress(false);
+                                                showAddTutorialDialog();
+//
+//                                                GlobalHelpers.showAlertMessage("success",
+//                                                        CreateNewLibraryActivity.this,
+//                                                        "Library Created Successfully.",
+//                                                        "You have successfully created your library,thanks and go ahead and contribute to Learn Era ");
+
+                                            }
+                                        });
 
                                     }
 
@@ -288,13 +307,29 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                                     editLibrary(libraryCategoryArrayList,coverPhotoDownloadUrl, coverPhotoStorageReference,new OnLibraryEditionListener() {
                                         @Override
                                         public void onSuccess() {
-                                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryId,null,false,true,false,null,null,null,false,false,false);
-                                            toggleProgress(false);
+                                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null, false, true, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                                @Override
+                                                public void onSuccess() {
 
-                                            GlobalHelpers.showAlertMessage("success",
-                                                    CreateNewLibraryActivity.this,
-                                                    "Library Edited Successfully.",
-                                                    "You have successfully edited your library,thanks and go ahead and contribute to Learn Era ");
+                                                    toggleProgress(false);
+
+                                                    GlobalHelpers.showAlertMessage("success",
+                                                            CreateNewLibraryActivity.this,
+                                                            "Library Edited Successfully.",
+                                                            "You have successfully edited your library,thanks go ahead and contribute to Learn Era ");
+                                                }
+
+                                                @Override
+                                                public void onFailed(String errorMessage) {
+
+                                                    toggleProgress(false);
+
+                                                    GlobalHelpers.showAlertMessage("success",
+                                                            CreateNewLibraryActivity.this,
+                                                            "Library Edited Successfully.",
+                                                            "You have successfully edited your library,thanks and go ahead and contribute to Learn Era ");
+                                                }
+                                            });
 
 
                                         }
@@ -330,7 +365,17 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                             editLibrary(libraryCategoryArrayList,retrievedCoverPhotoDownloadUrl,retrievedCoverPhotoStorageReference, new OnLibraryEditionListener() {
                                 @Override
                                 public void onSuccess() {
-                                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryId,null,false,true,false,null,null,null,false,false,false);
+                                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null, false, true, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                        }
+
+                                        @Override
+                                        public void onFailed(String errorMessage) {
+
+                                        }
+                                    });
 
                                 }
 
@@ -352,14 +397,33 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                         createNewLibrary(categoryList,"","", new OnLibraryEditionListener() {
                             @Override
                             public void onSuccess() {
-                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryId,null,false,true,false,null,null,null,false,false,false);
-                                toggleProgress(false);
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null, false, true, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
 
-                                GlobalHelpers.showAlertMessage("success",
-                                        CreateNewLibraryActivity.this,
-                                        "Library Created Successfully.",
-                                        "You have successfully created your library,thanks and go ahead and contribute to Learn Era ");
+                                        toggleProgress(false);
+                                        showAddTutorialDialog();
+//
+//                                        GlobalHelpers.showAlertMessage("success",
+//                                                CreateNewLibraryActivity.this,
+//                                                "Library Created Successfully.",
+//                                                "You have successfully created your library,thanks and go ahead and contribute to Learn Era ");
 
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+
+                                        toggleProgress(false);
+                                        showAddTutorialDialog();
+//
+//                                        GlobalHelpers.showAlertMessage("success",
+//                                                CreateNewLibraryActivity.this,
+//                                                "Library Created Successfully.",
+//                                                "You have successfully created your library,thanks and go ahead and contribute to Learn Era ");
+
+                                    }
+                                });
                             }
 
                             @Override
@@ -377,12 +441,27 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                         editLibrary(libraryCategoryArrayList,"","", new OnLibraryEditionListener() {
                             @Override
                             public void onSuccess() {
-                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryId,null,false,true,false,null,null,null,false,false,false);
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null, false, true, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
+toggleProgress(false);
+                                        GlobalHelpers.showAlertMessage("success",
+                                                CreateNewLibraryActivity.this,
+                                                "Library Edited Successfully.",
+                                                "You have successfully edited your library,thanks and go ahead and contribute to Learn Era ");
 
-                                GlobalHelpers.showAlertMessage("success",
-                                        CreateNewLibraryActivity.this,
-                                        "Library Edited Successfully.",
-                                        "You have successfully edited your library,thanks and go ahead and contribute to Learn Era ");
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+toggleProgress(false);
+                                        GlobalHelpers.showAlertMessage("success",
+                                                CreateNewLibraryActivity.this,
+                                                "Library Edited Successfully.",
+                                                "You have successfully edited your library,thanks and go ahead and contribute to Learn Era ");
+
+                                    }
+                                });
 
                             }
 
@@ -582,6 +661,26 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                 .setCancelable(false)
                 .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
                 .create();
+
+        addTutorialDialog = new AlertDialog.Builder(CreateNewLibraryActivity.this)
+                .setCancelable(false)
+                .setTitle("Congrats,"+libraryName+" library created!")
+                .setMessage("Create first Tutorial under this library")
+                .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(CreateNewLibraryActivity.this, CreateNewTutorialActivity.class);
+                        //creating new
+
+                        intent.putExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY,true);
+                        intent.putExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,categoryList);
+                        intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+                        startActivity(intent);
+
+                    }
+                })
+                .setNegativeButton("Back",null)
+                .create();
     }
 
 
@@ -592,6 +691,9 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
         }else{
             alertDialog.cancel();
         }
+    }
+    private void showAddTutorialDialog(){
+        addTutorialDialog.show();
     }
 
     /**

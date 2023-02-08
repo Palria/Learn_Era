@@ -941,7 +941,7 @@ public class GlobalConfig {
         return list;
     }
 //
-    public static void updateActivityLog(String activityLogType, String authorId, String libraryId, String tutorialId, boolean isAuthorAffected, boolean isLibraryAffected, boolean isTutorialAffected,String tutorialFolderId ,String tutorialPageId ,String folderPageId , boolean isTutorialFolderAffected, boolean isTutorialPageAffected, boolean isFolderPageAffected){
+    public static void updateActivityLog(String activityLogType, String authorId, String libraryId, String tutorialId, boolean isAuthorAffected, boolean isLibraryAffected, boolean isTutorialAffected,String tutorialFolderId ,String tutorialPageId ,String folderPageId ,String reviewId , boolean isTutorialFolderAffected, boolean isTutorialPageAffected, boolean isFolderPageAffected, ActionCallback actionCallback){
             String activityLogId = getRandomString(10);
             HashMap<String,Object> activityLogDetails = new HashMap<>();
 //            activityLogDetails.put(LOG_NOTE_KEY,);
@@ -961,6 +961,7 @@ public class GlobalConfig {
             activityLogDetails.put(FOLDER_ID_KEY,tutorialFolderId);
             activityLogDetails.put(TUTORIAL_PAGE_ID_KEY,tutorialPageId);
             activityLogDetails.put(FOLDER_PAGE_ID_KEY,folderPageId);
+            activityLogDetails.put(REVIEWER_ID_KEY,reviewId);
             activityLogDetails.put(IS_AUTHOR_AFFECTED_KEY,isAuthorAffected);
             activityLogDetails.put(IS_LIBRARY_AFFECTED_KEY,isLibraryAffected);
             activityLogDetails.put(IS_TUTORIAL_AFFECTED_KEY,isTutorialAffected);
@@ -978,13 +979,13 @@ public class GlobalConfig {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        actionCallback.onFailed(e.getMessage());
                     }
                 })
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-
+                        actionCallback.onSuccess();
                     }
                 });
 

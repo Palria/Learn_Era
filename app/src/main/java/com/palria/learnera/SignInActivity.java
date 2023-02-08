@@ -64,14 +64,31 @@ boolean isInProgress = false;
                         public void onSuccess(String email, String password) {
                             //user has successfully signed in
                             GlobalConfig.setCurrentUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_SIGN_IN_TYPE_KEY,GlobalConfig.getCurrentUserId(),null,null,true,false,false,null,null,null,false,false,false);
-                            isInProgress = false;
-                            //hide progress
-                            toggleProgress(false);
-                            Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            Toast.makeText(getApplicationContext(), "You successfully signed in, go learn more, it is era of learning", Toast.LENGTH_LONG).show();
-                            SignInActivity.this.finish();
+                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_SIGN_IN_TYPE_KEY, GlobalConfig.getCurrentUserId(), null, null, true, false, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                @Override
+                                public void onSuccess() {
+
+                                    isInProgress = false;
+                                    //hide progress
+                                    toggleProgress(false);
+                                    Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    Toast.makeText(getApplicationContext(), "You successfully signed in, go learn more, it is era of learning", Toast.LENGTH_LONG).show();
+                                    SignInActivity.this.finish();
+                                }
+
+                                @Override
+                                public void onFailed(String errorMessage) {
+
+                                    isInProgress = false;
+                                    //hide progress
+                                    toggleProgress(false);
+                                    Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    Toast.makeText(getApplicationContext(), "You successfully signed in, go learn more, it is era of learning", Toast.LENGTH_LONG).show();
+                                    SignInActivity.this.finish();
+                                }
+                            });
                         }
 
                         @Override

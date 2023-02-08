@@ -244,13 +244,29 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                                 createNewTutorial(coverPhotoDownloadUrl,coverPhotoStorageReference, new OnTutorialEditionListener() {
                                     @Override
                                     public void onSuccess() {
-                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryContainerId,tutorialId,false,false,true,null,null,null,false,false,false);
+                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId, false, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                            @Override
+                                            public void onSuccess() {
 
-                                        toggleProgress(false);
-                                        GlobalHelpers.showAlertMessage("success",
-                                                CreateNewTutorialActivity.this,
-                                                "Tutorial created successfully",
-                                                "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
+                                                toggleProgress(false);
+                                                GlobalHelpers.showAlertMessage("success",
+                                                        CreateNewTutorialActivity.this,
+                                                        "Tutorial created successfully",
+                                                        "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
+
+                                            }
+
+                                            @Override
+                                            public void onFailed(String errorMessage) {
+
+                                                toggleProgress(false);
+                                                GlobalHelpers.showAlertMessage("success",
+                                                        CreateNewTutorialActivity.this,
+                                                        "Tutorial created successfully",
+                                                        "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
+
+                                            }
+                                        });
 
 
                                     }
@@ -284,20 +300,38 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                                     editTutorial(coverPhotoDownloadUrl,coverPhotoStorageReference, new OnTutorialEditionListener() {
                                         @Override
                                         public void onSuccess() {
-                                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryContainerId,tutorialId,false,false,true,null,null,null,false,false,false);
+                                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId, false, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                                @Override
+                                                public void onSuccess() {
+                                                    toggleProgress(false);
+                                                    GlobalHelpers.showAlertMessage("success",
+                                                            CreateNewTutorialActivity.this,
+                                                            "Tutorial edited successfully",
+                                                            "You have successfully edited your tutorial,thanks go ahead and contribute to Learn Era ");
+                                                }
+
+                                                @Override
+                                                public void onFailed(String errorMessage) {
+toggleProgress(false);
+                                                    GlobalHelpers.showAlertMessage("success",
+                                                            CreateNewTutorialActivity.this,
+                                                            "Tutorial edited successfully",
+                                                            "You have successfully edited your tutorial,thanks go ahead and contribute to Learn Era ");
+                                                }
+                                            });
 
                                         }
 
                                         @Override
                                         public void onFailed(String errorMessage) {
-
+toggleProgress(false);
                                         }
                                     });
                                 }
 
                                 @Override
                                 public void onFailed(String errorMessage) {
-
+toggleProgress(false);
                                 }
                             });
                         }
@@ -305,13 +339,33 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                             editTutorial(retrievedCoverPhotoDownloadUrl,retrievedCoverPhotoStorageReference, new OnTutorialEditionListener() {
                                 @Override
                                 public void onSuccess() {
-                                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryContainerId,tutorialId,false,false,true,null,null,null,false,false,false);
+                                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId, false, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                        @Override
+                                        public void onSuccess() {
+
+                                            toggleProgress(false);
+                                            GlobalHelpers.showAlertMessage("success",
+                                                    CreateNewTutorialActivity.this,
+                                                    "Tutorial edited successfully",
+                                                    "You have successfully edited your tutorial,thanks go ahead and contribute to Learn Era ");
+                                        }
+
+                                        @Override
+                                        public void onFailed(String errorMessage) {
+
+                                            toggleProgress(false);
+                                            GlobalHelpers.showAlertMessage("success",
+                                                    CreateNewTutorialActivity.this,
+                                                    "Tutorial edited successfully",
+                                                    "You have successfully edited your tutorial,thanks go ahead and contribute to Learn Era ");
+                                        }
+                                    });
 
                                 }
 
                                 @Override
                                 public void onFailed(String errorMessage) {
-
+toggleProgress(false);
                                 }
                             });
                         }
@@ -322,7 +376,29 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                         createNewTutorial("", "",new OnTutorialEditionListener() {
                             @Override
                             public void onSuccess() {
-                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryContainerId,tutorialId,false,false,true,null,null,null,false,false,false);
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId, false, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
+
+
+                                        toggleProgress(false);
+                                        GlobalHelpers.showAlertMessage("success",
+                                                CreateNewTutorialActivity.this,
+                                                "Tutorial created successfully",
+                                                "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+
+
+                                        toggleProgress(false);
+                                        GlobalHelpers.showAlertMessage("success",
+                                                CreateNewTutorialActivity.this,
+                                                "Tutorial created successfully",
+                                                "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
+                                    }
+                                });
 
                             }
 
@@ -336,7 +412,29 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                         editTutorial("","" ,new OnTutorialEditionListener() {
                             @Override
                             public void onSuccess() {
-                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY,GlobalConfig.getCurrentUserId(),libraryContainerId,tutorialId,false,false,true,null,null,null,false,false,false);
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId, false, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
+
+
+                                        toggleProgress(false);
+                                        GlobalHelpers.showAlertMessage("success",
+                                                CreateNewTutorialActivity.this,
+                                                "Tutorial edited successfully",
+                                                "You have successfully edited your tutorial,thanks go ahead and contribute to Learn Era ");
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+
+
+                                        toggleProgress(false);
+                                        GlobalHelpers.showAlertMessage("success",
+                                                CreateNewTutorialActivity.this,
+                                                "Tutorial edited successfully",
+                                                "You have successfully edited your tutorial,thanks go ahead and contribute to Learn Era ");
+                                    }
+                                });
 
                             }
 

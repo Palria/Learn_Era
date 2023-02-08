@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,7 +32,11 @@ public class UploadPageActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_page);
+
         initUI();
+        bookId  = "TEST_ID";
+        pageId  = "TEST_ID";
+
         startService(new Intent(getApplicationContext(),UploadPageManagerService.class));
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +57,7 @@ private void initUI(){
 
         for(int i=0; i<containerLinearLayout.getChildCount(); i++){
             String partitionId = GlobalConfig.getRandomString(10) + GlobalConfig._IS_PARTITION_ID_IS_FOR_IDENTIFYING_PARTITIONS_KEY;
-            UploadPageManagerService.setInitialVariables(pageId);
+
             UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
                 @Override
                 public void onNewPage(String pageId) {
@@ -74,8 +79,10 @@ private void initUI(){
 
                 }
             });
+            UploadPageManagerService.setInitialVariables(pageId);
+
             LinearLayout partitionLinearLayout = (LinearLayout) containerLinearLayout.getChildAt(i);
-            EditText textDataPartitionTextView =(EditText) partitionLinearLayout.getChildAt(0);
+            TextView textDataPartitionTextView =(TextView) partitionLinearLayout.getChildAt(0);
             String textDataPartition = textDataPartitionTextView.getText().toString();
             ArrayList<String>textPartitionsDataDetailsArrayList = new ArrayList<>();
             if(!textDataPartition.isEmpty()){

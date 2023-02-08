@@ -107,7 +107,8 @@ public class UploadPageManagerService extends Service {
                     pageTextPartitionsDataDetailsHashMap.put("TEXT_PARTITION_ARRAY_" + i, allPageTextPartitionsDataDetailsArrayList.get(i));
                 }
 
-                firebaseFirestore.collection("ALL_USERS").document(currentUserId).collection("ALL_LIBRARY").document(libraryId).collection("ALL_BOOKS").document(bookId).collection("ALL_PAGES").document(pageId).set(pageTextPartitionsDataDetailsHashMap, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
+//                firebaseFirestore.collection("ALL_USERS").document(currentUserId).collection("ALL_LIBRARY").document(libraryId).collection("ALL_BOOKS").document(bookId).collection("ALL_PAGES").document(pageId).set(pageTextPartitionsDataDetailsHashMap, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
+                firebaseFirestore.collection(GlobalConfig.ALL_TUTORIAL_KEY).document(bookId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId).set(pageTextPartitionsDataDetailsHashMap, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         uploadPartitionTextDataToPage( libraryId,  bookId,  pageId,  allPageTextPartitionsDataDetailsArrayList,  totalNumberOfPartitions);
@@ -197,7 +198,7 @@ public class UploadPageManagerService extends Service {
                                             String imageDownloadUrl = String.valueOf(task.getResult());
                                             pageImagePartitionsDataDetails.put(imagePartitionArrayName, FieldValue.arrayUnion(imageDownloadUrl));
                                             pageImagePartitionsDataDetails.put(imagePartitionArrayName + "_STORAGE_REFERENCE", FieldValue.arrayUnion(storageReference.getPath()));
-                                            firebaseFirestore.collection("ALL_USERS").document(currentUserId).collection("ALL_LIBRARY").document(libraryId).collection("ALL_BOOKS").document(bookId).collection("ALL_PAGES").document(pageId).set(pageImagePartitionsDataDetails, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
+                                            firebaseFirestore.collection(GlobalConfig.ALL_TUTORIAL_KEY).document(bookId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId).set(pageImagePartitionsDataDetails, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
                                                 @Override
                                                 public void onFailure(@NonNull Exception e) {
 

@@ -227,16 +227,34 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                                    @Override
                                    public void onSuccess(String userName) {
                                        //succeed in editing profile
-                                       GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY,GlobalConfig.getCurrentUserId(),null,null,true,false,false,null,null,null,false,false,false);
+                                       GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY, GlobalConfig.getCurrentUserId(), null, null, true, false, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                           @Override
+                                           public void onSuccess() {
 
-                                       display_name.setText(userDisplayNameEditText.getText().toString());
-                                       display_email.setText(contactEmailEditText.getText().toString());
-                                       toggleProgress(false);
+                                               display_name.setText(userDisplayNameEditText.getText().toString());
+                                               display_email.setText(contactEmailEditText.getText().toString());
+                                               toggleProgress(false);
 
-                                       GlobalHelpers.showAlertMessage("success",
-                                               EditCurrentUserProfileActivity.this,
-                                               "Profile Edited Successfully.",
-                                               "You have successfully edited your profile, Learn Era has more knowledge to offer you, go ahead and learn more.");
+                                               GlobalHelpers.showAlertMessage("success",
+                                                       EditCurrentUserProfileActivity.this,
+                                                       "Profile Edited Successfully.",
+                                                       "You have successfully edited your profile, Learn Era has more knowledge to offer you, go ahead and learn more.");
+                                           }
+
+                                           @Override
+                                           public void onFailed(String errorMessage) {
+
+                                               display_name.setText(userDisplayNameEditText.getText().toString());
+                                               display_email.setText(contactEmailEditText.getText().toString());
+                                               toggleProgress(false);
+
+                                               GlobalHelpers.showAlertMessage("success",
+                                                       EditCurrentUserProfileActivity.this,
+                                                       "Profile Edited Successfully.",
+                                                       "You have successfully edited your profile, Learn Era has more knowledge to offer you, go ahead and learn more.");
+                                           }
+                                       });
+
 
 
                                    }
@@ -263,15 +281,29 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(String userName) {
                                 //succeed in editing profile
-                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY,GlobalConfig.getCurrentUserId(),null,null,true,false,true,null,null,null,false,false,false);
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY, GlobalConfig.getCurrentUserId(), null, null, true, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        toggleProgress(false);
+                                        GlobalHelpers.showAlertMessage("success",
+                                                EditCurrentUserProfileActivity.this,
+                                                "Profile Edited Successfully.",
+                                                "You have successfully edited your profile, Learn Era has more knowledge to offer you, go ahead and learn more.");
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+                                        toggleProgress(false);
+                                        GlobalHelpers.showAlertMessage("success",
+                                                EditCurrentUserProfileActivity.this,
+                                                "Profile Edited Successfully.",
+                                                "You have successfully edited your profile, Learn Era has more knowledge to offer you, go ahead and learn more.");
+                                    }
+                                });
 
                                 display_name.setText(userDisplayNameEditText.getText().toString());
                                 display_email.setText(contactEmailEditText.getText().toString());
-                                toggleProgress(false);
-                                GlobalHelpers.showAlertMessage("success",
-                                        EditCurrentUserProfileActivity.this,
-                                        "Profile Edited Successfully.",
-                                        "You have successfully edited your profile, Learn Era has more knowledge to offer you, go ahead and learn more.");
+
 
                             }
 
@@ -288,16 +320,31 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(String userName) {
                             //succeed in editing profile
-                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY,GlobalConfig.getCurrentUserId(),null,null,true,false,true,null,null,null,false,false,false);
+                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY, GlobalConfig.getCurrentUserId(), null, null, true, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                @Override
+                                public void onSuccess() {
+
+                                    GlobalHelpers.showAlertMessage("success",
+                                            EditCurrentUserProfileActivity.this,
+                                            "Profile Edited Successfully.",
+                                            "You have successfully edited your profile, Learn Era has more knowledge to offer you, go ahead and learn more.");
+
+                                }
+
+                                @Override
+                                public void onFailed(String errorMessage) {
+
+                                    GlobalHelpers.showAlertMessage("success",
+                                            EditCurrentUserProfileActivity.this,
+                                            "Profile Edited Successfully.",
+                                            "You have successfully edited your profile, Learn Era has more knowledge to offer you, go ahead and learn more.");
+
+                                }
+                            });
 
                             toggleProgress(false);
                             display_name.setText(userDisplayNameEditText.getText().toString());
                             display_email.setText(contactEmailEditText.getText().toString());
-                            GlobalHelpers.showAlertMessage("success",
-                                        EditCurrentUserProfileActivity.this,
-                                        "Profile Edited Successfully.",
-                                        "You have successfully edited your profile, Learn Era has more knowledge to offer you, go ahead and learn more.");
-
                         }
 
                         @Override

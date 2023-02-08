@@ -27,7 +27,17 @@ String libraryId = "";
         fetchTutorial(new TutorialFetchListener() {
             @Override
             public void onSuccess(TutorialDataModel tutorialDataModel) {
-                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY,authorId,libraryId,tutorialId,false,false,true,null,null,null,false,false,false);
+                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY, authorId, libraryId, tutorialId, false, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+
+                    }
+                });
 
             }
 
