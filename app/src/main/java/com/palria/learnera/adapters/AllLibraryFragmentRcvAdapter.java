@@ -13,6 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.palria.learnera.GlobalConfig;
 import com.palria.learnera.GlobalHelpers;
 import com.palria.learnera.R;
 import com.palria.learnera.models.AuthorDataModel;
@@ -61,6 +64,20 @@ public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibrar
         String averageRating= GlobalHelpers.calculateAverageRating(ratings);
 
         holder.ratingCount.setText(averageRating);
+
+
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_USERS_KEY)
+                .document(libraryDataModel.getAuthorUserId())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                        String userDisplayName = "" + documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                        holder.authorName.setText(userDisplayName);
+                    }
+                });
 
 
     }

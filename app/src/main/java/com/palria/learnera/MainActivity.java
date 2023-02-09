@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         toggleProgress(true);
 
                         GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY)
+                                .whereEqualTo(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserId())
                                 .get()
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
