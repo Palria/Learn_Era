@@ -4,21 +4,43 @@ package com.palria.learnera;
 
         import androidx.annotation.NonNull;
         import androidx.fragment.app.Fragment;
+        import androidx.recyclerview.widget.LinearLayoutManager;
+        import androidx.recyclerview.widget.RecyclerView;
 
+        import android.text.Editable;
+        import android.text.TextWatcher;
         import android.view.LayoutInflater;
         import android.view.View;
         import android.view.ViewGroup;
+        import android.widget.LinearLayout;
+        import android.widget.Toast;
 
+        import com.facebook.shimmer.ShimmerFrameLayout;
         import com.google.android.gms.tasks.OnFailureListener;
         import com.google.android.gms.tasks.OnSuccessListener;
+        import com.google.android.material.textfield.TextInputEditText;
         import com.google.firebase.Timestamp;
         import com.google.firebase.firestore.DocumentSnapshot;
         import com.google.firebase.firestore.QuerySnapshot;
+        import com.palria.learnera.adapters.AllLibraryFragmentRcvAdapter;
         import com.palria.learnera.models.LibraryDataModel;
 
         import java.util.ArrayList;
 
 public class AllLibraryFragment extends Fragment {
+
+
+    RecyclerView libraryListRecyclerView;
+    TextInputEditText searchKeywordInput;
+
+    AllLibraryFragmentRcvAdapter adapter;
+    ArrayList<LibraryDataModel> libraryDataModels;
+    ArrayList<LibraryDataModel> libraryDataModelsBackup;
+
+    ShimmerFrameLayout shimmerFrameLayout;
+    LinearLayout libraryContents;
+    LinearLayout notFoundView;
+
 
     public AllLibraryFragment() {
         // Required empty public constructor
@@ -27,6 +49,9 @@ public class AllLibraryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //create
+        libraryDataModels=new ArrayList<>();
+        libraryDataModelsBackup=new ArrayList<>();
 
 
     }
@@ -36,7 +61,7 @@ public class AllLibraryFragment extends Fragment {
                              Bundle savedInstanceState) {
         View parentView = inflater.inflate(R.layout.fragment_all_library, container, false);
 initUI(parentView);
-
+        toggleContentsVisibility(false);
 fetchAllLibrary(new LibraryFetchListener() {
     @Override
     public void onFailed(String errorMessage) {
@@ -45,14 +70,80 @@ fetchAllLibrary(new LibraryFetchListener() {
 
     @Override
     public void onSuccess(LibraryDataModel libraryDataModel) {
+        //add to library data models.
+        libraryDataModels.add(libraryDataModel);
+        libraryDataModelsBackup.add(libraryDataModel);
+    }
+});
+
+searchKeywordInput.addTextChangedListener(new TextWatcher() {
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        toggleContentsVisibility(false);
+    }
+
+    @Override
+    public void onTextChanged(CharSequence query, int i, int i1, int i2) {
+
+        //fetch the library from server if requires here
+
+//        fetchLibraryFromServer();
+
+        ArrayList<LibraryDataModel> filteredList = new ArrayList<>();
+        for(LibraryDataModel libraryDataModel : libraryDataModelsBackup){
+            if(libraryDataModel.getLibraryName().toLowerCase().contains(query.toString().trim().toLowerCase())){
+                filteredList.add(libraryDataModel);
+            }
+        }
+        toggleContentsVisibility(true);
+        if(filteredList.size()==0){
+            libraryListRecyclerView.setVisibility(View.GONE);
+            notFoundView.setVisibility(View.VISIBLE);
+        }else{
+            notFoundView.setVisibility(View.GONE);
+            libraryListRecyclerView.setVisibility(View.VISIBLE);
+            adapter.setDataList(filteredList);
+        }
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
 
     }
 });
 
+
+
         return parentView;
     }
 
+    private void toggleContentsVisibility(boolean show){
+        if(!show){
+            libraryContents.setVisibility(View.GONE);
+            shimmerFrameLayout.startShimmer();
+            shimmerFrameLayout.setVisibility(View.VISIBLE);
+
+        }else{
+            libraryContents.setVisibility(View.VISIBLE);
+            shimmerFrameLayout.stopShimmer();
+            shimmerFrameLayout.setVisibility(View.GONE);
+        }
+    }
+
     private void initUI(View parentView){
+        libraryListRecyclerView=parentView.findViewById(R.id.libraryListRecyclerView);
+        searchKeywordInput=parentView.findViewById(R.id.searchKeywordInput);
+
+        shimmerFrameLayout=parentView.findViewById(R.id.shimmerLayout);
+        libraryContents=parentView.findViewById(R.id.libraryContents);
+        notFoundView=parentView.findViewById(R.id.notFoundView);
+
+
+        adapter = new AllLibraryFragmentRcvAdapter(libraryDataModels,getContext());
+        libraryListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+        libraryListRecyclerView.setHasFixedSize(false);
+        libraryListRecyclerView.setAdapter(adapter);
 
     }
 
@@ -70,6 +161,10 @@ fetchAllLibrary(new LibraryFetchListener() {
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                        libraryDataModels.clear();
+                        adapter.notifyDataSetChanged();
+
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             String libraryId = documentSnapshot.getId();
                             long totalNumberOfLibraryVisitor = (documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY) : 0L;
@@ -107,6 +202,14 @@ fetchAllLibrary(new LibraryFetchListener() {
                                     totalNumberOfFiveStarRate
                             ));
                         }
+                        //willl reload rcv
+                        toggleContentsVisibility(true);
+
+                        if(queryDocumentSnapshots.size()==0){
+                            libraryListRecyclerView.setVisibility(View.GONE);
+                            notFoundView.setVisibility(View.VISIBLE);
+                        }
+
                     }
                 });
 

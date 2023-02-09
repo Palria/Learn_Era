@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
@@ -34,6 +35,7 @@ import com.palria.learnera.models.CurrentUserProfileDataModel;
 import com.palria.learnera.models.LibraryDataModel;
 import com.palria.learnera.models.TutorialDataModel;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -56,6 +58,11 @@ String categorySelected = "";
         RecyclerView booksItemRecyclerListView;
         RecyclerView popularTutorialsContainerRcv;
         TabLayout tabLayout;
+
+        ShimmerFrameLayout shimmerLayout;
+        LinearLayout homeContents;
+        TextView greetingTextView;
+
     ArrayList<AuthorDataModel> modelArrayList = new ArrayList<AuthorDataModel>();
     HomeAuthorListViewAdapter popularAuthorAdapter;
     ArrayList<LibraryDataModel> libraryArrayList = new ArrayList<>();
@@ -78,28 +85,36 @@ String categorySelected = "";
         // Inflate the layout for this fragment
        View parentView = inflater.inflate(R.layout.fragment_home, container, false);
         initUI(parentView);
+
+        //geret the curent user Good morning, evening etc.
+
+        System.out.println(java.time.LocalTime.now());
+        LocalTime currentTime = LocalTime.now();
+        String greeting="";
+        int current_hour = Integer.parseInt(currentTime.toString().substring(0,2));
+        if (current_hour < 12)
+            greeting = "Good Morning";
+        else if (current_hour >= 12 && current_hour <= 17)
+            greeting = "Good Afternoon";
+        else if (current_hour >= 17 && current_hour <= 24)
+            greeting = "Good Evening";
+
+        //show the greting to
+        greetingTextView.setText(greeting);
+
         createTabLayout(new OnNewCategorySelectedListener() {
             @Override
             public void onSelected(String categoryName) {
                 modelArrayList.clear();
-                popularAuthorAdapter.notifyDataSetChanged();
-
                 libraryArrayList.clear();
-                homeBooksRecyclerListViewAdapter.notifyDataSetChanged();
-
                 tutorialDataModels.clear();
-                popularTutorialsListViewAdapter.notifyDataSetChanged();
-
-
                 fetchPopularAuthor(categoryName, new PopularAuthorFetchListener() {
                     @Override
                     public void onSuccess(String authorName, String authorId, String authorProfilePhotoDownloadUrl, long totalNumberOfLibrary) {
 //                        displayPopularAuthor(authorName,authorProfilePhotoDownloadUrl,totalNumberOfLibrary);
                         modelArrayList.add(new AuthorDataModel(authorName,authorId,authorProfilePhotoDownloadUrl, (int) totalNumberOfLibrary,0,0,0,0,0));
                         popularAuthorAdapter.notifyItemChanged(modelArrayList.size());
-
                     }
-
                     @Override
                     public void onFailed(String errorMessage) {
 
@@ -145,6 +160,8 @@ String categorySelected = "";
 //                                tutorialDataModel.getTotalNumberOfFiveStarRate()));
 
                         popularTutorialsListViewAdapter.notifyItemChanged(tutorialDataModels.size());
+
+                        toggleContentsVisibility(true);
                     }
 
                     @Override
@@ -161,7 +178,7 @@ String categorySelected = "";
             public void run() {
 
                 if(CurrentUserProfileDataModel.getUserName()!=null && !CurrentUserProfileDataModel.getUserName().equals("null") && !CurrentUserProfileDataModel.getUserName().isEmpty()) {
-                    helloUserTextView.setText("Hello, "+CurrentUserProfileDataModel.getUserName());
+                    helloUserTextView.setText("Hello, "+CurrentUserProfileDataModel.getUserName().split(" ")[0]);
                 }
             }
         },12000);
@@ -231,6 +248,10 @@ String categorySelected = "";
         homeBooksRecyclerListViewAdapter = new HomeBooksRecyclerListViewAdapter(libraryArrayList,getContext());
         popularTutorialsListViewAdapter = new PopularTutorialsListViewAdapter(tutorialDataModels,getContext());
 
+
+        shimmerLayout=parentView.findViewById(R.id.shimmerLayout);
+        homeContents=parentView.findViewById(R.id.homeContents);
+        greetingTextView=parentView.findViewById(R.id.greetingTextView);
 /*
         //init and show some dummny authors.
         modelArrayList.add(new AuthorDataModel("Palria","lasdjf","url",0,0,0,0,0,0));
@@ -348,7 +369,9 @@ String categorySelected = "";
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 //change categories here
+                toggleContentsVisibility(false);
                 onNewCategorySelectedListener.onSelected(tab.getText().toString());
+
 
                  }
 
@@ -391,14 +414,27 @@ String categorySelected = "";
         artificialIntelligenceTabItem.setText("Artificial Intelligence");
         tabLayout.addTab(artificialIntelligenceTabItem,5);
 
+    }
 
+    private void toggleContentsVisibility(boolean show){
+        if(!show){
+            homeContents.setVisibility(View.GONE);
+            shimmerLayout.startShimmer();
+            shimmerLayout.setVisibility(View.VISIBLE);
 
+        }else{
+            homeContents.setVisibility(View.VISIBLE);
+            shimmerLayout.stopShimmer();
+            shimmerLayout.setVisibility(View.GONE);
+        }
     }
 
 private void changeCategory(String categorySelected){
     popularAuthorLinearLayout.removeAllViews();
     libraryLinearLayout.removeAllViews();
     tutorialLinearLayout.removeAllViews();
+
+
 
     fetchPopularAuthor(categorySelected, new PopularAuthorFetchListener() {
         @Override
@@ -426,6 +462,7 @@ private void changeCategory(String categorySelected){
         @Override
         public void onSuccess(TutorialDataModel tutorialDataModel) {
             displayTutorial(tutorialDataModel);
+            toggleContentsVisibility(true);
         }
 
         @Override

@@ -44,7 +44,22 @@
 
 
                     <TextView
-                        android:textStyle="bold"
+
+                        android:id="@+id/libraryNameView"
+                        android:layout_marginBottom="5pt"
+                        android:textSize="10pt"
+                        android:text="Library Name : Java Oops"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_marginBottom="8pt"
+                        app:dividerColor="@color/gray"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+
                         android:layout_marginBottom="7pt"
                         android:text="Tutorial Info"
                         android:layout_width="match_parent"
@@ -63,6 +78,7 @@
                             android:id="@+id/nameInput"
                             android:background="@drawable/default_input_bg"
                             android:layout_height="wrap_content"/>
+
                         <TextView
                             android:textSize="5pt"
                             android:text="Make a title clean, short and understandable."
@@ -141,7 +157,7 @@
 
 
                     <TextView
-                        android:textStyle="bold"
+
                         android:layout_marginTop="20pt"
                         android:layout_marginBottom="7pt"
                         android:text="Tutorial Media"

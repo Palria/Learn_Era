@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -29,6 +31,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
 import com.palria.learnera.models.StatisticsDataModel;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
@@ -56,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     //learn era bottom sheet dialog
     LEBottomSheetDialog leBottomSheetDialog;
+    RoundedImageView currentUserProfile;
 
     /**
      * loading alert dialog
@@ -115,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         libraryFrameLayout = findViewById(R.id.libraryFragment);
         allTutorialFrameLayout = findViewById(R.id.allTutorialFragment);
         userProfileFrameLayout = findViewById(R.id.userProfileFragment);
+        currentUserProfile=findViewById(R.id.currentUserProfile);
+
 
         fab = findViewById(R.id.fab);
 
@@ -143,10 +149,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .addOptionItem("New Tutorial", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        leBottomSheetDialog.hide();
                         toggleProgress(true);
 
                         GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY)
-                               .whereEqualTo(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserId())
                                 .get()
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -159,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                                     @Override
                                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                                         toggleProgress(false);
+
                                         ArrayList<String>libraryIdArrayList= new ArrayList<>();
                                         ArrayList<String>libraryNameArrayList= new ArrayList<>();
                                         ArrayList<ArrayList<String>>libraryCategoryArrayList = new ArrayList<>();
@@ -193,8 +200,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
                                             i.putExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY,true);
                                             i.putExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,libraryCategoryArrayList.get(which));
-                                            i.putExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryIdArrayList.get(which));
-                                            leBottomSheetDialog.hide();
+                                            i.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryIdArrayList.get(which));
+                                            i.putExtra(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY, libraryNameArrayList.get(which));
+
                                             startActivity(i);
                                             // when selected an item the dialog should be closed with the dismiss method
                                             dialog.dismiss();
@@ -220,6 +228,51 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
                 .render();
 
+
+        currentUserProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GlobalConfig.createPopUpMenu(MainActivity.this,R.menu.home_overflow_menu , currentUserProfile, new GlobalConfig.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClicked(MenuItem item) {
+
+                        if(item.getItemId() == R.id.notification_item){
+                            Toast.makeText(MainActivity.this, "notification clicked.", Toast.LENGTH_SHORT).show();
+                        }
+                        else if(item.getItemId() == R.id.settings_item){
+                         //settings activity starts here 
+                            Toast.makeText(MainActivity.this, "Setting clicked", Toast.LENGTH_SHORT).show();
+                            
+                        }else if(item.getItemId() == R.id.log_out_item){
+                        //log out user code here 
+                           MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
+                           builder.setTitle("Log out?")
+                                   .setMessage("Are you sure want to log out now?")
+                                   .setCancelable(false)
+                                   .setPositiveButton("Log out", new DialogInterface.OnClickListener() {
+                                       @Override
+                                       public void onClick(DialogInterface dialogInterface, int i) {
+                                           Toast.makeText(MainActivity.this, "log out clicked", Toast.LENGTH_SHORT).show();
+                                            //log out code goes here ]
+
+
+
+                                       }
+                                   })
+                                   .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                       @Override
+                                       public void onClick(DialogInterface dialogInterface, int i) {
+                                           Toast.makeText(MainActivity.this, "cancel log out.", Toast.LENGTH_SHORT).show();
+                                       }
+                                   })
+                                   .show();
+                        }
+                        return true;
+                    }
+                });
+            }
+        });
+        
 
 
     }
@@ -360,6 +413,12 @@ if(GlobalConfig.isUserLoggedIn()) {
                     long totalNumberOfLibraries = (documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)!= null) ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY) : 0L;
                     boolean isAnAuthor = (documentSnapshot.get(GlobalConfig.IS_USER_AUTHOR_KEY)!=null )? (documentSnapshot.getBoolean(GlobalConfig.IS_USER_AUTHOR_KEY)) : false;
 
+                    //show current user profile there .
+                    Glide.with(MainActivity.this)
+                            .load(userProfileImageDownloadUrl)
+                            .centerCrop()
+                            .placeholder(R.drawable.default_profile)
+                            .into(currentUserProfile);
 
                    new CurrentUserProfileDataModel(
                             userName,

@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 
 public class GlobalHelpers {
@@ -111,6 +112,20 @@ public class GlobalHelpers {
         dialog.show();
     }
 
+
+    public static String calculateAverageRating(int[] ratings){
+
+        int totalStarsCount=0;
+
+        for(int r : ratings){
+            totalStarsCount+=r;
+        }
+        double average_rate = (ratings[0] + 2 * ratings[1] + 3 * ratings[2] + 4 * ratings[3] + 5 * ratings[4]) / (totalStarsCount+0.0);
+
+        DecimalFormat df = new DecimalFormat("#.#");
+        String rating_string_average =  df.format(average_rate);
+        return rating_string_average;
+    }
 
 
 }
