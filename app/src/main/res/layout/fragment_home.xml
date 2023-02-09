@@ -14,7 +14,6 @@
 
         <LinearLayout
             android:orientation="vertical"
-            android:paddingBottom="27pt"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -47,6 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView
+            android:id="@+id/greetingTextView"
             android:textColor="@color/white"
             android:layout_marginHorizontal="8pt"
             android:textSize="12pt"
@@ -138,48 +138,313 @@
 -->
               </androidx.cardview.widget.CardView>
 
-           <androidx.recyclerview.widget.RecyclerView
-               android:id="@+id/booksItemContainer"
-               android:layout_marginTop="5pt"
-               tools:listitem="@layout/home_single_library_item_layout"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"/>
 
-
+            <com.facebook.shimmer.ShimmerFrameLayout
+                app:shimmer_auto_start="true"
+                android:id="@+id/shimmerLayout"
+                android:layout_marginVertical="4pt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
             <LinearLayout
-                android:layout_marginTop="10pt"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:textSize="9pt"
-                    android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:paddingHorizontal="8pt"
-                    android:text="Popular Authors"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-
-                <androidx.recyclerview.widget.RecyclerView
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:orientation="horizontal"
-                    tools:listitem="@layout/single_author_item_layout"
-                    android:layout_marginTop="5pt"
-                    android:id="@+id/popular_authors_listview"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_marginLeft="5pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="50pt"
+                        android:layout_height="80pt"/>
+
+                    <TextView
+                        android:layout_marginLeft="5pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="50pt"
+                        android:layout_height="80pt"/>
+                    <TextView
+                        android:layout_marginLeft="5pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="50pt"
+                        android:layout_height="80pt"/>
+                    <TextView
+                        android:layout_marginLeft="5pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="50pt"
+                        android:layout_height="80pt"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="10pt"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_marginLeft="5pt"
+                        android:layout_marginBottom="4pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="100pt"
+                        android:layout_height="7pt"/>
+                   <androidx.appcompat.widget.LinearLayoutCompat
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content">
+                       <TextView
+                           android:layout_marginLeft="5pt"
+                           android:background="@drawable/rounded_grey_bg"
+                           android:layout_width="35pt"
+                           android:layout_height="35pt"/>
+                       <TextView
+                           android:layout_marginLeft="5pt"
+                           android:background="@drawable/rounded_grey_bg"
+                           android:layout_width="35pt"
+                           android:layout_height="35pt"/>
+                       <TextView
+                           android:layout_marginLeft="5pt"
+                           android:background="@drawable/rounded_grey_bg"
+                           android:layout_width="35pt"
+                           android:layout_height="35pt"/>
+                       <TextView
+                           android:layout_marginLeft="5pt"
+                           android:background="@drawable/rounded_grey_bg"
+                           android:layout_width="35pt"
+                           android:layout_height="35pt"/>
+                       <TextView
+                           android:layout_marginLeft="5pt"
+                           android:background="@drawable/rounded_grey_bg"
+                           android:layout_width="35pt"
+                           android:layout_height="35pt"/>
+                   </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </LinearLayout>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10pt"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_marginHorizontal="5pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="match_parent"
+                        android:layout_height="60pt"/>
+
+
+                   <LinearLayout
+                       android:layout_marginHorizontal="5pt"
+                       android:layout_marginTop="3pt"
+                       android:layout_gravity="center"
+                       android:gravity="center"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content">
+
+                       <com.makeramen.roundedimageview.RoundedImageView
+                           android:layout_width="20pt"
+                           app:riv_corner_radius="100sp"
+                           app:riv_oval="true"
+                           android:src="@drawable/rounded_grey_bg"
+                           android:layout_height="20pt"/>
+
+                       <TextView
+                           android:background="@drawable/rounded_grey_bg"
+                           android:layout_width="40pt"
+                           android:layout_marginHorizontal="10pt"
+                           android:layout_height="8pt"/>
+
+                       <TextView
+                           android:layout_weight="1"
+                           android:background="@drawable/rounded_grey_bg"
+                           android:layout_width="40pt"
+                           android:layout_height="8pt"/>
+
+                   </LinearLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10pt"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_marginHorizontal="5pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="match_parent"
+                        android:layout_height="60pt"/>
+
+
+                    <LinearLayout
+                        android:layout_marginHorizontal="5pt"
+                        android:layout_marginTop="3pt"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.makeramen.roundedimageview.RoundedImageView
+                            android:layout_width="20pt"
+                            app:riv_corner_radius="100sp"
+                            app:riv_oval="true"
+                            android:src="@drawable/rounded_grey_bg"
+                            android:layout_height="20pt"/>
+
+                        <TextView
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="40pt"
+                            android:layout_marginHorizontal="10pt"
+                            android:layout_height="8pt"/>
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="40pt"
+                            android:layout_height="8pt"/>
+
+                    </LinearLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10pt"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_marginHorizontal="5pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="match_parent"
+                        android:layout_height="60pt"/>
+
+
+                    <LinearLayout
+                        android:layout_marginHorizontal="5pt"
+                        android:layout_marginTop="3pt"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.makeramen.roundedimageview.RoundedImageView
+                            android:layout_width="20pt"
+                            app:riv_corner_radius="100sp"
+                            app:riv_oval="true"
+                            android:src="@drawable/rounded_grey_bg"
+                            android:layout_height="20pt"/>
+
+                        <TextView
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="40pt"
+                            android:layout_marginHorizontal="10pt"
+                            android:layout_height="8pt"/>
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="40pt"
+                            android:layout_height="8pt"/>
+
+                    </LinearLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10pt"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_marginHorizontal="5pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="match_parent"
+                        android:layout_height="60pt"/>
+
+
+                    <LinearLayout
+                        android:layout_marginHorizontal="5pt"
+                        android:layout_marginTop="3pt"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.makeramen.roundedimageview.RoundedImageView
+                            android:layout_width="20pt"
+                            app:riv_corner_radius="100sp"
+                            app:riv_oval="true"
+                            android:src="@drawable/rounded_grey_bg"
+                            android:layout_height="20pt"/>
+
+                        <TextView
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="40pt"
+                            android:layout_marginHorizontal="10pt"
+                            android:layout_height="8pt"/>
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="40pt"
+                            android:layout_height="8pt"/>
+
+                    </LinearLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
             </LinearLayout>
 
+            </com.facebook.shimmer.ShimmerFrameLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/popularTutorialsContainer"
-                android:layout_width="match_parent"
+<!--            main contents goes here -->
+
+
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/homeContents"
                 android:orientation="vertical"
-                android:layout_marginTop="10pt"
-                android:layout_height="wrap_content"/>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/booksItemContainer"
+                    android:layout_marginTop="5pt"
+                    tools:listitem="@layout/home_single_library_item_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+
+
+                <LinearLayout
+                    android:layout_marginTop="10pt"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:textSize="9pt"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:paddingHorizontal="8pt"
+                        android:text="Popular Authors"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:orientation="horizontal"
+                        tools:listitem="@layout/single_author_item_layout"
+                        android:layout_marginTop="5pt"
+                        android:id="@+id/popular_authors_listview"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/popularTutorialsContainer"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10pt"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
 
 
         </LinearLayout>

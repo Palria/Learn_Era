@@ -10,7 +10,7 @@
             android:id="@+id/topBar"
             android:background="@color/teal_700"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize">
+            android:layout_height="19pt">
             <include layout="@layout/top_bar_custom_layout"/>
         </androidx.appcompat.widget.Toolbar>
 
@@ -29,26 +29,26 @@
         <!-- Fragments Container -->
 
         <FrameLayout
-            android:layout_marginTop="?attr/actionBarSize"
+            android:layout_marginTop="19pt"
             android:id="@+id/homeFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="visible"
             />
         <FrameLayout
-            android:layout_marginTop="?attr/actionBarSize"
+            android:layout_marginTop="19pt"
             android:id="@+id/libraryFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="invisible"/>
         <FrameLayout
-            android:layout_marginTop="?attr/actionBarSize"
+            android:layout_marginTop="19pt"
             android:id="@+id/allTutorialFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="invisible"/>
         <FrameLayout
-            android:layout_marginTop="?attr/actionBarSize"
+            android:layout_marginTop="19pt"
             android:id="@+id/userProfileFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

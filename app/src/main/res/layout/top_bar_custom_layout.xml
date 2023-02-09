@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/teal_700"
     android:gravity="center"
     android:paddingRight="8pt"
-    android:layout_height="?attr/actionBarSize">
+    android:paddingVertical="1pt"
+    android:layout_height="19pt">
 
 
     <TextView
@@ -24,24 +26,28 @@
 
 
 
+
         <Button
+            android:layout_gravity="center"
             android:elevation="0sp"
+            android:gravity="center"
             android:id="@+id/menu_search_button"
             android:foreground="@drawable/ic_baseline_search_24"
             android:layout_width="13pt"
             android:foregroundTint="@color/white"
             android:layout_height="13pt"/>
 
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:layout_width="15pt"
+            android:id="@+id/currentUserProfile"
+            android:src="@drawable/default_profile"
+            app:riv_oval="true"
+            android:background="?attr/selectableItemBackground"
+            android:layout_gravity="center"
+            android:layout_marginLeft="7pt"
+            app:riv_corner_radius="25pt"
+            android:layout_height="15pt"/>
 
-
-        <Button
-            android:elevation="0pt"
-            android:layout_marginLeft="5pt"
-            android:id="@+id/menu_action_button"
-            android:foreground="@drawable/ic_baseline_more_vert_24"
-           android:layout_width="13pt"
-            android:foregroundTint="@color/white"
-            android:layout_height="13pt"/>
 
     </LinearLayout>
 

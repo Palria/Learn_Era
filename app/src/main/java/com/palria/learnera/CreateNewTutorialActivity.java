@@ -20,6 +20,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -70,7 +71,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
     ImageView coverPhotoImageView;
     Button cancelButton;
     TextView chooseCategoryTextView;
-    ArrayList<Integer> categoriesList = new ArrayList<>();
+    TextView libraryNameView;
     /**
      * <p>Indicates whether the user is editing his tutorial or creating a new tutorial</p>
      * The {@link boolean} value is initialized from {@link Intent} data
@@ -139,6 +140,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
      */
     ArrayList<String> categoryArrayList;
     final int[] checkedCategory = {-1};
+    private String selectedLibraryName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -596,6 +598,8 @@ toggleProgress(false);
 
         cancelButton = findViewById(R.id.cancelButton);
 
+        libraryNameView=findViewById(R.id.libraryNameView);
+
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -612,6 +616,9 @@ toggleProgress(false);
                 .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
                 .create();
 
+
+
+
     }
 
     /**
@@ -626,9 +633,10 @@ toggleProgress(false);
 
         }else{
             categoryArrayList = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
-
         }
 
+        selectedLibraryName=intent.getStringExtra(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
+        libraryNameView.setText("Creating new tutoial in : "+ Html.fromHtml("<b>"+selectedLibraryName+" </b>"));
         libraryContainerId = intent.getStringExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
 //        tutorialCategory = intent.getStringExtra(GlobalConfig.TUTORIAL_CATEGORY_KEY);
     }

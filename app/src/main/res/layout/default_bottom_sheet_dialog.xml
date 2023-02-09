@@ -8,9 +8,9 @@
 
     <LinearLayout
         android:gravity="center"
-        android:paddingVertical="1pt"
+        android:paddingVertical="0pt"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="8pt">
 
         <ImageView
 
@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <ImageView
-android:layout_marginLeft="-4pt"
+android:layout_marginLeft="-8pt"
             android:src="@drawable/ic_baseline_drag_handle_24"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
