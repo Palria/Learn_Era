@@ -36,6 +36,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.models.LibraryDataModel;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
@@ -47,6 +48,7 @@ import java.util.HashMap;
 public class UserProfileFragment extends Fragment {
 
     AlertDialog alertDialog;
+    AlertDialog createLibraryDialog;
     LinearLayout containerLinearLayout;
 
     //views
@@ -80,8 +82,9 @@ public class UserProfileFragment extends Fragment {
     "Database Design", "Furniture", "Internet", "Communication", "Story", "Drama", "Podcasts"};
 
 
-    boolean[] selectedCategories;
+    boolean[] checkedCategories;
     ArrayList<Integer> catsList = new ArrayList<>();
+    ArrayList<String> selectedCategories = new ArrayList<>();
 
     public UserProfileFragment() {
         // Required empty public constructor
@@ -94,19 +97,19 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        selectedCategories = new boolean[categories.length];
+        checkedCategories = new boolean[categories.length];
 
-        getProfile(new OnUserProfileFetchListener() {
-            @Override
-            public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
-
-            }
-
-            @Override
-            public void onFailed(String errorMessage) {
-
-            }
-        });
+//        getProfile(new OnUserProfileFetchListener() {
+//            @Override
+//            public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor) {
+//
+//            }
+//
+//            @Override
+//            public void onFailed(String errorMessage) {
+//
+//            }
+//        });
     }
 
     @Override
@@ -176,6 +179,7 @@ public class UserProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
+
                 leBottomSheetDialog.show();
 
             }
@@ -212,8 +216,9 @@ public class UserProfileFragment extends Fragment {
     private void loadCurrentUserProfile(){
         getProfile(new OnUserProfileFetchListener() {
             @Override
-            public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
+            public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor) {
                 swipeRefreshLayout.setRefreshing(false);
+                isUserAuthor = isUserAnAuthor;
                 Glide.with(getContext())
                         .load(userProfilePhotoDownloadUrl)
                         .centerCrop()
@@ -226,8 +231,20 @@ public class UserProfileFragment extends Fragment {
                 shimmerLayout.setVisibility(View.GONE);
 
                 parentScrollView.setVisibility(View.VISIBLE);
-                Toast.makeText(getContext(), "Libraries loaded.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Libraries loaded.", Toast.LENGTH_SHORT).show();
 
+                if(!isUserAuthor){
+                    leBottomSheetDialog.addOptionItem("Become An Author", R.drawable.ic_baseline_edit_24, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //show they are going to become an author
+                            leBottomSheetDialog.hide();
+
+                            showPromptToBeAnAuthor();
+
+                        }
+                    },0);
+                }
             }
 
             @Override
@@ -262,8 +279,24 @@ public class UserProfileFragment extends Fragment {
                 .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
                 .create();
 
-        leBottomSheetDialog = new LEBottomSheetDialog(getContext());
+        createLibraryDialog = new AlertDialog.Builder(getContext())
+                .setCancelable(false)
+                .setTitle("Congrats! You are now an author You are  privileged to create and own a library")
+                .setMessage("Create your first library")
+                .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(getContext(), CreateNewLibraryActivity.class);
+                        //creating new
 
+                        intent.putExtra(GlobalConfig.IS_CREATE_NEW_LIBRARY_KEY,true);
+                        startActivity(intent);
+
+                    }
+                })
+                .setNegativeButton("Back",null)
+                .create();
+        leBottomSheetDialog = new LEBottomSheetDialog(getContext());
         leBottomSheetDialog
                 .addOptionItem("My Tutorials", R.drawable.ic_baseline_dynamic_feed_24, new View.OnClickListener() {
                     @Override
@@ -280,18 +313,6 @@ public class UserProfileFragment extends Fragment {
 
 
 
-        if(!isUserAuthor){
-            leBottomSheetDialog.addOptionItem("Become An Author", R.drawable.ic_baseline_edit_24, new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //show they are going to become an author
-                    leBottomSheetDialog.hide();
-
-                    showPromptToBeAnAuthor();
-
-                }
-            },0);
-        }
         leBottomSheetDialog.render();
 
     }
@@ -316,6 +337,71 @@ public class UserProfileFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 //make a user as an author here
+                // Initialize alert dialog
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+
+                // set title
+                builder.setTitle("Select Categories where you will add Libraries.");
+
+                // set dialog non cancelable
+                builder.setCancelable(false);
+//
+//                String[] arr = new String[libraryCategoryArrayList.size()];
+//                for(int i=0; i<arr.length;i++){
+//                    arr[i]=libraryCategoryArrayList.get(i);
+//                }
+
+                builder.setMultiChoiceItems(categories,checkedCategories , new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i, boolean isChecked) {
+                        if (isChecked) {
+                            catsList.add(i);
+                            Collections.sort(catsList);
+                        } else {
+                            catsList.remove(Integer.valueOf(i));
+                        }
+                    }
+                });
+
+                builder.setPositiveButton("Become author", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // Initialize string builder
+                        StringBuilder stringBuilder = new StringBuilder();
+                        // use for loop
+                        for (int j = 0; j < catsList.size(); j++) {
+                            // concat array value
+                            selectedCategories.add(categories[catsList.get(j)]);
+                        }
+                        dialogInterface.cancel();
+                        toggleProgress(true);
+                        becomeAnAuthor(selectedCategories, new BecomeAuthorListener() {
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                toggleProgress(false);
+                                GlobalHelpers.showAlertMessage("error",getContext(), "Oops! Failed to make you author", errorMessage +", Please try again! ");
+
+                            }
+
+                            @Override
+                            public void onSuccess() {
+                                toggleProgress(false);
+                                GlobalHelpers.showAlertMessage("success",getContext(), "Congrats! You are now an author", "You are now privileged to create and own a library");
+
+                            }
+                        });
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+
+                // show dialog
+                builder.show();
 
                 isUserAuthor = !isUserAuthor;
             }
@@ -352,8 +438,13 @@ public class UserProfileFragment extends Fragment {
                         String contactPhoneNumber =""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY);
                         String genderType =""+ documentSnapshot.get(GlobalConfig.USER_GENDER_TYPE_KEY);
                         String userProfilePhotoDownloadUrl =""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
+                        boolean isUserAnAuthor = false;
                         boolean isUserBlocked = false;
                         boolean isUserProfilePhotoIncluded = false;
+                        if(documentSnapshot.get(GlobalConfig.IS_USER_AUTHOR_KEY) != null){
+                            isUserAnAuthor =documentSnapshot.getBoolean(GlobalConfig.IS_USER_AUTHOR_KEY);
+
+                        }
                         if(documentSnapshot.get(GlobalConfig.IS_USER_BLOCKED_KEY) != null){
                             isUserBlocked =documentSnapshot.getBoolean(GlobalConfig.IS_USER_BLOCKED_KEY);
 
@@ -363,7 +454,7 @@ public class UserProfileFragment extends Fragment {
 
                         }
 
-                        onUserProfileFetchListener.onSuccess( userDisplayName, userCountryOfResidence, contactEmail, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl, isUserBlocked, isUserProfilePhotoIncluded);
+                        onUserProfileFetchListener.onSuccess( userDisplayName, userCountryOfResidence, contactEmail, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl, isUserBlocked, isUserProfilePhotoIncluded,isUserAnAuthor);
                         }
                 });
     }
@@ -501,7 +592,7 @@ libraryView.setOnClickListener(new View.OnClickListener() {
         HashMap<String,Object> authorDetails = new HashMap<>();
         authorDetails.put(GlobalConfig.AUTHOR_CATEGORY_TAG_ARRAY_KEY,categoryTagList);
         authorDetails.put(GlobalConfig.IS_USER_AUTHOR_KEY,true);
-        authorDetails.put(GlobalConfig.AUTHOR_DATE_KEY,GlobalConfig.getDate());
+//        authorDetails.put(GlobalConfig.AUTHOR_DATE_KEY,GlobalConfig.getDate());
         authorDetails.put(GlobalConfig.AUTHOR_DATE_TIME_STAMP_KEY, FieldValue.serverTimestamp());
 
         userProfileDocumentReference.update(authorDetails)
@@ -529,7 +620,7 @@ libraryView.setOnClickListener(new View.OnClickListener() {
     }
 
     interface OnUserProfileFetchListener{
-        void onSuccess(String userDisplayName,String userCountryOfResidence,String contactEmail,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,boolean isUserBlocked,boolean isUserProfilePhotoIncluded);
+        void onSuccess(String userDisplayName,String userCountryOfResidence,String contactEmail,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,boolean isUserBlocked,boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor);
         void onFailed(String errorMessage);
     }
 }

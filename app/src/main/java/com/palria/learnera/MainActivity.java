@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         toggleProgress(true);
 
                         GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY)
+                               .whereEqualTo(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserId())
                                 .get()
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -192,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
                                             i.putExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY,true);
                                             i.putExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,libraryCategoryArrayList.get(which));
-                                            i.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryIdArrayList.get(which));
+                                            i.putExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryIdArrayList.get(which));
                                             leBottomSheetDialog.hide();
                                             startActivity(i);
                                             // when selected an item the dialog should be closed with the dismiss method

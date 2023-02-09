@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -55,31 +56,34 @@ private void initUI(){
     void uploadPage(){
         ArrayList<ArrayList<String>> allPageTextPartitionsDataDetailsArrayList = new ArrayList<>();
 
+        UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
+            @Override
+            public void onNewPage(String pageId) {
+                Toast.makeText(getApplicationContext(), "New page id: "+ pageId, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailed(String pageId) {
+                Toast.makeText(getApplicationContext(), "page upload failed: "+ pageId, Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onProgress(String pageId, int progressCount) {
+                Toast.makeText(getApplicationContext(), "New page uploading: "+ pageId, Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onSuccess(String pageId) {
+                Toast.makeText(getApplicationContext(), "New page upload succeeded: "+ pageId, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        UploadPageManagerService.setInitialVariables(pageId);
+
         for(int i=0; i<containerLinearLayout.getChildCount(); i++){
             String partitionId = GlobalConfig.getRandomString(10) + GlobalConfig._IS_PARTITION_ID_IS_FOR_IDENTIFYING_PARTITIONS_KEY;
-
-            UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
-                @Override
-                public void onNewPage(String pageId) {
-
-                }
-
-                @Override
-                public void onFailed(String pageId) {
-
-                }
-
-                @Override
-                public void onProgress(String pageId, int progressCount) {
-
-                }
-
-                @Override
-                public void onSuccess(String pageId) {
-
-                }
-            });
-            UploadPageManagerService.setInitialVariables(pageId);
 
             LinearLayout partitionLinearLayout = (LinearLayout) containerLinearLayout.getChildAt(i);
             TextView textDataPartitionTextView =(TextView) partitionLinearLayout.getChildAt(0);
