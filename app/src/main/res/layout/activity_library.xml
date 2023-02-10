@@ -1,9 +1,231 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".LibraryActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
+           android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            >
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_marginTop="0pt"
+                    android:alpha="0.8"
+                    android:id="@+id/libraryCoverImage"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/book_cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="130pt"/>
+
+
+                <TextView
+                    android:id="@+id/libraryName"
+                    android:layout_marginBottom="2pt"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:layout_marginTop="-94pt"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:paddingHorizontal="9pt"
+                    android:textSize="10pt"
+                    android:textAlignment="center"
+                    android:text="Python and Data Structure"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/libraryDescription"
+                    android:textColor="@color/gray"
+                    android:layout_marginTop="2pt"
+                    android:textAlignment="center"
+                    android:text="Javascript and Database, Python and Learning, Model Design, Professional Video Editing, Motion Design"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:layout_marginHorizontal="5pt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+<com.google.android.material.divider.MaterialDivider
+    android:layout_width="match_parent"
+    android:layout_marginTop="5pt"
+    app:dividerColor="@color/gray"
+    android:layout_height="wrap_content"/>
+
+              <LinearLayout
+                  android:layout_marginTop="10pt"
+                  android:layout_marginHorizontal="5pt"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content">
+
+                  <LinearLayout
+                      android:layout_weight="1"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content">
+
+                      <com.makeramen.roundedimageview.RoundedImageView
+                          android:layout_marginEnd="2pt"
+                          android:layout_gravity="center"
+                          app:riv_corner_radius="15pt"
+                          app:riv_oval="true"
+                          android:id="@+id/authorPicture"
+                          android:src="@drawable/default_profile"
+                          android:layout_width="9pt"
+                          android:layout_height="9pt"/>
+
+                      <TextView
+                          android:id="@+id/authorName"
+                          android:textSize="7pt"
+                          android:textStyle="bold"
+                          android:textColor="@color/white"
+                          android:text="James Dones"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"/>
+                  </LinearLayout>
+
+                  <LinearLayout
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content">
+
+                      <ImageView
+                          android:layout_gravity="center"
+                          app:tint="@color/white"
+                          android:src="@drawable/ic_baseline_remove_red_eye_24"
+                          android:layout_width="7pt"
+                          android:layout_height="7pt"/>
+
+                      <TextView
+                          android:id="@+id/libraryViewCount"
+                          android:text="450"
+                          android:textStyle="bold"
+                          android:textColor="@color/white"
+                          android:layout_marginLeft="2pt"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"/>
+                  </LinearLayout>
+
+                  <LinearLayout
+                      android:layout_marginLeft="5pt"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content">
+
+                      <ImageView
+                          android:layout_gravity="center"
+                          app:tint="@color/white"
+                          android:src="@drawable/ic_baseline_dynamic_feed_24"
+                          android:layout_width="7pt"
+                          android:layout_height="7pt"/>
+
+                      <TextView
+                          android:id="@+id/tutorialsCount"
+                          android:text="12"
+                          android:textStyle="bold"
+                          android:textColor="@color/white"
+                          android:layout_marginLeft="2pt"
+                          android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"/>
+                  </LinearLayout>
+
+              </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginTop="5pt"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:layout_height="wrap_content">
+
+
+                    <Button
+                        android:id="@+id/addActionButton"
+                        android:text="@string/add"
+                        android:drawableEnd="@drawable/ic_baseline_add_24"
+                        android:layout_width="wrap_content"
+                        app:tint="@color/white"
+                        android:drawableTint="@color/white"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_height="25pt"/>
+
+
+                    <Button
+                        android:id="@+id/rateActionButton"
+                        android:text="@string/rate"
+                        android:drawableEnd="@drawable/ic_baseline_star_24"
+                        android:layout_width="wrap_content"
+                        app:tint="@color/white"
+                        android:drawableTint="@color/white"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_height="25pt"/>
+
+                    <Button
+                        android:id="@+id/saveActionButton"
+                        android:text="@string/save"
+                        android:drawableEnd="@drawable/ic_baseline_bookmarks_24"
+                        android:layout_width="wrap_content"
+                        app:tint="@color/white"
+                        android:drawableTint="@color/white"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_height="25pt"/>
+
+
+                </LinearLayout>
+
+
+
+                    <com.google.android.material.tabs.TabLayout
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="10pt"
+                        android:layout_marginHorizontal="5pt"
+                        android:layout_height="?actionBarSize"
+                        android:id="@+id/tab_layout"
+                        android:background="@color/white"
+                        app:tabInlineLabel="false"
+                        app:tabGravity="fill"
+                        app:tabMode="fixed"
+                        app:tabIndicatorColor="@color/teal_700"
+                        app:tabSelectedTextColor="@color/teal_700"
+                        app:tabIndicatorFullWidth="true"
+                        app:tabTextAppearance="@style/TextAppearance.AppCompat.Small"/>
+
+
+
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <FrameLayout
+        android:visibility="visible"
+        android:id="@+id/tutorialsFrameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <FrameLayout
+        android:visibility="invisible"
+        android:id="@+id/ratingsFrameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <FrameLayout
+        android:visibility="invisible"
+        android:id="@+id/booksFrameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+
+</FrameLayout>

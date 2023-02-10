@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingHorizontal="5pt"
+    android:layout_marginTop="2pt"
+    android:paddingVertical="3pt"
+    android:clickable="true"
+    android:layout_marginHorizontal="5pt"
+    android:background="@drawable/rounded_border_gray_bg"
+    android:id="@+id/parentItem"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:layout_width="30pt"
+            android:id="@+id/profilePicture"
+            app:riv_corner_radius="7pt"
+            app:riv_oval="true"
+            android:src="@drawable/default_profile"
+            android:layout_height="30pt"/>
+
+        <LinearLayout
+            android:paddingLeft="8pt"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/name"
+                android:textStyle="bold"
+                android:textSize="8pt"
+                android:text="Jhon Cena"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <RatingBar
+                style="?android:attr/ratingBarStyleSmall"
+                android:clickable="false"
+                android:focusable="false"
+                android:progressTint="@color/teal_700"
+                android:progress="3"
+                android:numStars="5"
+                android:max="5"
+                android:elevation="0pt"
+                android:stepSize="1"
+                android:layout_marginVertical="3pt"
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/message"
+                android:text="Thsi sis the amzain comment i like to have this app forever use and cool."
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <TextView
+        android:id="@+id/date"
+        android:text="Jan 05"
+        android:layout_marginTop="3pt"
+        android:textAlignment="textEnd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

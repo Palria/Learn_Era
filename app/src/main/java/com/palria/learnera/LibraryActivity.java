@@ -3,18 +3,42 @@ package com.palria.learnera;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.Transformation;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.palria.learnera.models.*;
+import com.palria.learnera.widgets.LEBottomSheetDialog;
+import com.palria.learnera.widgets.RatingBarWidget;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import jp.wasabeef.glide.transformations.BitmapTransformation;
+import jp.wasabeef.glide.transformations.BlurTransformation;
 
 public class LibraryActivity extends AppCompatActivity {
 
@@ -24,6 +48,28 @@ String authorName;
 String authorProfilePhotoDownloadUrl;
 AlertDialog alertDialog;
 FrameLayout tutorialsFrameLayout;
+FrameLayout ratingsFrameLayout;
+FrameLayout booksFrameLayout;
+
+TabLayout tabLayout;
+ImageView libraryCoverImage;
+ImageView authorPicture;
+TextView libraryName;
+TextView libraryDescription;
+TextView authorNameView;
+TextView libraryViewCount;
+TextView tutorialsCount;
+Button addActionButton;
+Button saveActionButton;
+Button rateActionButton;
+
+boolean isRatingFragmentOpen=false;
+boolean isTutorialsFragmentOpen=false;
+boolean isBooksFragmentOpen=false;
+
+LEBottomSheetDialog leBottomSheetDialog;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +77,7 @@ FrameLayout tutorialsFrameLayout;
         initUI();
         fetchIntentData();
         toggleProgress(true);
+
         fetchLibraryProfile(new LibraryProfileFetchListener() {
             @Override
             public void onFailed(String errorMessage) {
@@ -45,6 +92,33 @@ FrameLayout tutorialsFrameLayout;
                     @Override
                     public void onSuccess() {
                         toggleProgress(false);
+                        //set library name and image
+                        libraryName.setText(libraryDataModel.getLibraryName());
+                        Glide.with(LibraryActivity.this)
+                                .load(libraryDataModel.getLibraryCoverPhotoDownloadUrl())
+                                .placeholder(R.drawable.book_cover)
+                                .apply(RequestOptions.bitmapTransform(new BlurTransformation(10, 3)))
+                                .into(libraryCoverImage);
+
+                        //set library cetegories.
+                        String categories = "N/A";
+                        ArrayList<String> cats = libraryDataModel.getLibraryCategoryArrayList();
+                        if(cats!=null) {
+                            categories = "";
+                            int j=0;
+                            for (String cat : cats) {
+                                if(j==cats.size()-1){
+                                    categories += cat;
+                                }else{
+                                    categories += cat+", ";
+                                }
+                                j++;
+                            }
+                        }
+
+                        libraryDescription.setText(categories);
+                        libraryViewCount.setText(libraryDataModel.getTotalNumberOfLibraryViews()+"");
+
 
                     }
 
@@ -58,6 +132,7 @@ FrameLayout tutorialsFrameLayout;
 
             }
         });
+
         getAuthorProfile(new AuthorProfileFetchListener() {
             @Override
             public void onFailed(String errorMessage) {
@@ -68,18 +143,196 @@ FrameLayout tutorialsFrameLayout;
             @Override
             public void onSuccess(String authorName, String authorProfilePhotoDownloadUrl) {
                 toggleProgress(false);
+                authorNameView.setText(authorName);
+                Glide.with(LibraryActivity.this)
+                        .load(authorProfilePhotoDownloadUrl)
+                        .placeholder(R.drawable.default_profile)
+                        .centerCrop()
+                        .into(authorPicture);
+
 
             }
         });
+
+        //tab layout selected goes here .
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+               String tabTitle=tab.getText().toString().trim().toUpperCase();
+               if(tabTitle.equals("TUTORIALS")){
+                   if(isTutorialsFragmentOpen){
+                       //Just set the frame layout visibility
+                       setFrameLayoutVisibility(tutorialsFrameLayout);
+                   }else {
+                       isTutorialsFragmentOpen =true;
+                       setFrameLayoutVisibility(tutorialsFrameLayout);
+                       initFragment(new AllTutorialFragment(), tutorialsFrameLayout);
+                   }
+
+
+               }else if(tabTitle.equals("BOOKS"))
+               {
+                   if(isBooksFragmentOpen){
+                       //Just set the frame layout visibility
+                       setFrameLayoutVisibility(booksFrameLayout);
+                   }else {
+                       isBooksFragmentOpen =true;
+                       setFrameLayoutVisibility(booksFrameLayout);
+                       initFragment(new LibraryActivityRatingFragment(), booksFrameLayout);
+                   }
+               }else if(tabTitle.equals("RATINGS")){
+                   if(isRatingFragmentOpen){
+                       //Just set the frame layout visibility
+                       setFrameLayoutVisibility(ratingsFrameLayout);
+                   }else {
+                       isRatingFragmentOpen =true;
+                       setFrameLayoutVisibility(ratingsFrameLayout);
+                       initFragment(new LibraryActivityRatingFragment(), ratingsFrameLayout);
+                   }
+               }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        addActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+             leBottomSheetDialog.show();
+
+            }
+        });
+
+        saveActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(LibraryActivity.this)
+                        .setTitle("Add this to bookmark?")
+                        .setMessage("when you save to bookmark you are abale to view it in your bookmar" +
+                                "ks for future.")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Toast.makeText(LibraryActivity.this, "bookmared", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Toast.makeText(LibraryActivity.this, "cancelled bookmark.", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .show();
+            }
+        });
+
         openAllTutorialFragment();
     }
 
+    private void initFragment(Fragment fragment, FrameLayout frameLayout){
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(frameLayout.getId(), fragment)
+                .commit();
+
+
+    }
+
+    private void setFrameLayoutVisibility(FrameLayout frameLayoutToSetVisible){
+        tutorialsFrameLayout.setVisibility(View.GONE);
+        ratingsFrameLayout.setVisibility(View.GONE);
+        booksFrameLayout.setVisibility(View.GONE);
+        frameLayoutToSetVisible.setVisibility(View.VISIBLE);
+    }
+
     private void initUI(){
-    alertDialog = new AlertDialog.Builder(getApplicationContext())
+
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+
+        tutorialsFrameLayout=findViewById(R.id.tutorialsFrameLayout);
+        booksFrameLayout=findViewById(R.id.booksFrameLayout);
+        ratingsFrameLayout=findViewById(R.id.booksFrameLayout);
+
+        tabLayout=findViewById(R.id.tab_layout);
+        libraryCoverImage=findViewById(R.id.libraryCoverImage);
+        authorPicture=findViewById(R.id.authorPicture);
+        libraryName=findViewById(R.id.libraryName);
+        libraryDescription=findViewById(R.id.libraryDescription);
+        authorNameView=findViewById(R.id.authorName);
+        libraryViewCount=findViewById(R.id.libraryViewCount);
+        tutorialsCount=findViewById(R.id.tutorialsCount);
+        addActionButton=findViewById(R.id.addActionButton);
+        saveActionButton=findViewById(R.id.saveActionButton);
+        rateActionButton=findViewById(R.id.rateActionButton);
+
+
+
+
+        Glide.with(LibraryActivity.this)
+                .load(R.drawable.book_cover)
+                .apply(RequestOptions.bitmapTransform(new BlurTransformation(10, 3)))
+                .into(libraryCoverImage);
+
+
+        alertDialog = new AlertDialog.Builder(LibraryActivity.this)
             .setCancelable(false)
                 .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
             .create();
+
+        //set tab layout here .
+        tabLayout.addTab( tabLayout.newTab(),0,true);
+        tabLayout.addTab( tabLayout.newTab(),1);
+        tabLayout.addTab( tabLayout.newTab(),2);
+        tabLayout.getTabAt(0).setText("Tutorials");
+        tabLayout.getTabAt(1).setText("Books");
+        tabLayout.getTabAt(2).setText("Ratings");
+
+        leBottomSheetDialog = new LEBottomSheetDialog(this)
+                .addOptionItem("New Tutorial", R.drawable.ic_baseline_add_circle_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        leBottomSheetDialog.hide();
+
+                        Intent i = new Intent(LibraryActivity.this, CreateNewTutorialActivity.class);
+                        //creating new
+
+                        ArrayList<String> catArrayKeys=new ArrayList<>();
+                        catArrayKeys.add("Java and Design");
+
+                        i.putExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY,true);
+                        i.putExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY, catArrayKeys);
+                        i.putExtra(GlobalConfig.LIBRARY_ID_KEY,"id");
+                        i.putExtra(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY, "Oops and Design Principle in Java");
+                        startActivity(i);
+
+                    }
+                },0)
+                .addOptionItem("New Book", R.drawable.ic_baseline_library_books_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                },0)
+                .render();
+
+
 }
+
+
 
     private void toggleProgress(boolean show) {
         if(show){
@@ -88,6 +341,7 @@ FrameLayout tutorialsFrameLayout;
             alertDialog.cancel();
         }
     }
+
 
 
     private void fetchIntentData() {
@@ -107,6 +361,8 @@ FrameLayout tutorialsFrameLayout;
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+
+                        Toast.makeText(LibraryActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
 
                     }
                 }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -178,6 +434,7 @@ FrameLayout tutorialsFrameLayout;
     }
 
     private void openAllTutorialFragment(){
+        isTutorialsFragmentOpen=true;
         AllTutorialFragment tutorialsFragment = new AllTutorialFragment();
         Bundle bundle = new Bundle();
         bundle.putBoolean(GlobalConfig.IS_FROM_LIBRARY_ACTIVITY_CONTEXT_KEY,true);
@@ -189,6 +446,8 @@ FrameLayout tutorialsFrameLayout;
                 .replace(tutorialsFrameLayout.getId(),tutorialsFragment)
                 .commit();
     }
+
+
     interface LibraryProfileFetchListener{
         void onFailed(String errorMessage);
         void onSuccess(LibraryDataModel libraryDataModel);
