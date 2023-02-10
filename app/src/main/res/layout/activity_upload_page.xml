@@ -7,16 +7,21 @@
     android:layout_height="match_parent"
     tools:context=".UploadPageActivity">
 
-
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
     <LinearLayout
         android:id="@+id/containerLinearLayoutId"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:paddingBottom="100dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
 
         >
+        <!--
         <LinearLayout
             android:id="@+id/partitionContainerLinearLayoutId"
             android:layout_width="match_parent"
@@ -26,7 +31,7 @@
             app:layout_constraintTop_toTopOf="parent"
 
             >
-<TextView
+<EditText
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:text="Android is a platform for mobile manipulations"
@@ -59,7 +64,7 @@
             app:layout_constraintTop_toTopOf="parent"
 
             >
-<TextView
+<EditText
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:text="ios is a platform for mobile operations"
@@ -90,8 +95,11 @@
 
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
 
+        -->
+
+    </LinearLayout>
+</ScrollView>
     <Button
         android:id="@+id/btn"
         android:layout_width="match_parent"
