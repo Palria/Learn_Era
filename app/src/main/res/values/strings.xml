@@ -19,6 +19,9 @@
     <string name="contact_caution">This is your primary phone number. This is used to contact you in the future when needed.</string>
     <string name="cancel">Cancel</string>
     <string name="create">Create</string>
+    <string name="rate">Rate</string>
+    <string name="bookmark">Bookmark</string>
+    <string name="add">Add</string>
 
 
 </resources>

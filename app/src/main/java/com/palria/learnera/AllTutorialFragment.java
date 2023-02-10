@@ -4,27 +4,43 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.palria.learnera.adapters.PopularTutorialsListViewAdapter;
 import com.palria.learnera.models.TutorialDataModel;
 
+import java.util.ArrayList;
+
 public class AllTutorialFragment extends Fragment {
+
+
+    RecyclerView tutorialsRecyclerListView;
+    LinearLayout topContents;
+    PopularTutorialsListViewAdapter popularTutorialsListViewAdapter;
+    ArrayList<TutorialDataModel> tutorialDataModels = new ArrayList<>();
+
 
 
     public AllTutorialFragment() {
         // Required empty public constructor
     }
+
+
+
 String tutorialCategory = "";
 String libraryId = "";
-boolean isFromLibraryActivityContext = true;
+boolean isFromLibraryActivityContext = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +55,9 @@ if(getArguments() != null){
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
       View parentView = inflater.inflate(R.layout.fragment_all_tutorial, container, false);
+
+      initView(parentView);
+
         fetchTutorial(tutorialCategory, new TutorialFetchListener() {
             @Override
             public void onSuccess(TutorialDataModel tutorialDataModel) {
@@ -51,6 +70,86 @@ if(getArguments() != null){
             }
         });
         return parentView;
+    }
+
+    private void initView(View parentView) {
+
+        topContents=parentView.findViewById(R.id.topContents);
+        tutorialsRecyclerListView=parentView.findViewById(R.id.tutorialsRecyclerListView);
+
+        popularTutorialsListViewAdapter = new PopularTutorialsListViewAdapter(tutorialDataModels,getContext());
+
+
+
+
+        //hide if from context of library
+        if(isFromLibraryActivityContext){
+            topContents.setVisibility(View.GONE);
+        }
+
+        //init and show some dummy tutorials
+        tutorialDataModels.add(
+                new TutorialDataModel("How to connect to mysql database for free. in 2012 for Users to get it.",
+                        "category",
+                        "description",
+                        "__id__02151",
+                        "1 days ago",
+                        2l,
+                        1l,
+                        0l,
+                        0l,
+                        "Kamaensi",
+                        "",
+                        "https://api.lorem.space/image/furniture?w=300&h=150",
+                        0l,
+                        0l,
+                        0l,
+                        0l,
+                        0l));
+
+        tutorialDataModels.add(
+                new TutorialDataModel("The protest was organised against the Kathmandu Metropolitan City mayor’s recent move to demolish a part of private property in Sankhamul",
+                        "Category",
+                        "description",
+                        "Jeevan",
+                        "32 mins ago",
+                        2l,
+                        1l,
+                        0l,
+                        0l,
+                        "Jeevan",
+                        "",
+                        "https://api.lorem.space/image/drink?w=350&h=150",
+                        0l,
+                        0l,
+                        0l,
+                        0l,
+                        0l));
+
+        tutorialDataModels.add(
+                new TutorialDataModel("According to him, the metropolis demolished the house compound without any letter or notice.",
+                        "Category",
+                        "description",
+                        "Palria",
+                        "32 mins ago",
+                        2l,
+                        1l,
+                        0l,
+                        0l,
+                        "Palria",
+                        "",
+                        "https://api.lorem.space/image/burger?w=350&h=150",
+                        0l,
+                        0l,
+                        0l,
+                        0l,
+                        0l));
+
+//        popularTutorialsContainerRcv.setHasFixedSize(true);
+        tutorialsRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+        tutorialsRecyclerListView.setAdapter(popularTutorialsListViewAdapter);
+
+
     }
 
     private void fetchTutorial(String tutorialCategoryTag, TutorialFetchListener tutorialFetchListener){

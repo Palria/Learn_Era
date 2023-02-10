@@ -3,12 +3,531 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AllTutorialFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_below="@+id/bg"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+<LinearLayout
+    android:id="@+id/topContents"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="80pt">
+
+
+    <ImageView
+        android:scaleType="centerCrop"
+        android:src="@drawable/auth_bg_top"
+        android:layout_width="match_parent"
+        android:layout_height="70pt"/>
+
+
+    <LinearLayout
+        android:layout_marginTop="-60pt"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_marginHorizontal="8pt"
+                android:textSize="7pt"
+                android:textStyle="bold"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:layout_marginTop="5pt"
+                android:text="Enter your tutorial name here and, Enter name and press go."
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_marginTop="15pt"
+        app:cardCornerRadius="6pt"
+        android:background="@drawable/rounded_white_bg"
+        android:layout_marginHorizontal="5pt"
+        android:layout_width="match_parent"
+        android:layout_height="60dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:hint="Search Tutorials..."
+                android:inputType="text"
+                android:maxLines="1"
+                android:background="@android:color/transparent"
+                android:drawableTint="@color/grayDark"
+                android:drawableEnd="@drawable/ic_baseline_search_24"
+                android:id="@+id/searchKeywordInput"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </androidx.cardview.widget.CardView>
+
+
+</LinearLayout>
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                app:shimmer_auto_start="false"
+                android:visibility="gone"
+                android:id="@+id/shimmerLayout"
+                android:layout_marginVertical="4pt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_marginTop="10pt"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="10pt"
+                        android:orientation="horizontal"
+                        android:layout_gravity="start"
+                        android:gravity="start"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_marginHorizontal="5pt"
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="40pt"
+                            android:layout_height="40pt"/>
+
+
+                        <LinearLayout
+                            android:paddingRight="5pt"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="5pt"/>
+                                <TextView
+                                    android:layout_marginTop="2pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="5pt"/>
+                                <TextView
+                                    android:layout_marginTop="2pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="40pt"
+                                    android:layout_height="5pt"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+
+                                <TextView
+                                    android:layout_marginTop="5pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="80pt"
+                                    android:layout_height="8pt"/>
+
+                                <TextView
+                                    android:layout_marginTop="5pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="40pt"
+                                    android:layout_height="8pt"/>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="10pt"
+                        android:orientation="horizontal"
+                        android:layout_gravity="start"
+                        android:gravity="start"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_marginHorizontal="5pt"
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="40pt"
+                            android:layout_height="40pt"/>
+
+
+                        <LinearLayout
+                            android:paddingRight="5pt"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="5pt"/>
+                                <TextView
+                                    android:layout_marginTop="2pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="5pt"/>
+                                <TextView
+                                    android:layout_marginTop="2pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="40pt"
+                                    android:layout_height="5pt"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+
+                                <TextView
+                                    android:layout_marginTop="5pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="80pt"
+                                    android:layout_height="8pt"/>
+
+                                <TextView
+                                    android:layout_marginTop="5pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="40pt"
+                                    android:layout_height="8pt"/>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="10pt"
+                        android:orientation="horizontal"
+                        android:layout_gravity="start"
+                        android:gravity="start"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_marginHorizontal="5pt"
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="40pt"
+                            android:layout_height="40pt"/>
+
+
+                        <LinearLayout
+                            android:paddingRight="5pt"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="5pt"/>
+                                <TextView
+                                    android:layout_marginTop="2pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="5pt"/>
+                                <TextView
+                                    android:layout_marginTop="2pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="40pt"
+                                    android:layout_height="5pt"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+
+                                <TextView
+                                    android:layout_marginTop="5pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="80pt"
+                                    android:layout_height="8pt"/>
+
+                                <TextView
+                                    android:layout_marginTop="5pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="40pt"
+                                    android:layout_height="8pt"/>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="10pt"
+                        android:orientation="horizontal"
+                        android:layout_gravity="start"
+                        android:gravity="start"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_marginHorizontal="5pt"
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="40pt"
+                            android:layout_height="40pt"/>
+
+
+                        <LinearLayout
+                            android:paddingRight="5pt"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="5pt"/>
+                                <TextView
+                                    android:layout_marginTop="2pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="5pt"/>
+                                <TextView
+                                    android:layout_marginTop="2pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="40pt"
+                                    android:layout_height="5pt"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+
+                                <TextView
+                                    android:layout_marginTop="5pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="80pt"
+                                    android:layout_height="8pt"/>
+
+                                <TextView
+                                    android:layout_marginTop="5pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="40pt"
+                                    android:layout_height="8pt"/>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="10pt"
+                        android:orientation="horizontal"
+                        android:layout_gravity="start"
+                        android:gravity="start"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_marginHorizontal="5pt"
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="40pt"
+                            android:layout_height="40pt"/>
+
+
+                        <LinearLayout
+                            android:paddingRight="5pt"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="5pt"/>
+                                <TextView
+                                    android:layout_marginTop="2pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="5pt"/>
+                                <TextView
+                                    android:layout_marginTop="2pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="40pt"
+                                    android:layout_height="5pt"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+
+                                <TextView
+                                    android:layout_marginTop="5pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="80pt"
+                                    android:layout_height="8pt"/>
+
+                                <TextView
+                                    android:layout_marginTop="5pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="40pt"
+                                    android:layout_height="8pt"/>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="10pt"
+                        android:orientation="horizontal"
+                        android:layout_gravity="start"
+                        android:gravity="start"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_marginHorizontal="5pt"
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="40pt"
+                            android:layout_height="40pt"/>
+
+
+                        <LinearLayout
+                            android:paddingRight="5pt"
+                            android:orientation="vertical"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="5pt"/>
+                                <TextView
+                                    android:layout_marginTop="2pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="5pt"/>
+                                <TextView
+                                    android:layout_marginTop="2pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="40pt"
+                                    android:layout_height="5pt"/>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+
+                                <TextView
+                                    android:layout_marginTop="5pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="80pt"
+                                    android:layout_height="8pt"/>
+
+                                <TextView
+                                    android:layout_marginTop="5pt"
+                                    android:background="@drawable/rounded_grey_bg"
+                                    android:layout_width="40pt"
+                                    android:layout_height="8pt"/>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </LinearLayout>
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <!--            main contents goes here -->
+
+
+            <LinearLayout
+                android:id="@+id/mainContents"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/tutorialsRecyclerListView"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10pt"
+                    tools:listitem="@layout/single_tutorial_item_layout"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
 
 </FrameLayout>

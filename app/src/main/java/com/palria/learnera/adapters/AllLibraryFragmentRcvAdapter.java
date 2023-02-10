@@ -1,6 +1,10 @@
 package com.palria.learnera.adapters;
 
+import static com.palria.learnera.GlobalConfig.LIBRARY_AUTHOR_ID_KEY;
+import static com.palria.learnera.GlobalConfig.LIBRARY_ID_KEY;
+
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +21,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.palria.learnera.GlobalConfig;
 import com.palria.learnera.GlobalHelpers;
+import com.palria.learnera.LibraryActivity;
 import com.palria.learnera.R;
 import com.palria.learnera.models.AuthorDataModel;
 import com.palria.learnera.models.LibraryDataModel;
@@ -64,7 +69,22 @@ public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibrar
         String averageRating= GlobalHelpers.calculateAverageRating(ratings);
 
         holder.ratingCount.setText(averageRating);
+        String categories = "N/A";
+        ArrayList<String> cats = libraryDataModel.getLibraryCategoryArrayList();
+                      if(cats!=null) {
+                          categories = "";
+                          int j=0;
+                          for (String cat : cats) {
+                              if(j==cats.size()-1){
+                                  categories += cat;
+                              }else{
+                                  categories += cat+", ";
+                              }
+                              j++;
+                          }
+                      }
 
+        holder.libraryDescription.setText(categories);
 
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_USERS_KEY)
@@ -79,6 +99,15 @@ public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibrar
                     }
                 });
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, LibraryActivity.class);
+                intent.putExtra(LIBRARY_ID_KEY, libraryDataModel.getLibraryId());
+                intent.putExtra(LIBRARY_AUTHOR_ID_KEY, libraryDataModel.getAuthorUserId());
+                context.startActivity(intent);
+            }
+        });
 
     }
 
@@ -95,6 +124,7 @@ public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibrar
         public TextView libraryViewCount;
         public TextView  booksCount;
         public TextView ratingCount;
+        public TextView libraryDescription;
 
 
         public ViewHolder(View itemView) {
@@ -105,6 +135,8 @@ public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibrar
             libraryViewCount=itemView.findViewById(R.id.libraryViewCount);
             booksCount=itemView.findViewById(R.id.booksCount);
             ratingCount=itemView.findViewById(R.id.ratingCount);
+            libraryDescription=itemView.findViewById(R.id.libraryDescription);
+
 
         }
     }

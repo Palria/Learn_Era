@@ -75,6 +75,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:hint="Search Library..."
+                        android:inputType="text"
+                        android:maxLines="1"
                         android:background="@android:color/transparent"
                         android:drawableTint="@color/grayDark"
                         android:drawableEnd="@drawable/ic_baseline_search_24"
