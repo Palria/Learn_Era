@@ -107,6 +107,9 @@ fetchLogs(new OnLogFetchListener() {
                 ;
                 return;
             case GlobalConfig.ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY:
+                activityDataModelArrayList.add(new UserActivityDataModel("You a library.",
+                        eventDate, "...","null",1,"rating",false));
+                userActivityItemRCVAdapter.notifyItemChanged(activityDataModelArrayList.size());
                 ;
                 return;
             case GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_LIBRARY_TYPE_KEY:

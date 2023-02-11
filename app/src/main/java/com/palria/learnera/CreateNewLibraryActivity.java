@@ -511,7 +511,7 @@ toggleProgress(false);
                 builder.setTitle("Select Categories for Library.");
 
                 // set dialog non cancelable
-                builder.setCancelable(false);
+                builder.setCancelable(true);
 
                 String[] arr = new String[libraryCategoryArrayList.size()];
                 for(int i=0; i<arr.length;i++){

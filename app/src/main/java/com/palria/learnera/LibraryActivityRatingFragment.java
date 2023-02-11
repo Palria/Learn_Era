@@ -2,6 +2,7 @@ package com.palria.learnera;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,7 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.model.DocumentSet;
 import com.palria.learnera.adapters.RatingItemRecyclerViewAdapter;
 import com.palria.learnera.models.RatingDataModel;
 import com.palria.learnera.widgets.RatingBarWidget;
@@ -27,16 +35,20 @@ public class LibraryActivityRatingFragment extends Fragment {
 
     LinearLayout ratingBarContainer;
     RecyclerView ratingsRecyclerListView;
-
+    String libraryId = "";
+    ArrayList<RatingDataModel> ratingDataModels;
+    RatingItemRecyclerViewAdapter ratingItemRecyclerViewAdapter;
     public LibraryActivityRatingFragment() {
         // Required empty public constructor
     }
 
-
+OnReviewFetchListener onReviewFetchListener;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+if(getArguments() != null){
+    libraryId = getArguments().getString(GlobalConfig.LIBRARY_ID_KEY);
+        }
     }
 
     @Override
@@ -46,6 +58,20 @@ public class LibraryActivityRatingFragment extends Fragment {
         View view= inflater.inflate(R.layout.fragment_library_activity_rating, container, false);
         initView(view);
 
+onReviewFetchListener = new OnReviewFetchListener() {
+    @Override
+    public void onSuccess(RatingDataModel ratingDataModel) {
+     ratingDataModels.add(ratingDataModel);
+     ratingItemRecyclerViewAdapter.notifyItemChanged(ratingDataModels.size());
+    }
+
+    @Override
+    public void onFailed(String errorMessage) {
+        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+    }
+};
+
+getReviews();
 
         return view;
     }
@@ -55,7 +81,7 @@ public class LibraryActivityRatingFragment extends Fragment {
         ratingBarContainer=parentView.findViewById(R.id.ratingBarContainer);
         ratingsRecyclerListView=parentView.findViewById(R.id.ratingsRecyclerListView);
 
-        ArrayList<RatingDataModel> ratingDataModels = new ArrayList<>();
+         ratingDataModels = new ArrayList<>();
 
         ratingDataModels.add(new RatingDataModel("lasdjf","Karmalu Sherpa",
                 "123",
@@ -77,16 +103,16 @@ public class LibraryActivityRatingFragment extends Fragment {
                 "123",
                 "library",
                 "Feb 04",
-                "Everytihing is good but have some bugs in this tutorial. please fix it fast now .",
+                "Everything is good but have some bugs in this tutorial. please fix it fast now .",
                 4,
                 "https://api.lorem.space/image/face?w=150&h=150"));
 
 
-        RatingItemRecyclerViewAdapter ratingItemRecyclerViewAdapter = new RatingItemRecyclerViewAdapter(ratingDataModels,getContext());
+        ratingItemRecyclerViewAdapter = new RatingItemRecyclerViewAdapter(ratingDataModels,getContext());
 
 
         ratingsRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
-        ratingsRecyclerListView.setHasFixedSize(true);
+//        ratingsRecyclerListView.setHasFixedSize(true);
         ratingsRecyclerListView.setAdapter(ratingItemRecyclerViewAdapter);
 
         //load rating bar
@@ -99,8 +125,63 @@ public class LibraryActivityRatingFragment extends Fragment {
                 .setRatings(ratings)
                 .setText_color(R.color.teal_700)
                 .render();
+    }
 
+    void getReviews(){
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                .document(libraryId)
+                .collection(GlobalConfig.REVIEWS_KEY)
+                .get()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+onReviewFetchListener.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
+                        for(DocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+String reviewerId = documentSnapshot.getId();
+String dateReviewed = documentSnapshot.get(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY)!=null &&  documentSnapshot.get(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY) instanceof Timestamp ?  documentSnapshot.getTimestamp(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY).toString() : "Undefined";
+if(dateReviewed.length()>10){
+    dateReviewed = dateReviewed.substring(0,10);
+}
+String finalDateReview = dateReviewed;
 
+String reviewBody = "" + documentSnapshot.get(GlobalConfig.REVIEW_COMMENT_KEY);
+long starLevel = documentSnapshot.get(GlobalConfig.STAR_LEVEL_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.STAR_LEVEL_KEY): 0L;
+
+                            GlobalConfig.getFirebaseFirestoreInstance()
+                                    .collection(GlobalConfig.ALL_USERS_KEY)
+                                    .document(reviewerId)
+                                    .get()
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                        }
+                                    })
+                                   .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                       @Override
+                                       public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                                           String reviewerName =""+ documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                                           String userProfilePhotoDownloadUrl =""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
+
+                                           onReviewFetchListener.onSuccess(new RatingDataModel(reviewerId,reviewerName,libraryId,"library",finalDateReview,reviewBody, (int) starLevel,userProfilePhotoDownloadUrl));
+
+                                       }
+                                   });
+                        }
+                    }
+                });
+    }
+
+    interface  OnReviewFetchListener{
+        void onSuccess(RatingDataModel  ratingDataModel);
+        void onFailed(String errorMessage);
     }
 }

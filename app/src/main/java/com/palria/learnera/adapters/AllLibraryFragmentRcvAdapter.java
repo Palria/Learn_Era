@@ -84,7 +84,8 @@ public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibrar
                           }
                       }
 
-        holder.libraryDescription.setText(categories);
+        holder.libraryDescription.setText(libraryDataModel.getLibraryDescription());
+        holder.tutorialsCount.setText(libraryDataModel.getTotalNumberOfTutorials() +"");
 
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_USERS_KEY)
@@ -122,7 +123,7 @@ public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibrar
         public TextView libraryName;
         public TextView authorName;
         public TextView libraryViewCount;
-        public TextView  booksCount;
+        public TextView  tutorialsCount;
         public TextView ratingCount;
         public TextView libraryDescription;
 
@@ -133,7 +134,7 @@ public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibrar
             this.libraryName = (TextView) itemView.findViewById(R.id.libraryName);
             authorName=itemView.findViewById(R.id.authorName);
             libraryViewCount=itemView.findViewById(R.id.libraryViewCount);
-            booksCount=itemView.findViewById(R.id.booksCount);
+            tutorialsCount=itemView.findViewById(R.id.tutorialsCount);
             ratingCount=itemView.findViewById(R.id.ratingCount);
             libraryDescription=itemView.findViewById(R.id.libraryDescription);
 

@@ -33,6 +33,7 @@ import com.palria.learnera.widgets.LEBottomSheetDialog;
 import com.palria.learnera.widgets.RatingBarWidget;
 import com.squareup.picasso.Picasso;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +41,7 @@ import java.util.List;
 import jp.wasabeef.glide.transformations.BitmapTransformation;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
-public class LibraryActivity extends AppCompatActivity {
+public class LibraryActivity extends AppCompatActivity implements Serializable {
 
 String libraryId;
 String authorId;
@@ -50,7 +51,7 @@ AlertDialog alertDialog;
 FrameLayout tutorialsFrameLayout;
 FrameLayout ratingsFrameLayout;
 FrameLayout booksFrameLayout;
-
+ArrayList<String> libraryCategoryList = new ArrayList<>();
 TabLayout tabLayout;
 ImageView libraryCoverImage;
 ImageView authorPicture;
@@ -77,7 +78,10 @@ LEBottomSheetDialog leBottomSheetDialog;
         initUI();
         fetchIntentData();
         toggleProgress(true);
-
+if(!authorId.equals(GlobalConfig.getCurrentUserId())){
+    //this user is not the owner of this library, so hide some widgets to limit access
+    addActionButton.setVisibility(View.GONE);
+}
         fetchLibraryProfile(new LibraryProfileFetchListener() {
             @Override
             public void onFailed(String errorMessage) {
@@ -88,44 +92,47 @@ LEBottomSheetDialog leBottomSheetDialog;
             @Override
             public void onSuccess(LibraryDataModel libraryDataModel) {
             //use this libraryDataModel object to access the public methods.
+
+                libraryCategoryList = libraryDataModel.getLibraryCategoryArrayList();
+                libraryDescription.setText(libraryDataModel.getLibraryDescription());
+                libraryViewCount.setText(libraryDataModel.getTotalNumberOfLibraryViews()+"");
+                tutorialsCount.setText(libraryDataModel.getTotalNumberOfTutorials()+"");
+
+                toggleProgress(false);
+                //set library name and image
+                libraryName.setText(libraryDataModel.getLibraryName());
+                Glide.with(LibraryActivity.this)
+                        .load(libraryDataModel.getLibraryCoverPhotoDownloadUrl())
+                        .placeholder(R.drawable.book_cover)
+                        .apply(RequestOptions.bitmapTransform(new BlurTransformation(10, 3)))
+                        .into(libraryCoverImage);
+
+                //set library cetegories.
+                String categories = "N/A";
+                ArrayList<String> cats = libraryDataModel.getLibraryCategoryArrayList();
+                if(cats!=null) {
+                    categories = "";
+                    int j=0;
+                    for (String cat : cats) {
+                        if(j==cats.size()-1){
+                            categories += cat;
+                        }else{
+                            categories += cat+", ";
+                        }
+                        j++;
+                    }
+                }
+
+
+
                 GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY, authorId, libraryId, null, false, true, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
                     @Override
                     public void onSuccess() {
-                        toggleProgress(false);
-                        //set library name and image
-                        libraryName.setText(libraryDataModel.getLibraryName());
-                        Glide.with(LibraryActivity.this)
-                                .load(libraryDataModel.getLibraryCoverPhotoDownloadUrl())
-                                .placeholder(R.drawable.book_cover)
-                                .apply(RequestOptions.bitmapTransform(new BlurTransformation(10, 3)))
-                                .into(libraryCoverImage);
-
-                        //set library cetegories.
-                        String categories = "N/A";
-                        ArrayList<String> cats = libraryDataModel.getLibraryCategoryArrayList();
-                        if(cats!=null) {
-                            categories = "";
-                            int j=0;
-                            for (String cat : cats) {
-                                if(j==cats.size()-1){
-                                    categories += cat;
-                                }else{
-                                    categories += cat+", ";
-                                }
-                                j++;
-                            }
-                        }
-
-                        libraryDescription.setText(categories);
-                        libraryViewCount.setText(libraryDataModel.getTotalNumberOfLibraryViews()+"");
-
 
                     }
 
                     @Override
                     public void onFailed(String errorMessage) {
-                        toggleProgress(false);
-
                     }
                 });
 
@@ -239,7 +246,9 @@ LEBottomSheetDialog leBottomSheetDialog;
     }
 
     private void initFragment(Fragment fragment, FrameLayout frameLayout){
-
+Bundle bundle = new Bundle();
+bundle.putString(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+fragment.setArguments(bundle);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(frameLayout.getId(), fragment)
@@ -295,10 +304,10 @@ LEBottomSheetDialog leBottomSheetDialog;
         //set tab layout here .
         tabLayout.addTab( tabLayout.newTab(),0,true);
         tabLayout.addTab( tabLayout.newTab(),1);
-        tabLayout.addTab( tabLayout.newTab(),2);
+//        tabLayout.addTab( tabLayout.newTab(),2);
         tabLayout.getTabAt(0).setText("Tutorials");
-        tabLayout.getTabAt(1).setText("Books");
-        tabLayout.getTabAt(2).setText("Ratings");
+//        tabLayout.getTabAt(1).setText("Books");
+        tabLayout.getTabAt(1).setText("Ratings");
 
         leBottomSheetDialog = new LEBottomSheetDialog(this)
                 .addOptionItem("New Tutorial", R.drawable.ic_baseline_add_circle_24, new View.OnClickListener() {
@@ -314,19 +323,19 @@ LEBottomSheetDialog leBottomSheetDialog;
                         catArrayKeys.add("Java and Design");
 
                         i.putExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY,true);
-                        i.putExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY, catArrayKeys);
-                        i.putExtra(GlobalConfig.LIBRARY_ID_KEY,"id");
-                        i.putExtra(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY, "Oops and Design Principle in Java");
+                        i.putExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY, libraryCategoryList);
+                        i.putExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryId);
+                        i.putExtra(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY, libraryName.getText().toString());
                         startActivity(i);
 
                     }
                 },0)
-                .addOptionItem("New Book", R.drawable.ic_baseline_library_books_24, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                    }
-                },0)
+//                .addOptionItem("New Book", R.drawable.ic_baseline_library_books_24, new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//
+//                    }
+//                },0)
                 .render();
 
 
@@ -353,8 +362,6 @@ LEBottomSheetDialog leBottomSheetDialog;
 
     private void fetchLibraryProfile(LibraryProfileFetchListener libraryProfileFetchListener){
         GlobalConfig.getFirebaseFirestoreInstance()
-                .collection(GlobalConfig.ALL_USERS_KEY)
-                .document(authorId)
                 .collection(GlobalConfig.ALL_LIBRARY_KEY)
                 .document(libraryId)
                 .get()
@@ -381,6 +388,7 @@ LEBottomSheetDialog leBottomSheetDialog;
 
                 String libraryName = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
                 ArrayList<String> libraryCategoryArray = (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
+                String libraryDescription = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DESCRIPTION_KEY);
                 String dateCreated = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_KEY);
                 String authorUserId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
                 String libraryCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY);
@@ -392,6 +400,7 @@ LEBottomSheetDialog leBottomSheetDialog;
                         libraryId,
                         libraryCategoryArray,
                         libraryCoverPhotoDownloadUrl,
+                        libraryDescription,
                         dateCreated,
                         totalNumberOfTutorials,
                         totalNumberOfLibraryVisitor,
@@ -438,7 +447,7 @@ LEBottomSheetDialog leBottomSheetDialog;
         AllTutorialFragment tutorialsFragment = new AllTutorialFragment();
         Bundle bundle = new Bundle();
         bundle.putBoolean(GlobalConfig.IS_FROM_LIBRARY_ACTIVITY_CONTEXT_KEY,true);
-        bundle.putString(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+        bundle.putString(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryId);
         tutorialsFragment.setArguments(bundle);
 
         getSupportFragmentManager()

@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                                         builder.setTitle("Select Library to add tutorial.");
 
                                         // set dialog non cancelable
-                                        builder.setCancelable(false);
+                                        builder.setCancelable(true);
 
                                         String[] arr = new String[libraryNameArrayList.size()];
                                         for(int i=0; i<arr.length;i++){
@@ -222,8 +222,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .addOptionItem("New Post", R.drawable.ic_baseline_add_circle_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(getApplicationContext() , UploadPageActivity.class);
-                        startActivity(intent);
                     }
                 }, 0)
 

@@ -94,13 +94,13 @@
                 <ImageView
                     android:layout_gravity="center"
                     app:tint="@color/grayDark"
-                    android:src="@drawable/ic_baseline_book_24"
+                    android:src="@drawable/ic_baseline_dynamic_feed_24"
                     android:layout_width="7pt"
                     android:layout_height="7pt"/>
 
                 <TextView
                     android:layout_marginLeft="3pt"
-                    android:id="@+id/booksCount"
+                    android:id="@+id/tutorialsCount"
                     android:text="10"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>

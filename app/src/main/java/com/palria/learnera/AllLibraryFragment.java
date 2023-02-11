@@ -178,6 +178,7 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
 
 
                             String libraryName = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
+                            String libraryDescription = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DESCRIPTION_KEY);
                             ArrayList<String> libraryCategoryArray = (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
                             String dateCreated =documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY)!=null && documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? ""+ documentSnapshot.getTimestamp(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY).toDate() :"Undefined";
                             String authorUserId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
@@ -190,6 +191,7 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
                                     libraryId,
                                     libraryCategoryArray,
                                     libraryCoverPhotoDownloadUrl,
+                                    libraryDescription,
                                     dateCreated,
                                     totalNumberOfTutorials,
                                     totalNumberOfLibraryVisitor,

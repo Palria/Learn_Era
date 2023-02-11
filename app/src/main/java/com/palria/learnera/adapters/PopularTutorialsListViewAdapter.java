@@ -53,7 +53,9 @@ public class PopularTutorialsListViewAdapter extends RecyclerView.Adapter<Popula
         TutorialDataModel tutorialDataModel = tutorialDataModels.get(position);
 
       holder.tutorialName.setText(tutorialDataModel.getTutorialName());
-      holder.tutorialCreatedDate.setText(tutorialDataModel.getDateCreated().substring(0,10));
+      if(tutorialDataModel.getDateCreated().length() >10) {
+          holder.tutorialCreatedDate.setText(tutorialDataModel.getDateCreated().substring(0, 10));
+      }else holder.tutorialCreatedDate.setText(tutorialDataModel.getDateCreated());
 
         Glide.with(context)
                 .load(tutorialDataModel.getTutorialCoverPhotoDownloadUrl())

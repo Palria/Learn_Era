@@ -138,7 +138,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
     /**
      * categories list containing only string values.
      */
-    ArrayList<String> categoryArrayList;
+    ArrayList<String> categoryArrayList = new ArrayList<>();
     final int[] checkedCategory = {-1};
     private String selectedLibraryName;
 
@@ -482,7 +482,7 @@ toggleProgress(false);
                 builder.setTitle("Select categories for tutorial.");
 
                 // set dialog non cancelable
-                builder.setCancelable(false);
+                builder.setCancelable(true);
 
                 String[] arr = new String[categoryArrayList.size()];
                 for(int i=0; i<arr.length;i++){
@@ -632,11 +632,13 @@ toggleProgress(false);
             tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
 
         }else{
-            categoryArrayList = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
+            if(intent.getSerializableExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY) != null) {
+                categoryArrayList = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
+            }
         }
 
         selectedLibraryName=intent.getStringExtra(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
-        libraryNameView.setText("Creating new tutoial in : "+ Html.fromHtml("<b>"+selectedLibraryName+" </b>"));
+        libraryNameView.setText("Creating new tutorial in : "+ Html.fromHtml("<b>"+selectedLibraryName+" </b>"));
         libraryContainerId = intent.getStringExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
 //        tutorialCategory = intent.getStringExtra(GlobalConfig.TUTORIAL_CATEGORY_KEY);
     }
@@ -775,6 +777,15 @@ toggleProgress(false);
 //        userDetails.put(GlobalConfig.LAST_TUTORIAL_DATE_CREATED_KEY,GlobalConfig.getDate());
         userDetails.put(GlobalConfig.LAST_TUTORIAL_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         writeBatch.set(userDocumentReference,userDetails, SetOptions.merge());
+
+
+        DocumentReference libraryDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryContainerId);
+        HashMap<String,Object>libraryDetails  = new HashMap<>();
+        libraryDetails.put(GlobalConfig.LAST_TUTORIAL_CREATED_ID_KEY,tutorialId);
+        libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY,FieldValue.increment(1L));
+//        userDetails.put(GlobalConfig.LAST_TUTORIAL_DATE_CREATED_KEY,GlobalConfig.getDate());
+        libraryDetails.put(GlobalConfig.LAST_TUTORIAL_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        writeBatch.set(libraryDocumentReference,libraryDetails, SetOptions.merge());
 
 
         writeBatch.commit()

@@ -515,6 +515,7 @@ public class UserProfileFragment extends Fragment {
 
                             String libraryName = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
                             ArrayList<String> libraryCategoryArray = (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
+                            String libraryDescription = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DESCRIPTION_KEY);
                             String dateCreated = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_KEY);
                             String authorUserId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
                             String libraryCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY);
@@ -529,6 +530,7 @@ public class UserProfileFragment extends Fragment {
                                     libraryId,
                                     libraryCategoryArray,
                                     libraryCoverPhotoDownloadUrl,
+                                    libraryDescription,
                                     dateCreated,
                                     totalNumberOfTutorials,
                                     finalTotalNumberOfLibraryView,

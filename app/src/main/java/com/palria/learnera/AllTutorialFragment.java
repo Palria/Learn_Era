@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -61,7 +62,8 @@ if(getArguments() != null){
         fetchTutorial(tutorialCategory, new TutorialFetchListener() {
             @Override
             public void onSuccess(TutorialDataModel tutorialDataModel) {
-
+                tutorialDataModels.add(tutorialDataModel);
+                popularTutorialsListViewAdapter.notifyItemChanged(tutorialDataModels.size());
             }
 
             @Override
@@ -88,62 +90,62 @@ if(getArguments() != null){
         }
 
         //init and show some dummy tutorials
-        tutorialDataModels.add(
-                new TutorialDataModel("How to connect to mysql database for free. in 2012 for Users to get it.",
-                        "category",
-                        "description",
-                        "__id__02151",
-                        "1 days ago",
-                        2l,
-                        1l,
-                        0l,
-                        0l,
-                        "Kamaensi",
-                        "",
-                        "https://api.lorem.space/image/furniture?w=300&h=150",
-                        0l,
-                        0l,
-                        0l,
-                        0l,
-                        0l));
-
-        tutorialDataModels.add(
-                new TutorialDataModel("The protest was organised against the Kathmandu Metropolitan City mayor’s recent move to demolish a part of private property in Sankhamul",
-                        "Category",
-                        "description",
-                        "Jeevan",
-                        "32 mins ago",
-                        2l,
-                        1l,
-                        0l,
-                        0l,
-                        "Jeevan",
-                        "",
-                        "https://api.lorem.space/image/drink?w=350&h=150",
-                        0l,
-                        0l,
-                        0l,
-                        0l,
-                        0l));
-
-        tutorialDataModels.add(
-                new TutorialDataModel("According to him, the metropolis demolished the house compound without any letter or notice.",
-                        "Category",
-                        "description",
-                        "Palria",
-                        "32 mins ago",
-                        2l,
-                        1l,
-                        0l,
-                        0l,
-                        "Palria",
-                        "",
-                        "https://api.lorem.space/image/burger?w=350&h=150",
-                        0l,
-                        0l,
-                        0l,
-                        0l,
-                        0l));
+//        tutorialDataModels.add(
+//                new TutorialDataModel("How to connect to mysql database for free. in 2012 for Users to get it.",
+//                        "category",
+//                        "description",
+//                        "__id__02151",
+//                        "1 days ago",
+//                        2l,
+//                        1l,
+//                        0l,
+//                        0l,
+//                        "Kamaensi",
+//                        "",
+//                        "https://api.lorem.space/image/furniture?w=300&h=150",
+//                        0l,
+//                        0l,
+//                        0l,
+//                        0l,
+//                        0l));
+//
+//        tutorialDataModels.add(
+//                new TutorialDataModel("The protest was organised against the Kathmandu Metropolitan City mayor’s recent move to demolish a part of private property in Sankhamul",
+//                        "Category",
+//                        "description",
+//                        "Jeevan",
+//                        "32 mins ago",
+//                        2l,
+//                        1l,
+//                        0l,
+//                        0l,
+//                        "Jeevan",
+//                        "",
+//                        "https://api.lorem.space/image/drink?w=350&h=150",
+//                        0l,
+//                        0l,
+//                        0l,
+//                        0l,
+//                        0l));
+//
+//        tutorialDataModels.add(
+//                new TutorialDataModel("According to him, the metropolis demolished the house compound without any letter or notice.",
+//                        "Category",
+//                        "description",
+//                        "Palria",
+//                        "32 mins ago",
+//                        2l,
+//                        1l,
+//                        0l,
+//                        0l,
+//                        "Palria",
+//                        "",
+//                        "https://api.lorem.space/image/burger?w=350&h=150",
+//                        0l,
+//                        0l,
+//                        0l,
+//                        0l,
+//                        0l));
 
 //        popularTutorialsContainerRcv.setHasFixedSize(true);
         tutorialsRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
@@ -155,11 +157,12 @@ if(getArguments() != null){
     private void fetchTutorial(String tutorialCategoryTag, TutorialFetchListener tutorialFetchListener){
         Query tutorialQuery =null;
         if(isFromLibraryActivityContext){
-            tutorialQuery =   GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.LIBRARY_CONTAINER_ID_KEY, libraryId).orderBy(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY);
+            tutorialQuery =   GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.LIBRARY_CONTAINER_ID_KEY, libraryId);
 
         }else {
 
-            tutorialQuery =   GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY, tutorialCategoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY);
+//            tutorialQuery =   GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY, tutorialCategoryTag);
+            tutorialQuery =   GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY);
         }
 
         tutorialQuery.get()
@@ -172,6 +175,10 @@ if(getArguments() != null){
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                        tutorialDataModels.clear();
+                        popularTutorialsListViewAdapter.notifyDataSetChanged();
+
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             String authorId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY);
                             String libraryId =""+ documentSnapshot.get(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
@@ -179,7 +186,11 @@ if(getArguments() != null){
                             String tutorialName = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
                             String tutorialCategory = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_CATEGORY_KEY);
                             String tutorialDescription = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DESCRIPTION_KEY);
-                            String dateCreated = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DATE_CREATED_KEY);
+
+                            String dateCreated =  documentSnapshot.get(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY)!=null &&  documentSnapshot.get(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ?  documentSnapshot.getTimestamp(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY).toDate().toString() : "Undefined" ;
+                            if(dateCreated.length()>10){
+                                dateCreated = dateCreated.substring(0,10);
+                            }
                             long  totalNumberOfFolders = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY) :0L;
                             long totalNumberOfPages =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY) :0L;
                             String tutorialCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_COVER_PHOTO_DOWNLOAD_URL_KEY);
@@ -198,7 +209,7 @@ if(getArguments() != null){
                             tutorialFetchListener.onSuccess(new TutorialDataModel(
                                                             tutorialName,
                                                             tutorialCategory,
-                                    tutorialDescription,
+                                                            tutorialDescription,
                                                             tutorialId,
                                                             dateCreated,
                                                             totalNumberOfPages,
