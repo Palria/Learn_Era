@@ -27,14 +27,21 @@
                     android:src="@drawable/book_cover"
                     android:layout_width="match_parent"
                     android:layout_height="130pt"/>
-
+                <ImageView
+                    android:layout_marginTop="-130pt"
+                    android:alpha="0.5"
+                    android:id="@+id/xx"
+                    android:scaleType="centerCrop"
+                    android:src="@color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="130pt"/>
 
                 <TextView
                     android:id="@+id/libraryName"
-                    android:layout_marginBottom="2pt"
+                    android:layout_marginBottom="5pt"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:layout_marginTop="-94pt"
+                    android:layout_marginTop="-100pt"
                     android:textStyle="bold"
                     android:textColor="@color/white"
                     android:paddingHorizontal="9pt"
@@ -47,18 +54,18 @@
                 <TextView
                     android:id="@+id/libraryDescription"
                     android:textColor="@color/gray"
-                    android:layout_marginTop="2pt"
+                    android:layout_marginTop="5pt"
                     android:textAlignment="center"
                     android:text="Javascript and Database, Python and Learning, Model Design, Professional Video Editing, Motion Design"
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:layout_marginHorizontal="5pt"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
 <com.google.android.material.divider.MaterialDivider
     android:layout_width="match_parent"
-    android:layout_marginTop="5pt"
+    android:layout_marginTop="7pt"
     app:dividerColor="@color/gray"
     android:layout_height="wrap_content"/>
 
@@ -194,7 +201,20 @@
                         app:tabIndicatorColor="@color/teal_700"
                         app:tabSelectedTextColor="@color/teal_700"
                         app:tabIndicatorFullWidth="true"
-                        app:tabTextAppearance="@style/TextAppearance.AppCompat.Small"/>
+                        app:tabTextAppearance="@style/TextAppearance.AppCompat.Small">
+
+                        <com.google.android.material.tabs.TabItem
+                            android:layout_width="wrap_content"
+                            android:text="Tutorials"
+                            android:icon="@drawable/ic_baseline_dynamic_feed_24"
+                            android:layout_height="wrap_content"/>
+                        <com.google.android.material.tabs.TabItem
+                            android:layout_width="wrap_content"
+                            android:text="Ratings"
+                            android:icon="@drawable/ic_baseline_stars_24"
+                            android:layout_height="wrap_content"/>
+
+                    </com.google.android.material.tabs.TabLayout>
 
 
 

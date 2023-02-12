@@ -302,12 +302,12 @@ fragment.setArguments(bundle);
             .create();
 
         //set tab layout here .
-        tabLayout.addTab( tabLayout.newTab(),0,true);
-        tabLayout.addTab( tabLayout.newTab(),1);
-//        tabLayout.addTab( tabLayout.newTab(),2);
-        tabLayout.getTabAt(0).setText("Tutorials");
-//        tabLayout.getTabAt(1).setText("Books");
-        tabLayout.getTabAt(1).setText("Ratings");
+//        tabLayout.addTab( tabLayout.newTab(),0,true);
+//        tabLayout.addTab( tabLayout.newTab(),1);
+////        tabLayout.addTab( tabLayout.newTab(),2);
+//        tabLayout.getTabAt(0).setText("Tutorials");
+////        tabLayout.getTabAt(1).setText("Books");
+//        tabLayout.getTabAt(1).setText("Ratings");
 
         leBottomSheetDialog = new LEBottomSheetDialog(this)
                 .addOptionItem("New Tutorial", R.drawable.ic_baseline_add_circle_24, new View.OnClickListener() {
