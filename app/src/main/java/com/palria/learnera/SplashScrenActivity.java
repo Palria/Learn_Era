@@ -3,6 +3,7 @@ package com.palria.learnera;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.splashscreen.SplashScreen;
 
 
 import android.app.ActionBar;
@@ -25,9 +26,8 @@ public class SplashScrenActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
-
-
         if(getSupportActionBar()!=null)getSupportActionBar().hide();
 
 
