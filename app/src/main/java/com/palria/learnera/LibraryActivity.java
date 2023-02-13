@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,6 +27,8 @@ import com.bumptech.glide.load.Transformation;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.palria.learnera.models.*;
@@ -63,6 +66,11 @@ TextView tutorialsCount;
 Button addActionButton;
 Button saveActionButton;
 Button rateActionButton;
+
+ImageButton backButton;
+
+TextView dateCreated;
+ChipGroup categoriesChipGroup;
 
 boolean isRatingFragmentOpen=false;
 boolean isTutorialsFragmentOpen=false;
@@ -104,7 +112,7 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
                 Glide.with(LibraryActivity.this)
                         .load(libraryDataModel.getLibraryCoverPhotoDownloadUrl())
                         .placeholder(R.drawable.book_cover)
-                        .apply(RequestOptions.bitmapTransform(new BlurTransformation(10, 3)))
+                       // .apply(RequestOptions.bitmapTransform(new BlurTransformation(10, 3)))
                         .into(libraryCoverImage);
 
                 //set library cetegories.
@@ -123,7 +131,8 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
                     }
                 }
 
-
+initCategoriesChip(categories);
+                dateCreated.setText(libraryDataModel.getDateCreated());
 
                 GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY, authorId, libraryId, null, false, true, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
                     @Override
@@ -242,6 +251,13 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
             }
         });
 
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LibraryActivity.this.onBackPressed();
+            }
+        });
+
         openAllTutorialFragment();
     }
 
@@ -266,10 +282,6 @@ fragment.setArguments(bundle);
 
     private void initUI(){
 
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         tutorialsFrameLayout=findViewById(R.id.tutorialsFrameLayout);
         booksFrameLayout=findViewById(R.id.booksFrameLayout);
@@ -287,13 +299,10 @@ fragment.setArguments(bundle);
         saveActionButton=findViewById(R.id.saveActionButton);
         rateActionButton=findViewById(R.id.rateActionButton);
 
+        backButton=findViewById(R.id.backButton);
+        dateCreated=findViewById(R.id.dateCreated);
+        categoriesChipGroup=findViewById(R.id.categoriesChipGroup);
 
-
-
-        Glide.with(LibraryActivity.this)
-                .load(R.drawable.book_cover)
-                .apply(RequestOptions.bitmapTransform(new BlurTransformation(10, 3)))
-                .into(libraryCoverImage);
 
 
         alertDialog = new AlertDialog.Builder(LibraryActivity.this)
@@ -351,6 +360,18 @@ fragment.setArguments(bundle);
         }
     }
 
+
+    private void initCategoriesChip(String categories){
+
+        categoriesChipGroup.removeAllViews();
+        String[] cats = categories.split(",");
+        for(String cat : cats){
+            Chip chip = new Chip(this);
+            chip.setText(cat);
+            categoriesChipGroup.addView(chip);
+        }
+
+    }
 
 
     private void fetchIntentData() {

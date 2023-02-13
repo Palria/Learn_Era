@@ -1,9 +1,307 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TutorialActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".LibraryActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:paddingHorizontal="5pt"
+                android:paddingTop="5pt"
+                android:layout_height="wrap_content">
+                <ImageButton
+                    android:id="@+id/backButton"
+                    android:src="@drawable/baseline_arrow_back_24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <com.makeramen.roundedimageview.RoundedImageView
+                app:riv_corner_radius="5pt"
+                android:layout_marginVertical="5pt"
+                android:layout_marginHorizontal="5pt"
+                android:layout_marginTop="0pt"
+                android:id="@+id/libraryCoverImage"
+                android:scaleType="centerCrop"
+                android:src="@drawable/book_cover"
+                android:layout_width="match_parent"
+                android:layout_height="80pt"/>
+
+
+
+            <LinearLayout
+                android:layout_marginTop="5pt"
+                android:layout_marginHorizontal="5pt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_marginEnd="2pt"
+                        android:layout_gravity="center"
+                        app:riv_corner_radius="15pt"
+                        app:riv_oval="true"
+                        android:id="@+id/authorPicture"
+                        android:src="@drawable/default_profile"
+                        android:layout_width="15pt"
+                        android:layout_height="15pt"/>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/authorName"
+                            android:textSize="7pt"
+                            android:textStyle="bold"
+                            android:text="James Dones"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/dateCreated"
+                            android:textSize="6pt"
+                            android:textColor="@color/grayDark"
+                            android:text="1 hours ago"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_baseline_remove_red_eye_24"
+                        android:layout_width="7pt"
+                        android:layout_height="7pt"/>
+
+                    <TextView
+                        android:id="@+id/libraryViewCount"
+                        android:text="450"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginLeft="5pt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:src="@drawable/baseline_pages_24"
+                        android:layout_width="7pt"
+                        android:layout_height="7pt"/>
+
+                    <TextView
+                        android:id="@+id/pagesCount"
+                        android:text="12"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginLeft="5pt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:src="@drawable/baseline_folder_24"
+                        android:layout_width="7pt"
+                        android:layout_height="7pt"/>
+
+                    <TextView
+                        android:id="@+id/foldersCount"
+                        android:text="12"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <TextView
+                android:layout_marginTop="5pt"
+                android:id="@+id/libraryName"
+                android:layout_marginBottom="5pt"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                android:paddingHorizontal="5pt"
+                android:textSize="10pt"
+                android:text="Python and Data Structure"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <com.google.android.material.chip.ChipGroup
+                android:paddingHorizontal="5pt"
+                app:itemSpacing="-4dp"
+                app:chipSpacingVertical="0dp"
+                app:lineSpacing="0dp"
+                android:id="@+id/categoriesChipGroup"
+                app:chipSpacing="0dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:text="Software PRoduction"
+                    android:layout_height="wrap_content"/>
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:text="Design"
+                    android:layout_height="wrap_content"/>
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:text="Insolvency home data"
+                    android:layout_height="wrap_content"/>
+            </com.google.android.material.chip.ChipGroup>
+
+
+            <TextView
+                android:id="@+id/libraryDescription"
+                android:layout_marginTop="2pt"
+                android:text="Javascript and Database, Python and Learning, Model Design, Professional Video Editing, Motion Design"
+                android:ellipsize="end"
+                android:layout_marginHorizontal="5pt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+
+            <LinearLayout
+                android:layout_marginHorizontal="5pt"
+                android:layout_marginTop="5pt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <Button
+                    android:layout_weight="1"
+                    android:id="@+id/addActionButton"
+                    android:text="@string/add"
+                    android:drawableEnd="@drawable/ic_baseline_add_24"
+                    android:layout_width="wrap_content"
+                    android:drawableTint="@color/white"
+                    android:layout_height="25pt"/>
+
+
+                <Button
+                    android:layout_weight="1"
+                    android:id="@+id/rateActionButton"
+                    android:text="@string/rate"
+                    android:drawableEnd="@drawable/ic_baseline_star_24"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/grayDark"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_height="25pt"/>
+
+                <Button
+                    android:layout_weight="1"
+                    android:id="@+id/saveActionButton"
+                    android:text="@string/save"
+                    android:drawableEnd="@drawable/ic_baseline_bookmarks_24"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/grayDark"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_height="25pt"/>
+
+
+            </LinearLayout>
+
+
+
+            <com.google.android.material.tabs.TabLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="5pt"
+                android:layout_marginHorizontal="5pt"
+                android:layout_height="?actionBarSize"
+                android:id="@+id/tab_layout"
+                android:background="@color/white"
+                app:tabInlineLabel="false"
+                app:tabGravity="fill"
+                app:tabMode="fixed"
+                app:tabIndicatorColor="@color/teal_700"
+                app:tabSelectedTextColor="@color/teal_700"
+                app:tabIndicatorFullWidth="true"
+                app:tabTextAppearance="@style/TextAppearance.AppCompat.Small">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:text="Folders"
+                    android:icon="@drawable/baseline_folder_24"
+                    android:layout_height="wrap_content"/>
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:text="Pages"
+                    android:icon="@drawable/baseline_pages_24"
+                    android:layout_height="wrap_content"/>
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:text="Ratings"
+                    android:icon="@drawable/ic_baseline_stars_24"
+                    android:layout_height="wrap_content"/>
+
+            </com.google.android.material.tabs.TabLayout>
+
+
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <FrameLayout
+                    android:visibility="visible"
+                    android:id="@+id/tutorialsFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <FrameLayout
+                    android:visibility="invisible"
+                    android:id="@+id/ratingsFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <FrameLayout
+                    android:visibility="invisible"
+                    android:id="@+id/booksFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
+
+</FrameLayout>

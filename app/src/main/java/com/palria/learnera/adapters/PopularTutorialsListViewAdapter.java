@@ -2,6 +2,7 @@ package com.palria.learnera.adapters;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.palria.learnera.GlobalConfig;
 import com.palria.learnera.R;
+import com.palria.learnera.TutorialActivity;
 import com.palria.learnera.models.AuthorDataModel;
 import com.palria.learnera.models.LibraryDataModel;
 import com.palria.learnera.models.TutorialDataModel;
@@ -89,8 +91,10 @@ public class PopularTutorialsListViewAdapter extends RecyclerView.Adapter<Popula
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(view.getContext(),"click on item: "+tutorialDataModel.getAuthorId(),Toast.LENGTH_LONG).show();
-            }
+                Intent intent = new Intent(context, TutorialActivity.class);
+                intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY, tutorialDataModel.getTutorialId());
+                context.startActivity(intent);
+                  }
         });
 
     }
