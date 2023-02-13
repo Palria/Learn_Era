@@ -7,11 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -44,6 +47,9 @@ public class UploadPageActivity extends AppCompatActivity {
     String libraryId;
     String bookId;
     LinearLayout containerLinearLayout;
+    ImageButton addImageActionButton ;
+    ImageButton addTodoListActionButton ;
+    ImageButton addTableActionButton ;
     Button btn ;
 
     /**
@@ -59,6 +65,7 @@ public class UploadPageActivity extends AppCompatActivity {
     int CAMERA_PERMISSION_REQUEST_CODE = 2002;
     int GALLERY_PERMISSION_REQUEST_CODE = 23;
     int imageDisplayPosition = 0;
+    int validPosition = 1;
     ImageView receiverImage;
     LinearLayout receiverLinearLayout;
     View currentFocusView;
@@ -83,7 +90,7 @@ public class UploadPageActivity extends AppCompatActivity {
 //                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(70,70);
 //                    partitionImage.setLayoutParams(layoutParams);
 //
-                   ImageView image = getImage(receiverLinearLayout);
+                   ImageView image = getImage();
                     Glide.with(UploadPageActivity.this)
                             .load(data.getData())
                             .centerCrop()
@@ -92,7 +99,7 @@ public class UploadPageActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                createPartition();
+                             //   createPartition();
 
                             }
                         });
@@ -123,7 +130,7 @@ public class UploadPageActivity extends AppCompatActivity {
 //                            partitionImage.setLayoutParams(layoutParams);
 //                            receiverLinearLayout.addView(partitionImage);
 
-                            ImageView image = getImage(receiverLinearLayout);
+                            ImageView image = getImage();
 
                             Glide.with(UploadPageActivity.this)
                                     .load(bitmapFromCamera)
@@ -133,7 +140,7 @@ public class UploadPageActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        createPartition();
+                                      //  createPartition();
 
                                     }
                                 });
@@ -153,10 +160,40 @@ public class UploadPageActivity extends AppCompatActivity {
         pageId  = "TEST_ID-2";
 
         startService(new Intent(getApplicationContext(),UploadPageManagerService.class));
+        addImageActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GlobalConfig.createPopUpMenu(getApplicationContext(), R.menu.pick_image_menu, addImageActionButton, new GlobalConfig.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClicked(MenuItem item) {
+                        if(item.getItemId() == R.id.galleryId)openGallery();
+                        else if(item.getItemId() == R.id.cameraId)openCamera();
+
+                        return true;
+                    }
+                });
+
+            }
+        });
+        addTodoListActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addTodoGroup();
+            }
+        });
+
+        addTableActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+createTable();
+            }
+        });
+
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                uploadPage();
+//                uploadPage();
+                iterateThrough();
             }
         });
 
@@ -164,8 +201,12 @@ public class UploadPageActivity extends AppCompatActivity {
 private void initUI(){
 
     containerLinearLayout = findViewById(R.id.containerLinearLayoutId);
+    addImageActionButton = findViewById(R.id.addImageActionButtonId);
+    addTodoListActionButton = findViewById(R.id.addTodoListActionButtonId);
+    addTableActionButton = findViewById(R.id.addTableActionButtonId);
     btn = findViewById(R.id.btn);
-createPartition();
+    addEditText(0);
+    //createPartition();
 }
 
 
@@ -242,25 +283,60 @@ createPartition();
                         return true;
                     }
                 });
+                addTodoGroup();
             }
         });
         containerLinearLayout.addView(partitionView);
     }
 
-    private ImageView getImage(ViewGroup viewGroup){
+    void addEditText(int validPosition){
+
+                    EditText editText = new EditText(getApplicationContext());
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    editText.setLayoutParams(layoutParams);
+                    ColorDrawable white = new ColorDrawable();
+                    white.setColor(getResources().getColor(R.color.white));
+                    editText.setBackground(white);
+                  editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                      @Override
+                      public void onFocusChange(View view, boolean b) {
+                          UploadPageActivity.this.validPosition = containerLinearLayout.indexOfChild(editText) + 1;
+
+                      }
+                  });
+//                    editText.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//                            UploadPageActivity.this.validPosition = containerLinearLayout.indexOfChild(editText) + 1;
+//                        }
+//                    });
+                    containerLinearLayout.addView(editText,validPosition);
+//        UploadPageActivity.this.validPosition = containerLinearLayout.indexOfChild(editText) + 1;
+
+
+    }
+
+    private ImageView getImage(){
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View imageView  =  layoutInflater.inflate(R.layout.page_image_layout,viewGroup,false);
+        View imageView  =  layoutInflater.inflate(R.layout.page_image_layout,containerLinearLayout,false);
         ImageView image = imageView.findViewById(R.id.imageViewId);
         ImageView removeImage = imageView.findViewById(R.id.removeImageId);
 
-removeImage.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View view) {
-        viewGroup.removeView(imageView);
-    }
-});
-viewGroup.addView(imageView);
-return image;
+        removeImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                EditText textBefore = (EditText) containerLinearLayout.getChildAt(containerLinearLayout.indexOfChild(imageView)-1);
+                EditText textAfter = (EditText) containerLinearLayout.getChildAt(containerLinearLayout.indexOfChild(imageView)+1);
+
+                textBefore.append(textAfter.getText().toString());
+                containerLinearLayout.removeView(textAfter);
+                containerLinearLayout.removeView(imageView);
+            }
+        });
+        containerLinearLayout.addView(imageView,validPosition);
+        addEditText(containerLinearLayout.indexOfChild(imageView)+1);
+        return image;
     }
 
     void uploadPage(){
@@ -333,6 +409,192 @@ return image;
 
     }
 
+    void addTodoItem(View todoGroupView,LinearLayout linearLayout){
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View todoItemView  =  layoutInflater.inflate(R.layout.page_to_do_item_layout,linearLayout,false);
+        ImageView removeItem  =  todoItemView.findViewById(R.id.removeTodoItemActionImageId);
+        removeItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(linearLayout.getChildCount()==1){
+
+                    EditText textBefore = (EditText) containerLinearLayout.getChildAt(containerLinearLayout.indexOfChild(todoGroupView)-1);
+                    EditText textAfter = (EditText) containerLinearLayout.getChildAt(containerLinearLayout.indexOfChild(todoGroupView)+1);
+
+                    textBefore.append(textAfter.getText().toString());
+                    containerLinearLayout.removeView(textAfter);
+                    containerLinearLayout.removeView(todoGroupView);
+                }else{
+                    linearLayout.removeView(todoItemView);
+                }
+
+            }
+        });
+        linearLayout.addView(todoItemView);
+    }
+
+ void addTodoGroup(){
+        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View todoGroupView  =  layoutInflater.inflate(R.layout.page_to_do_group_layout,containerLinearLayout,false);
+        LinearLayout todoLinearLayout = todoGroupView.findViewById(R.id.todoItemLinearLayoutId);
+        ImageView addMoreItemActionButton = todoGroupView.findViewById(R.id.addMoreItemActionButtonId);
+     addTodoItem(todoGroupView,todoLinearLayout);
+
+     addMoreItemActionButton.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+             addTodoItem(todoGroupView,todoLinearLayout);
+         }
+     });
+
+        containerLinearLayout.addView(todoGroupView,validPosition);
+
+     addEditText(containerLinearLayout.indexOfChild(todoGroupView)+1);
+
+ }
+void createTable(){
+    LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    View tableView  =  layoutInflater.inflate(R.layout.page_table_layout,containerLinearLayout,false);
+    LinearLayout tableLinearLayout = tableView.findViewById(R.id.tableLinearLayoutId);
+    ImageView addMoreColumnActionImageView = tableView.findViewById(R.id.addMoreColumnActionImageViewId);
+    ImageView addMoreRowActionImageView = tableView.findViewById(R.id.addMoreRowActionImageViewId);
+    createTableRow(tableView,tableLinearLayout);
+    createTableColumn(tableLinearLayout);
+    createTableColumn(tableLinearLayout);
+    addMoreRowActionImageView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            createTableRow(tableView,tableLinearLayout);
+        }
+    });
+
+    addMoreColumnActionImageView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            createTableColumn(tableLinearLayout);
+        }
+    });
+    containerLinearLayout.addView(tableView,validPosition);
+    addEditText(containerLinearLayout.indexOfChild(tableView)+1);
+
+}
+
+void createTableRow(View tableView,LinearLayout tableLinearLayout){
+    LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    View tableRowView  =  layoutInflater.inflate(R.layout.page_table_row_layout,containerLinearLayout,false);
+    ImageView removeRowActionImageView = tableRowView.findViewById(R.id.removeRowActionImageViewId);
+    LinearLayout tableRowLinearLayout = tableRowView.findViewById(R.id.tableRowLinearLayoutId);
+    if(tableLinearLayout.getChildCount()!=0){
+        LinearLayout firstRow = (LinearLayout) tableLinearLayout.getChildAt(0);
+        LinearLayout rowLinearLayout = (LinearLayout) firstRow.getChildAt(0);
+        int numberOfColumns = rowLinearLayout.getChildCount();
+        for(int i=0; i<numberOfColumns; i++){
+        addTableEditTextCell(tableRowLinearLayout);
+        }
+    }
+
+    removeRowActionImageView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if(tableLinearLayout.getChildCount() == 1){
+                EditText textBefore = (EditText) containerLinearLayout.getChildAt(containerLinearLayout.indexOfChild(tableView)-1);
+                EditText textAfter = (EditText) containerLinearLayout.getChildAt(containerLinearLayout.indexOfChild(tableView)+1);
+
+                textBefore.append(textAfter.getText().toString());
+                containerLinearLayout.removeView(textAfter);
+                containerLinearLayout.removeView(tableView);
+            }else {
+                tableLinearLayout.removeView(tableRowView);
+            }
+
+        }
+    });
+    tableLinearLayout.addView(tableRowView);
+}
+
+void createTableColumn(LinearLayout tableLinearLayout){
+        if(tableLinearLayout.getChildCount()!=0){
+            for(int i=0; i<tableLinearLayout.getChildCount(); i++){
+                LinearLayout rowContainerLinearLayout = (LinearLayout) tableLinearLayout.getChildAt(i);
+                LinearLayout rowLinearLayout = (LinearLayout) rowContainerLinearLayout.getChildAt(0);
+                addTableEditTextCell(rowLinearLayout);
+            }
+        }
+}
+
+void addTableEditTextCell(LinearLayout rowLinearLayout){
+    LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    View tableCell  =  layoutInflater.inflate(R.layout.page_table_cell_edit_text,rowLinearLayout,false);
+    EditText editTextCell =tableCell.findViewById(R.id.editTextCellId);
+    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,40,1);
+    layoutParams.setMargins(5,5,5,5);
+//    editTextCell.setLayoutParams(layoutParams);
+    editTextCell.setHint("?");
+    editTextCell.requestFocus();
+//    editTextCell.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+    ColorDrawable gray = new ColorDrawable();
+    gray.setColor(getResources().getColor(R.color.gray));
+//    editTextCell.setBackground(gray);
+
+    rowLinearLayout.addView(tableCell);
+
+}
+
+void iterateThrough(){
+    Toast.makeText(getApplicationContext(), containerLinearLayout.getChildCount()+"", Toast.LENGTH_SHORT).show();
+
+    for(int i=0; i<containerLinearLayout.getChildCount(); i++){
+
+            if(containerLinearLayout.getChildAt(i) instanceof  EditText){
+                //A plain text
+                Toast.makeText(getApplicationContext(), "it is edittext", Toast.LENGTH_SHORT).show();
+                EditText editText = (EditText) containerLinearLayout.getChildAt(i);
+                if(editText.getText().toString().isEmpty()){
+                    Toast.makeText(getApplicationContext(), editText.getText()+" is removed", Toast.LENGTH_SHORT).show();
+                    containerLinearLayout.removeView(editText);
+
+                }
+            }
+            else if(containerLinearLayout.getChildAt(i).getId() == R.id.imageConstraintLayoutId){
+                Toast.makeText(getApplicationContext(), "it is image", Toast.LENGTH_SHORT).show();
+
+                ImageView imageView = containerLinearLayout.getChildAt(i).findViewById(R.id.imageViewId);
+
+            }
+
+            else if(containerLinearLayout.getChildAt(i).getId() == R.id.tableConstraintLinearLayoutId){
+                Toast.makeText(getApplicationContext(), "it is table", Toast.LENGTH_SHORT).show();
+
+                LinearLayout tableLinearLayout = containerLinearLayout.getChildAt(i).findViewById(R.id.tableLinearLayoutId);
+                int numberOfRows = tableLinearLayout.getChildCount();
+                boolean isAllEmpty = false;
+                for(int i1 = 0; i1<numberOfRows; i1++){
+                    LinearLayout tableRowHorizontalLinearLayout = tableLinearLayout.getChildAt(i1).findViewById(R.id.tableRowLinearLayoutId);
+                    int numberOfColumns = tableRowHorizontalLinearLayout.getChildCount();
+                    for(int i2 = 0; i2<numberOfColumns; i2++){
+                        EditText cell = tableRowHorizontalLinearLayout.getChildAt(i2).findViewById(R.id.editTextCellId);
+                        Toast.makeText(getApplicationContext(), cell.getText(), Toast.LENGTH_SHORT).show();
+                        if (!cell.getText().toString().isEmpty())isAllEmpty=true;
+                    }
+
+                }
 
 
+
+            }
+
+            else if(containerLinearLayout.getChildAt(i).getId() == R.id.todoGroupLinearLayoutId){
+                Toast.makeText(getApplicationContext(), "it is todo list", Toast.LENGTH_SHORT).show();
+                LinearLayout todoItemLinearLayout = containerLinearLayout.getChildAt(i).findViewById(R.id.todoItemLinearLayoutId);
+                int numberOfItems = todoItemLinearLayout.getChildCount();
+                for(int i1 = 0; i1<numberOfItems; i1++){
+                    EditText todoEditText = todoItemLinearLayout.getChildAt(i1).findViewById(R.id.todoEditTextId);
+                    Toast.makeText(getApplicationContext(), todoEditText.getText(), Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+        }
+}
 }

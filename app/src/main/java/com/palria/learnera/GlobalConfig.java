@@ -55,6 +55,10 @@ public class GlobalConfig {
     they have to be unique in a particular document
     */
 
+    public static final String FRAGMENT_TYPE_KEY = "FRAGMENT_TYPE";
+    public static final String USER_PROFILE_FRAGMENT_TYPE_KEY = "USER_PROFILE_FRAGMENT_TYPE";
+
+
     //USER FIELD KEYS BEGIN
     public static final String ALL_USERS_KEY = "ALL_USERS";
     public static final String USER_PROFILE_KEY = "USER_PROFILE";
