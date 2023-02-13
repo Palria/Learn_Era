@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/teal_700"
+
+    >
+
+    <ImageButton
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="4dp"
+        android:background="@color/gray"
+        android:src="@drawable/ic_baseline_fiber_manual_record_24"
+        />
+    <EditText
+        android:id="@+id/todoEditTextId"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="To-Do item"
+        android:layout_margin="4dp"
+        android:background="@color/gray"
+
+        />
+
+    <ImageView
+        android:id="@+id/removeTodoItemActionImageId"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:src="@drawable/ic_outline_cancel_24"
+
+        />
+
+</LinearLayout>
