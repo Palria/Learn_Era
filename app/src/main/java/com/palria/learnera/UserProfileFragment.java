@@ -10,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.text.Html;
@@ -18,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -38,7 +41,10 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.palria.learnera.adapters.HomeBooksRecyclerListViewAdapter;
+import com.palria.learnera.adapters.PopularTutorialsListViewAdapter;
 import com.palria.learnera.models.LibraryDataModel;
+import com.palria.learnera.models.TutorialDataModel;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
 
 import java.util.ArrayList;
@@ -64,13 +70,21 @@ public class UserProfileFragment extends Fragment {
     BottomAppBar bottomAppBar;
 
     TextView   failureIndicatorTextView;
-    Button profileMoreIconButton;
+    ImageButton profileMoreIconButton;
     Button statsButton;
 
     TextView logButton;
 
     //learn era bottom sheet dialog
     LEBottomSheetDialog leBottomSheetDialog;
+
+    RecyclerView recentLibraryRcv;
+    ArrayList<LibraryDataModel> libraryArrayList = new ArrayList<>();
+    HomeBooksRecyclerListViewAdapter libraryRcvAdapter;
+
+    RecyclerView tutorialsRcv;
+    ArrayList<TutorialDataModel> tutorialsArrayList=new ArrayList<>();
+    PopularTutorialsListViewAdapter tutorialsRcvAdapter;
 
     boolean isUserAuthor = false;
 
@@ -138,7 +152,10 @@ public class UserProfileFragment extends Fragment {
                shimmerLayout.setVisibility(View.GONE);
 
                parentScrollView.setVisibility(View.VISIBLE);
-               Toast.makeText(getContext(), "Libraries loaded.", Toast.LENGTH_SHORT).show();
+
+               libraryArrayList.add(new LibraryDataModel(libraryDataModel.getLibraryName(),libraryDataModel.getLibraryId(),libraryDataModel.getLibraryCategoryArrayList(),libraryDataModel.getLibraryCoverPhotoDownloadUrl(),libraryDataModel.getLibraryDescription(),libraryDataModel.getDateCreated(),libraryDataModel.getTotalNumberOfTutorials(),libraryDataModel.getTotalNumberOfLibraryViews(),libraryDataModel.getTotalNumberOfLibraryReach(),libraryDataModel.getAuthorUserId(),libraryDataModel.getTotalNumberOfOneStarRate(),libraryDataModel.getTotalNumberOfTwoStarRate(),libraryDataModel.getTotalNumberOfThreeStarRate(),libraryDataModel.getTotalNumberOfFourStarRate(),libraryDataModel.getTotalNumberOfFiveStarRate()));
+               libraryRcvAdapter.notifyItemChanged(libraryArrayList.size());
+//
 
            }
        });
@@ -273,6 +290,12 @@ public class UserProfileFragment extends Fragment {
         profileMoreIconButton = parentView.findViewById(R.id.profileMoreIcon);
         shimmerLayout = parentView.findViewById(R.id.shimmerLayout);
 
+        recentLibraryRcv=parentView.findViewById(R.id.recentLibraryRcv);
+        tutorialsRcv=parentView.findViewById(R.id.tutorialsRcv);
+
+
+
+
 
         alertDialog = new AlertDialog.Builder(getContext())
                 .setCancelable(false)
@@ -314,6 +337,186 @@ public class UserProfileFragment extends Fragment {
 
 
         leBottomSheetDialog.render();
+
+        //init recycler list view here
+        libraryArrayList.add(new LibraryDataModel(
+                "Deploying the constructor for free.",
+                "lasdjf",
+                null,
+                "https://api.lorem.space/image/album?w=150&h=150&hash=5115",
+                "",
+                "",
+                0l,
+                0l,
+                1,
+                "jvjhgjyuikjkj",
+                0l,
+                0l,
+                0l,
+                0l,
+                0));
+
+        libraryArrayList.add(new LibraryDataModel(
+                "Cracking the Hash with hashcat",
+                "lasdjf",
+                null,
+                "https://api.lorem.space/image/album?w=150&h=150&hash=410115",
+                "",
+                "",
+                0l,
+                0l,
+                1,
+                "jvjhgjyuikjkj",
+                0l,
+                0l,
+                0l,
+                0l,
+                0));
+
+        libraryArrayList.add(new LibraryDataModel(
+                "Design Principle in Short ",
+                "lasdjf",
+                null,
+                "https://api.lorem.space/image/album?w=150&h=150&hash=12500",
+                "",
+                "",
+                0l,
+                0l,
+                1,
+                "jvjhgjyuikjkj",
+                0l,
+                0l,
+                0l,
+                0l,
+                0));
+
+
+
+        libraryRcvAdapter = new HomeBooksRecyclerListViewAdapter(libraryArrayList,getContext());
+        recentLibraryRcv.setHasFixedSize(true);
+        recentLibraryRcv.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
+        recentLibraryRcv.setAdapter(libraryRcvAdapter);
+
+              tutorialsArrayList.add(
+                new TutorialDataModel("How to connect to mysql database for free. in 2012 for Users to get it.",
+                        "category",
+                        "description",
+                        "__id__02151",
+                        "1 days ago",
+                        2l,
+                        1l,
+                        0l,
+                        0l,
+                        "Kamaensi",
+                        "",
+                        "https://api.lorem.space/image/movie?w=400&h=220&hash=45110",
+                        0l,
+                        0l,
+                        0l,
+                        0l,
+                        0l));
+
+        tutorialsArrayList.add(
+                new TutorialDataModel("The protest was organised against the Kathmandu Metropolitan City mayor’s recent move to demolish a part of private property in Sankhamul",
+                        "Category",
+                        "description",
+                        "Jeevan",
+                        "32 mins ago",
+                        2l,
+                        1l,
+                        0l,
+                        0l,
+                        "Jeevan",
+                        "",
+                        "https://api.lorem.space/image/movie?w=400&h=220&hash=123",
+                        0l,
+                        0l,
+                        0l,
+                        0l,
+                        0l));
+
+        tutorialsArrayList.add(
+                new TutorialDataModel("According to him, the metropolis demolished the house compound without any letter or notice.",
+                        "Category",
+                        "description",
+                        "Palria",
+                        "32 mins ago",
+                        2l,
+                        1l,
+                        0l,
+                        0l,
+                        "Palria",
+                        "",
+                        "https://api.lorem.space/image/movie?w=450&h=200&hash=334",
+                        0l,
+                        0l,
+                        0l,
+                        0l,
+                        0l));
+
+        tutorialsArrayList.add(
+                new TutorialDataModel("According to him, the metropolis demolished the house compound without any letter or notice.",
+                        "Category",
+                        "description",
+                        "Palria",
+                        "32 mins ago",
+                        2l,
+                        1l,
+                        0l,
+                        0l,
+                        "Palria",
+                        "",
+                        "https://api.lorem.space/image/movie?w=450&h=200&hash=asdfadsew",
+                        0l,
+                        0l,
+                        0l,
+                        0l,
+                        0l));
+
+        tutorialsArrayList.add(
+                new TutorialDataModel("According to him, the metropolis demolished the house compound without any letter or notice.",
+                        "Category",
+                        "description",
+                        "Palria",
+                        "32 mins ago",
+                        2l,
+                        1l,
+                        0l,
+                        0l,
+                        "Palria",
+                        "",
+                        "https://api.lorem.space/image/movie?w=450&h=200&hash=sdfsad",
+                        0l,
+                        0l,
+                        0l,
+                        0l,
+                        0l));
+
+        tutorialsArrayList.add(
+                new TutorialDataModel("According to him, the metropolis demolished the house compound without any letter or notice.",
+                        "Category",
+                        "description",
+                        "Palria",
+                        "32 mins ago",
+                        2l,
+                        1l,
+                        0l,
+                        0l,
+                        "Palria",
+                        "",
+                        "https://api.lorem.space/image/movie?w=450&h=200&hash=sdfs33423",
+                        0l,
+                        0l,
+                        0l,
+                        0l,
+                        0l));
+
+        tutorialsRcvAdapter = new PopularTutorialsListViewAdapter(tutorialsArrayList,getContext());
+        tutorialsRcv.setHasFixedSize(true);
+        tutorialsRcv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        tutorialsRcv.setAdapter(tutorialsRcvAdapter);
+
+
 
     }
 
@@ -469,14 +672,19 @@ public class UserProfileFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         libraryFetchListener.onFailed(e.getMessage());
+                        Toast.makeText(getContext(), e.getMessage(),Toast.LENGTH_SHORT).show();
 
                     }
                 })
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+
                             String libraryId = documentSnapshot.getId();
+                            Toast.makeText(getContext(), libraryId,Toast.LENGTH_SHORT).show();
                             long totalNumberOfLibraryView = 0L;
                             if(documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VIEWS_KEY) != null){
                                 totalNumberOfLibraryView =   documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VIEWS_KEY);
