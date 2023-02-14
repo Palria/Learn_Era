@@ -227,8 +227,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     @Override
                     public void onClick(View view) {
 
-                        Intent intent = new Intent(getApplicationContext() , UploadPageActivity.class);
-                        startActivity(intent);
                     }
                 }, 0)
 
