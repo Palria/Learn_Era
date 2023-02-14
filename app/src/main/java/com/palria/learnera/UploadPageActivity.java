@@ -542,13 +542,9 @@ void addTableEditTextCell(LinearLayout rowLinearLayout){
 }
 
 void iterateThrough(){
-
     ArrayList<ArrayList<String>> allPageTextDataDetailsArrayList = new ArrayList<>();
 
-
-
     Toast.makeText(getApplicationContext(), containerLinearLayout.getChildCount()+"", Toast.LENGTH_SHORT).show();
-
 
     ArrayList<byte[]> imagePartitionByteArrayList = new ArrayList<>();
 

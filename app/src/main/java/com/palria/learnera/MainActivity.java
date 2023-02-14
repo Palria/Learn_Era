@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
                                             i.putExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY,true);
                                             i.putExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,libraryCategoryArrayList.get(which));
-                                            i.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryIdArrayList.get(which));
+                                            i.putExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryIdArrayList.get(which));
                                             i.putExtra(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY, libraryNameArrayList.get(which));
 
                                             startActivity(i);
@@ -226,6 +226,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 .addOptionItem("New Post", R.drawable.ic_baseline_add_circle_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
+
+                        leBottomSheetDialog.hide();
 
                     }
                 }, 0)
@@ -311,7 +314,11 @@ if(GlobalConfig.isUserLoggedIn()) {
                 }else {
                     isAllTutorialFragmentOpen =true;
                     setFrameLayoutVisibility(allTutorialFrameLayout);
-                    initFragment(new AllTutorialFragment(), allTutorialFrameLayout);
+                    AllTutorialFragment allTutorialFragment = new AllTutorialFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(AllTutorialFragment.OPEN_TYPE_KEY,AllTutorialFragment.OPEN_TYPE_ALL_TUTORIAL);
+                    allTutorialFragment.setArguments(bundle);
+                    initFragment(allTutorialFragment, allTutorialFrameLayout);
                 }
                 return true;
             case R.id.home_item:
@@ -335,7 +342,11 @@ if(GlobalConfig.isUserLoggedIn()) {
                     isLibraryFragmentOpen =true;
 
                     setFrameLayoutVisibility(libraryFrameLayout);
-                    initFragment(new AllLibraryFragment(), libraryFrameLayout);
+                   AllLibraryFragment allLibraryFragment = new AllLibraryFragment();
+                   Bundle bundle = new Bundle();
+                   bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY,AllLibraryFragment.OPEN_TYPE_ALL_LIBRARY);
+                   allLibraryFragment.setArguments(bundle);
+                    initFragment(allLibraryFragment, libraryFrameLayout);
                 }
                 return true;
             case R.id.profile_item:
@@ -346,7 +357,11 @@ if(GlobalConfig.isUserLoggedIn()) {
                     isUserProfileFragmentOpen =true;
 
                     setFrameLayoutVisibility(userProfileFrameLayout);
-                    initFragment(new UserProfileFragment(bottomAppBar), userProfileFrameLayout);
+                    UserProfileFragment userProfileFragment = new UserProfileFragment(bottomAppBar);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(GlobalConfig.USER_ID_KEY,GlobalConfig.getCurrentUserId());
+                    userProfileFragment.setArguments(bundle);
+                    initFragment(userProfileFragment, userProfileFrameLayout);
                 }
                 return true;
         }
@@ -453,6 +468,12 @@ if(GlobalConfig.isUserLoggedIn()) {
                             totalNumberOfFourStarRate,
                             totalNumberOfFiveStarRate
                     );
+
+//                   if(CurrentUserProfileDataModel.isAnAuthor()){
+//                    fab.setVisibility(View.VISIBLE);
+//                   }else{
+//                       fab.setVisibility(View.GONE);
+//                   }
                 }
             });
 }

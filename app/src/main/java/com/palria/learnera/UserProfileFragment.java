@@ -35,9 +35,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -63,6 +65,13 @@ public class UserProfileFragment extends Fragment {
     TextView currentDisplayNameView;
     TextView currentEmailView;
     TextView currentCountryOfResidence;
+    TextView joined_dateTextView;
+
+    TextView numOfLibraryTextView;
+    TextView numOfTutorialsTextView;
+    TextView numOfRatingsTextView;
+
+    LinearLayout numOfLibraryTutorialRatingsLinearLayout;
 
     //parent swiper layout
     SwipeRefreshLayout swipeRefreshLayout;
@@ -72,7 +81,7 @@ public class UserProfileFragment extends Fragment {
     TextView   failureIndicatorTextView;
     ImageButton profileMoreIconButton;
     Button statsButton;
-
+    String authorId = "";
     TextView logButton;
 
     //learn era bottom sheet dialog
@@ -113,6 +122,9 @@ public class UserProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         checkedCategories = new boolean[categories.length];
 
+        if(getArguments() != null){
+            authorId = getArguments().getString(GlobalConfig.USER_ID_KEY);
+        }
 //        getProfile(new OnUserProfileFetchListener() {
 //            @Override
 //            public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor) {
@@ -147,16 +159,36 @@ public class UserProfileFragment extends Fragment {
            public void onSuccess(LibraryDataModel libraryDataModel) {
 //               toggleProgress(false);
                swipeRefreshLayout.setRefreshing(false);
-               displayLibrary(libraryDataModel);
+              // displayLibrary(libraryDataModel);
                shimmerLayout.stopShimmer();
                shimmerLayout.setVisibility(View.GONE);
 
                parentScrollView.setVisibility(View.VISIBLE);
 
-               libraryArrayList.add(new LibraryDataModel(libraryDataModel.getLibraryName(),libraryDataModel.getLibraryId(),libraryDataModel.getLibraryCategoryArrayList(),libraryDataModel.getLibraryCoverPhotoDownloadUrl(),libraryDataModel.getLibraryDescription(),libraryDataModel.getDateCreated(),libraryDataModel.getTotalNumberOfTutorials(),libraryDataModel.getTotalNumberOfLibraryViews(),libraryDataModel.getTotalNumberOfLibraryReach(),libraryDataModel.getAuthorUserId(),libraryDataModel.getTotalNumberOfOneStarRate(),libraryDataModel.getTotalNumberOfTwoStarRate(),libraryDataModel.getTotalNumberOfThreeStarRate(),libraryDataModel.getTotalNumberOfFourStarRate(),libraryDataModel.getTotalNumberOfFiveStarRate()));
+//               libraryArrayList.add(new LibraryDataModel(libraryDataModel.getLibraryName(),libraryDataModel.getLibraryId(),libraryDataModel.getLibraryCategoryArrayList(),libraryDataModel.getLibraryCoverPhotoDownloadUrl(),libraryDataModel.getLibraryDescription(),libraryDataModel.getDateCreated(),libraryDataModel.getTotalNumberOfTutorials(),libraryDataModel.getTotalNumberOfLibraryViews(),libraryDataModel.getTotalNumberOfLibraryReach(),libraryDataModel.getAuthorUserId(),libraryDataModel.getTotalNumberOfOneStarRate(),libraryDataModel.getTotalNumberOfTwoStarRate(),libraryDataModel.getTotalNumberOfThreeStarRate(),libraryDataModel.getTotalNumberOfFourStarRate(),libraryDataModel.getTotalNumberOfFiveStarRate()));
+               libraryArrayList.add(libraryDataModel);
                libraryRcvAdapter.notifyItemChanged(libraryArrayList.size());
 //
 
+           }
+       });
+
+       fetchTutorial(new TutorialFetchListener() {
+           @Override
+           public void onSuccess(TutorialDataModel tutorialDataModel) {
+
+               swipeRefreshLayout.setRefreshing(false);
+               shimmerLayout.stopShimmer();
+               shimmerLayout.setVisibility(View.GONE);
+
+               parentScrollView.setVisibility(View.VISIBLE);
+
+               tutorialsArrayList.add(tutorialDataModel);
+               tutorialsRcvAdapter.notifyItemChanged(tutorialsArrayList.size());
+           }
+
+           @Override
+           public void onFailed(String errorMessage) {
            }
        });
 
@@ -184,9 +216,13 @@ public class UserProfileFragment extends Fragment {
            public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
 
              if(scrollY > 30){
-                 bottomAppBar.performHide();
+                 if(bottomAppBar!=null) {
+                     bottomAppBar.performHide();
+                 }
              }else{
-                 bottomAppBar.performShow();
+                 if(bottomAppBar!=null) {
+                     bottomAppBar.performShow();
+                 }
              }
 
            }
@@ -233,7 +269,7 @@ public class UserProfileFragment extends Fragment {
     private void loadCurrentUserProfile(){
         getProfile(new OnUserProfileFetchListener() {
             @Override
-            public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor) {
+            public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, String joined_date,String numOfLibraryCreated,String numOfTutorialCreated,String numOfRatings, boolean isUserBlocked, boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor) {
                 swipeRefreshLayout.setRefreshing(false);
                 isUserAuthor = isUserAnAuthor;
                 Glide.with(getContext())
@@ -243,6 +279,11 @@ public class UserProfileFragment extends Fragment {
                 currentEmailView.setText(Html.fromHtml("Contact Email <b>"+contactEmail+"</b> "));
                 currentDisplayNameView.setText(userDisplayName);
                 currentCountryOfResidence.setText(Html.fromHtml("From <b>"+userCountryOfResidence+"</b> "));
+                joined_dateTextView.setText(Html.fromHtml("Joined <b>"+joined_date+"</b> "));
+
+                numOfLibraryTextView.setText(numOfLibraryCreated);
+                numOfTutorialsTextView.setText(numOfTutorialCreated);
+                numOfRatingsTextView.setText(numOfRatings);
 
                 shimmerLayout.stopShimmer();
                 shimmerLayout.setVisibility(View.GONE);
@@ -250,7 +291,7 @@ public class UserProfileFragment extends Fragment {
                 parentScrollView.setVisibility(View.VISIBLE);
 //                Toast.makeText(getContext(), "Libraries loaded.", Toast.LENGTH_SHORT).show();
 
-                if(!isUserAuthor){
+                if(!isUserAuthor && authorId.equals(GlobalConfig.getCurrentUserId())){
                     leBottomSheetDialog.addOptionItem("Become An Author", R.drawable.ic_baseline_edit_24, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -261,6 +302,19 @@ public class UserProfileFragment extends Fragment {
 
                         }
                     },0);
+                }else{
+                    numOfLibraryTutorialRatingsLinearLayout.setVisibility(View.GONE);
+
+                }
+
+                if(authorId.equals(GlobalConfig.getCurrentUserId())){
+                    //he is the owner of this profile
+
+                }else{
+                    //he is not the owner of this profile
+                    editProfileButton.setVisibility(View.GONE);
+                    logButton.setVisibility(View.INVISIBLE);
+
                 }
             }
 
@@ -283,8 +337,17 @@ public class UserProfileFragment extends Fragment {
         currentDisplayNameView = parentView.findViewById(R.id.current_name);
         currentEmailView = parentView.findViewById(R.id.current_email);
         currentCountryOfResidence = parentView.findViewById(R.id.current_country);
+        joined_dateTextView = parentView.findViewById(R.id.joined_date);
         logButton=parentView.findViewById(R.id.logButton);
         statsButton=parentView.findViewById(R.id.statsButton);
+
+
+        numOfLibraryTutorialRatingsLinearLayout=parentView.findViewById(R.id.numOfLibraryTutorialRatingsLinearLayoutId);
+
+
+        numOfLibraryTextView=parentView.findViewById(R.id.numOfLibraryCreatedTextView);
+        numOfTutorialsTextView=parentView.findViewById(R.id.numOfTutorialCreatedTextView);
+        numOfRatingsTextView=parentView.findViewById(R.id.numOfRatingsCreatedTextView);
 
         swipeRefreshLayout = parentView.findViewById(R.id.swiperRefreshLayout);
         profileMoreIconButton = parentView.findViewById(R.id.profileMoreIcon);
@@ -304,7 +367,7 @@ public class UserProfileFragment extends Fragment {
 
         createLibraryDialog = new AlertDialog.Builder(getContext())
                 .setCancelable(false)
-                .setTitle("Congrats! You are now an author You are  privileged to create and own a library")
+                .setTitle("Congrats! You are now an author, You are  privileged to create and own a library")
                 .setMessage("Create your first library")
                 .setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     @Override
@@ -317,19 +380,35 @@ public class UserProfileFragment extends Fragment {
 
                     }
                 })
-                .setNegativeButton("Back",null)
+                .setNegativeButton("Not yet",null)
                 .create();
+
+        String libraryLeOptionName = "";
+        String tutorialLeOptionName = "";
+
+        if(authorId.equals(GlobalConfig.getCurrentUserId())){
+            libraryLeOptionName = "My Libraries";
+            tutorialLeOptionName = "My Tutorials";
+        }else{
+            libraryLeOptionName = "Libraries";
+            tutorialLeOptionName = "Tutorials";
+
+        }
+
         leBottomSheetDialog = new LEBottomSheetDialog(getContext());
         leBottomSheetDialog
-                .addOptionItem("My Tutorials", R.drawable.ic_baseline_dynamic_feed_24, new View.OnClickListener() {
+                .addOptionItem(tutorialLeOptionName, R.drawable.ic_baseline_dynamic_feed_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
+                        startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.TUTORIAL_FRAGMENT_TYPE_KEY,authorId));
+
                     }
                 }, 0)
-                .addOptionItem("My Libraries", R.drawable.ic_baseline_library_books_24, new View.OnClickListener() {
+                .addOptionItem(libraryLeOptionName , R.drawable.ic_baseline_library_books_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.LIBRARY_FRAGMENT_TYPE_KEY,authorId));
 
                     }
                 }, 0);
@@ -339,6 +418,7 @@ public class UserProfileFragment extends Fragment {
         leBottomSheetDialog.render();
 
         //init recycler list view here
+        /*
         libraryArrayList.add(new LibraryDataModel(
                 "Deploying the constructor for free.",
                 "lasdjf",
@@ -390,13 +470,13 @@ public class UserProfileFragment extends Fragment {
                 0l,
                 0));
 
-
+*/
 
         libraryRcvAdapter = new HomeBooksRecyclerListViewAdapter(libraryArrayList,getContext());
-        recentLibraryRcv.setHasFixedSize(true);
+        recentLibraryRcv.setHasFixedSize(false);
         recentLibraryRcv.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
         recentLibraryRcv.setAdapter(libraryRcvAdapter);
-
+/*
               tutorialsArrayList.add(
                 new TutorialDataModel("How to connect to mysql database for free. in 2012 for Users to get it.",
                         "category",
@@ -510,9 +590,10 @@ public class UserProfileFragment extends Fragment {
                         0l,
                         0l,
                         0l));
+*/
 
         tutorialsRcvAdapter = new PopularTutorialsListViewAdapter(tutorialsArrayList,getContext());
-        tutorialsRcv.setHasFixedSize(true);
+        tutorialsRcv.setHasFixedSize(false);
         tutorialsRcv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         tutorialsRcv.setAdapter(tutorialsRcvAdapter);
 
@@ -623,7 +704,7 @@ public class UserProfileFragment extends Fragment {
     }
 
     private  void getProfile(OnUserProfileFetchListener onUserProfileFetchListener){
-        GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId())
+        GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId)
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -641,6 +722,15 @@ public class UserProfileFragment extends Fragment {
                         String contactPhoneNumber =""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY);
                         String genderType =""+ documentSnapshot.get(GlobalConfig.USER_GENDER_TYPE_KEY);
                         String userProfilePhotoDownloadUrl =""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
+                        String joined_date = documentSnapshot.get(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY)!=null ? documentSnapshot.getTimestamp(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY).toDate()+"" :"Undefined";
+                        if(joined_date.length()>10){
+                            joined_date = joined_date.substring(0,10);
+                        }
+                        long numOfLibraryCreated = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY):0L;
+                        long numOfTutorialCreated = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY):0L;
+                        long numOfRatings = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY):0L;
+
+
                         boolean isUserAnAuthor = false;
                         boolean isUserBlocked = false;
                         boolean isUserProfilePhotoIncluded = false;
@@ -657,7 +747,7 @@ public class UserProfileFragment extends Fragment {
 
                         }
 
-                        onUserProfileFetchListener.onSuccess( userDisplayName, userCountryOfResidence, contactEmail, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl, isUserBlocked, isUserProfilePhotoIncluded,isUserAnAuthor);
+                        onUserProfileFetchListener.onSuccess( userDisplayName, userCountryOfResidence, contactEmail, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl,joined_date,""+ numOfLibraryCreated,""+ numOfTutorialCreated,""+ numOfRatings, isUserBlocked, isUserProfilePhotoIncluded,isUserAnAuthor);
                         }
                 });
     }
@@ -666,7 +756,7 @@ public class UserProfileFragment extends Fragment {
     private void fetchAllLibrary(LibraryFetchListener libraryFetchListener){
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_LIBRARY_KEY)
-                .whereEqualTo(GlobalConfig.AUTHOR_ID_KEY,GlobalConfig.getCurrentUserId())
+                .whereEqualTo(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,authorId)
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -684,7 +774,7 @@ public class UserProfileFragment extends Fragment {
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
 
                             String libraryId = documentSnapshot.getId();
-                            Toast.makeText(getContext(), libraryId,Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getContext(), libraryId,Toast.LENGTH_SHORT).show();
                             long totalNumberOfLibraryView = 0L;
                             if(documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VIEWS_KEY) != null){
                                 totalNumberOfLibraryView =   documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VIEWS_KEY);
@@ -728,7 +818,7 @@ public class UserProfileFragment extends Fragment {
                             String authorUserId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
                             String libraryCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY);
                             long totalNumberOfTutorials = 0L;
-                            if(documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY) != null){
+                            if(documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY) != null){
                                 totalNumberOfTutorials =   documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY);
                             }
 
@@ -755,6 +845,78 @@ public class UserProfileFragment extends Fragment {
                 });
 
     }
+
+    private void fetchTutorial(TutorialFetchListener tutorialFetchListener){
+        Query tutorialQuery = null;
+
+            tutorialQuery =   GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY, authorId);
+        tutorialQuery.get()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        tutorialFetchListener.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+
+                        for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                            String authorId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY);
+                            String libraryId =""+ documentSnapshot.get(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
+                            String tutorialId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
+                            String tutorialName = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
+                            String tutorialCategory = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_CATEGORY_KEY);
+                            String tutorialDescription = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DESCRIPTION_KEY);
+
+                            String dateCreated =  documentSnapshot.get(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY)!=null &&  documentSnapshot.get(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ?  documentSnapshot.getTimestamp(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY).toDate().toString() : "Undefined" ;
+                            if(dateCreated.length()>10){
+                                dateCreated = dateCreated.substring(0,10);
+                            }
+                            long  totalNumberOfFolders = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY) :0L;
+                            long totalNumberOfPages =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY) :0L;
+                            String tutorialCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_COVER_PHOTO_DOWNLOAD_URL_KEY);
+
+
+                            long totalNumberOfTutorialVisitor = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY) : 0L;
+                            long totalNumberOfTutorialReach = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_REACH_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_REACH_KEY) : 0L;
+                            long totalNumberOfOneStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY) : 0L;
+                            long totalNumberOfTwoStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY) : 0L;
+                            long totalNumberOfThreeStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY) : 0L;
+                            long totalNumberOfFourStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY) : 0L;
+                            long totalNumberOfFiveStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY) : 0L;
+
+
+
+                            tutorialFetchListener.onSuccess(new TutorialDataModel(
+                                    tutorialName,
+                                    tutorialCategory,
+                                    tutorialDescription,
+                                    tutorialId,
+                                    dateCreated,
+                                    totalNumberOfPages,
+                                    totalNumberOfFolders,
+                                    totalNumberOfTutorialVisitor,
+                                    totalNumberOfTutorialReach,
+                                    authorId,
+                                    libraryId,
+                                    tutorialCoverPhotoDownloadUrl,
+                                    totalNumberOfOneStarRate,
+                                    totalNumberOfTwoStarRate,
+                                    totalNumberOfThreeStarRate,
+                                    totalNumberOfFourStarRate,
+                                    totalNumberOfFiveStarRate
+                            ));
+
+
+                        }
+                    }
+                });
+    }
+
+
+
     private void displayLibrary(LibraryDataModel libraryDataModel){
 
                  if(getContext() != null) {
@@ -824,13 +986,17 @@ libraryView.setOnClickListener(new View.OnClickListener() {
         void onFailed(String errorMessage);
         void onSuccess(LibraryDataModel libraryDataModel);
     }
+    interface TutorialFetchListener{
+        void onFailed(String errorMessage);
+        void onSuccess(TutorialDataModel tutorialDataModel);
+    }
     interface BecomeAuthorListener{
         void onFailed(String errorMessage);
         void onSuccess();
     }
 
     interface OnUserProfileFetchListener{
-        void onSuccess(String userDisplayName,String userCountryOfResidence,String contactEmail,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,boolean isUserBlocked,boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor);
+        void onSuccess(String userDisplayName,String userCountryOfResidence,String contactEmail,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,String joined_date,String numOfLibraryCreated,String numOfTutorialCreated,String numberOfRatings,boolean isUserBlocked,boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor);
         void onFailed(String errorMessage);
     }
 }

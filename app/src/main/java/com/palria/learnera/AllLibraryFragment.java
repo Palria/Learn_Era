@@ -21,6 +21,7 @@ package com.palria.learnera;
         import com.google.android.material.textfield.TextInputEditText;
         import com.google.firebase.Timestamp;
         import com.google.firebase.firestore.DocumentSnapshot;
+        import com.google.firebase.firestore.Query;
         import com.google.firebase.firestore.QuerySnapshot;
         import com.palria.learnera.adapters.AllLibraryFragmentRcvAdapter;
         import com.palria.learnera.models.LibraryDataModel;
@@ -41,6 +42,12 @@ public class AllLibraryFragment extends Fragment {
     LinearLayout libraryContents;
     LinearLayout notFoundView;
 
+    public static String OPEN_TYPE_KEY = "OPEN_TYPE";
+   public static String OPEN_TYPE_USER_LIBRARY = "OPEN_TYPE_USER_LIBRARY";
+   public static String OPEN_TYPE_ALL_LIBRARY = "OPEN_TYPE_ALL_LIBRARY";
+
+    String open_type = "ALL";
+    String authorId = "";
 
     public AllLibraryFragment() {
         // Required empty public constructor
@@ -52,7 +59,10 @@ public class AllLibraryFragment extends Fragment {
         //create
         libraryDataModels=new ArrayList<>();
         libraryDataModelsBackup=new ArrayList<>();
-
+if(getArguments() != null){
+    open_type = getArguments().getString(OPEN_TYPE_KEY);
+    authorId = getArguments().getString(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
+}
 
     }
 
@@ -148,9 +158,18 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
     }
 
     private void fetchAllLibrary(LibraryFetchListener libraryFetchListener){
-        GlobalConfig.getFirebaseFirestoreInstance()
-                .collection(GlobalConfig.ALL_LIBRARY_KEY)
-                .get()
+
+        Query libraryQuery = null;
+        if(open_type.equals(OPEN_TYPE_USER_LIBRARY)) {
+            libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereEqualTo(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,authorId);
+        }
+        else if(open_type.equals(OPEN_TYPE_ALL_LIBRARY)){
+            libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY);
+
+        }
+
+
+                libraryQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {

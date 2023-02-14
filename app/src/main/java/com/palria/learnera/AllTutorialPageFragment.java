@@ -17,7 +17,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 public class AllTutorialPageFragment extends Fragment {
 
-
     public AllTutorialPageFragment() {
         // Required empty public constructor
     }
@@ -42,11 +41,23 @@ if(getArguments()!= null){
         // Inflate the layout for this fragment
        View parentView = inflater.inflate(R.layout.fragment_all_tutorial_page, container, false);
 
+        fetchPages(new FetchPageListener() {
+            @Override
+            public void onSuccess(String pageId, String pageName, String dateCreated) {
+
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+
+            }
+        });
+
        return parentView;
     }
 
 
-    private void fetchFolderPages(FetchPageListener fetchPageListener){
+    private void fetchPages(FetchPageListener fetchPageListener){
         Query pageQuery = null;
         if(isFolderPage){
             pageQuery =  GlobalConfig.getFirebaseFirestoreInstance()
@@ -79,7 +90,11 @@ if(getArguments()!= null){
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             String pageId = documentSnapshot.getId();
                             String pageName  = ""+ documentSnapshot.get(GlobalConfig.PAGE_NAME_KEY);
-                            fetchPageListener.onSuccess(pageId,pageName);
+                            String dateCreated  =  documentSnapshot.get(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY)!=null ? documentSnapshot.getTimestamp(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY).toDate()+"" : "Undefined";
+                            if(dateCreated.length()>10){
+                                dateCreated = dateCreated.substring(0,10);
+                            }
+                            fetchPageListener.onSuccess(pageId,pageName,dateCreated);
                         }
 
                     }
@@ -87,7 +102,7 @@ if(getArguments()!= null){
     }
 
     interface FetchPageListener{
-        void onSuccess(String pageId , String pageName);
+        void onSuccess(String pageId , String pageName, String dateCreated);
         void onFailed(String errorMessage);
     }
 }

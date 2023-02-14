@@ -544,6 +544,7 @@ private void initUI(){
         userProfileDetails.put(GlobalConfig.USER_ID_KEY,GlobalConfig.getCurrentUserId());
         userProfileDetails.put(GlobalConfig.USER_COUNTRY_OF_RESIDENCE_KEY,userCountryOfResidence);
         userProfileDetails.put(GlobalConfig.USER_GENDER_TYPE_KEY,genderType);
+        userProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY,FieldValue.increment(0L));
         userProfileDetails.put(GlobalConfig.IS_USER_BLOCKED_KEY,isUserBlocked);
         userProfileDetails.put(GlobalConfig.USER_CONTACT_EMAIL_ADDRESS_KEY,contactEmail);
         userProfileDetails.put(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY,userProfilePhotoDownloadUrl);
@@ -559,7 +560,7 @@ private void initUI(){
                     userProfileDetails.put(GlobalConfig.USER_SEARCH_VERBATIM_KEYWORD_KEY, GlobalConfig.generateSearchVerbatimKeyWords(userDisplayName));
                     userProfileDetails.put(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,GlobalConfig.generateSearchAnyMatchKeyWords(userDisplayName));
 
-        writeBatch.set(userProfileDocumentReference,userProfileDetails);
+        writeBatch.set(userProfileDocumentReference,userProfileDetails,SetOptions.merge());
 
 
 //        DocumentReference userDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());

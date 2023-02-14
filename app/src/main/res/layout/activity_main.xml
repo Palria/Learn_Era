@@ -89,7 +89,10 @@
         android:padding="3pt"
         android:contentDescription="@string/app_name"
         android:src="@drawable/ic_baseline_add_24"
-        app:layout_anchor="@id/bottomAppBar" />
+        app:layout_anchor="@id/bottomAppBar"
+        android:visibility="visible"
+
+        />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

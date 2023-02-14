@@ -40,7 +40,8 @@ String tutorialId = "";
         initUI();
         fetchTutorialFolders(new FetchTutorialFolderListener() {
             @Override
-            public void onSuccess(String folderId, String folderName) {
+            public void onSuccess(String folderId , String folderName,String dateCreated,String numOfPages) {
+
 
             }
 
@@ -75,7 +76,9 @@ String tutorialId = "";
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             String folderId = documentSnapshot.getId();
                             String folderName  = ""+ documentSnapshot.get(GlobalConfig.FOLDER_NAME_KEY);
-                            fetchTutorialFolderListener.onSuccess(folderId,folderName);
+                            String dateCreated  = documentSnapshot.get(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY)!=null ?documentSnapshot.getTimestamp(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY).toDate() +""  :"Undefined";
+                            long numOfPages  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY) : 0L;
+                            fetchTutorialFolderListener.onSuccess(folderId,folderName,dateCreated,numOfPages+"");
                         }
 
                     }
@@ -83,7 +86,8 @@ String tutorialId = "";
     }
 
     interface FetchTutorialFolderListener{
-        void onSuccess(String folderId , String folderName);
+        void onSuccess(String folderId , String folderName,String dateCreated,String numOfPages);
         void onFailed(String errorMessage);
     }
+
 }

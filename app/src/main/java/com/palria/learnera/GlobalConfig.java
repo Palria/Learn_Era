@@ -2,6 +2,7 @@ package com.palria.learnera;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,6 +66,8 @@ public class GlobalConfig {
 
     public static final String FRAGMENT_TYPE_KEY = "FRAGMENT_TYPE";
     public static final String USER_PROFILE_FRAGMENT_TYPE_KEY = "USER_PROFILE_FRAGMENT_TYPE";
+    public static final String LIBRARY_FRAGMENT_TYPE_KEY = "LIBRARY_FRAGMENT_TYPE";
+    public static final String TUTORIAL_FRAGMENT_TYPE_KEY = "TUTORIAL_FRAGMENT_TYPE";
 
 
     //USER FIELD KEYS BEGIN
@@ -203,12 +206,15 @@ public class GlobalConfig {
     public static final String ALL_TUTORIAL_FOLDERS_KEY = "ALL_TUTORIAL_FOLDERS";
     public static final String FOLDER_NAME_KEY = "FOLDER_NAME";
     public static final String PAGE_NAME_KEY = "PAGE_NAME";
+    public static final String PAGE_DATE_CREATED_TIME_STAMP_KEY = "PAGE_DATE_CREATED_TIME_STAMP";
     public static final String FOLDER_ID_KEY = "FOLDER_ID";
     public static final String IS_FOLDER_PAGE_KEY = "IS_FOLDER_PAGE";
     public static final String ALL_TUTORIAL_PAGES_KEY = "ALL_TUTORIAL_PAGES";
     public static final String ALL_FOLDER_PAGES_KEY = "ALL_FOLDER_PAGES";
     public static final String TUTORIAL_PAGE_ID_KEY = "TUTORIAL_PAGE_ID";
     public static final String FOLDER_PAGE_ID_KEY = "FOLDER_PAGE_ID";
+    public static final String FOLDER_CREATED_DATE_TIME_STAMP_KEY = "FOLDER_CREATED_DATE_TIME_STAMP";
+    public static final String TOTAL_NUMBER_OF_FOLDER_PAGES_KEY = "TOTAL_NUMBER_OF_FOLDER_PAGES";
 
     //TUTORIAL FIELD KEYS END
 
@@ -1104,6 +1110,16 @@ public class GlobalConfig {
         return 0.0F;
     }
 
+    public static Intent getHostActivityIntent(Context context,@Nullable Intent intent,String fragmentOpenType, String userId){
+        if(intent == null){
+            intent = new Intent(context,HostActivity.class);
+        }
+
+        intent.putExtra(GlobalConfig.FRAGMENT_TYPE_KEY,fragmentOpenType);
+        intent.putExtra(GlobalConfig.USER_ID_KEY,userId);
+
+        return  intent;
+    }
 
     /*
         static HashMap<String,Double> getStarMap(int fiveStar,int fourStar, int threeStar, int twoStar, int oneStar){

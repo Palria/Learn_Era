@@ -38,9 +38,14 @@ public class AllTutorialFragment extends Fragment {
     }
 
 
+    public static String OPEN_TYPE_KEY = "OPEN_TYPE";
+    public static String OPEN_TYPE_USER_TUTORIAL = "OPEN_TYPE_USER_TUTORIAL";
+    public static String OPEN_TYPE_ALL_TUTORIAL = "OPEN_TYPE_ALL_TUTORIAL";
+    String open_type = "ALL";
 
 String tutorialCategory = "";
 String libraryId = "";
+String authorId = "";
 boolean isFromLibraryActivityContext = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,6 +53,8 @@ boolean isFromLibraryActivityContext = false;
 if(getArguments() != null){
     isFromLibraryActivityContext =  getArguments().getBoolean(GlobalConfig.IS_FROM_LIBRARY_ACTIVITY_CONTEXT_KEY);
     libraryId =  getArguments().getString(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
+    authorId =  getArguments().getString(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY);
+    open_type =  getArguments().getString(OPEN_TYPE_KEY);
 }
     }
 
@@ -155,14 +162,21 @@ if(getArguments() != null){
     }
 
     private void fetchTutorial(String tutorialCategoryTag, TutorialFetchListener tutorialFetchListener){
-        Query tutorialQuery =null;
+        Query tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserId());
+
         if(isFromLibraryActivityContext){
             tutorialQuery =   GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.LIBRARY_CONTAINER_ID_KEY, libraryId);
 
         }else {
 
 //            tutorialQuery =   GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY, tutorialCategoryTag);
-            tutorialQuery =   GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY);
+
+            if(open_type.equals(OPEN_TYPE_USER_TUTORIAL)) {
+                tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY,authorId);
+            }
+            else if(open_type.equals(OPEN_TYPE_ALL_TUTORIAL)) {
+                tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY);
+            }
         }
 
         tutorialQuery.get()

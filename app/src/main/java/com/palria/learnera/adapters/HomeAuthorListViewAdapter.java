@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.palria.learnera.GlobalConfig;
 import com.palria.learnera.R;
 import com.palria.learnera.models.AuthorDataModel;
 
@@ -52,7 +53,10 @@ public class HomeAuthorListViewAdapter extends RecyclerView.Adapter<HomeAuthorLi
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(view.getContext(),"click on item: "+authorDataModel.getAuthorName(),Toast.LENGTH_LONG).show();
+//                Toast.makeText(view.getContext(),"click on item: "+authorDataModel.getAuthorName(),Toast.LENGTH_LONG).show();
+
+                context.startActivity(GlobalConfig.getHostActivityIntent(context,null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY,authorDataModel.getAuthorId()));
+
             }
         });
 

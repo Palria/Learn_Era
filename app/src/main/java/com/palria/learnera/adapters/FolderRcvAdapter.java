@@ -1,6 +1,7 @@
 package com.palria.learnera.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.palria.learnera.GlobalConfig;
 import com.palria.learnera.R;
+import com.palria.learnera.TutorialFolderActivity;
 import com.palria.learnera.models.AuthorDataModel;
 import com.palria.learnera.models.FolderDataModel;
 
@@ -46,12 +49,15 @@ public class FolderRcvAdapter extends RecyclerView.Adapter<FolderRcvAdapter.View
 
         holder.folderName.setText(folderDataModel.getFolderName());
         holder.dateCreated.setText(folderDataModel.getDateCreated());
-        holder.pagesCountView.setText(new Random(50).nextInt(25)+"");
+        holder.pagesCountView.setText(folderDataModel.getNumOfPages()+"");
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(view.getContext(),"click on item: "+folderDataModel.getFolderName(),Toast.LENGTH_LONG).show();
+//                Toast.makeText(view.getContext(),"click on item: "+folderDataModel.getFolderName(),Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(context, TutorialFolderActivity.class);
+                intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderDataModel.getId());
+                context.startActivity(intent);
             }
         });
 

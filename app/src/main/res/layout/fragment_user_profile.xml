@@ -468,6 +468,7 @@
                     android:layout_height="1dp"/>
 
                 <LinearLayout
+                    android:id="@+id/numOfLibraryTutorialRatingsLinearLayoutId"
                     android:background="@color/teal_700"
                     android:layout_marginTop="6pt"
                     android:orientation="horizontal"
@@ -490,11 +491,12 @@
                             android:layout_height="wrap_content"/>
 
                         <TextView
+                            android:id="@+id/numOfLibraryCreatedTextView"
                             android:textColor="@color/white"
                             android:layout_marginTop="3pt"
                             android:textSize="8pt"
                             android:textStyle="bold"
-                            android:text="1250"
+                            android:text="0"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
 
@@ -516,11 +518,12 @@
                             android:layout_height="wrap_content"/>
 
                         <TextView
+                            android:id="@+id/numOfTutorialCreatedTextView"
                             android:textColor="@color/white"
                             android:layout_marginTop="3pt"
                             android:textSize="8pt"
                             android:textStyle="bold"
-                            android:text="45"
+                            android:text="0"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
 
@@ -541,11 +544,12 @@
                             android:layout_height="wrap_content"/>
 
                         <TextView
+                            android:id="@+id/numOfRatingsCreatedTextView"
                             android:textColor="@color/white"
                             android:layout_marginTop="3pt"
                             android:textSize="8pt"
                             android:textStyle="bold"
-                            android:text="455"
+                            android:text="0"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
 

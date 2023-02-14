@@ -674,7 +674,7 @@ toggleProgress(false);
 
                         intent.putExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY,true);
                         intent.putExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,categoryList);
-                        intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+                        intent.putExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryId);
                         startActivity(intent);
 
                     }

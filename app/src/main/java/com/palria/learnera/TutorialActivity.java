@@ -137,7 +137,12 @@ Button addActionButton;
                     }else {
                         isFoldersFragmentOpened =true;
                         setFrameLayoutVisibility(foldersFrameLayout);
-                        initFragment(new FoldersFragment(), foldersFrameLayout);
+
+                        FoldersFragment foldersFragment = new FoldersFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+                        foldersFragment.setArguments(bundle);
+                        initFragment(foldersFragment, foldersFrameLayout);
                     }
 
 
@@ -149,7 +154,13 @@ Button addActionButton;
                     }else {
                         isPagesFragmentOpened =true;
                         setFrameLayoutVisibility(pagesFrameLayout);
-                        initFragment(new LibraryActivityRatingFragment(), pagesFrameLayout);
+                        AllTutorialPageFragment allTutorialPageFragment = new AllTutorialPageFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+                        bundle.putString(GlobalConfig.FOLDER_ID_KEY,null);
+                        bundle.putBoolean(GlobalConfig.IS_FOLDER_PAGE_KEY,false);
+                        allTutorialPageFragment.setArguments(bundle);
+//                        initFragment(new AllTutorialPageFragment(), pagesFrameLayout);
                     }
                 }else if(tabTitle.equals("RATINGS")){
                     if(isRatingsFragmentOpened){
@@ -213,13 +224,14 @@ Button addActionButton;
         });
 
 
-        openFoldersFragment();
+//        openFoldersFragment();
     }
 
     private void initFragment(Fragment fragment, FrameLayout frameLayout){
-        Bundle bundle = new Bundle();
-        bundle.putString(GlobalConfig.LIBRARY_ID_KEY,libraryId);
-        fragment.setArguments(bundle);
+//        Bundle bundle = new Bundle();
+//        bundle.putString(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+//        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+//        fragment.setArguments(bundle);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(frameLayout.getId(), fragment)
@@ -235,19 +247,19 @@ Button addActionButton;
         frameLayoutToSetVisible.setVisibility(View.VISIBLE);
     }
 
-    private void openFoldersFragment(){
-        isFoldersFragmentOpened=true;
-        Fragment foldersFragment = new FoldersFragment();
-        Bundle bundle = new Bundle();
-//        bundle.putBoolean(GlobalConfig.IS_FROM_LIBRARY_ACTIVITY_CONTEXT_KEY,true);
-//        bundle.putString(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryId);
-        foldersFragment.setArguments(bundle);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(foldersFrameLayout.getId(),foldersFragment)
-                .commit();
-    }
+//    private void openFoldersFragment(){
+//        isFoldersFragmentOpened=true;
+//        Fragment foldersFragment = new FoldersFragment();
+//        Bundle bundle = new Bundle();
+////        bundle.putBoolean(GlobalConfig.IS_FROM_LIBRARY_ACTIVITY_CONTEXT_KEY,true);
+////        bundle.putString(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryId);
+//        foldersFragment.setArguments(bundle);
+//
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(foldersFrameLayout.getId(),foldersFragment)
+//                .commit();
+//    }
 
     private void iniUI(){
         tutorialCoverImage = findViewById(R.id.tutorialCoverImage);

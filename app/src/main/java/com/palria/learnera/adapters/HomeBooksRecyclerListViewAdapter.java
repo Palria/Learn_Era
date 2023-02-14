@@ -57,6 +57,7 @@ public class HomeBooksRecyclerListViewAdapter extends RecyclerView.Adapter<HomeB
         LibraryDataModel libraryDataModel = libraryDataModels.get(position);
 
         holder.bookName.setText(libraryDataModel.getLibraryName());
+        holder.numOfViews.setText(libraryDataModel.getTotalNumberOfLibraryViews()+"");
 
         Glide.with(context)
                 .load(libraryDataModel.getLibraryCoverPhotoDownloadUrl())
@@ -99,6 +100,7 @@ public class HomeBooksRecyclerListViewAdapter extends RecyclerView.Adapter<HomeB
         public ImageView bookCover;
         public TextView bookName;
         public TextView bookAuthor;
+        public TextView numOfViews;
         public LinearLayout linearLayout;
 
         public ViewHolder(View itemView) {
@@ -106,6 +108,7 @@ public class HomeBooksRecyclerListViewAdapter extends RecyclerView.Adapter<HomeB
             this.bookCover = (ImageView) itemView.findViewById(R.id.bookCover);
             this.bookName = (TextView) itemView.findViewById(R.id.bookName);
             this.bookAuthor = itemView.findViewById(R.id.bookAuthor);
+            this.numOfViews = itemView.findViewById(R.id.viewCount);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.parentItem);
         }
     }
