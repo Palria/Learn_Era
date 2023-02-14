@@ -158,24 +158,24 @@
                     <TextView
                         android:layout_marginLeft="5pt"
                         android:background="@drawable/rounded_grey_bg"
-                        android:layout_width="50pt"
-                        android:layout_height="80pt"/>
+                        android:layout_width="110pt"
+                        android:layout_height="110pt"/>
 
                     <TextView
                         android:layout_marginLeft="5pt"
                         android:background="@drawable/rounded_grey_bg"
-                        android:layout_width="50pt"
-                        android:layout_height="80pt"/>
+                        android:layout_width="110pt"
+                        android:layout_height="110pt"/>
                     <TextView
                         android:layout_marginLeft="5pt"
                         android:background="@drawable/rounded_grey_bg"
-                        android:layout_width="50pt"
-                        android:layout_height="80pt"/>
+                        android:layout_width="110pt"
+                        android:layout_height="110pt"/>
                     <TextView
                         android:layout_marginLeft="5pt"
                         android:background="@drawable/rounded_grey_bg"
-                        android:layout_width="50pt"
-                        android:layout_height="80pt"/>
+                        android:layout_width="110pt"
+                        android:layout_height="110pt"/>
 
                 </LinearLayout>
 

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:icon="@drawable/ic_baseline_home_24"
+        android:icon="@drawable/icon_home"
         android:id="@+id/home_item"
         android:title="Home"
         app:showAsAction="always"
@@ -13,7 +13,7 @@
         app:showAsAction="always"
         android:id="@+id/library_item"
         android:title="Library"
-        android:icon="@drawable/ic_baseline_library_books_24"
+        android:icon="@drawable/icon_library"
         />
 
 
@@ -24,14 +24,14 @@
         app:showAsAction="always"
         android:id="@+id/tutorials_item"
         android:title="Tutorials"
-        android:icon="@drawable/ic_baseline_dynamic_feed_24"
+        android:icon="@drawable/icon_tutorials"
         />
 
     <item
         app:showAsAction="always"
         android:id="@+id/profile_item"
         android:title="Profile"
-        android:icon="@drawable/ic_baseline_person_24"
+        android:icon="@drawable/icon_profile"
         />
     <item
 

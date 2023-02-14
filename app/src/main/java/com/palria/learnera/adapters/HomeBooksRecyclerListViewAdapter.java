@@ -1,6 +1,10 @@
 package com.palria.learnera.adapters;
 
+import static com.palria.learnera.GlobalConfig.LIBRARY_AUTHOR_ID_KEY;
+import static com.palria.learnera.GlobalConfig.LIBRARY_ID_KEY;
+
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +21,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.palria.learnera.GlobalConfig;
+import com.palria.learnera.LibraryActivity;
 import com.palria.learnera.R;
 import com.palria.learnera.models.AuthorDataModel;
 import com.palria.learnera.models.LibraryDataModel;
@@ -76,7 +81,10 @@ public class HomeBooksRecyclerListViewAdapter extends RecyclerView.Adapter<HomeB
        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(view.getContext(),"click on item: "+libraryDataModel.getLibraryCategoryArrayList(),Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(context, LibraryActivity.class);
+                intent.putExtra(LIBRARY_ID_KEY, libraryDataModel.getLibraryId());
+                intent.putExtra(LIBRARY_AUTHOR_ID_KEY, libraryDataModel.getAuthorUserId());
+                context.startActivity(intent);
             }
         });
 
