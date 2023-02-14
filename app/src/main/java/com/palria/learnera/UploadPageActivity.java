@@ -542,6 +542,148 @@ void addTableEditTextCell(LinearLayout rowLinearLayout){
 }
 
 void iterateThrough(){
+
+    ArrayList<ArrayList<String>> allPageTextDataDetailsArrayList = new ArrayList<>();
+
+
+
+    Toast.makeText(getApplicationContext(), containerLinearLayout.getChildCount()+"", Toast.LENGTH_SHORT).show();
+
+
+    ArrayList<byte[]> imagePartitionByteArrayList = new ArrayList<>();
+
+    for(int i=0; i<containerLinearLayout.getChildCount(); i++){
+
+            if(containerLinearLayout.getChildAt(i) instanceof  EditText){
+                //A plain text
+                EditText editText = (EditText) containerLinearLayout.getChildAt(i);
+                ArrayList<String> pageTextDataTypeDetailsArrayList = new ArrayList<>();
+
+                pageTextDataTypeDetailsArrayList.add(0,GlobalConfig.TEXT_TYPE);
+                pageTextDataTypeDetailsArrayList.add(1,containerLinearLayout.indexOfChild(editText)+"");
+                pageTextDataTypeDetailsArrayList.add(2,editText.getText().toString());
+                allPageTextDataDetailsArrayList.add(pageTextDataTypeDetailsArrayList);
+
+                       // for(int r =0; r<pageTextDataTypeDetailsArrayList.size(); r++){
+                        EditText editText1 =  (EditText) containerLinearLayout.getChildAt(0);
+                        editText1.append(pageTextDataTypeDetailsArrayList.get(0)+"-"+pageTextDataTypeDetailsArrayList.get(1)+"-"+pageTextDataTypeDetailsArrayList.get(2)+"_"+containerLinearLayout.indexOfChild(editText)+"_");
+                      //  }
+
+//                Toast.makeText(getApplicationContext(), "it is edittext", Toast.LENGTH_SHORT).show();
+                if(editText.getText().toString().isEmpty()){
+//                    Toast.makeText(getApplicationContext(), editText.getText()+" is removed", Toast.LENGTH_SHORT).show();
+//                    containerLinearLayout.removeView(editText);
+
+                }
+            }
+            else if(containerLinearLayout.getChildAt(i).getId() == R.id.imageConstraintLayoutId){
+//                Toast.makeText(getApplicationContext(), "it is image", Toast.LENGTH_SHORT).show();
+
+                ImageView imageView = containerLinearLayout.getChildAt(i).findViewById(R.id.imageViewId);
+
+
+                imageView.setDrawingCacheEnabled(true);
+                Bitmap bitmap = imageView.getDrawingCache();
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 20, byteArrayOutputStream);
+                byte[] bytes = byteArrayOutputStream.toByteArray();
+                imagePartitionByteArrayList.add(bytes);
+
+                EditText editText = (EditText) containerLinearLayout.getChildAt(0);
+                for(int i1 = 0; i<200; i++) {
+
+                    editText.append(bytes[i] + "");
+                }
+
+            }
+
+            else if(containerLinearLayout.getChildAt(i).getId() == R.id.tableConstraintLinearLayoutId){
+//                Toast.makeText(getApplicationContext(), "it is table", Toast.LENGTH_SHORT).show();
+
+                LinearLayout tableLinearLayout = containerLinearLayout.getChildAt(i).findViewById(R.id.tableLinearLayoutId);
+                int numberOfRows = tableLinearLayout.getChildCount();
+
+                LinearLayout tableRowHorizontalLinearLayout = tableLinearLayout.getChildAt(0).findViewById(R.id.tableRowLinearLayoutId);
+                int numberOfColumns = tableRowHorizontalLinearLayout.getChildCount();
+
+                ArrayList<String> pageTableTextDataTypeDetailsArrayList = new ArrayList<>();
+
+                pageTableTextDataTypeDetailsArrayList.add(0,GlobalConfig.TABLE_TYPE);
+                pageTableTextDataTypeDetailsArrayList.add(1,containerLinearLayout.indexOfChild(tableLinearLayout)+"");
+                pageTableTextDataTypeDetailsArrayList.add(2,numberOfRows+"");
+                pageTableTextDataTypeDetailsArrayList.add(3,numberOfColumns+"");
+
+                StringBuilder tableItems = new StringBuilder();
+
+                for(int i1 = 0; i1<numberOfRows; i1++){
+                    LinearLayout tableRowHorizontalLinearLayout2 = tableLinearLayout.getChildAt(i1).findViewById(R.id.tableRowLinearLayoutId);
+                    int numberOfColumns2 = tableRowHorizontalLinearLayout2.getChildCount();
+                    for(int i2 = 0; i2<numberOfColumns2; i2++){
+                        EditText cell = tableRowHorizontalLinearLayout2.getChildAt(i2).findViewById(R.id.editTextCellId);
+                        String text = cell.getText()+"";
+                        if(i2 != numberOfColumns2-1) {
+                            tableItems.append(text).append(",");
+                        }else{
+                            tableItems.append(text);
+
+                        }
+//                        Toast.makeText(getApplicationContext(), cell.getText(), Toast.LENGTH_SHORT).show();
+                    }
+                    if(i1 != numberOfRows-1) {
+                        tableItems.append("_");
+                    }
+
+
+                }
+                pageTableTextDataTypeDetailsArrayList.add(4,tableItems+"");
+                allPageTextDataDetailsArrayList.add(pageTableTextDataTypeDetailsArrayList);
+
+//                for(int r =0; r<pageTableTextDataTypeDetailsArrayList.size(); r++){
+                    EditText editText1 =  (EditText) containerLinearLayout.getChildAt(0);
+                    editText1.append(pageTableTextDataTypeDetailsArrayList.get(0)+"-"+pageTableTextDataTypeDetailsArrayList.get(1)+"-"+pageTableTextDataTypeDetailsArrayList.get(3)+"_"+pageTableTextDataTypeDetailsArrayList.get(4)+"_"+containerLinearLayout.indexOfChild(containerLinearLayout.getChildAt(i))+"_");
+//                }
+
+
+
+            }
+
+            else if(containerLinearLayout.getChildAt(i).getId() == R.id.todoGroupLinearLayoutId){
+                Toast.makeText(getApplicationContext(), "it is todo list", Toast.LENGTH_SHORT).show();
+                LinearLayout todoItemLinearLayout = containerLinearLayout.getChildAt(i).findViewById(R.id.todoItemLinearLayoutId);
+                int numberOfItems = todoItemLinearLayout.getChildCount();
+
+                ArrayList<String> pageTodoTextDataTypeDetailsArrayList = new ArrayList<>();
+
+                pageTodoTextDataTypeDetailsArrayList.add(0,GlobalConfig.TODO_TYPE);
+                pageTodoTextDataTypeDetailsArrayList.add(1,containerLinearLayout.indexOfChild(todoItemLinearLayout)+"");
+                pageTodoTextDataTypeDetailsArrayList.add(2,numberOfItems+"");
+                StringBuilder todoItems = new StringBuilder();
+
+                for(int i1 = 0; i1<numberOfItems; i1++){
+                    EditText todoEditText = todoItemLinearLayout.getChildAt(i1).findViewById(R.id.todoEditTextId);
+                    String item = todoEditText.getText().toString();
+                    Toast.makeText(getApplicationContext(), todoEditText.getText(), Toast.LENGTH_SHORT).show();
+
+                    if(i1  != numberOfItems-1){
+                        todoItems.append(item).append(",");
+                    }else{
+                        todoItems.append(item);
+                    }
+
+                }
+                pageTodoTextDataTypeDetailsArrayList.add(3,todoItems+"");
+                allPageTextDataDetailsArrayList.add(pageTodoTextDataTypeDetailsArrayList);
+
+//                for(int r =0; r<pageTodoTextDataTypeDetailsArrayList.size(); r++){
+                    EditText editText1 =  (EditText) containerLinearLayout.getChildAt(0);
+                    editText1.append(pageTodoTextDataTypeDetailsArrayList.get(0)+"-"+pageTodoTextDataTypeDetailsArrayList.get(1)+"-"+pageTodoTextDataTypeDetailsArrayList.get(2)+"_"+pageTodoTextDataTypeDetailsArrayList.get(3)+"_"+containerLinearLayout.indexOfChild(containerLinearLayout.getChildAt(i))+"_");
+//                }
+            }
+
+        }
+}
+
+void preparePage(){
     Toast.makeText(getApplicationContext(), containerLinearLayout.getChildCount()+"", Toast.LENGTH_SHORT).show();
 
     for(int i=0; i<containerLinearLayout.getChildCount(); i++){
@@ -568,16 +710,29 @@ void iterateThrough(){
 
                 LinearLayout tableLinearLayout = containerLinearLayout.getChildAt(i).findViewById(R.id.tableLinearLayoutId);
                 int numberOfRows = tableLinearLayout.getChildCount();
-                boolean isAllEmpty = false;
+                boolean isAllTableEmpty = true;
                 for(int i1 = 0; i1<numberOfRows; i1++){
                     LinearLayout tableRowHorizontalLinearLayout = tableLinearLayout.getChildAt(i1).findViewById(R.id.tableRowLinearLayoutId);
                     int numberOfColumns = tableRowHorizontalLinearLayout.getChildCount();
+                    boolean isAllRowEmpty = true;
                     for(int i2 = 0; i2<numberOfColumns; i2++){
                         EditText cell = tableRowHorizontalLinearLayout.getChildAt(i2).findViewById(R.id.editTextCellId);
                         Toast.makeText(getApplicationContext(), cell.getText(), Toast.LENGTH_SHORT).show();
-                        if (!cell.getText().toString().isEmpty())isAllEmpty=true;
+                        if (!cell.getText().toString().isEmpty()){
+                            isAllTableEmpty=false;
+                            isAllRowEmpty = false;
+                        }
+                        if(isAllRowEmpty){
+                            //remove this row if they are all empty (if there is need to do that)
+//                            tableLinearLayout.removeView(tableRowHorizontalLinearLayout);
+                        }
                     }
 
+                }
+                if(isAllTableEmpty){
+                    //remove this table if they are all empty (if there is need to do that)
+
+//                    containerLinearLayout.removeView(tableLinearLayout);
                 }
 
 

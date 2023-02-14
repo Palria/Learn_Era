@@ -55,6 +55,14 @@ public class GlobalConfig {
     they have to be unique in a particular document
     */
 
+    public static final String TEXT_TYPE = "TEXT_TYPE";
+    public static final String IMAGE_TYPE = "IMAGE_TYPE";
+    public static final String TODO_TYPE = "TODO_TYPE";
+    public static final String TABLE_TYPE = "TABLE_TYPE";
+
+
+
+
     public static final String FRAGMENT_TYPE_KEY = "FRAGMENT_TYPE";
     public static final String USER_PROFILE_FRAGMENT_TYPE_KEY = "USER_PROFILE_FRAGMENT_TYPE";
 
