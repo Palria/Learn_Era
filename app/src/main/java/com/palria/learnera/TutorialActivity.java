@@ -5,18 +5,31 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.models.TutorialDataModel;
 
 public class TutorialActivity extends AppCompatActivity {
 String tutorialId = "";
 String authorId = "";
 String libraryId = "";
+
+RoundedImageView tutorialCoverImage;
+RoundedImageView authorPicture;
+TextView authorName;
+TextView dateCreated;
+TextView tutorialViewCount;
+TextView pagesCount;
+TextView foldersCount;
+TextView tutorialName;
+TextView tutorialDescription;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +52,38 @@ String libraryId = "";
                     }
                 });
 
+                GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(tutorialDataModel.getAuthorId())
+                        .get()
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                            }
+                        })
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                String authorName1 = ""+documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                                String authorProfilePhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
+                                Glide.with(getApplicationContext())
+                                        .load(authorProfilePhotoDownloadUrl)
+                                        .into(authorPicture);
+                                authorName.setText(authorName1);
+                            }
+                        });
+
+                Glide.with(getApplicationContext())
+                        .load(tutorialDataModel.getTutorialCoverPhotoDownloadUrl())
+                        .into(tutorialCoverImage);
+                dateCreated.setText(tutorialDataModel.getDateCreated());
+                tutorialViewCount.setText(tutorialDataModel.getTotalNumberOfTutorialViews()+"");
+                pagesCount.setText(tutorialDataModel.getTotalNumberOfPages()+"");
+                foldersCount.setText(tutorialDataModel.getTotalNumberOfFolders()+"");
+                tutorialName.setText(tutorialDataModel.getTutorialName()+"");
+                tutorialDescription.setText(tutorialDataModel.getTutorialDescription()+"");
+
             }
 
             @Override
@@ -49,6 +94,15 @@ String libraryId = "";
     }
 
     private void iniUI(){
+        tutorialCoverImage = findViewById(R.id.tutorialCoverImage);
+        authorPicture = findViewById(R.id.authorPicture);
+        authorName = findViewById(R.id.authorName);
+        dateCreated = findViewById(R.id.dateCreated);
+        tutorialViewCount = findViewById(R.id.tutorialViewCount);
+        pagesCount = findViewById(R.id.pagesCount);
+        foldersCount = findViewById(R.id.foldersCount);
+        tutorialName = findViewById(R.id.tutorialName);
+        tutorialDescription = findViewById(R.id.tutorialDescription);
 
     }
     private void fetchIntentData(){
@@ -72,7 +126,7 @@ String libraryId = "";
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot){
 
-                        if(1>0)return;
+//                        if(1>0)return;
                             String libraryId =""+ documentSnapshot.get(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
                             String tutorialId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
 
@@ -88,10 +142,14 @@ String libraryId = "";
                             String tutorialName = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
                             String tutorialCategory = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_CATEGORY_KEY);
                             String tutorialDescription = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DESCRIPTION_KEY);
-                            String dateCreated = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DATE_CREATED_KEY);
-                            String authorUserId = ""+ documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY);
-                            long totalNumberOfPages = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY) :0L;
-                            long totalNumberOfFolders =  documentSnapshot.get(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY) :0L;
+
+                            String dateCreated =  documentSnapshot.get(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY)!=null ? documentSnapshot.getTimestamp(GlobalConfig.TUTORIAL_DATE_CREATED_TIME_STAMP_KEY).toDate()+"": "Undefined";
+                            if(dateCreated.length()>10){
+                                dateCreated = dateCreated.substring(0,10);
+                            }
+                            String authorUserId = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY);
+                            long totalNumberOfPages = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY) :0L;
+                            long totalNumberOfFolders =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY) :0L;
                             String tutorialCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_COVER_PHOTO_DOWNLOAD_URL_KEY);
 
 

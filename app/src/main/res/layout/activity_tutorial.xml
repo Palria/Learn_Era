@@ -38,7 +38,7 @@
                 android:layout_marginVertical="5pt"
                 android:layout_marginHorizontal="5pt"
                 android:layout_marginTop="0pt"
-                android:id="@+id/libraryCoverImage"
+                android:id="@+id/tutorialCoverImage"
                 android:scaleType="centerCrop"
                 android:src="@drawable/book_cover"
                 android:layout_width="match_parent"
@@ -100,7 +100,7 @@
                         android:layout_height="7pt"/>
 
                     <TextView
-                        android:id="@+id/libraryViewCount"
+                        android:id="@+id/tutorialViewCount"
                         android:text="450"
                         android:textStyle="bold"
                         android:layout_marginLeft="2pt"
@@ -153,7 +153,7 @@
 
             <TextView
                 android:layout_marginTop="5pt"
-                android:id="@+id/libraryName"
+                android:id="@+id/tutorialName"
                 android:layout_marginBottom="5pt"
                 android:ellipsize="end"
                 android:textStyle="bold"
@@ -188,7 +188,7 @@
 
 
             <TextView
-                android:id="@+id/libraryDescription"
+                android:id="@+id/tutorialDescription"
                 android:layout_marginTop="2pt"
                 android:text="Javascript and Database, Python and Learning, Model Design, Professional Video Editing, Motion Design"
                 android:ellipsize="end"

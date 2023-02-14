@@ -576,7 +576,7 @@
                   android:layout_height="wrap_content">
                   <ImageView
                       android:layout_marginRight="3pt"
-                      android:src="@drawable/icon_library"
+                      android:src="@drawable/icons8librarybuilding50"
                       android:layout_width="11pt"
                       android:layout_gravity="center"
                       android:layout_height="11pt"/>
@@ -611,7 +611,7 @@
         android:layout_height="wrap_content">
         <ImageView
             android:layout_marginRight="3pt"
-            android:src="@drawable/icon_profile"
+            android:src="@drawable/icons8librarybuilding50"
             android:layout_width="11pt"
             android:layout_gravity="center"
             android:layout_height="11pt"/>
@@ -638,7 +638,7 @@
                 android:layout_height="wrap_content">
                 <ImageView
                     android:layout_marginRight="3pt"
-                    android:src="@drawable/icon_tutorials"
+                    android:src="@drawable/icons8tutorial64"
                     android:layout_width="11pt"
                     android:layout_gravity="center"
                     android:layout_height="11pt"/>
