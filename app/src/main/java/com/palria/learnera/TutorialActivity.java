@@ -71,6 +71,8 @@ String libraryId = "";
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot){
+
+                        if(1>0)return;
                             String libraryId =""+ documentSnapshot.get(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
                             String tutorialId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
 

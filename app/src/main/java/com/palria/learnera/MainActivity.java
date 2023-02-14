@@ -242,7 +242,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     @Override
                     public boolean onMenuItemClicked(MenuItem item) {
 
-                        if(item.getItemId() == R.id.notification_item){
+                        if(item.getItemId()== R.id.login_item){
+                            Intent intent =new Intent(MainActivity.this, SignInActivity.class);
+                            startActivity(intent);
+                        }
+                        else if(item.getItemId() == R.id.notification_item){
                             Toast.makeText(MainActivity.this, "notification clicked.", Toast.LENGTH_SHORT).show();
                         }
                         else if(item.getItemId() == R.id.settings_item){
