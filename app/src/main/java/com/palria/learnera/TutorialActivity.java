@@ -25,6 +25,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.models.TutorialDataModel;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
+import com.palria.learnera.widgets.RatingBottomSheetWidget;
 
 import java.util.ArrayList;
 
@@ -61,6 +62,8 @@ Button addActionButton;
     Button saveActionButton;
     Button rateActionButton;
     ImageButton backButton;
+
+    RatingBottomSheetWidget ratingBottomSheetWidget;
 
     LEBottomSheetDialog leBottomSheetDialog;
 
@@ -189,6 +192,13 @@ Button addActionButton;
             }
         });
 
+        rateActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ratingBottomSheetWidget.show();
+            }
+        });
+
         saveActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -295,6 +305,18 @@ Button addActionButton;
                 },0)
                 .render();
 
+
+        ratingBottomSheetWidget= new RatingBottomSheetWidget(this);
+        ratingBottomSheetWidget.setRatingPostListener(new RatingBottomSheetWidget.OnRatingPosted(){
+            @Override
+            public void onPost(int star, String message) {
+                Toast.makeText(TutorialActivity.this,star + "-"+ message, Toast.LENGTH_SHORT).show();
+                //add the rating to the database with current user.
+
+
+
+            }
+        }).render();
 
 
     }
