@@ -1,20 +1,32 @@
 package com.palria.learnera;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.models.TutorialDataModel;
+import com.palria.learnera.widgets.LEBottomSheetDialog;
+
+import java.util.ArrayList;
 
 public class TutorialActivity extends AppCompatActivity {
 String tutorialId = "";
@@ -30,6 +42,28 @@ TextView pagesCount;
 TextView foldersCount;
 TextView tutorialName;
 TextView tutorialDescription;
+
+//get frame layouts
+    FrameLayout foldersFrameLayout;
+    FrameLayout pagesFrameLayout;
+    FrameLayout ratingsFrameLayout;
+
+    //tab layout
+    TabLayout tabLayout;
+
+    //boolean fragment open stats
+    boolean isFoldersFragmentOpened=false;
+    boolean isPagesFragmentOpened=false;
+    boolean isRatingsFragmentOpened=false;
+
+//buttonsl
+Button addActionButton;
+    Button saveActionButton;
+    Button rateActionButton;
+    ImageButton backButton;
+
+    LEBottomSheetDialog leBottomSheetDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +125,128 @@ TextView tutorialDescription;
 
             }
         });
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                String tabTitle=tab.getText().toString().trim().toUpperCase();
+                if(tabTitle.equals("FOLDERS")){
+                    if(isFoldersFragmentOpened){
+                        //Just set the frame layout visibility
+                        setFrameLayoutVisibility(foldersFrameLayout);
+                    }else {
+                        isFoldersFragmentOpened =true;
+                        setFrameLayoutVisibility(foldersFrameLayout);
+                        initFragment(new FoldersFragment(), foldersFrameLayout);
+                    }
+
+
+                }else if(tabTitle.equals("PAGES"))
+                {
+                    if(isPagesFragmentOpened){
+                        //Just set the frame layout visibility
+                        setFrameLayoutVisibility(pagesFrameLayout);
+                    }else {
+                        isPagesFragmentOpened =true;
+                        setFrameLayoutVisibility(pagesFrameLayout);
+                        initFragment(new LibraryActivityRatingFragment(), pagesFrameLayout);
+                    }
+                }else if(tabTitle.equals("RATINGS")){
+                    if(isRatingsFragmentOpened){
+                        //Just set the frame layout visibility
+                        setFrameLayoutVisibility(ratingsFrameLayout);
+                    }else {
+                        isRatingsFragmentOpened =true;
+                        setFrameLayoutVisibility(ratingsFrameLayout);
+                        initFragment(new LibraryActivityRatingFragment(), ratingsFrameLayout);
+                    }
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TutorialActivity.this.onBackPressed();
+            }
+        });
+
+        addActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                leBottomSheetDialog.show();
+
+            }
+        });
+
+        saveActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(TutorialActivity.this)
+                        .setTitle("Add this to bookmark?")
+                        .setMessage("when you save to bookmark you are abale to view it in your bookmar" +
+                                "ks for future.")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Toast.makeText(TutorialActivity.this, "bookmared", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Toast.makeText(TutorialActivity.this, "cancelled bookmark.", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .show();
+            }
+        });
+
+
+        openFoldersFragment();
+    }
+
+    private void initFragment(Fragment fragment, FrameLayout frameLayout){
+        Bundle bundle = new Bundle();
+        bundle.putString(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+        fragment.setArguments(bundle);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(frameLayout.getId(), fragment)
+                .commit();
+
+
+    }
+
+    private void setFrameLayoutVisibility(FrameLayout frameLayoutToSetVisible){
+        foldersFrameLayout.setVisibility(View.GONE);
+        ratingsFrameLayout.setVisibility(View.GONE);
+        pagesFrameLayout.setVisibility(View.GONE);
+        frameLayoutToSetVisible.setVisibility(View.VISIBLE);
+    }
+
+    private void openFoldersFragment(){
+        isFoldersFragmentOpened=true;
+        Fragment foldersFragment = new FoldersFragment();
+        Bundle bundle = new Bundle();
+//        bundle.putBoolean(GlobalConfig.IS_FROM_LIBRARY_ACTIVITY_CONTEXT_KEY,true);
+//        bundle.putString(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryId);
+        foldersFragment.setArguments(bundle);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(foldersFrameLayout.getId(),foldersFragment)
+                .commit();
     }
 
     private void iniUI(){
@@ -103,6 +259,43 @@ TextView tutorialDescription;
         foldersCount = findViewById(R.id.foldersCount);
         tutorialName = findViewById(R.id.tutorialName);
         tutorialDescription = findViewById(R.id.tutorialDescription);
+        foldersFrameLayout=findViewById(R.id.foldersFrameLayout);
+        pagesFrameLayout=findViewById(R.id.pagesFrameLayout);
+        ratingsFrameLayout=findViewById(R.id.ratingsFrameLayout);
+        addActionButton=findViewById(R.id.addActionButton);
+        saveActionButton=findViewById(R.id.saveActionButton);
+        rateActionButton=findViewById(R.id.rateActionButton);
+        backButton=findViewById(R.id.backButton);
+
+        tabLayout=findViewById(R.id.tab_layout);
+
+
+        leBottomSheetDialog = new LEBottomSheetDialog(this)
+                .addOptionItem("New Folder", R.drawable.ic_baseline_add_circle_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        leBottomSheetDialog.hide();
+
+                        Intent i = new Intent(TutorialActivity.this, CreateNewTutorialFolderActivity.class);
+                        i.putExtra(GlobalConfig.TUTORIAL_ID_KEY,"some-id");
+                        //creating new
+                        startActivity(i);
+
+                    }
+                },0)
+                .addOptionItem("New page", R.drawable.baseline_pages_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent i = new Intent(TutorialActivity.this, CreateNewTutorialPageActivity.class);
+                        i.putExtra(GlobalConfig.TUTORIAL_ID_KEY,"some-id");
+                        //creating new
+                        startActivity(i);
+                    }
+                },0)
+                .render();
+
+
 
     }
     private void fetchIntentData(){
@@ -110,6 +303,9 @@ TextView tutorialDescription;
         tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
 
     }
+
+    //
+
 
     private void fetchTutorial(TutorialFetchListener tutorialFetchListener){
        GlobalConfig.getFirebaseFirestoreInstance()
@@ -178,6 +374,8 @@ TextView tutorialDescription;
 
 
     }
+
+
 
 
     interface TutorialFetchListener{

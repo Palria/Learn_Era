@@ -21,28 +21,27 @@
             android:layout_height="wrap_content">
 
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:paddingHorizontal="5pt"
-                android:paddingTop="5pt"
                 android:layout_height="wrap_content">
+
+                <com.makeramen.roundedimageview.RoundedImageView
+                    app:riv_corner_radius="0dp"
+                    android:layout_marginTop="0pt"
+                    android:id="@+id/tutorialCoverImage"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/book_cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="80pt"/>
+
                 <ImageButton
                     android:id="@+id/backButton"
+                    android:layout_marginLeft="5pt"
+                    android:layout_marginTop="5pt"
                     android:src="@drawable/baseline_arrow_back_24"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-            </LinearLayout>
-
-            <com.makeramen.roundedimageview.RoundedImageView
-                app:riv_corner_radius="5pt"
-                android:layout_marginVertical="5pt"
-                android:layout_marginHorizontal="5pt"
-                android:layout_marginTop="0pt"
-                android:id="@+id/tutorialCoverImage"
-                android:scaleType="centerCrop"
-                android:src="@drawable/book_cover"
-                android:layout_width="match_parent"
-                android:layout_height="80pt"/>
+            </RelativeLayout>
 
 
 
@@ -163,29 +162,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
-            <com.google.android.material.chip.ChipGroup
-                android:paddingHorizontal="5pt"
-                app:itemSpacing="-4dp"
-                app:chipSpacingVertical="0dp"
-                app:lineSpacing="0dp"
-                android:id="@+id/categoriesChipGroup"
-                app:chipSpacing="0dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <com.google.android.material.chip.Chip
-                    android:layout_width="wrap_content"
-                    android:text="Software PRoduction"
-                    android:layout_height="wrap_content"/>
-                <com.google.android.material.chip.Chip
-                    android:layout_width="wrap_content"
-                    android:text="Design"
-                    android:layout_height="wrap_content"/>
-                <com.google.android.material.chip.Chip
-                    android:layout_width="wrap_content"
-                    android:text="Insolvency home data"
-                    android:layout_height="wrap_content"/>
-            </com.google.android.material.chip.ChipGroup>
-
 
             <TextView
                 android:id="@+id/tutorialDescription"
@@ -195,6 +171,7 @@
                 android:layout_marginHorizontal="5pt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
+
 
 
             <LinearLayout
@@ -238,6 +215,11 @@
             </LinearLayout>
 
 
+<com.google.android.material.divider.MaterialDivider
+    android:layout_width="match_parent"
+    app:dividerColor="@color/gray"
+    android:layout_marginVertical="10pt"
+    android:layout_height="wrap_content"/>
 
             <com.google.android.material.tabs.TabLayout
                 android:layout_width="match_parent"
@@ -281,19 +263,19 @@
 
                 <FrameLayout
                     android:visibility="visible"
-                    android:id="@+id/tutorialsFrameLayout"
+                    android:id="@+id/foldersFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <FrameLayout
+                    android:visibility="invisible"
+                    android:id="@+id/pagesFrameLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
                 <FrameLayout
                     android:visibility="invisible"
                     android:id="@+id/ratingsFrameLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <FrameLayout
-                    android:visibility="invisible"
-                    android:id="@+id/booksFrameLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 

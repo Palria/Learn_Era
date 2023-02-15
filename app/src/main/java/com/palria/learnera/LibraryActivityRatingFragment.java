@@ -128,6 +128,7 @@ getReviews();
     }
 
     void getReviews(){
+        if(1==1)return;
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_LIBRARY_KEY)
                 .document(libraryId)
