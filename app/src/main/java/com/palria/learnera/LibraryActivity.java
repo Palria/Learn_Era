@@ -34,6 +34,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.palria.learnera.models.*;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
 import com.palria.learnera.widgets.RatingBarWidget;
+import com.palria.learnera.widgets.RatingBottomSheetWidget;
 import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
@@ -77,6 +78,8 @@ boolean isTutorialsFragmentOpen=false;
 boolean isBooksFragmentOpen=false;
 
 LEBottomSheetDialog leBottomSheetDialog;
+
+    RatingBottomSheetWidget ratingBottomSheetWidget;
 
 
     @Override
@@ -228,6 +231,13 @@ initCategoriesChip(categories);
             }
         });
 
+        rateActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ratingBottomSheetWidget.show();
+            }
+        });
+
         saveActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -346,6 +356,17 @@ fragment.setArguments(bundle);
 //                    }
 //                },0)
                 .render();
+
+        ratingBottomSheetWidget= new RatingBottomSheetWidget(this);
+        ratingBottomSheetWidget.setRatingPostListener(new RatingBottomSheetWidget.OnRatingPosted(){
+            @Override
+            public void onPost(int star, String message) {
+
+                Toast.makeText(LibraryActivity.this,star + "-"+ message, Toast.LENGTH_SHORT).show();
+                //add the rating to the database with current user.
+
+            }
+        }).render();
 
 
 }

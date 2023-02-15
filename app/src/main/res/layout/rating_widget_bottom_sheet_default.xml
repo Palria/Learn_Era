@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:gravity="center"
+        android:paddingVertical="0pt"
+        android:layout_width="match_parent"
+        android:layout_height="8pt">
+
+        <ImageView
+
+            android:src="@drawable/ic_baseline_drag_handle_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <ImageView
+            android:layout_marginLeft="-8pt"
+            android:src="@drawable/ic_baseline_drag_handle_24"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_marginTop="3pt"
+        app:cardCornerRadius="8pt"
+        android:elevation="2dp"
+        app:contentPaddingBottom="5pt"
+        app:contentPaddingLeft="5pt"
+        app:contentPaddingRight="5pt"
+        app:contentPaddingTop="5pt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+     <LinearLayout
+         android:orientation="vertical"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content">
+
+         <TextView
+             android:layout_marginTop="10pt"
+             style="@style/TextAppearance.AppCompat.Title"
+             android:textStyle="bold"
+             android:text="Post a Rating"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"/>
+
+         <TextView
+             android:layout_marginTop="15pt"
+             android:text="How is it?"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"/>
+
+         <RatingBar
+             android:tooltipText="Rating"
+             android:progressTint="@color/teal_700"
+             android:progress="1"
+             android:stepSize="1"
+             android:max="5"
+             android:id="@+id/ratingBar"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"/>
+
+
+         <TextView
+             android:layout_marginTop="15pt"
+             android:text="Please leave a review message here."
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"/>
+
+
+ <EditText
+     android:id="@+id/ratingBodyEditText"
+     android:gravity="start"
+     android:minLines="6"
+     android:maxLines="10"
+     android:inputType="textMultiLine"
+     android:hint="Enter your message"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"/>
+
+
+         <Button
+             android:id="@+id/postRatingActionButton"
+             android:background="@drawable/default_auth_btn"
+             android:layout_marginTop="10pt"
+             android:text="Post Rating"
+             android:textColor="@color/white"
+             android:layout_width="match_parent"
+             android:layout_height="24pt"/>
+
+         <TextView
+             android:layout_marginTop="15pt"
+             android:textAlignment="center"
+             android:text="your rating will be posted now."
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"/>
+
+     </LinearLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+
+</LinearLayout>
