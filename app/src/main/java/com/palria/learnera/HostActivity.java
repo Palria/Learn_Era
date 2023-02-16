@@ -5,8 +5,11 @@ import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import com.google.android.material.appbar.MaterialToolbar;
 
 public class HostActivity extends AppCompatActivity {
     Intent intent;
@@ -14,7 +17,7 @@ public class HostActivity extends AppCompatActivity {
 FrameLayout hostFrameLayout;
 String userId = "";
 
-TextView headerTextView;
+MaterialToolbar materialToolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,9 +28,14 @@ TextView headerTextView;
     }
 
     private void initUI(){
-        headerTextView = findViewById(R.id.headerTextViewId);
+        materialToolbar=findViewById(R.id.topBar);
         hostFrameLayout = findViewById(R.id.hostFrameLayoutId);
+        setSupportActionBar(materialToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
+
+
 
     void fetchIntentData(){
          intent = getIntent();
@@ -37,6 +45,17 @@ TextView headerTextView;
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            onBackPressed();  return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private void openIncomingFragment(){
         Bundle bundle = new Bundle();
 
@@ -44,13 +63,14 @@ TextView headerTextView;
             case GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY:
                  bundle = new Bundle();
                 bundle.putString(GlobalConfig.USER_ID_KEY,userId);
+                materialToolbar.setTitle("Profile");
                 initFragment(bundle,new UserProfileFragment(null));
                 break;
             case GlobalConfig.LIBRARY_FRAGMENT_TYPE_KEY:
                 if(userId.equals(GlobalConfig.getCurrentUserId())) {
-                    headerTextView.setText("My Libraries");
+                    materialToolbar.setTitle("My Libraries");
                 }else{
-                    headerTextView.setText("Libraries");
+                    materialToolbar.setTitle("Libraries");
                 }
                  bundle = new Bundle();
                 bundle.putString(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,userId);
@@ -59,9 +79,9 @@ TextView headerTextView;
                 break;
             case GlobalConfig.TUTORIAL_FRAGMENT_TYPE_KEY:
                 if(userId.equals(GlobalConfig.getCurrentUserId())) {
-                    headerTextView.setText("My Tutorials");
+                    materialToolbar.setTitle("My Tutorials");
                 }else{
-                    headerTextView.setText("Tutorials");
+                    materialToolbar.setTitle("Tutorials");
                 }
                 bundle = new Bundle();
                 bundle.putString(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY,userId);
