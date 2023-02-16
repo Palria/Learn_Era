@@ -9,7 +9,6 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/topBar"
         android:layout_width="match_parent"
-        app:titleCentered="true"
         app:title="Activity Logs"
         app:titleTextColor="@color/white"
         android:theme="@style/ToolbarColoredBackArrow"

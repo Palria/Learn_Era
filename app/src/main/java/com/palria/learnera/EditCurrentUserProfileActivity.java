@@ -89,6 +89,7 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
     Uri galleryImageUri;
 
     Button editProfileActionButton;
+    Button cancelButton;
     ImageView pickImageActionButton;
     ActivityResultLauncher<Intent> openGalleryLauncher;
     ActivityResultLauncher<Intent> openCameraLauncher;
@@ -204,6 +205,13 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                 }else{
                     Toast.makeText(getApplicationContext(), "No image captured!", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditCurrentUserProfileActivity.this.onBackPressed();
             }
         });
 
@@ -421,6 +429,8 @@ private void initUI(){
     display_name = findViewById(R.id.current_name);
     display_email = findViewById(R.id.current_email);
     profile_image_view = findViewById(R.id.imageView1);
+
+    cancelButton=findViewById(R.id.cancelButton);
 
 
     initCountrySpinner();

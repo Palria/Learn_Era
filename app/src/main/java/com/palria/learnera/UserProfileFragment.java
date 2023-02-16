@@ -400,7 +400,7 @@ public class UserProfileFragment extends Fragment {
                 .addOptionItem(tutorialLeOptionName, R.drawable.ic_baseline_dynamic_feed_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        leBottomSheetDialog.hide();
                         startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.TUTORIAL_FRAGMENT_TYPE_KEY,authorId));
 
                     }
@@ -408,6 +408,7 @@ public class UserProfileFragment extends Fragment {
                 .addOptionItem(libraryLeOptionName , R.drawable.ic_baseline_library_books_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        leBottomSheetDialog.hide();
                         startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.LIBRARY_FRAGMENT_TYPE_KEY,authorId));
 
                     }

@@ -313,8 +313,6 @@ fragment.setArguments(bundle);
         dateCreated=findViewById(R.id.dateCreated);
         categoriesChipGroup=findViewById(R.id.categoriesChipGroup);
 
-
-
         alertDialog = new AlertDialog.Builder(LibraryActivity.this)
             .setCancelable(false)
                 .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
@@ -367,7 +365,6 @@ fragment.setArguments(bundle);
 
             }
         }).render();
-
 
 }
 

@@ -6,23 +6,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HostActivity">
-<TextView
-    android:id="@+id/headerTextViewId"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:textSize="20sp"
-    android:textStyle="bold"
-    android:textColor="@color/white"
-    android:background="@color/teal_700"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    />
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        app:navigationIconTint="@color/white"
+        android:layout_width="match_parent"
+        app:titleTextColor="@color/white"
+        app:title="hello"
+        android:theme="@style/ToolbarColoredBackArrow"
+        android:background="@color/teal_700"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_height="?attr/actionBarSize"/>
     <FrameLayout
         android:id="@+id/hostFrameLayoutId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/headerTextViewId"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
 
         />
 

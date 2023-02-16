@@ -10,7 +10,6 @@
   <com.google.android.material.appbar.MaterialToolbar
       android:id="@+id/topBar"
       android:layout_width="match_parent"
-      app:titleCentered="true"
       app:title="Edit Profile"
       app:titleTextColor="@color/white"
       android:theme="@style/ToolbarColoredBackArrow"
@@ -34,7 +33,6 @@
     android:layout_height="match_parent">
     <LinearLayout
         android:orientation="vertical"
-        android:paddingBottom="27pt"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -242,6 +240,37 @@
 
 
 
+                <LinearLayout
+                    android:layout_marginTop="15pt"
+                    android:paddingHorizontal="5pt"
+                    android:layout_alignParentBottom="true"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize">
+
+
+                    <Button
+                        android:background="@drawable/default_auth_btn"
+                        style="@style/Widget.Material3.Button.ElevatedButton"
+                        android:layout_weight="1"
+                        android:backgroundTint="@null"
+                        android:id="@+id/cancelButton"
+                        android:text="@string/cancel"
+                        android:paddingVertical="2pt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+
+                    <Button
+                        android:background="@drawable/default_auth_btn"
+                        android:layout_marginLeft="3pt"
+                        android:layout_weight="1"
+                        android:id="@+id/update_button"
+                        android:text="Update"
+                        android:paddingVertical="2pt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
 
 
             </LinearLayout>
@@ -253,21 +282,6 @@
     </LinearLayout>
 </ScrollView>
 
-    <LinearLayout
-        android:paddingHorizontal="10pt"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
 
-
-<Button
-    android:background="@drawable/default_auth_btn"
-    android:id="@+id/update_button"
-    android:text="@string/save"
-    android:paddingVertical="2pt"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
-    </LinearLayout>
 
 </RelativeLayout>
