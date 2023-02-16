@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.palria.learnera.GlobalConfig;
 import com.palria.learnera.R;
@@ -132,7 +133,7 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
         reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
 //        reviewerReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
         reviewerReviewDetails.put(GlobalConfig.IS_AUTHOR_REVIEW_KEY, true);
-        writeBatch.set(reviewerDocumentReference,reviewerReviewDetails);
+        writeBatch.set(reviewerDocumentReference,reviewerReviewDetails, SetOptions.merge());
 
         writeBatch.commit()
                 .addOnFailureListener(new OnFailureListener() {
@@ -174,24 +175,24 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
         libraryReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
         libraryReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         libraryReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
-        writeBatch.set(libraryReviewDocumentReference,libraryReviewDetails);
+        writeBatch.set(libraryReviewDocumentReference,libraryReviewDetails,SetOptions.merge());
 
         DocumentReference libraryDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
         HashMap<String,Object> libraryDetails = new HashMap<>();
         libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REVIEWS_KEY, FieldValue.increment(1L));
         switch(Math.toIntExact(starLevel)){
             case 1: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(1L));
-                return;
+                break;
             case 2: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,  FieldValue.increment(1L));
-                return;
+                break;
             case 3: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,  FieldValue.increment(1L));
-                return;
+                break;
             case 4: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(1L));
-                return;
+                break;
             case 5: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(1L));
-                return;
+                break;
         }
-        writeBatch.set(libraryDocumentReference,libraryDetails);
+        writeBatch.set(libraryDocumentReference,libraryDetails,SetOptions.merge());
 
         DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.OTHER_REVIEWS_KEY).document(libraryId);
         HashMap<String,Object> reviewerReviewDetails = new HashMap<>();
@@ -203,7 +204,7 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
         reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         reviewerReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
         reviewerReviewDetails.put(GlobalConfig.IS_LIBRARY_REVIEW_KEY, true);
-        writeBatch.set(reviewerDocumentReference,reviewerReviewDetails);
+        writeBatch.set(reviewerDocumentReference,reviewerReviewDetails, SetOptions.merge());
 
         writeBatch.commit()
                 .addOnFailureListener(new OnFailureListener() {
@@ -249,7 +250,7 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
 //        tutorialReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
         tutorialReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         tutorialReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
-        writeBatch.set(tutorialReviewDocumentReference,tutorialReviewDetails);
+        writeBatch.set(tutorialReviewDocumentReference,tutorialReviewDetails, SetOptions.merge());
 
 
         DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
@@ -257,17 +258,17 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
         tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_REVIEWS_KEY, FieldValue.increment(1L));
         switch(Math.toIntExact(starLevel)){
             case 1: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(1L));
-                return;
+                break;
             case 2: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,  FieldValue.increment(1L));
-                return;
+                break;
             case 3: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,  FieldValue.increment(1L));
-                return;
+                break;
             case 4: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(1L));
-                return;
+                break;
             case 5: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(1L));
-                return;
+                break;
         }
-        writeBatch.set(tutorialDocumentReference,tutorialDetails);
+        writeBatch.set(tutorialDocumentReference,tutorialDetails,SetOptions.merge());
 
 
         DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
@@ -286,7 +287,7 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
         reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         reviewerReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
         reviewerReviewDetails.put(GlobalConfig.IS_TUTORIAL_REVIEW_KEY, true);
-        writeBatch.set(reviewerDocumentReference,reviewerReviewDetails);
+        writeBatch.set(reviewerDocumentReference,reviewerReviewDetails, SetOptions.merge());
 
         writeBatch.commit()
                 .addOnFailureListener(new OnFailureListener() {

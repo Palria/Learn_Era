@@ -76,12 +76,12 @@ public class FoldersFragment extends Fragment {
         foldersRcv=view.findViewById(R.id.foldersRcv);
 
         //init oflder rcv here
-        folderDataModels.add(new FolderDataModel("","","Design princilples","1 min ago",4l));
-        folderDataModels.add(new FolderDataModel("","","OOps Concept Advanced","45 min ago",05l));
-        folderDataModels.add(new FolderDataModel("","","Ui Guide 2023","1 hours ago",45l));
-        folderDataModels.add(new FolderDataModel("","","Domain Registration P","5 hours ago",7l));
-        folderDataModels.add(new FolderDataModel("","","Lambda Expression with Joy","1 day ago",80l));
-        folderDataModels.add(new FolderDataModel("","","Youtube Policy changes overview","1 week ago",99l));
+        folderDataModels.add(new FolderDataModel("id","id","Design princilples","1 min ago",4l));
+        folderDataModels.add(new FolderDataModel("id","id","OOps Concept Advanced","45 min ago",05l));
+        folderDataModels.add(new FolderDataModel("id","id","Ui Guide 2023","1 hours ago",45l));
+        folderDataModels.add(new FolderDataModel("id","id","Domain Registration P","5 hours ago",7l));
+        folderDataModels.add(new FolderDataModel("id","id","Lambda Expression with Joy","1 day ago",80l));
+        folderDataModels.add(new FolderDataModel("id","id","Youtube Policy changes overview","1 week ago",99l));
         folderRcvAdapter= new FolderRcvAdapter(folderDataModels,getContext());
 
         foldersRcv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL,false));

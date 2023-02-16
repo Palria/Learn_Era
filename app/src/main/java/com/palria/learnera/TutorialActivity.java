@@ -246,7 +246,7 @@ Button addActionButton;
 
             @Override
             public  void onFailed(String errorMessage){
-                Toast.makeText(TutorialActivity.this,"failed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(TutorialActivity.this,errorMessage, Toast.LENGTH_SHORT).show();
 
             }
 
