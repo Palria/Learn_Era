@@ -23,7 +23,7 @@ FrameLayout pagesFrameLayout;
     }
 
     private void iniUI(){
-
+        pagesFrameLayout = findViewById(R.id.pagesFrameLayoutId);
     }
     private void fetchIntentData(){
         Intent intent = getIntent();

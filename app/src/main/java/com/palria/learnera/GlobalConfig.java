@@ -206,6 +206,8 @@ public class GlobalConfig {
     public static final String ALL_TUTORIAL_FOLDERS_KEY = "ALL_TUTORIAL_FOLDERS";
     public static final String FOLDER_NAME_KEY = "FOLDER_NAME";
     public static final String PAGE_NAME_KEY = "PAGE_NAME";
+    public static final String TOTAL_NUMBER_OF_PAGE_DATA_KEY = "TOTAL_NUMBER_OF_PAGE_DATA";
+    public static final String PAGE_TITLE_KEY = "PAGE_TITLE";
     public static final String PAGE_DATE_CREATED_TIME_STAMP_KEY = "PAGE_DATE_CREATED_TIME_STAMP";
     public static final String FOLDER_ID_KEY = "FOLDER_ID";
     public static final String IS_FOLDER_PAGE_KEY = "IS_FOLDER_PAGE";
@@ -1201,7 +1203,7 @@ public class GlobalConfig {
 
     }
 
-interface ActionCallback{
+public interface ActionCallback{
         void onSuccess();
         void onFailed(String errorMessage);
 }

@@ -6,10 +6,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UploadPageActivity">
+    <LinearLayout
+        android:id="@+id/topLinearLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/teal_700"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="Title"
+        android:textSize="15sp"
+        />
+ <EditText
+        android:id="@+id/pageTitleEditTextId"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="2dp"
+        android:hint="Title"
+        android:textColor="@color/black"
+        android:background="@color/white"
+        />
+
+    </LinearLayout>
 <ScrollView
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/topLinearLayoutId"
     >
     <LinearLayout
         android:id="@+id/containerLinearLayoutId"

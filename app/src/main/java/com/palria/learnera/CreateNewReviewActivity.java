@@ -37,7 +37,7 @@ long starLevel = 1;
 
     }
 
-    private void reviewAuthor(OnReviewListener onReviewListener){
+    private void reviewAuthor(String authorId,String comment,long starLevel,OnReviewListener onReviewListener){
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
 
         DocumentReference authorReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId).collection(GlobalConfig.REVIEWS_KEY).document(GlobalConfig.getCurrentUserId());
@@ -45,7 +45,7 @@ long starLevel = 1;
         authorReviewDetails.put(GlobalConfig.REVIEWER_ID_KEY, GlobalConfig.getCurrentUserId());
         authorReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
         authorReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
-        authorReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
+//        authorReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
         authorReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
 //        authorReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
         writeBatch.set(authorReviewDocumentReference,authorReviewDetails);
@@ -90,12 +90,26 @@ long starLevel = 1;
         .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
+                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_AUTHOR_TYPE_KEY,authorId, null, null, true, false, false, null, null, null,GlobalConfig.getCurrentUserId(), false, false, false, new GlobalConfig.ActionCallback() {
+                    @Override
+                    public void onSuccess() {
+//                        toggleProgress(false);
+
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+//                        toggleProgress(false);
+
+                    }
+                });
+
                 onReviewListener.onSuccess(true,false,false);
             }
         });
 
     }
-    private void reviewLibrary(OnReviewListener onReviewListener){
+    private void reviewLibrary(String authorId,String libraryId,String comment,long starLevel,OnReviewListener onReviewListener){
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
 
         DocumentReference libraryReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId).collection(GlobalConfig.REVIEWS_KEY).document(GlobalConfig.getCurrentUserId());
@@ -147,15 +161,33 @@ long starLevel = 1;
         .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
+                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_LIBRARY_TYPE_KEY,authorId, libraryId, null, false, true, false, null, null, null,GlobalConfig.getCurrentUserId(), false, false, false, new GlobalConfig.ActionCallback() {
+                    @Override
+                    public void onSuccess() {
+//                        toggleProgress(false);
+
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+//                        toggleProgress(false);
+
+                    }
+                });
+
                 onReviewListener.onSuccess(false,true,false);
             }
         });
 
     }
-    private void reviewTutorial(OnReviewListener onReviewListener){
+    private void reviewTutorial(String authorId,String libraryId,String tutorialId,String comment,long starLevel,OnReviewListener onReviewListener){
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
 
-        DocumentReference tutorialReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.REVIEWS_KEY).document(GlobalConfig.getCurrentUserId());
+        DocumentReference tutorialReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                .document(tutorialId).collection(GlobalConfig.REVIEWS_KEY)
+                .document(GlobalConfig.getCurrentUserId());
+
         HashMap<String,Object> tutorialReviewDetails = new HashMap<>();
         tutorialReviewDetails.put(GlobalConfig.REVIEWER_ID_KEY, GlobalConfig.getCurrentUserId());
         tutorialReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
@@ -184,10 +216,15 @@ long starLevel = 1;
         writeBatch.set(tutorialDocumentReference,tutorialDetails);
 
 
-        DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.OTHER_REVIEWS_KEY).document(tutorialId);
+        DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_USERS_KEY)
+                .document(GlobalConfig.getCurrentUserId())
+                .collection(GlobalConfig.OTHER_REVIEWS_KEY)
+                .document(tutorialId);
+
         HashMap<String,Object> reviewerReviewDetails = new HashMap<>();
         reviewerReviewDetails.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
-        reviewerReviewDetails.put(GlobalConfig.LIBRARY_ID_KEY, libraryId);
+        reviewerReviewDetails.put(GlobalConfig.LIBRARY_CONTAINER_ID_KEY, libraryId);
         reviewerReviewDetails.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
         reviewerReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
         reviewerReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
@@ -207,6 +244,20 @@ long starLevel = 1;
         .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
+                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_TUTORIAL_TYPE_KEY,authorId, libraryId, tutorialId, false, false, true, null, null, null,GlobalConfig.getCurrentUserId(), false, false, false, new GlobalConfig.ActionCallback() {
+                    @Override
+                    public void onSuccess() {
+//                        toggleProgress(false);
+
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+//                        toggleProgress(false);
+
+                    }
+                });
+
                 onReviewListener.onSuccess(false,false,true);
             }
         });

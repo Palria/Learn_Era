@@ -57,6 +57,8 @@ public class FolderRcvAdapter extends RecyclerView.Adapter<FolderRcvAdapter.View
 //                Toast.makeText(view.getContext(),"click on item: "+folderDataModel.getFolderName(),Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(context, TutorialFolderActivity.class);
                 intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderDataModel.getId());
+                intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,folderDataModel.getTutorialId());
+                intent.putExtra(GlobalConfig.FOLDER_NAME_KEY,folderDataModel.getFolderName());
                 context.startActivity(intent);
             }
         });

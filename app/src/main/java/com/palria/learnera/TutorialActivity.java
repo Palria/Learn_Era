@@ -160,10 +160,10 @@ Button addActionButton;
                         AllTutorialPageFragment allTutorialPageFragment = new AllTutorialPageFragment();
                         Bundle bundle = new Bundle();
                         bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
-                        bundle.putString(GlobalConfig.FOLDER_ID_KEY,null);
+                        bundle.putString(GlobalConfig.FOLDER_ID_KEY,"folderId");
                         bundle.putBoolean(GlobalConfig.IS_FOLDER_PAGE_KEY,false);
                         allTutorialPageFragment.setArguments(bundle);
-//                        initFragment(new AllTutorialPageFragment(), pagesFrameLayout);
+                        initFragment(allTutorialPageFragment, pagesFrameLayout);
                     }
                 }else if(tabTitle.equals("RATINGS")){
                     if(isRatingsFragmentOpened){
@@ -187,6 +187,7 @@ Button addActionButton;
 
             }
         });
+//        tabLayout.getChildAt(tabLayout.getTabAt(0).getPosition()).setSelected(true);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -215,12 +216,12 @@ Button addActionButton;
             public void onClick(View view) {
                 new AlertDialog.Builder(TutorialActivity.this)
                         .setTitle("Add this to bookmark?")
-                        .setMessage("when you save to bookmark you are abale to view it in your bookmar" +
+                        .setMessage("when you save to bookmark you are able to view it in your bookmark" +
                                 "ks for future.")
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Toast.makeText(TutorialActivity.this, "bookmared", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(TutorialActivity.this, "bookmarked", Toast.LENGTH_SHORT).show();
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -233,6 +234,28 @@ Button addActionButton;
             }
         });
 
+
+        ratingBottomSheetWidget= new RatingBottomSheetWidget(this, authorId, libraryId,  tutorialId,false, false,true);;
+        ratingBottomSheetWidget.setRatingPostListener(new RatingBottomSheetWidget.OnRatingPosted(){
+
+            @Override
+            public void onPost(int star, String message) {
+                Toast.makeText(TutorialActivity.this,star + "-"+ message, Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public  void onFailed(String errorMessage){
+                Toast.makeText(TutorialActivity.this,"failed", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onSuccess(boolean isReviewAuthor,boolean isReviewLibrary,boolean isReviewTutorial){
+                Toast.makeText(TutorialActivity.this,"You rated this tutorial", Toast.LENGTH_SHORT).show();
+
+            }
+        }).render();
 
 //        openFoldersFragment();
     }
@@ -317,18 +340,6 @@ Button addActionButton;
                 },0)
                 .render();
 
-
-        ratingBottomSheetWidget= new RatingBottomSheetWidget(this);
-        ratingBottomSheetWidget.setRatingPostListener(new RatingBottomSheetWidget.OnRatingPosted(){
-            @Override
-            public void onPost(int star, String message) {
-                Toast.makeText(TutorialActivity.this,star + "-"+ message, Toast.LENGTH_SHORT).show();
-                //add the rating to the database with current user.
-
-
-
-            }
-        }).render();
 
 
     }

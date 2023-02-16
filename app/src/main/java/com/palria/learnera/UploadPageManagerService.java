@@ -249,6 +249,170 @@ public class UploadPageManagerService extends Service {
 
     }
 
+
+    static  void uploadTextDataToPage(String libraryId, String tutorialId, String folderId, String pageId, String pageTitle, ArrayList<ArrayList<String>> allPageTextDataDetailsArrayList, int totalNumberOfChildren) {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            if (!allPageTextDataDetailsArrayList.isEmpty()) {
+                isTextIncludedHashMap.put(pageId,true);
+                HashMap<String, Object> pageTextPartitionsDataDetailsHashMap = new HashMap<>();
+                pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_TITLE_KEY, pageTitle);
+                pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY, totalNumberOfChildren);
+                for (int i = 0; i < allPageTextDataDetailsArrayList.size(); i++) {
+                    ArrayList<String> pageTextDataTypeDetailsArrayList = allPageTextDataDetailsArrayList.get(i);
+                    String position = pageTextDataTypeDetailsArrayList.get(1);
+                    pageTextPartitionsDataDetailsHashMap.put("DATA_ARRAY_" + position , pageTextDataTypeDetailsArrayList);
+                }
+
+//                firebaseFirestore.collection("ALL_USERS").document(currentUserId).collection("ALL_LIBRARY").document(libraryId).collection("ALL_BOOKS").document(bookId).collection("ALL_PAGES").document(pageId).set(pageTextPartitionsDataDetailsHashMap, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
+                firebaseFirestore.collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId).set(pageTextPartitionsDataDetailsHashMap, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        uploadTextDataToPage(libraryId,  tutorialId,  folderId,  pageId,pageTitle,  allPageTextDataDetailsArrayList,  totalNumberOfChildren);
+
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        isPageTextPartitionsUploaded.put(pageId,true);
+                        if(!isImageIncludedHashMap.get(pageId) || isPageImagesPartitionsUploaded.get(pageId)){
+
+                            //succeeded
+                            allActivePagesIdArrayList.remove(pageId);
+                            isPageUploadedHashMap.put(pageId,true);
+                            onPageUploadListener.onSuccess(pageId);
+                        }
+                    }
+                });
+            }
+
+
+        }
+    }
+    static  void uploadImageDataToPage(String libraryId, String tutorialId, String folderId, String pageId, String pageTitle, ArrayList<ArrayList<Object>> allImageArrayList,final int totalNumberOfImages,final int numOfChildrenData) {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            if (!allImageArrayList.isEmpty()) {
+                totalNumberOfPartitionsWithImageHashMap.put(pageId,totalNumberOfPartitionsWithImageHashMap.get(pageId)+1);
+                int[] imagePartitionSuccessCounter = new int[1];
+                isImageIncludedHashMap.put(pageId,true);
+
+                int totalNumberOfPartitionsWithImage = totalNumberOfPartitionsWithImageHashMap.get(pageId);
+//                HashMap<String, Object> pageImagePartitionsDataDetails = new HashMap<>();
+//                pageImagePartitionsDataDetails.put("TOTAL_NUMBER_OF_PARTITIONS", totalNumberOfPartitions);
+//                pageImagePartitionsDataDetails.put(imagePartitionArrayName, FieldValue.arrayUnion(partitionId));
+
+                for (int i = 0; i < allImageArrayList.size(); i++) {
+
+                    ArrayList<Object> imageDataList = allImageArrayList.get(i);
+                    String position =""+ imageDataList.get(0);
+                    byte[] imageByteArray =(byte[]) imageDataList.get(1);
+                    uploadImageDataToPage( libraryId,  tutorialId,folderId,  pageId,  pageTitle, position,imageByteArray,  totalNumberOfImages,  numOfChildrenData);
+
+                }
+
+
+            }
+        }
+    }
+    static  void uploadImageDataToPage(String libraryId, String tutorialId, String folderId, String pageId, String pageTitle,String position, byte[] imageUploadByteArray,final int totalNumberOfImages,final int numOfChildrenData) {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            int[] imagePartitionSuccessCounter = new int[1];
+            isImageIncludedHashMap.put(pageId,true);
+            HashMap<String, Object> pageImageDataDetails = new HashMap<>();
+
+            pageImageDataDetails.put(GlobalConfig.PAGE_TITLE_KEY, pageTitle);
+            pageImageDataDetails.put(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY, numOfChildrenData);
+            String imageId = GlobalConfig.getRandomString(10);
+            StorageReference storageReference = firebaseStorage.getReference().child(GlobalConfig.ALL_USERS_KEY+"/" + currentUserId + "/"+GlobalConfig.ALL_LIBRARY_KEY+"/" + libraryId + "/"+GlobalConfig.ALL_TUTORIAL_KEY+"/" + tutorialId + "/"+GlobalConfig.ALL_TUTORIAL_PAGES_KEY+"/" + pageId + "/ALL_IMAGES/" + imageId + ".PNG");
+            UploadTask uploadTask = storageReference.putBytes(imageUploadByteArray);
+            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+
+                    long totalBytes = snapshot.getTotalByteCount();
+                    long totalBytesTransferred = snapshot.getBytesTransferred();
+                    int progressCount = (int) ( (totalBytesTransferred /totalBytes) * 100 );
+                    pageUploadProgressCounterHashMap.put(pageId,progressCount);
+                    onPageUploadListener.onProgress(pageId,progressCount);
+
+                }
+            })
+                    .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                    @Override
+                                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+
+
+                                        return storageReference.getDownloadUrl();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                    }
+                                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Uri> task) {
+                                        if (task.isSuccessful()) {
+                                            String imageDownloadUrl = String.valueOf(task.getResult());
+                                            ArrayList<String> dataImageList = new ArrayList<>();
+                                            dataImageList.add(0,position+"");
+                                            dataImageList.add(1,imageDownloadUrl);
+                                            dataImageList.add(2,storageReference.getPath());
+                                            pageImageDataDetails.put("DATA_ARRAY_"+position, dataImageList);
+                                            firebaseFirestore.collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId).set(pageImageDataDetails, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+
+                                                }
+                                            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void unused) {
+                                                    //Succeeded in uploading image of a book page.
+                                                    imagePartitionSuccessCounter[0]++;
+
+                                                    if(imagePartitionSuccessCounter[0] == totalNumberOfImages){
+                                                        //all images succeeded
+                                                        isPageImagesPartitionsUploaded.put(pageId,true);
+                                                        if(!isTextIncludedHashMap.get(pageId) || isPageTextPartitionsUploaded.get(pageId)){
+
+                                                            //succeeded
+                                                            allActivePagesIdArrayList.remove(pageId);
+                                                            isPageUploadedHashMap.put(pageId,true);
+                                                            onPageUploadListener.onSuccess(pageId);
+                                                        }
+                                                    }
+                                                }
+                                            });
+
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                //failed to upload the image
+
+                                if(totalNumberOfTimesImageFailed.containsKey(imageId)) {
+                                    if(totalNumberOfTimesImageFailed.get(imageId) <=5){
+                                        uploadImageDataToPage( libraryId,  tutorialId,folderId,  pageId,pageTitle, position,imageUploadByteArray,  totalNumberOfImages,  numOfChildrenData);
+                                    }
+                                    totalNumberOfTimesImageFailed.put(imageId, totalNumberOfTimesImageFailed.get(imageId) + 1);
+                                }else{
+                                    totalNumberOfTimesImageFailed.put(imageId,1);
+                                }
+                            }
+                        }
+                    });
+
+        }
+
+
+
+
+    }
+
     static int getTotalNumberOfPagePartitions(String pageId){
         return  totalNumberOfPagePartitionsHashMap.get(pageId);
     }

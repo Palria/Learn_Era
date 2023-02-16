@@ -269,6 +269,30 @@ initCategoriesChip(categories);
         });
 
         openAllTutorialFragment();
+
+
+        ratingBottomSheetWidget= new RatingBottomSheetWidget(this, authorId, libraryId,  null,false, true,false);
+        ratingBottomSheetWidget.setRatingPostListener(new RatingBottomSheetWidget.OnRatingPosted(){
+
+            @Override
+            public void onPost(int star, String message) {
+                Toast.makeText(LibraryActivity.this,star + "-"+ message, Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public  void onFailed(String errorMessage){
+                Toast.makeText(LibraryActivity.this,"failed", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onSuccess(boolean isReviewAuthor,boolean isReviewLibrary,boolean isReviewTutorial){
+                Toast.makeText(LibraryActivity.this,"You rated this library", Toast.LENGTH_SHORT).show();
+
+            }
+        }).render();
+
     }
 
     private void initFragment(Fragment fragment, FrameLayout frameLayout){
@@ -357,16 +381,6 @@ fragment.setArguments(bundle);
 //                },0)
                 .render();
 
-        ratingBottomSheetWidget= new RatingBottomSheetWidget(this);
-        ratingBottomSheetWidget.setRatingPostListener(new RatingBottomSheetWidget.OnRatingPosted(){
-            @Override
-            public void onPost(int star, String message) {
-
-                Toast.makeText(LibraryActivity.this,star + "-"+ message, Toast.LENGTH_SHORT).show();
-                //add the rating to the database with current user.
-
-            }
-        }).render();
 
 
 }

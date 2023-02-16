@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private void initUI(){
 
 
+
         bottomAppBar = findViewById(R.id.bottomAppBar);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
@@ -227,7 +228,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     @Override
                     public void onClick(View view) {
 
-
+                        Intent intent = new Intent(getApplicationContext() , UploadPageActivity.class);
+                        startActivity(intent);
                         leBottomSheetDialog.hide();
 
                     }
