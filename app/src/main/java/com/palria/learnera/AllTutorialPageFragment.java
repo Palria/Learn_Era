@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.palria.learnera.adapters.PagesRcvAdapter;
+import com.palria.learnera.models.PageDataModel;
+
+import org.checkerframework.checker.units.qual.A;
+
+import java.util.ArrayList;
 
 public class AllTutorialPageFragment extends Fragment {
 
@@ -24,6 +32,9 @@ public class AllTutorialPageFragment extends Fragment {
 boolean isFolderPage = false;
 String tutorialId = "";
 String folderId = "";
+
+ArrayList<PageDataModel> pageDataModels=new ArrayList<>();
+RecyclerView pagesRecyclerListView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,7 +51,7 @@ if(getArguments()!= null){
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
        View parentView = inflater.inflate(R.layout.fragment_all_tutorial_page, container, false);
-
+initUi(parentView);
         fetchPages(new FetchPageListener() {
             @Override
             public void onSuccess(String pageId, String pageName, String dateCreated) {
@@ -54,6 +65,40 @@ if(getArguments()!= null){
         });
 
        return parentView;
+    }
+
+    private void initUi(View parentView) {
+
+        pagesRecyclerListView=parentView.findViewById(R.id.pagesRecyclerListView);
+
+        pageDataModels.add(new PageDataModel("How to hold","this is content",
+                "",
+                "autohor",
+                "folderId",
+                "1 hrs ago"));
+        pageDataModels.add(new PageDataModel("How to hold","this is content",
+                "",
+                "autohor",
+                "folderId",
+                "1 hrs ago"));
+        pageDataModels.add(new PageDataModel("How to hold","this is content",
+                "",
+                "autohor",
+                "folderId",
+                "1 hrs ago"));
+        pageDataModels.add(new PageDataModel("How to hold","this is content",
+                "",
+                "autohor",
+                "folderId",
+                "1 hrs ago"));
+
+
+        PagesRcvAdapter adapter = new PagesRcvAdapter(pageDataModels,getContext());
+
+        pagesRecyclerListView.setHasFixedSize(true);
+        pagesRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        pagesRecyclerListView.setAdapter(adapter);
+
     }
 
 

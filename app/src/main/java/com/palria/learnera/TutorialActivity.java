@@ -24,6 +24,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.models.TutorialDataModel;
+import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
 import com.palria.learnera.widgets.RatingBottomSheetWidget;
 
@@ -336,10 +337,28 @@ Button addActionButton;
 
                         leBottomSheetDialog.hide();
 
-                        Intent i = new Intent(TutorialActivity.this, CreateNewTutorialFolderActivity.class);
-                        i.putExtra(GlobalConfig.TUTORIAL_ID_KEY,"some-id");
-                        //creating new
-                        startActivity(i);
+                       new BottomSheetFormBuilderWidget(TutorialActivity.this)
+                               .setTitle("Enter Folder Name")
+                               .setPositiveTitle("Create")
+                               .addInputField(new BottomSheetFormBuilderWidget.EditTextInput(TutorialActivity.this)
+                                       .setHint("Enter folder name")
+                                       .autoFocus())
+                               .setOnSubmit(new BottomSheetFormBuilderWidget.OnSubmitHandler(){
+                                   @Override
+                                   public void onSubmit(String[] values) {
+                                       super.onSubmit(values);
+                                       Toast.makeText(TutorialActivity.this, values[0],Toast.LENGTH_SHORT).show();
+                                        //values will be returned as array of strings as per input list position
+                                       //eg first added input has first valuel
+                                       String folderName = values[0];
+                                       if(folderName.trim().equals("")){
+                                           Toast.makeText(TutorialActivity.this, "Please enter name",Toast.LENGTH_SHORT).show();
+                                       }
+                                       //create folder process here
+                                   }
+                               })
+                               .render()
+                               .show();
 
                     }
                 },0)
