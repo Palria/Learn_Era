@@ -7,12 +7,209 @@
     android:layout_height="match_parent"
     tools:context=".TutorialFolderActivity">
 
-    <FrameLayout
-        android:id="@+id/pagesFrameLayoutId"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/teal_700"
+        android:theme="@style/ToolbarColoredBackArrow"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIconTint="@color/white"
+        app:title="hello"
+        app:titleTextColor="@color/white" />
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        android:paddingBottom="35pt"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/topBar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/topContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="45pt"
+                        android:background="@color/teal_700" />
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="5pt"
+                        android:layout_marginTop="10pt"
+                        android:layout_marginBottom="5pt"
+                        app:cardElevation="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="35pt"
+                                android:layout_height="35pt"
+                                android:layout_gravity="center"
+                                android:layout_margin="3pt"
+                                android:background="@drawable/rounded_border_gray_bg"
+                                android:clickable="false"
+                                android:padding="4pt"
+                                android:src="@drawable/baseline_folder_24"
+                                app:tint="@color/teal_700" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:paddingHorizontal="4pt"
+                                android:paddingVertical="5pt">
+
+                                <TextView
+                                    android:id="@+id/folderName"
+                                    style="@style/MaterialAlertDialog.Material3.Body.Text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="How to crack Java InterView"
+                                    android:textSize="9pt"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/dateCreated"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5pt"
+                                    android:drawableLeft="@drawable/ic_baseline_access_time_filled_24"
+                                    android:drawablePadding="5pt"
+                                    android:drawableTint="@color/grayDark"
+                                    android:gravity="center"
+                                    android:text="2 days ago" />
+
+                                <TextView
+                                    android:id="@+id/authorName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5pt"
+                                    android:drawableLeft="@drawable/ic_baseline_person_24"
+                                    android:drawablePadding="5pt"
+                                    android:drawableTint="@color/teal_700"
+                                    android:gravity="center"
+                                    android:text="Amrit Acharya" />
+
+                                <TextView
+                                    android:id="@+id/libraryName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="5pt"
+                                    android:drawableLeft="@drawable/ic_baseline_library_books_24"
+                                    android:drawablePadding="5pt"
+                                    android:drawableTint="@color/grayDark"
+                                    android:gravity="center"
+                                    android:text="Data Structure and Algorighms" />
+
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="4pt"
+                                    android:layout_marginTop="5pt">
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content">
+
+                                        <ImageView
+                                            android:layout_width="7pt"
+                                            android:layout_height="7pt"
+                                            android:layout_gravity="center"
+                                            android:src="@drawable/ic_baseline_remove_red_eye_24"
+                                            app:tint="@color/grayDark" />
+
+                                        <TextView
+                                            android:id="@+id/viewCount"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="2pt"
+                                            android:text="450" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="5pt">
+
+                                        <ImageView
+                                            android:layout_width="7pt"
+                                            android:layout_height="7pt"
+                                            android:layout_gravity="center"
+                                            android:src="@drawable/baseline_pages_24"
+                                            app:tint="@color/grayDark" />
+
+                                        <TextView
+                                            android:id="@+id/pagesCount"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="2pt"
+                                            android:text="12" />
+                                    </LinearLayout>
+
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:paddingHorizontal="5pt"
+                android:layout_marginTop="5pt"
+                android:layout_marginBottom="5pt"
+                android:textStyle="bold"
+                android:textSize="8pt"
+                android:text="Pages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <FrameLayout
+                android:id="@+id/pagesFrameLayoutId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/topContainer" />
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:layout_width="wrap_content"
+        android:id="@+id/fab"
+        android:text="@null"
+        app:icon="@drawable/ic_baseline_more_vert_24"
+        android:layout_margin="5pt"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

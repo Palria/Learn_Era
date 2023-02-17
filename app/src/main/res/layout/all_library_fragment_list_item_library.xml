@@ -86,6 +86,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/tutorialsContainer"
                 android:layout_marginLeft="5pt"
                 android:layout_marginTop="4pt"
                 android:layout_width="wrap_content"
@@ -101,6 +102,30 @@
                 <TextView
                     android:layout_marginLeft="3pt"
                     android:id="@+id/tutorialsCount"
+                    android:text="10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/dateContainer"
+                android:layout_marginLeft="5pt"
+                android:layout_marginTop="4pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_gravity="center"
+                    app:tint="@color/grayDark"
+                    android:src="@drawable/ic_baseline_access_time_filled_24"
+                    android:layout_width="7pt"
+                    android:layout_height="7pt"/>
+
+                <TextView
+                    android:layout_marginLeft="3pt"
+                    android:id="@+id/dateCreated"
                     android:text="10"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
