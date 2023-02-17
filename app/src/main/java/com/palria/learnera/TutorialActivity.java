@@ -77,7 +77,7 @@ Button addActionButton;
         fetchTutorial(new TutorialFetchListener() {
             @Override
             public void onSuccess(TutorialDataModel tutorialDataModel) {
-                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY, authorId, libraryId, tutorialId, false, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY, authorId, libraryId, tutorialId,  null, null, null, null, new GlobalConfig.ActionCallback() {
                     @Override
                     public void onSuccess() {
 
@@ -221,7 +221,20 @@ Button addActionButton;
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Toast.makeText(TutorialActivity.this, "bookmarked", Toast.LENGTH_SHORT).show();
+                                GlobalConfig.addToBookmark(authorId, libraryId, null, true, false, new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Toast.makeText(TutorialActivity.this, "bookmarked", Toast.LENGTH_SHORT).show();
+
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+                                        Toast.makeText(TutorialActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+
+                                    }
+                                });
+
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -231,6 +244,7 @@ Button addActionButton;
                             }
                         })
                         .show();
+
             }
         });
 

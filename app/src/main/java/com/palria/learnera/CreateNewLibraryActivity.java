@@ -247,7 +247,7 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                                 createNewLibrary(categoryList,coverPhotoDownloadUrl, coverPhotoStorageReference,new OnLibraryEditionListener() {
                                     @Override
                                     public void onSuccess() {
-                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null, false, true, false, null, null, null,null, false, false, false, new GlobalConfig.ActionCallback() {
+                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null, null, null, null,null, new GlobalConfig.ActionCallback() {
                                             @Override
                                             public void onSuccess() {
                                                 toggleProgress(false);
@@ -307,7 +307,7 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                                     editLibrary(libraryCategoryArrayList,coverPhotoDownloadUrl, coverPhotoStorageReference,new OnLibraryEditionListener() {
                                         @Override
                                         public void onSuccess() {
-                                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null, false, true, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null,  null, null, null, null, new GlobalConfig.ActionCallback() {
                                                 @Override
                                                 public void onSuccess() {
 
@@ -365,7 +365,7 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                             editLibrary(libraryCategoryArrayList,retrievedCoverPhotoDownloadUrl,retrievedCoverPhotoStorageReference, new OnLibraryEditionListener() {
                                 @Override
                                 public void onSuccess() {
-                                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null, false, true, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null,  null, null, null, null,  new GlobalConfig.ActionCallback() {
                                         @Override
                                         public void onSuccess() {
 
@@ -397,7 +397,7 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                         createNewLibrary(categoryList,"","", new OnLibraryEditionListener() {
                             @Override
                             public void onSuccess() {
-                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null, false, true, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null,  null, null, null, null, new GlobalConfig.ActionCallback() {
                                     @Override
                                     public void onSuccess() {
 
@@ -441,7 +441,7 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                         editLibrary(libraryCategoryArrayList,"","", new OnLibraryEditionListener() {
                             @Override
                             public void onSuccess() {
-                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null, false, true, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null, null, null, null, null, new GlobalConfig.ActionCallback() {
                                     @Override
                                     public void onSuccess() {
 toggleProgress(false);

@@ -137,7 +137,7 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
 initCategoriesChip(categories);
                 dateCreated.setText(libraryDataModel.getDateCreated());
 
-                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY, authorId, libraryId, null, false, true, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY, authorId, libraryId, null,  null, null, null, null,  new GlobalConfig.ActionCallback() {
                     @Override
                     public void onSuccess() {
 
@@ -243,12 +243,24 @@ initCategoriesChip(categories);
             public void onClick(View view) {
                 new AlertDialog.Builder(LibraryActivity.this)
                         .setTitle("Add this to bookmark?")
-                        .setMessage("when you save to bookmark you are abale to view it in your bookmar" +
+                        .setMessage("when you save to bookmark you are able to view it in your bookmarked" +
                                 "ks for future.")
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Toast.makeText(LibraryActivity.this, "bookmared", Toast.LENGTH_SHORT).show();
+                                GlobalConfig.addToBookmark(authorId, libraryId, null, true, false, new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        Toast.makeText(LibraryActivity.this, "bookmarked", Toast.LENGTH_SHORT).show();
+
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+                                        Toast.makeText(LibraryActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+
+                                    }
+                                });
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -235,7 +235,7 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                                    @Override
                                    public void onSuccess(String userName) {
                                        //succeed in editing profile
-                                       GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY, GlobalConfig.getCurrentUserId(), null, null, true, false, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                       GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY, GlobalConfig.getCurrentUserId(), null, null,  null, null, null, null, new GlobalConfig.ActionCallback() {
                                            @Override
                                            public void onSuccess() {
 
@@ -289,7 +289,7 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(String userName) {
                                 //succeed in editing profile
-                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY, GlobalConfig.getCurrentUserId(), null, null, true, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY, GlobalConfig.getCurrentUserId(), null, null, null, null, null, null,new GlobalConfig.ActionCallback() {
                                     @Override
                                     public void onSuccess() {
                                         toggleProgress(false);
@@ -328,7 +328,7 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(String userName) {
                             //succeed in editing profile
-                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY, GlobalConfig.getCurrentUserId(), null, null, true, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY, GlobalConfig.getCurrentUserId(), null, null,  null, null, null, null,new GlobalConfig.ActionCallback() {
                                 @Override
                                 public void onSuccess() {
 

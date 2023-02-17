@@ -246,7 +246,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                                 createNewTutorial(coverPhotoDownloadUrl,coverPhotoStorageReference, new OnTutorialEditionListener() {
                                     @Override
                                     public void onSuccess() {
-                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId, false, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId, null, null, null, null, new GlobalConfig.ActionCallback() {
                                             @Override
                                             public void onSuccess() {
 
@@ -302,7 +302,7 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                                     editTutorial(coverPhotoDownloadUrl,coverPhotoStorageReference, new OnTutorialEditionListener() {
                                         @Override
                                         public void onSuccess() {
-                                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId, false, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId,  null, null, null, null, new GlobalConfig.ActionCallback() {
                                                 @Override
                                                 public void onSuccess() {
                                                     toggleProgress(false);
@@ -341,7 +341,7 @@ toggleProgress(false);
                             editTutorial(retrievedCoverPhotoDownloadUrl,retrievedCoverPhotoStorageReference, new OnTutorialEditionListener() {
                                 @Override
                                 public void onSuccess() {
-                                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId, false, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId,  null, null, null, null, new GlobalConfig.ActionCallback() {
                                         @Override
                                         public void onSuccess() {
 
@@ -378,7 +378,7 @@ toggleProgress(false);
                         createNewTutorial("", "",new OnTutorialEditionListener() {
                             @Override
                             public void onSuccess() {
-                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId, false, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId,  null, null, null, null, new GlobalConfig.ActionCallback() {
                                     @Override
                                     public void onSuccess() {
 
@@ -414,7 +414,7 @@ toggleProgress(false);
                         editTutorial("","" ,new OnTutorialEditionListener() {
                             @Override
                             public void onSuccess() {
-                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId, false, false, true, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryContainerId, tutorialId, null, null, null, null, new GlobalConfig.ActionCallback() {
                                     @Override
                                     public void onSuccess() {
 

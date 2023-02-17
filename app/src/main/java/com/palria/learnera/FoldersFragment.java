@@ -76,7 +76,7 @@ public class FoldersFragment extends Fragment {
         foldersRcv=view.findViewById(R.id.foldersRcv);
 
         //init oflder rcv here
-        folderDataModels.add(new FolderDataModel("id","id","Design princilples","1 min ago",4l));
+        folderDataModels.add(new FolderDataModel("id","id","Design principles","1 min ago",4l));
         folderDataModels.add(new FolderDataModel("id","id","OOps Concept Advanced","45 min ago",05l));
         folderDataModels.add(new FolderDataModel("id","id","Ui Guide 2023","1 hours ago",45l));
         folderDataModels.add(new FolderDataModel("id","id","Domain Registration P","5 hours ago",7l));

@@ -64,7 +64,7 @@ boolean isInProgress = false;
                         public void onSuccess(String email, String password) {
                             //user has successfully signed in
                             GlobalConfig.setCurrentUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_SIGN_IN_TYPE_KEY, GlobalConfig.getCurrentUserId(), null, null, true, false, false, null, null, null, null, false, false, false, new GlobalConfig.ActionCallback() {
+                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_SIGN_IN_TYPE_KEY, GlobalConfig.getCurrentUserId(), null, null, null, null, null, null,  new GlobalConfig.ActionCallback() {
                                 @Override
                                 public void onSuccess() {
 

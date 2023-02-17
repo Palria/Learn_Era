@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.telecom.Call;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -25,13 +26,16 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ServerTimestamp;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.firestore.model.ServerTimestamps;
 import com.google.firebase.storage.FirebaseStorage;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
+import com.palria.learnera.models.UserActivityDataModel;
 import com.palria.learnera.models.UserProfileDataModel;
 import com.palria.learnera.models.WelcomeScreenItemModal;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -123,6 +127,10 @@ public class GlobalConfig {
     public static final String IS_TUTORIAL_BOOK_MARK_KEY = "IS_TUTORIAL_BOOK_MARK";
     public static final String AUTHOR_ID_KEY = "AUTHOR_ID";
     public static final String DATE_BOOK_MARKED_KEY = "DATE_BOOK_MARKED";
+    public static final String DATE_TIME_STAMP_BOOK_MARKED_KEY = "DATE_TIME_STAMP_BOOK_MARKED";
+    public static final String LAST_DATE_TIME_STAMP_BOOK_MARKED_KEY = "LAST_DATE_TIME_STAMP_BOOK_MARKED";
+    public static final String TOTAL_NUMBER_OFR_BOOK_MARKS_KEY = "TOTAL_NUMBER_OFR_BOOK_MARKS";
+    public static final String BOOK_MARKER_USER_ID_KEY = "BOOK_MARKER_USER_ID";
 
 
     public static final String REVIEWS_KEY = "REVIEWS";
@@ -961,7 +969,7 @@ public class GlobalConfig {
         return list;
     }
 //
-    public static void updateActivityLog(String activityLogType, String authorId, String libraryId, String tutorialId, boolean isAuthorAffected, boolean isLibraryAffected, boolean isTutorialAffected,String tutorialFolderId ,String tutorialPageId ,String folderPageId ,String reviewId , boolean isTutorialFolderAffected, boolean isTutorialPageAffected, boolean isFolderPageAffected, ActionCallback actionCallback){
+    public static void updateActivityLog(String activityLogType, String authorId, String libraryId, String tutorialId,String tutorialFolderId ,String tutorialPageId ,String folderPageId ,String reviewId , ActionCallback actionCallback){
             String activityLogId = getRandomString(10);
             HashMap<String,Object> activityLogDetails = new HashMap<>();
 //            activityLogDetails.put(LOG_NOTE_KEY,);
@@ -982,12 +990,13 @@ public class GlobalConfig {
             activityLogDetails.put(TUTORIAL_PAGE_ID_KEY,tutorialPageId);
             activityLogDetails.put(FOLDER_PAGE_ID_KEY,folderPageId);
             activityLogDetails.put(REVIEWER_ID_KEY,reviewId);
-            activityLogDetails.put(IS_AUTHOR_AFFECTED_KEY,isAuthorAffected);
-            activityLogDetails.put(IS_LIBRARY_AFFECTED_KEY,isLibraryAffected);
-            activityLogDetails.put(IS_TUTORIAL_AFFECTED_KEY,isTutorialAffected);
-            activityLogDetails.put(IS_TUTORIAL_FOLDER_AFFECTED_KEY,isTutorialFolderAffected);
-            activityLogDetails.put(IS_TUTORIAL_PAGE_AFFECTED_KEY,isTutorialPageAffected);
-            activityLogDetails.put(IS_FOLDER_PAGE_AFFECTED_KEY,isFolderPageAffected);
+//
+//            activityLogDetails.put(IS_AUTHOR_AFFECTED_KEY,isAuthorAffected);
+//            activityLogDetails.put(IS_LIBRARY_AFFECTED_KEY,isLibraryAffected);
+//            activityLogDetails.put(IS_TUTORIAL_AFFECTED_KEY,isTutorialAffected);
+//            activityLogDetails.put(IS_TUTORIAL_FOLDER_AFFECTED_KEY,isTutorialFolderAffected);
+//            activityLogDetails.put(IS_TUTORIAL_PAGE_AFFECTED_KEY,isTutorialPageAffected);
+//            activityLogDetails.put(IS_FOLDER_PAGE_AFFECTED_KEY,isFolderPageAffected);
 
 
         getFirebaseFirestoreInstance()
@@ -1009,6 +1018,121 @@ public class GlobalConfig {
                     }
                 });
 
+        switch(activityLogType){
+            case GlobalConfig.ACTIVITY_LOG_USER_REVIEW_AUTHOR_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_DELETE_AUTHOR_REVIEW_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_EDIT_AUTHOR_REVIEW_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_SIGN_UP_TYPE_KEY:
+
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_SIGN_IN_TYPE_KEY:
+
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_EDIT_ACCOUNT_TYPE_KEY:
+
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_VISIT_AUTHOR_TYPE_KEY:
+
+                ;
+                return;
+
+            case GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY:
+
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_DELETE_LIBRARY_TYPE_KEY:
+
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY:
+
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_REVIEW_LIBRARY_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_REVIEW_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_DELETE_LIBRARY_REVIEW_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY:
+
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_LIBRARY_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_LIBRARY_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_TYPE_KEY:
+
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_REVIEW_TUTORIAL_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_DELETE_TUTORIAL_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_DELETE_TUTORIAL_REVIEW_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_REVIEW_TYPE_KEY:
+
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_TUTORIAL_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_TUTORIAL_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_FOLDER_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_FOLDER_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_DELETE_TUTORIAL_FOLDER_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_PAGE_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_DELETE_TUTORIAL_PAGE_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_EDIT_FOLDER_PAGE_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_DELETE_FOLDER_PAGE_TYPE_KEY:
+                ;
+                return;
+        }
 
     }
 
@@ -1121,6 +1245,109 @@ public class GlobalConfig {
         intent.putExtra(GlobalConfig.USER_ID_KEY,userId);
 
         return  intent;
+    }
+
+
+    public static void addToBookmark(String authorId, String libraryId, String tutorialId, boolean isLibraryBookmark, boolean isTutorialBookmark, ActionCallback actionCallback){
+        WriteBatch writeBatch  =  getFirebaseFirestoreInstance().batch();
+
+        DocumentReference bookMarkOwnerReference = null;
+        if(isLibraryBookmark) {
+            bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_USERS_KEY)
+                    .document(GlobalConfig.getCurrentUserId())
+                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(libraryId);
+
+        }else if(isTutorialBookmark){
+            bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_USERS_KEY)
+                    .document(GlobalConfig.getCurrentUserId())
+                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(tutorialId);
+
+        }
+        HashMap<String,Object> bookmarkOwnerDetails = new HashMap<>();
+        bookmarkOwnerDetails.put(IS_LIBRARY_BOOK_MARK_KEY,isLibraryBookmark);
+        bookmarkOwnerDetails.put(IS_TUTORIAL_BOOK_MARK_KEY,isTutorialBookmark);
+        bookmarkOwnerDetails.put(AUTHOR_ID_KEY,authorId);
+        bookmarkOwnerDetails.put(LIBRARY_ID_KEY,libraryId);
+        bookmarkOwnerDetails.put(TUTORIAL_ID_KEY,tutorialId);
+        bookmarkOwnerDetails.put(DATE_TIME_STAMP_BOOK_MARKED_KEY, FieldValue.serverTimestamp());
+        writeBatch.set(bookMarkOwnerReference,bookmarkOwnerDetails,SetOptions.merge());
+
+
+         DocumentReference bookMarkReference = null;
+        if(isLibraryBookmark) {
+           bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                    .document(libraryId)
+                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+
+        }else if(isTutorialBookmark){
+            bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                    .document(tutorialId)
+                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+
+        }
+        HashMap<String,Object> bookmarkDetails = new HashMap<>();
+        bookmarkDetails.put(BOOK_MARKER_USER_ID_KEY,getCurrentUserId());
+        bookmarkDetails.put(AUTHOR_ID_KEY,authorId);
+        bookmarkDetails.put(LIBRARY_ID_KEY,libraryId);
+        bookmarkDetails.put(TUTORIAL_ID_KEY,tutorialId);
+        bookmarkDetails.put(DATE_TIME_STAMP_BOOK_MARKED_KEY, FieldValue.serverTimestamp());
+        writeBatch.set(bookMarkReference,bookmarkDetails,SetOptions.merge());
+
+
+         DocumentReference numOfBookMarkReference = null;
+        if(isLibraryBookmark) {
+            numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                    .document(libraryId);
+
+        }else if(isTutorialBookmark){
+            numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                    .document(tutorialId);
+
+        }
+        HashMap<String,Object> numOfBookmarkDetails = new HashMap<>();
+        numOfBookmarkDetails.put(TOTAL_NUMBER_OFR_BOOK_MARKS_KEY, FieldValue.increment(1L));
+        numOfBookmarkDetails.put(LAST_DATE_TIME_STAMP_BOOK_MARKED_KEY, FieldValue.serverTimestamp());
+        writeBatch.set(numOfBookMarkReference,numOfBookmarkDetails,SetOptions.merge());
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        if(isLibraryBookmark){
+                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_LIBRARY_TYPE_KEY, authorId, libraryId, null, null, null, null,null,  new GlobalConfig.ActionCallback() {
+                                @Override
+                                public void onSuccess() {
+//
+//                                                GlobalHelpers.showAlertMessage("success",
+//                                                        CreateNewLibraryActivity.this,
+//                                                        "Library Created Successfully.",
+//                                                        "You have successfully created your library,thanks and go ahead and contribute to Learn Era ");
+                                actionCallback.onSuccess();
+                                }
+
+                                @Override
+                                public void onFailed(String errorMessage) {
+                                    actionCallback.onSuccess();
+
+                                }
+                            });
+
+                        }
+                    }
+                });
+
     }
 
     /*

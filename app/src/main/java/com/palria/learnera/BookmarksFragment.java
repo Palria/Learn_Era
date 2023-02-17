@@ -78,7 +78,7 @@ fetchBookmarks(new BookmarkFetchListener() {
                            final String authorId = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
                            final String libraryId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
                            final String tutorialId = ""+  documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
-                           final String dateBookmarked = ""+  documentSnapshot.get(GlobalConfig.DATE_BOOK_MARKED_KEY);
+                           final String dateBookmarked = ""+  documentSnapshot.get(GlobalConfig.DATE_TIME_STAMP_BOOK_MARKED_KEY);
 
                             bookmarkFetchListener.onSuccess(isLibraryBookmark,isTutorialBookmark,authorId,libraryId ,tutorialId ,dateBookmarked );
 
