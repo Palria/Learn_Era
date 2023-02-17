@@ -251,7 +251,8 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                                             @Override
                                             public void onSuccess() {
                                                 toggleProgress(false);
-                                                showAddTutorialDialog();
+                                                //showAddTutorialDialog();
+                                                gotoNewlyCreatedLibrary();
 //
 //                                                GlobalHelpers.showAlertMessage("success",
 //                                                        CreateNewLibraryActivity.this,
@@ -263,7 +264,9 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                                             @Override
                                             public void onFailed(String errorMessage) {
                                                 toggleProgress(false);
-                                                showAddTutorialDialog();
+                                                //showAddTutorialDialog();
+                                                gotoNewlyCreatedLibrary();
+
 //
 //                                                GlobalHelpers.showAlertMessage("success",
 //                                                        CreateNewLibraryActivity.this,
@@ -402,7 +405,9 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                                     public void onSuccess() {
 
                                         toggleProgress(false);
-                                        showAddTutorialDialog();
+                                        //showAddTutorialDialog();
+                                        gotoNewlyCreatedLibrary();
+
 //
 //                                        GlobalHelpers.showAlertMessage("success",
 //                                                CreateNewLibraryActivity.this,
@@ -415,7 +420,9 @@ if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
                                     public void onFailed(String errorMessage) {
 
                                         toggleProgress(false);
-                                        showAddTutorialDialog();
+                                        //showAddTutorialDialog();
+                                        gotoNewlyCreatedLibrary();
+
 //
 //                                        GlobalHelpers.showAlertMessage("success",
 //                                                CreateNewLibraryActivity.this,
@@ -946,6 +953,15 @@ toggleProgress(false);
                     }
                 });
 
+    }
+
+    private void gotoNewlyCreatedLibrary(){
+
+        Intent intent  = new Intent(CreateNewLibraryActivity.this,LibraryActivity.class);
+        intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+        intent.putExtra(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserId());
+        intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
+        startActivity(intent);
     }
 
     interface CoverPhotoUploadListener{

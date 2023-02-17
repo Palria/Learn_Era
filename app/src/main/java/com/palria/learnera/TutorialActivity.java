@@ -19,9 +19,13 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.models.TutorialDataModel;
 import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
@@ -29,12 +33,13 @@ import com.palria.learnera.widgets.LEBottomSheetDialog;
 import com.palria.learnera.widgets.RatingBottomSheetWidget;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TutorialActivity extends AppCompatActivity {
 String tutorialId = "";
 String authorId = "";
 String libraryId = "";
-
+boolean isFirstView = true;
 RoundedImageView tutorialCoverImage;
 RoundedImageView authorPicture;
 TextView authorName;
@@ -44,6 +49,7 @@ TextView pagesCount;
 TextView foldersCount;
 TextView tutorialName;
 TextView tutorialDescription;
+    int[] ratings = {0,0,0,0,0};
 
 //get frame layouts
     FrameLayout foldersFrameLayout;
@@ -78,17 +84,17 @@ Button addActionButton;
         fetchTutorial(new TutorialFetchListener() {
             @Override
             public void onSuccess(TutorialDataModel tutorialDataModel) {
-                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY, authorId, libraryId, tutorialId,  null, null, null, null, new GlobalConfig.ActionCallback() {
-                    @Override
-                    public void onSuccess() {
-
-                    }
-
-                    @Override
-                    public void onFailed(String errorMessage) {
-
-                    }
-                });
+//                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY, authorId, libraryId, tutorialId,  null, null, null, null, new GlobalConfig.ActionCallback() {
+//                    @Override
+//                    public void onSuccess() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onFailed(String errorMessage) {
+//
+//                    }
+//                });
 
                 GlobalConfig.getFirebaseFirestoreInstance()
                         .collection(GlobalConfig.ALL_USERS_KEY)
@@ -121,6 +127,15 @@ Button addActionButton;
                 foldersCount.setText(tutorialDataModel.getTotalNumberOfFolders()+"");
                 tutorialName.setText(tutorialDataModel.getTutorialName()+"");
                 tutorialDescription.setText(tutorialDataModel.getTutorialDescription()+"");
+
+
+                ratings[0] = (int) tutorialDataModel.getTotalNumberOfOneStarRate();
+                ratings[1] = (int) tutorialDataModel.getTotalNumberOfTwoStarRate();
+                ratings[2] = (int) tutorialDataModel.getTotalNumberOfThreeStarRate();
+                ratings[3] = (int) tutorialDataModel.getTotalNumberOfFourStarRate();
+                ratings[4] = (int) tutorialDataModel.getTotalNumberOfFiveStarRate();
+
+                GlobalConfig.incrementNumberOfVisitors(authorId,libraryId,tutorialId,null,null,false,false,true,false,false,false);
 
             }
 
@@ -173,7 +188,14 @@ Button addActionButton;
                     }else {
                         isRatingsFragmentOpened =true;
                         setFrameLayoutVisibility(ratingsFrameLayout);
-                        initFragment(new LibraryActivityRatingFragment(), ratingsFrameLayout);
+                        LibraryActivityRatingFragment libraryActivityRatingFragment = new LibraryActivityRatingFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean(GlobalConfig.IS_LIBRARY_REVIEW_KEY,false);
+                        bundle.putString(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+                        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+                        bundle.putIntArray(GlobalConfig.STAR_RATING_ARRAY_KEY,ratings);
+                        libraryActivityRatingFragment.setArguments(bundle);
+                        initFragment(libraryActivityRatingFragment, ratingsFrameLayout);
                     }
                 }
             }
@@ -222,7 +244,7 @@ Button addActionButton;
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                GlobalConfig.addToBookmark(authorId, libraryId, null, true, false, new GlobalConfig.ActionCallback() {
+                                GlobalConfig.addToBookmark(authorId, libraryId, tutorialId, false, true, new GlobalConfig.ActionCallback() {
                                     @Override
                                     public void onSuccess() {
                                         Toast.makeText(TutorialActivity.this, "bookmarked", Toast.LENGTH_SHORT).show();
@@ -338,7 +360,7 @@ Button addActionButton;
                         leBottomSheetDialog.hide();
 
                        new BottomSheetFormBuilderWidget(TutorialActivity.this)
-                               .setTitle("Enter Folder Name")
+                               .setTitle("Folder is used to organize your pages within a tutorial")
                                .setPositiveTitle("Create")
                                .addInputField(new BottomSheetFormBuilderWidget.EditTextInput(TutorialActivity.this)
                                        .setHint("Enter folder name")
@@ -347,12 +369,20 @@ Button addActionButton;
                                    @Override
                                    public void onSubmit(String[] values) {
                                        super.onSubmit(values);
+
                                        Toast.makeText(TutorialActivity.this, values[0],Toast.LENGTH_SHORT).show();
                                         //values will be returned as array of strings as per input list position
-                                       //eg first added input has first valuel
+                                       //eg first added input has first value
                                        String folderName = values[0];
                                        if(folderName.trim().equals("")){
-                                           Toast.makeText(TutorialActivity.this, "Please enter name",Toast.LENGTH_SHORT).show();
+//                                           leBottomSheetDialog.setTitle("Folder needs name, must enter name for the folder");
+
+//                                           Toast.makeText(TutorialActivity.this, "Please enter name",Toast.LENGTH_SHORT).show();
+                                       }else{
+
+                                           createNewFolder(values[0]);
+//                                           leBottomSheetDialog.setTitle("Creating "+values[0]+" folder in progress...");
+//                                           leBottomSheetDialog.hide();
                                        }
                                        //create folder process here
                                    }
@@ -379,6 +409,8 @@ Button addActionButton;
     private void fetchIntentData(){
         Intent intent = getIntent();
         tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
+        libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
+        isFirstView = intent.getBooleanExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
 
     }
 
@@ -454,7 +486,85 @@ Button addActionButton;
     }
 
 
+    private void createNewFolder(final String folderName){
+        String folderId = GlobalConfig.getRandomString(50);
+        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+        DocumentReference documentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                .document(tutorialId)
+                .collection(GlobalConfig.ALL_FOLDERS_KEY)
+                .document(folderId);
 
+        HashMap<String,Object> folderDetails = new HashMap<>();
+        folderDetails.put(GlobalConfig.FOLDER_NAME_KEY,folderName );
+        folderDetails.put(GlobalConfig.FOLDER_ID_KEY,folderId );
+        folderDetails.put(GlobalConfig.TUTORIAL_ID_KEY,tutorialId );
+        folderDetails.put(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY,authorId);
+        folderDetails.put(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        writeBatch.set(documentReference,folderDetails, SetOptions.merge());
+
+         DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                .document(tutorialId);
+        HashMap<String,Object> tutorialDetails = new HashMap<>();
+        tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY,FieldValue.increment(1L) );
+        tutorialDetails.put(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        writeBatch.set(tutorialDocumentReference,tutorialDetails, SetOptions.merge());
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                        GlobalHelpers.showAlertMessage("error",
+                                TutorialActivity.this,
+                                "Folder Creation failed.",
+                                "Your "+folderName+" folder failed to create with error: "+e.getMessage());
+
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_FOLDER_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, null, null,null, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+////
+//                                                GlobalHelpers.showAlertMessage("success",
+//                                                        TutorialActivity.this,
+//                                                        "Folder Created Successfully.",
+//                                                        "You have successfully created folder,thanks and go ahead and contribute to Learn Era ");
+                            Intent intent  = new Intent(TutorialActivity.this,TutorialFolderActivity.class);
+                                intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+                                intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderId);
+                                intent.putExtra(GlobalConfig.FOLDER_NAME_KEY,folderName);
+                                intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
+                                startActivity(intent);
+                                leBottomSheetDialog.hide();
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                //GlobalHelpers.showAlertMessage("success",
+//                                    TutorialActivity.this,
+//                                    "Folder Created Successfully.",
+//                                    "You have successfully created folder,thanks and go ahead and contribute to Learn Era ");
+
+                                Intent intent  = new Intent(TutorialActivity.this,TutorialFolderActivity.class);
+                                intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+                                intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderId);
+                                intent.putExtra(GlobalConfig.FOLDER_NAME_KEY,folderName);
+                                intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
+                                startActivity(intent);
+                                leBottomSheetDialog.hide();
+
+                            }
+                        });
+
+                    }
+                });
+    }
 
     interface TutorialFetchListener{
         void onSuccess(TutorialDataModel tutorialDataModel);

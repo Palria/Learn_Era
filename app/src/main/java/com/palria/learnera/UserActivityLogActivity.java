@@ -180,6 +180,15 @@ fetchLogs(new OnLogFetchListener() {
             case GlobalConfig.ACTIVITY_LOG_USER_DELETE_FOLDER_PAGE_TYPE_KEY:
                 ;
                 return;
+            case GlobalConfig.ACTIVITY_LOG_USER_VISIT_FOLDER_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_PAGE_TYPE_KEY:
+                ;
+                return;
+            case GlobalConfig.ACTIVITY_LOG_USER_VISIT_FOLDER_PAGE_TYPE_KEY:
+                ;
+                return;
         }
 
     }

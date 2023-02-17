@@ -51,7 +51,7 @@ if(getArguments()!= null){
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
        View parentView = inflater.inflate(R.layout.fragment_all_tutorial_page, container, false);
-initUi(parentView);
+        initUi(parentView);
         fetchPages(new FetchPageListener() {
             @Override
             public void onSuccess(String pageId, String pageName, String dateCreated) {
@@ -73,22 +73,22 @@ initUi(parentView);
 
         pageDataModels.add(new PageDataModel("How to hold","this is content",
                 "",
-                "autohor",
+                "author",
                 "folderId",
                 "1 hrs ago"));
         pageDataModels.add(new PageDataModel("How to hold","this is content",
                 "",
-                "autohor",
+                "author",
                 "folderId",
                 "1 hrs ago"));
         pageDataModels.add(new PageDataModel("How to hold","this is content",
                 "",
-                "autohor",
+                "author",
                 "folderId",
                 "1 hrs ago"));
         pageDataModels.add(new PageDataModel("How to hold","this is content",
                 "",
-                "autohor",
+                "author",
                 "folderId",
                 "1 hrs ago"));
 
@@ -108,7 +108,7 @@ initUi(parentView);
             pageQuery =  GlobalConfig.getFirebaseFirestoreInstance()
                     .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                     .document(tutorialId)
-                    .collection(GlobalConfig.ALL_TUTORIAL_FOLDERS_KEY)
+                    .collection(GlobalConfig.ALL_FOLDERS_KEY)
                     .document(folderId)
                     .collection(GlobalConfig.ALL_FOLDER_PAGES_KEY);
 
@@ -134,7 +134,7 @@ initUi(parentView);
 
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             String pageId = documentSnapshot.getId();
-                            String pageName  = ""+ documentSnapshot.get(GlobalConfig.PAGE_NAME_KEY);
+                            String pageName  = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
                             String dateCreated  =  documentSnapshot.get(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY)!=null ? documentSnapshot.getTimestamp(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY).toDate()+"" : "Undefined";
                             if(dateCreated.length()>10){
                                 dateCreated = dateCreated.substring(0,10);

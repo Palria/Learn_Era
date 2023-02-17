@@ -27,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ServerTimestamp;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.firestore.model.Document;
 import com.google.firebase.firestore.model.ServerTimestamps;
 import com.google.firebase.storage.FirebaseStorage;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
@@ -211,9 +212,12 @@ public class GlobalConfig {
     public static final String TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY = "TOTAL_NUMBER_OF_FOLDERS_CREATED";
     public static final String TOTAL_NUMBER_OF_PAGES_CREATED_KEY = "TOTAL_NUMBER_OF_PAGES_CREATED";
 
-    public static final String ALL_TUTORIAL_FOLDERS_KEY = "ALL_TUTORIAL_FOLDERS";
+    public static final String ALL_FOLDERS_KEY = "ALL_FOLDERS";
     public static final String FOLDER_NAME_KEY = "FOLDER_NAME";
-    public static final String PAGE_NAME_KEY = "PAGE_NAME";
+    public static final String TOTAL_NUMBER_OF_FOLDER_VISITOR_KEY = "TOTAL_NUMBER_OF_FOLDER_VISITOR";
+    public static final String TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR";
+    public static final String TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR";
+//    public static final String PAGE_NAME_KEY = "PAGE_NAME";
     public static final String TOTAL_NUMBER_OF_PAGE_DATA_KEY = "TOTAL_NUMBER_OF_PAGE_DATA";
     public static final String PAGE_TITLE_KEY = "PAGE_TITLE";
     public static final String PAGE_DATE_CREATED_TIME_STAMP_KEY = "PAGE_DATE_CREATED_TIME_STAMP";
@@ -227,6 +231,12 @@ public class GlobalConfig {
     public static final String TOTAL_NUMBER_OF_FOLDER_PAGES_KEY = "TOTAL_NUMBER_OF_FOLDER_PAGES";
 
     //TUTORIAL FIELD KEYS END
+
+
+
+    public static final String IS_FIRST_VIEW_KEY = "IS_FIRST_VIEW";
+    public static final String STAR_RATING_ARRAY_KEY = "STAR_RATING_ARRAY";
+
 
     public static final String IS_FROM_LIBRARY_ACTIVITY_CONTEXT_KEY = "IS_FROM_LIBRARY_ACTIVITY_CONTEXT";
 
@@ -285,15 +295,18 @@ public class GlobalConfig {
 
     public static final String ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_FOLDER_TYPE_KEY = "ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_FOLDER_TYPE";
     public static final String ACTIVITY_LOG_USER_EDIT_TUTORIAL_FOLDER_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_TUTORIAL_FOLDER_TYPE";
+    public static final String ACTIVITY_LOG_USER_VISIT_FOLDER_TYPE_KEY = "ACTIVITY_LOG_USER_VISIT_FOLDER_TYPE";
     public static final String ACTIVITY_LOG_USER_DELETE_TUTORIAL_FOLDER_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_TUTORIAL_FOLDER_TYPE";
 
 
     public static final String ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE";
+    public static final String ACTIVITY_LOG_USER_VISIT_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_VISIT_TUTORIAL_PAGE_TYPE";
     public static final String ACTIVITY_LOG_USER_EDIT_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_TUTORIAL_PAGE_TYPE";
     public static final String ACTIVITY_LOG_USER_DELETE_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_TUTORIAL_PAGE_TYPE";
 
 
     public static final String ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE";
+    public static final String ACTIVITY_LOG_USER_VISIT_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_VISIT_FOLDER_PAGE_TYPE";
     public static final String ACTIVITY_LOG_USER_EDIT_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_FOLDER_PAGE_TYPE";
     public static final String ACTIVITY_LOG_USER_DELETE_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_FOLDER_PAGE_TYPE";
 
@@ -1348,6 +1361,125 @@ public class GlobalConfig {
                     }
                 });
 
+    }
+
+    public static void incrementNumberOfVisitors(String authorId, String libraryId, String tutorialId,String folderId,String pageId, boolean isAuthor,  boolean isLibrary,  boolean isTutorial,   boolean isFolder,   boolean isTutorialPage,   boolean isFolderPage){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+
+    if(isAuthor){
+        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_AUTHOR_TYPE_KEY, authorId, null, null, null, null, null, null, new GlobalConfig.ActionCallback() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+            }
+        });
+        DocumentReference documentReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(authorId);
+        HashMap<String,Object> details = new HashMap<>();
+        details.put(TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY,FieldValue.increment(1L));
+        writeBatch.update(documentReference,details);
+
+        writeBatch.commit();
+        return;
+    }
+    else if(isLibrary){
+        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY, authorId, libraryId, null, null, null, null, null, new GlobalConfig.ActionCallback() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+            }
+        });
+        DocumentReference documentReference = getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId);
+        HashMap<String,Object> details = new HashMap<>();
+        details.put(TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY,FieldValue.increment(1L));
+        writeBatch.update(documentReference,details);
+
+        writeBatch.commit();
+        return;
+    }
+    else if(isTutorial){
+        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY, authorId, libraryId, tutorialId, null, null, null, null, new GlobalConfig.ActionCallback() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+            }
+        });
+        DocumentReference documentReference = getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId);
+        HashMap<String,Object> details = new HashMap<>();
+        details.put(TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY,FieldValue.increment(1L));
+        writeBatch.update(documentReference,details);
+
+        writeBatch.commit();
+        return;
+    }
+    else if(isFolder){
+        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_FOLDER_TYPE_KEY, authorId, libraryId, tutorialId, folderId, null, null, null, new GlobalConfig.ActionCallback() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+            }
+        });
+        DocumentReference documentReference = getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_FOLDERS_KEY).document(folderId);
+        HashMap<String,Object> details = new HashMap<>();
+        details.put(TOTAL_NUMBER_OF_FOLDER_VISITOR_KEY,FieldValue.increment(1L));
+        writeBatch.update(documentReference,details);
+
+        writeBatch.commit();
+        return;
+    }
+    else if(isTutorialPage){
+        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_PAGE_TYPE_KEY, authorId, libraryId, tutorialId, null, pageId, null, null, new GlobalConfig.ActionCallback() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+            }
+        });
+        DocumentReference documentReference = getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_TUTORIAL_PAGES_KEY).document(pageId);
+        HashMap<String,Object> details = new HashMap<>();
+        details.put(TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR_KEY,FieldValue.increment(1L));
+        writeBatch.update(documentReference,details);
+
+        writeBatch.commit();
+        return;
+    }
+    else if(isFolderPage){
+        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_FOLDER_PAGE_TYPE_KEY, authorId, libraryId, tutorialId, null, null, pageId, null, new GlobalConfig.ActionCallback() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+            }
+        });
+        DocumentReference documentReference = getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_FOLDERS_KEY).document(folderId).collection(ALL_FOLDER_PAGES_KEY).document(pageId);
+        HashMap<String,Object> details = new HashMap<>();
+        details.put(TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR_KEY,FieldValue.increment(1L));
+        writeBatch.update(documentReference,details);
+
+        writeBatch.commit();
+        return;
+    }
     }
 
     /*

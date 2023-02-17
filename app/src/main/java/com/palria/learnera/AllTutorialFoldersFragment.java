@@ -13,6 +13,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.palria.learnera.models.FolderDataModel;
 
 public class AllTutorialFoldersFragment extends Fragment {
 
@@ -40,7 +41,7 @@ String tutorialId = "";
         initUI();
         fetchTutorialFolders(new FetchTutorialFolderListener() {
             @Override
-            public void onSuccess(String folderId , String folderName,String dateCreated,String numOfPages) {
+            public void onSuccess(FolderDataModel folderDataModel) {
 
 
             }
@@ -61,7 +62,7 @@ String tutorialId = "";
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                 .document(tutorialId)
-                .collection(GlobalConfig.ALL_TUTORIAL_FOLDERS_KEY)
+                .collection(GlobalConfig.ALL_FOLDERS_KEY)
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -77,8 +78,11 @@ String tutorialId = "";
                             String folderId = documentSnapshot.getId();
                             String folderName  = ""+ documentSnapshot.get(GlobalConfig.FOLDER_NAME_KEY);
                             String dateCreated  = documentSnapshot.get(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY)!=null ?documentSnapshot.getTimestamp(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY).toDate() +""  :"Undefined";
+                            if(dateCreated.length()>10){
+                                dateCreated = dateCreated.substring(0,10);
+                            }
                             long numOfPages  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY) : 0L;
-                            fetchTutorialFolderListener.onSuccess(folderId,folderName,dateCreated,numOfPages+"");
+                            fetchTutorialFolderListener.onSuccess(new FolderDataModel(folderId,tutorialId,folderName,dateCreated,numOfPages));
                         }
 
                     }
@@ -86,7 +90,7 @@ String tutorialId = "";
     }
 
     interface FetchTutorialFolderListener{
-        void onSuccess(String folderId , String folderName,String dateCreated,String numOfPages);
+        void onSuccess(FolderDataModel folderDataModel);
         void onFailed(String errorMessage);
     }
 

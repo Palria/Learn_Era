@@ -76,12 +76,14 @@ public class FoldersFragment extends Fragment {
         foldersRcv=view.findViewById(R.id.foldersRcv);
 
         //init oflder rcv here
-        folderDataModels.add(new FolderDataModel("id","id","Design principles","1 min ago",4l));
-        folderDataModels.add(new FolderDataModel("id","id","OOps Concept Advanced","45 min ago",05l));
-        folderDataModels.add(new FolderDataModel("id","id","Ui Guide 2023","1 hours ago",45l));
-        folderDataModels.add(new FolderDataModel("id","id","Domain Registration P","5 hours ago",7l));
-        folderDataModels.add(new FolderDataModel("id","id","Lambda Expression with Joy","1 day ago",80l));
-        folderDataModels.add(new FolderDataModel("id","id","Youtube Policy changes overview","1 week ago",99l));
+//        folderDataModels.add(new FolderDataModel("id","id","Design principles","1 min ago",4l));
+//        folderDataModels.add(new FolderDataModel("id","id","OOps Concept Advanced","45 min ago",05l));
+//        folderDataModels.add(new FolderDataModel("id","id","Ui Guide 2023","1 hours ago",45l));
+//        folderDataModels.add(new FolderDataModel("id","id","Domain Registration P","5 hours ago",7l));
+//        folderDataModels.add(new FolderDataModel("id","id","Lambda Expression with Joy","1 day ago",80l));
+//        folderDataModels.add(new FolderDataModel("id","id","Youtube Policy changes overview","1 week ago",99l));
+//
+//
         folderRcvAdapter= new FolderRcvAdapter(folderDataModels,getContext());
 
         foldersRcv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL,false));
@@ -97,7 +99,7 @@ public class FoldersFragment extends Fragment {
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                 .document(tutorialId)
-                .collection(GlobalConfig.ALL_TUTORIAL_FOLDERS_KEY)
+                .collection(GlobalConfig.ALL_FOLDERS_KEY)
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -113,6 +115,9 @@ public class FoldersFragment extends Fragment {
                             String folderId = documentSnapshot.getId();
                             String folderName  = ""+ documentSnapshot.get(GlobalConfig.FOLDER_NAME_KEY);
                             String dateCreated  = documentSnapshot.get(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY)!=null ?documentSnapshot.getTimestamp(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY).toDate() +""  :"Undefined";
+                            if(dateCreated.length()>10){
+                                dateCreated = dateCreated.substring(0,10);
+                            }
                             long numOfPages  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY) : 0L;
                             fetchTutorialFolderListener.onSuccess(new FolderDataModel(folderId,tutorialId,folderName,dateCreated,numOfPages));
                         }

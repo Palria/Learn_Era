@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.model.DocumentSet;
 import com.palria.learnera.adapters.RatingItemRecyclerViewAdapter;
@@ -36,8 +37,11 @@ public class LibraryActivityRatingFragment extends Fragment {
     LinearLayout ratingBarContainer;
     RecyclerView ratingsRecyclerListView;
     String libraryId = "";
+    String tutorialId = "";
+    boolean isLibraryReview = true;
     ArrayList<RatingDataModel> ratingDataModels;
     RatingItemRecyclerViewAdapter ratingItemRecyclerViewAdapter;
+    int[] ratings ={0,0,0,0,0};
     public LibraryActivityRatingFragment() {
         // Required empty public constructor
     }
@@ -48,6 +52,9 @@ OnReviewFetchListener onReviewFetchListener;
         super.onCreate(savedInstanceState);
 if(getArguments() != null){
     libraryId = getArguments().getString(GlobalConfig.LIBRARY_ID_KEY);
+    tutorialId = getArguments().getString(GlobalConfig.TUTORIAL_ID_KEY);
+    isLibraryReview = getArguments().getBoolean(GlobalConfig.IS_LIBRARY_REVIEW_KEY);
+    ratings = getArguments().getIntArray(GlobalConfig.STAR_RATING_ARRAY_KEY);
         }
     }
 
@@ -63,6 +70,16 @@ onReviewFetchListener = new OnReviewFetchListener() {
     public void onSuccess(RatingDataModel ratingDataModel) {
      ratingDataModels.add(ratingDataModel);
      ratingItemRecyclerViewAdapter.notifyItemChanged(ratingDataModels.size());
+
+        //int[] ratings = {40,12,155,1,15};
+
+        RatingBarWidget ratingBarWidget = new RatingBarWidget();
+        ratingBarWidget.setContainer(ratingBarContainer)
+                .setContext(getContext())
+                .setMax_value(5)
+                .setRatings(ratings)
+                .setText_color(R.color.teal_700)
+                .render();
     }
 
     @Override
@@ -83,29 +100,29 @@ getReviews();
 
          ratingDataModels = new ArrayList<>();
 
-        ratingDataModels.add(new RatingDataModel("lasdjf","Karmalu Sherpa",
-                "123",
-                "library",
-                "Sat 01",
-                "Hello i love this app so much dude.",
-                4,
-                "https://api.lorem.space/image/face?w=150&h=150"));
-
-        ratingDataModels.add(new RatingDataModel("lasdjf","Hira Kamu",
-                "123",
-                "library",
-                "June 01",
-                "Wow perficet.",
-                4,
-                "https://api.lorem.space/image/face?w=150&h=150"));
-
-        ratingDataModels.add(new RatingDataModel("lasdjf","Nima Shrestha",
-                "123",
-                "library",
-                "Feb 04",
-                "Everything is good but have some bugs in this tutorial. please fix it fast now .",
-                4,
-                "https://api.lorem.space/image/face?w=150&h=150"));
+//        ratingDataModels.add(new RatingDataModel("lasdjf","Karmalu Sherpa",
+//                "123",
+//                "library",
+//                "Sat 01",
+//                "Hello i love this app so much dude.",
+//                4,
+//                "https://api.lorem.space/image/face?w=150&h=150"));
+//
+//        ratingDataModels.add(new RatingDataModel("lasdjf","Hira Kamu",
+//                "123",
+//                "library",
+//                "June 01",
+//                "Wow perficet.",
+//                4,
+//                "https://api.lorem.space/image/face?w=150&h=150"));
+//
+//        ratingDataModels.add(new RatingDataModel("lasdjf","Nima Shrestha",
+//                "123",
+//                "library",
+//                "Feb 04",
+//                "Everything is good but have some bugs in this tutorial. please fix it fast now .",
+//                4,
+//                "https://api.lorem.space/image/face?w=150&h=150"));
 
 
         ratingItemRecyclerViewAdapter = new RatingItemRecyclerViewAdapter(ratingDataModels,getContext());
@@ -116,24 +133,25 @@ getReviews();
         ratingsRecyclerListView.setAdapter(ratingItemRecyclerViewAdapter);
 
         //load rating bar
-        int[] ratings = {40,12,155,1,15};
 
-        RatingBarWidget ratingBarWidget = new RatingBarWidget();
-        ratingBarWidget.setContainer(ratingBarContainer)
-                .setContext(getContext())
-                .setMax_value(5)
-                .setRatings(ratings)
-                .setText_color(R.color.teal_700)
-                .render();
     }
 
     void getReviews(){
-        if(1==1)return;
-        GlobalConfig.getFirebaseFirestoreInstance()
-                .collection(GlobalConfig.ALL_LIBRARY_KEY)
-                .document(libraryId)
-                .collection(GlobalConfig.REVIEWS_KEY)
-                .get()
+      Query reviewQuery = null;
+      if(isLibraryReview) {
+          reviewQuery = GlobalConfig.getFirebaseFirestoreInstance()
+                  .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                  .document(libraryId)
+                  .collection(GlobalConfig.REVIEWS_KEY);
+      }else{
+          reviewQuery = GlobalConfig.getFirebaseFirestoreInstance()
+                  .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                  .document(tutorialId)
+                  .collection(GlobalConfig.REVIEWS_KEY);
+      }
+
+
+                reviewQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -145,15 +163,15 @@ onReviewFetchListener.onFailed(e.getMessage());
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
                         for(DocumentSnapshot documentSnapshot: queryDocumentSnapshots){
-String reviewerId = documentSnapshot.getId();
-String dateReviewed = documentSnapshot.get(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY)!=null &&  documentSnapshot.get(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY) instanceof Timestamp ?  documentSnapshot.getTimestamp(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY).toString() : "Undefined";
-if(dateReviewed.length()>10){
-    dateReviewed = dateReviewed.substring(0,10);
-}
-String finalDateReview = dateReviewed;
+                            String reviewerId = documentSnapshot.getId();
+                            String dateReviewed = documentSnapshot.get(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY)!=null &&  documentSnapshot.get(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY) instanceof Timestamp ?  documentSnapshot.getTimestamp(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY).toDate().toString() : "Undefined";
+                            if(dateReviewed.length()>10){
+                                dateReviewed = dateReviewed.substring(0,10);
+                            }
+                            String finalDateReview = dateReviewed;
 
-String reviewBody = "" + documentSnapshot.get(GlobalConfig.REVIEW_COMMENT_KEY);
-long starLevel = documentSnapshot.get(GlobalConfig.STAR_LEVEL_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.STAR_LEVEL_KEY): 0L;
+                            String reviewBody = "" + documentSnapshot.get(GlobalConfig.REVIEW_COMMENT_KEY);
+                            long starLevel = documentSnapshot.get(GlobalConfig.STAR_LEVEL_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.STAR_LEVEL_KEY): 0L;
 
                             GlobalConfig.getFirebaseFirestoreInstance()
                                     .collection(GlobalConfig.ALL_USERS_KEY)

@@ -251,10 +251,10 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                                             public void onSuccess() {
 
                                                 toggleProgress(false);
-                                                GlobalHelpers.showAlertMessage("success",
-                                                        CreateNewTutorialActivity.this,
-                                                        "Tutorial created successfully",
-                                                        "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
+//                                                GlobalHelpers.showAlertMessage("success",
+//                                                        CreateNewTutorialActivity.this,
+//                                                        "Tutorial created successfully",
+//                                                        "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
 
                                             }
 
@@ -883,6 +883,15 @@ toggleProgress(false);
                     }
                 });
 
+    }
+
+    private void gotoNewlyCreatedTutorial(){
+
+        Intent intent  = new Intent(CreateNewTutorialActivity.this,TutorialActivity.class);
+        intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+        intent.putExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryContainerId);
+        intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
+        startActivity(intent);
     }
 
     interface CoverPhotoUploadListener{

@@ -314,7 +314,7 @@ public class UserProfileFragment extends Fragment {
                     //he is not the owner of this profile
                     editProfileButton.setVisibility(View.GONE);
                     logButton.setVisibility(View.INVISIBLE);
-
+                    GlobalConfig.incrementNumberOfVisitors(authorId,null,null,null,null,true,false,false,false,false,false);
                 }
             }
 

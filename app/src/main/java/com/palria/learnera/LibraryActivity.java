@@ -46,7 +46,7 @@ import jp.wasabeef.glide.transformations.BitmapTransformation;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
 public class LibraryActivity extends AppCompatActivity implements Serializable {
-
+boolean isFirstView = true;
 String libraryId;
 String authorId;
 String authorName;
@@ -67,7 +67,7 @@ TextView tutorialsCount;
 Button addActionButton;
 Button saveActionButton;
 Button rateActionButton;
-
+int[] ratings = {0,0,0,0,0};
 ImageButton backButton;
 
 TextView dateCreated;
@@ -133,20 +133,29 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
                         j++;
                     }
                 }
+                initCategoriesChip(categories);
 
-initCategoriesChip(categories);
+                 ratings[0] = (int) libraryDataModel.getTotalNumberOfOneStarRate();
+                 ratings[1] = (int) libraryDataModel.getTotalNumberOfTwoStarRate();
+                 ratings[2] = (int) libraryDataModel.getTotalNumberOfThreeStarRate();
+                 ratings[3] = (int) libraryDataModel.getTotalNumberOfFourStarRate();
+                 ratings[4] = (int) libraryDataModel.getTotalNumberOfFiveStarRate();
+
+
                 dateCreated.setText(libraryDataModel.getDateCreated());
 
-                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY, authorId, libraryId, null,  null, null, null, null,  new GlobalConfig.ActionCallback() {
-                    @Override
-                    public void onSuccess() {
+//                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY, authorId, libraryId, null,  null, null, null, null,  new GlobalConfig.ActionCallback() {
+//                    @Override
+//                    public void onSuccess() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onFailed(String errorMessage) {
+//                    }
+//                });
 
-                    }
-
-                    @Override
-                    public void onFailed(String errorMessage) {
-                    }
-                });
+                GlobalConfig.incrementNumberOfVisitors(authorId,libraryId,null,null,null,false,true,false,false,false,false);
 
 
             }
@@ -206,7 +215,13 @@ initCategoriesChip(categories);
                    }else {
                        isRatingFragmentOpen =true;
                        setFrameLayoutVisibility(ratingsFrameLayout);
-                       initFragment(new LibraryActivityRatingFragment(), ratingsFrameLayout);
+                       LibraryActivityRatingFragment libraryActivityRatingFragment = new LibraryActivityRatingFragment();
+                       Bundle bundle = new Bundle();
+                       bundle.putBoolean(GlobalConfig.IS_LIBRARY_REVIEW_KEY,true);
+                       bundle.putString(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+                       bundle.putIntArray(GlobalConfig.STAR_RATING_ARRAY_KEY,ratings);
+                       libraryActivityRatingFragment.setArguments(bundle);
+                       initFragment(libraryActivityRatingFragment, ratingsFrameLayout);
                    }
                }
             }
@@ -308,9 +323,6 @@ initCategoriesChip(categories);
     }
 
     private void initFragment(Fragment fragment, FrameLayout frameLayout){
-Bundle bundle = new Bundle();
-bundle.putString(GlobalConfig.LIBRARY_ID_KEY,libraryId);
-fragment.setArguments(bundle);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(frameLayout.getId(), fragment)
@@ -422,6 +434,7 @@ fragment.setArguments(bundle);
         Intent intent = getIntent();
         libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
         authorId = intent.getStringExtra(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
+        isFirstView = intent.getBooleanExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
 
     }
 

@@ -63,7 +63,7 @@ public class RatingItemRecyclerViewAdapter extends RecyclerView.Adapter<RatingIt
         holder.date.setText(ratingDataModel.getDate());
 
         //default progress for this now.
-        holder.ratingBar.setProgress(4);
+        holder.ratingBar.setProgress(ratingDataModel.getRating());
 
 
 //        GlobalConfig.getFirebaseFirestoreInstance()

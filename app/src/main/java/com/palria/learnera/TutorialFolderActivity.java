@@ -11,15 +11,20 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.palria.learnera.models.FolderDataModel;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
 
 public class TutorialFolderActivity extends AppCompatActivity {
+String authorId = "";
 String tutorialId = "";
 String folderId = "";
 String folderName = "";
-
+boolean isFirstView = true;
 FrameLayout pagesFrameLayout;
 TextView folderNameView;
 TextView dateCreated;
@@ -36,15 +41,30 @@ MaterialToolbar toolbar;
         setContentView(R.layout.activity_tutorial_folder);
         fetchIntentData();
         iniUI();
-
+        folderNameView.setText(folderName);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 leBottomSheetDialog.show();
             }
         });
+fetchFolderData(new OnFolderFetchListener() {
+    @Override
+    public void onSuccess(FolderDataModel folderDataModel) {
+        folderNameView.setText(folderDataModel.getFolderName());
+        dateCreated.setText(folderDataModel.getDateCreated());
+        pagesCount.setText(folderDataModel.getNumOfPages()+"");
+        GlobalConfig.incrementNumberOfVisitors(authorId,null,tutorialId,folderId,null,false,false,false,true,false,false);
 
+    }
+
+    @Override
+    public void onFailed(String errorMessage) {
+
+    }
+});
         openAllPageFragment();
+
     }
 
     private void iniUI(){
@@ -106,9 +126,41 @@ MaterialToolbar toolbar;
 
     private void fetchIntentData(){
         Intent intent = getIntent();
+        authorId = intent.getStringExtra(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY);
         tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
         folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
         folderName = intent.getStringExtra(GlobalConfig.FOLDER_NAME_KEY);
+        isFirstView = intent.getBooleanExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
+    }
+
+    private void fetchFolderData(OnFolderFetchListener onFolderFetchListener){
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                .document(tutorialId)
+                .collection(GlobalConfig.ALL_FOLDERS_KEY)
+                .document(folderId)
+                .get()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        onFolderFetchListener.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        String folderId = documentSnapshot.getId();
+                        String folderName  = ""+ documentSnapshot.get(GlobalConfig.FOLDER_NAME_KEY);
+                        String dateCreated  = documentSnapshot.get(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY)!=null ?documentSnapshot.getTimestamp(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY).toDate() +""  :"Undefined";
+                        if(dateCreated.length()>10){
+                            dateCreated = dateCreated.substring(0,10);
+                        }
+                        long numOfPages  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY) : 0L;
+
+
+                        onFolderFetchListener.onSuccess(new FolderDataModel(folderId,tutorialId,folderName,dateCreated,numOfPages));
+                    }
+                });
     }
 
     private void openAllPageFragment(){
@@ -123,6 +175,11 @@ MaterialToolbar toolbar;
                 .beginTransaction()
                 .replace(pagesFrameLayout.getId(),pagesFragment)
                 .commit();
+    }
+
+    public interface OnFolderFetchListener{
+        void onSuccess(FolderDataModel folderDataModel);
+        void onFailed(String errorMessage);
     }
 
 }
