@@ -1,16 +1,11 @@
 package com.palria.learnera.models;
 
 
+import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.io.Serializable;
 
-
-
-
-
-
-
-
-public class TutorialDataModel {
+public class TutorialDataModel implements Serializable {
 
 /**The name of the tutorial*/
     String tutorialName;
@@ -64,6 +59,7 @@ public class TutorialDataModel {
      * */
     long totalNumberOfFiveStarRate;
 
+    private DocumentSnapshot tutorialDocumentSnapshot;
 
     /**Empty constructor may be used to instantiate the class object if it is not
      * necessary to instantiate the global variables through the constructor. In this way
@@ -94,6 +90,7 @@ public class TutorialDataModel {
             long totalNumberOfThreeStarRate,
             long totalNumberOfFourStarRate,
             long totalNumberOfFiveStarRate
+//            DocumentSnapshot tutorialDocumentSnapshot
     ){
         this.tutorialName = tutorialName;
         this.tutorialCategory = tutorialCategory;
@@ -112,6 +109,7 @@ public class TutorialDataModel {
         this.totalNumberOfThreeStarRate = totalNumberOfThreeStarRate;
         this.totalNumberOfFourStarRate = totalNumberOfFourStarRate;
         this.totalNumberOfFiveStarRate = totalNumberOfFiveStarRate;
+//        this.tutorialDocumentSnapshot = tutorialDocumentSnapshot;
 
     }
 
@@ -252,5 +250,13 @@ public class TutorialDataModel {
 
     void setTotalNumberOfFiveStarRate(int totalNumberOfFiveStarRate) {
         this.totalNumberOfFiveStarRate = totalNumberOfFiveStarRate;
+    }
+
+    public DocumentSnapshot getTutorialDocumentSnapshot() {
+        return tutorialDocumentSnapshot;
+    }
+
+    void setTutorialDocumentSnapshot(DocumentSnapshot tutorialDocumentSnapshot) {
+        this.tutorialDocumentSnapshot = tutorialDocumentSnapshot;
     }
 }

@@ -55,7 +55,7 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
 
         holder.tutorialsContainer.setVisibility(View.GONE);
         holder.dateContainer.setVisibility(View.VISIBLE);
-        holder.dateCreated.setText("2 m ago");//view counts her
+        holder.dateCreated.setText("2 m ago");//view counts here
 
         holder.pageTitle.setText(pageDataModel.getTitle());
         Glide.with(context)

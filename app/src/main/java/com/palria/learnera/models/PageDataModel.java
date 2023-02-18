@@ -1,6 +1,10 @@
 package com.palria.learnera.models;
 
-public class PageDataModel {
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.io.Serializable;
+
+public class PageDataModel implements Serializable {
 
     private String title;
     private String description;
@@ -10,7 +14,7 @@ public class PageDataModel {
 
     private String dateCreated;
     //add other fields below
-
+    private DocumentSnapshot pageDocumentSnapshot;
 
     public PageDataModel(String title, String description, String coverDownloadUrl, String authorId, String folderId, String dateCreated) {
         this.title = title;
@@ -19,6 +23,7 @@ public class PageDataModel {
         this.authorId = authorId;
         this.folderId = folderId;
         this.dateCreated = dateCreated;
+        this.pageDocumentSnapshot = pageDocumentSnapshot;
     }
 
     public String getTitle() {
@@ -66,6 +71,14 @@ public class PageDataModel {
     }
 
     public void setDateCreated(String dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public DocumentSnapshot getPageDocumentSnapshot() {
+        return pageDocumentSnapshot;
+    }
+
+    public void setDateCreated(DocumentSnapshot pageDocumentSnapshot) {
         this.dateCreated = dateCreated;
     }
 }

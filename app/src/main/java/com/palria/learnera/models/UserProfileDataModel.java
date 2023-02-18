@@ -1,8 +1,12 @@
 package com.palria.learnera.models;
 
 
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.io.Serializable;
+
 /**This class is the user's data model*/
-public class UserProfileDataModel {
+public class UserProfileDataModel implements Serializable {
     /**The username of the user*/
 String userName;
     /**The user Id of the user*/
@@ -71,8 +75,11 @@ String userCountryOfResidence;
      * */
     int totalNumberOfFiveStarRate;
 
+    private DocumentSnapshot userDocumentSnapshot;
 
-/**Empty constructor may be used to instantiate the class object if it is not
+
+
+    /**Empty constructor may be used to instantiate the class object if it is not
  * necessary to instantiate the global variables through the constructor. In this way
  *Setters are used to as an alternative instantiate the global variables .
  * */
@@ -105,6 +112,7 @@ public  UserProfileDataModel(){
             int totalNumberOfThreeStarRate,
             int totalNumberOfFourStarRate,
             int totalNumberOfFiveStarRate
+//            DocumentSnapshot userDocumentSnapshot
 
 
     ){
@@ -134,6 +142,7 @@ public  UserProfileDataModel(){
         this.totalNumberOfThreeStarRate = totalNumberOfThreeStarRate;
         this.totalNumberOfFourStarRate = totalNumberOfFourStarRate;
         this.totalNumberOfFiveStarRate = totalNumberOfFiveStarRate;
+        this.userDocumentSnapshot = userDocumentSnapshot;
 
     }
 
@@ -321,6 +330,15 @@ public  UserProfileDataModel(){
 
     void setTotalNumberOfFiveStarRate(int totalNumberOfFiveStarRate) {
         this.totalNumberOfFiveStarRate = totalNumberOfFiveStarRate;
+    }
+
+
+    public DocumentSnapshot getUserDocumentSnapshot() {
+        return userDocumentSnapshot;
+    }
+
+    void setUserDocumentSnapshot(DocumentSnapshot userDocumentSnapshot) {
+        this.userDocumentSnapshot = userDocumentSnapshot;
     }
 
 }

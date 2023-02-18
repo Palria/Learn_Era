@@ -1,9 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".SearchActivity">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/headerCardViewId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/teal_700"
+        app:cardElevation="45dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:id="@+id/textHeaderTextViewId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/black"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                android:text="Search Learn Era"
+                android:fontFamily="sans-serif-condensed"
+                android:textSize="25sp"/>
+
+            <!--            <ImageButton-->
+            <!--                android:id="@+id/popUpImageButtonId"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:backgroundTint="@color/transparent"-->
+            <!--                android:src="@drawable/ic_baseline_more_vert_24"-->
+            <!--                android:layout_gravity="end"-->
+            <!--                />-->
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+        android:id="@+id/searchLinearLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/teal_700"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerCardViewId"
+        >
+        <EditText
+            android:id="@+id/searchFieldEditTextId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:inputType="textPersonName"
+            android:paddingStart="10dp"
+            android:hint="Enter keyword"
+            android:visibility="gone"
+            />
+
+
+        <ImageButton
+            android:id="@+id/searchActionButtonId"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:backgroundTint="@color/white"
+            android:background="@drawable/ic_baseline_search_24"
+            android:visibility="gone"
+            />
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchViewId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:layout_marginStart="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginTop="1dp"
+            android:focusedByDefault="true"
+            android:focusableInTouchMode="true"
+            app:iconifiedByDefault="false"
+
+            />
+
+    </LinearLayout>
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:tabMode="scrollable"
+        app:tabIndicatorColor="@color/teal_700"
+        app:tabSelectedTextColor="@color/teal_700"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchLinearLayoutId"
+        >
+
+
+    </com.google.android.material.tabs.TabLayout>
+
+
+
+    <FrameLayout
+        android:id="@+id/allViewerFrameLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayoutId"
+        />
+
+    <!--
+    <FrameLayout
+        android:id="@+id/allPostsFrameLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayoutId"
+        />
+
+
+    <FrameLayout
+        android:id="@+id/allUsersFrameLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:paddingBottom="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayoutId"   />
+
+
+    <FrameLayout
+        android:id="@+id/allPagesFrameLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:paddingBottom="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayoutId" />
+
+    -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

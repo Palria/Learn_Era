@@ -80,8 +80,9 @@ boolean isBooksFragmentOpen=false;
 LEBottomSheetDialog leBottomSheetDialog;
 
     RatingBottomSheetWidget ratingBottomSheetWidget;
-
-
+DocumentSnapshot intentLibraryDocumentSnapshot;
+LibraryDataModel intentLibraryDataModel;
+    LibraryProfileFetchListener libraryProfileFetchListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +94,7 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
     //this user is not the owner of this library, so hide some widgets to limit access
     addActionButton.setVisibility(View.GONE);
 }
-        fetchLibraryProfile(new LibraryProfileFetchListener() {
+        libraryProfileFetchListener = new LibraryProfileFetchListener() {
             @Override
             public void onFailed(String errorMessage) {
                 toggleProgress(false);
@@ -102,7 +103,7 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
 
             @Override
             public void onSuccess(LibraryDataModel libraryDataModel) {
-            //use this libraryDataModel object to access the public methods.
+                //use this libraryDataModel object to access the public methods.
 
                 libraryCategoryList = libraryDataModel.getLibraryCategoryArrayList();
                 libraryDescription.setText(libraryDataModel.getLibraryDescription());
@@ -115,7 +116,7 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
                 Glide.with(LibraryActivity.this)
                         .load(libraryDataModel.getLibraryCoverPhotoDownloadUrl())
                         .placeholder(R.drawable.book_cover)
-                       // .apply(RequestOptions.bitmapTransform(new BlurTransformation(10, 3)))
+                        // .apply(RequestOptions.bitmapTransform(new BlurTransformation(10, 3)))
                         .into(libraryCoverImage);
 
                 //set library cetegories.
@@ -135,11 +136,11 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
                 }
                 initCategoriesChip(categories);
 
-                 ratings[0] = (int) libraryDataModel.getTotalNumberOfOneStarRate();
-                 ratings[1] = (int) libraryDataModel.getTotalNumberOfTwoStarRate();
-                 ratings[2] = (int) libraryDataModel.getTotalNumberOfThreeStarRate();
-                 ratings[3] = (int) libraryDataModel.getTotalNumberOfFourStarRate();
-                 ratings[4] = (int) libraryDataModel.getTotalNumberOfFiveStarRate();
+                ratings[0] = (int) libraryDataModel.getTotalNumberOfOneStarRate();
+                ratings[1] = (int) libraryDataModel.getTotalNumberOfTwoStarRate();
+                ratings[2] = (int) libraryDataModel.getTotalNumberOfThreeStarRate();
+                ratings[3] = (int) libraryDataModel.getTotalNumberOfFourStarRate();
+                ratings[4] = (int) libraryDataModel.getTotalNumberOfFiveStarRate();
 
 
                 dateCreated.setText(libraryDataModel.getDateCreated());
@@ -159,7 +160,12 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
 
 
             }
-        });
+        };
+if(isFirstView) {
+    fetchLibraryProfile();
+}else{
+    libraryProfileFetchListener.onSuccess(intentLibraryDataModel);
+}
 
         getAuthorProfile(new AuthorProfileFetchListener() {
             @Override
@@ -172,12 +178,13 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
             public void onSuccess(String authorName, String authorProfilePhotoDownloadUrl) {
                 toggleProgress(false);
                 authorNameView.setText(authorName);
-                Glide.with(LibraryActivity.this)
-                        .load(authorProfilePhotoDownloadUrl)
-                        .placeholder(R.drawable.default_profile)
-                        .centerCrop()
-                        .into(authorPicture);
-
+                try {
+                    Glide.with(LibraryActivity.this)
+                            .load(authorProfilePhotoDownloadUrl)
+                            .placeholder(R.drawable.default_profile)
+                            .centerCrop()
+                            .into(authorPicture);
+                }catch(Exception e){}
 
             }
         });
@@ -263,7 +270,7 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                GlobalConfig.addToBookmark(authorId, libraryId, null, true, false, new GlobalConfig.ActionCallback() {
+                                GlobalConfig.addToBookmark(authorId, libraryId, null, null,null,false,true, false,false,false,false, new GlobalConfig.ActionCallback() {
                                     @Override
                                     public void onSuccess() {
                                         Toast.makeText(LibraryActivity.this, "bookmarked", Toast.LENGTH_SHORT).show();
@@ -436,9 +443,12 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
         authorId = intent.getStringExtra(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
         isFirstView = intent.getBooleanExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
 
+        intentLibraryDataModel = (LibraryDataModel) intent.getSerializableExtra(GlobalConfig.LIBRARY_DATA_MODEL_KEY);
+        intentLibraryDocumentSnapshot = intentLibraryDataModel.getLibraryDocumentSnapshot();
+
     }
 
-    private void fetchLibraryProfile(LibraryProfileFetchListener libraryProfileFetchListener){
+    private void fetchLibraryProfile(){
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_LIBRARY_KEY)
                 .document(libraryId)
@@ -493,6 +503,7 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
                         totalNumberOfThreeStarRate,
                         totalNumberOfFourStarRate,
                         totalNumberOfFiveStarRate
+//                        documentSnapshot
                 ));
             }
 

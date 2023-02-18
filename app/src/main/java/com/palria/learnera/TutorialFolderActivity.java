@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -21,6 +22,7 @@ import com.palria.learnera.widgets.LEBottomSheetDialog;
 
 public class TutorialFolderActivity extends AppCompatActivity {
 String authorId = "";
+String libraryId = "";
 String tutorialId = "";
 String folderId = "";
 String folderName = "";
@@ -35,6 +37,8 @@ TextView pagesCount;
 LEBottomSheetDialog leBottomSheetDialog;
 ExtendedFloatingActionButton floatingActionButton;
 MaterialToolbar toolbar;
+FolderDataModel intentFolderDataModel;
+    OnFolderFetchListener onFolderFetchListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,21 +52,26 @@ MaterialToolbar toolbar;
                 leBottomSheetDialog.show();
             }
         });
-fetchFolderData(new OnFolderFetchListener() {
-    @Override
-    public void onSuccess(FolderDataModel folderDataModel) {
-        folderNameView.setText(folderDataModel.getFolderName());
-        dateCreated.setText(folderDataModel.getDateCreated());
-        pagesCount.setText(folderDataModel.getNumOfPages()+"");
-        GlobalConfig.incrementNumberOfVisitors(authorId,null,tutorialId,folderId,null,false,false,false,true,false,false);
+        onFolderFetchListener =  new OnFolderFetchListener() {
+            @Override
+            public void onSuccess(FolderDataModel folderDataModel) {
+                folderNameView.setText(folderDataModel.getFolderName());
+                dateCreated.setText(folderDataModel.getDateCreated());
+                pagesCount.setText(folderDataModel.getNumOfPages()+"");
+                GlobalConfig.incrementNumberOfVisitors(authorId,null,tutorialId,folderId,null,false,false,false,true,false,false);
 
-    }
+            }
 
-    @Override
-    public void onFailed(String errorMessage) {
+            @Override
+            public void onFailed(String errorMessage) {
 
-    }
-});
+            }
+        };
+        if(isFirstView) {
+            fetchFolderData();
+        }else{
+            onFolderFetchListener.onSuccess(intentFolderDataModel);
+        }
         openAllPageFragment();
 
     }
@@ -86,26 +95,43 @@ fetchFolderData(new OnFolderFetchListener() {
          leBottomSheetDialog=new LEBottomSheetDialog(this);
          //if author id equal current logged in user
 
-         leBottomSheetDialog.addOptionItem("Edit Folder", R.drawable.ic_baseline_edit_24,
-                 new View.OnClickListener() {
-                     @Override
-                     public void onClick(View view) {
+        if(authorId.equals(GlobalConfig.getCurrentUserId())) {
+            leBottomSheetDialog.addOptionItem("Edit Folder", R.drawable.ic_baseline_edit_24,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
 
-                     }
-                 },0);
+                        }
+                    }, 0);
 
-         leBottomSheetDialog.addOptionItem("Add Page", R.drawable.ic_baseline_add_circle_24,
-                 new View.OnClickListener() {
-                     @Override
-                     public void onClick(View view) {
+            leBottomSheetDialog.addOptionItem("Add Page", R.drawable.ic_baseline_add_circle_24,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
 
-                     }
-                 }, 0);
-
+                        }
+                    }, 0);
+        }
         leBottomSheetDialog.addOptionItem("Add to Bookmark", R.drawable.ic_baseline_bookmarks_24,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Toast.makeText(TutorialFolderActivity.this, "adding to bookmark", Toast.LENGTH_SHORT).show();
+
+                        GlobalConfig.addToBookmark(authorId, libraryId, tutorialId, folderId,null,false,false, false,true,false,false,  new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(TutorialFolderActivity.this, "bookmarked", Toast.LENGTH_SHORT).show();
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                Toast.makeText(TutorialFolderActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+                        leBottomSheetDialog.hide();
 
                     }
                 }, 0);
@@ -126,14 +152,16 @@ fetchFolderData(new OnFolderFetchListener() {
 
     private void fetchIntentData(){
         Intent intent = getIntent();
-        authorId = intent.getStringExtra(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY);
+        authorId = intent.getStringExtra(GlobalConfig.AUTHOR_ID_KEY);
+        libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
         tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
         folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
         folderName = intent.getStringExtra(GlobalConfig.FOLDER_NAME_KEY);
         isFirstView = intent.getBooleanExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
+        intentFolderDataModel = (FolderDataModel) intent.getSerializableExtra(GlobalConfig.FOLDER_DATA_MODEL_KEY);
     }
 
-    private void fetchFolderData(OnFolderFetchListener onFolderFetchListener){
+    private void fetchFolderData(){
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                 .document(tutorialId)
@@ -150,7 +178,8 @@ fetchFolderData(new OnFolderFetchListener() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         String folderId = documentSnapshot.getId();
-                        String folderName  = ""+ documentSnapshot.get(GlobalConfig.FOLDER_NAME_KEY);
+                        String folderName  = ""+ documentSnapshot.get(GlobalConfig.FOLDER_NAME_KEY); String authorId  = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
+                        String libraryId  = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
                         String dateCreated  = documentSnapshot.get(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY)!=null ?documentSnapshot.getTimestamp(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY).toDate() +""  :"Undefined";
                         if(dateCreated.length()>10){
                             dateCreated = dateCreated.substring(0,10);
@@ -158,7 +187,7 @@ fetchFolderData(new OnFolderFetchListener() {
                         long numOfPages  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY) : 0L;
 
 
-                        onFolderFetchListener.onSuccess(new FolderDataModel(folderId,tutorialId,folderName,dateCreated,numOfPages));
+                        onFolderFetchListener.onSuccess(new FolderDataModel(folderId,authorId,libraryId,tutorialId,folderName,dateCreated,numOfPages));
                     }
                 });
     }

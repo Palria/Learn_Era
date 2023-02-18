@@ -1,10 +1,9 @@
 package com.palria.learnera.adapters;
 
-import static com.palria.learnera.GlobalConfig.LIBRARY_AUTHOR_ID_KEY;
-import static com.palria.learnera.GlobalConfig.LIBRARY_ID_KEY;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +25,10 @@ import com.palria.learnera.R;
 import com.palria.learnera.models.AuthorDataModel;
 import com.palria.learnera.models.LibraryDataModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibraryFragmentRcvAdapter.ViewHolder> {
+public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibraryFragmentRcvAdapter.ViewHolder> implements Serializable {
 
     ArrayList<LibraryDataModel> libraryDataModels;
     Context context;
@@ -86,26 +86,35 @@ public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibrar
 
         holder.libraryDescription.setText(libraryDataModel.getLibraryDescription());
         holder.tutorialsCount.setText(libraryDataModel.getTotalNumberOfTutorials() +"");
+try {
+    GlobalConfig.getFirebaseFirestoreInstance()
+            .collection(GlobalConfig.ALL_USERS_KEY)
+            .document(libraryDataModel.getAuthorUserId())
+            .get()
+            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-        GlobalConfig.getFirebaseFirestoreInstance()
-                .collection(GlobalConfig.ALL_USERS_KEY)
-                .document(libraryDataModel.getAuthorUserId())
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                        String userDisplayName = "" + documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
-                        holder.authorName.setText(userDisplayName);
-                    }
-                });
+                    String userDisplayName = "" + documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                    holder.authorName.setText(userDisplayName);
+                }
+            });
+}catch(Exception e){}
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//
+//                Bundle bundle = new Bundle();
+//                bundle.putSerializable(GlobalConfig.LIBRARY_DOCUMENT_SNAPSHOT_KEY, libraryDataModel);
+
+
                 Intent intent = new Intent(context, LibraryActivity.class);
-                intent.putExtra(LIBRARY_ID_KEY, libraryDataModel.getLibraryId());
-                intent.putExtra(LIBRARY_AUTHOR_ID_KEY, libraryDataModel.getAuthorUserId());
+                intent.putExtra(GlobalConfig.LIBRARY_ID_KEY, libraryDataModel.getLibraryId());
+                intent.putExtra(GlobalConfig.LIBRARY_AUTHOR_ID_KEY, libraryDataModel.getAuthorUserId());
+                intent.putExtra(GlobalConfig.LIBRARY_DATA_MODEL_KEY, libraryDataModel);
+                intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY, false);
+//                intent.putExtra(GlobalConfig.LIBRARY_DOCUMENT_SNAPSHOT_KEY, libraryDataModel.getLibraryDocumentSnapshot());
                 context.startActivity(intent);
             }
         });

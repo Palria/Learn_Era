@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     FrameLayout userProfileFrameLayout;
 
     FloatingActionButton fab;
+    Button menu_search_button;
 
     //learn era bottom sheet dialog
     LEBottomSheetDialog leBottomSheetDialog;
@@ -91,6 +92,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 public void onClick(View view) {
 
                     leBottomSheetDialog.show();
+
+                }
+            });
+        menu_search_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Intent intent = new Intent(MainActivity.this,SearchActivity.class);
+                    startActivity(intent);
 
                 }
             });
@@ -128,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 
         fab = findViewById(R.id.fab);
+        menu_search_button = findViewById(R.id.menu_search_button);
 
         bottomNavigationView.setBackground(null);
 //        bottomNavigationView.getIt

@@ -99,7 +99,7 @@ String categorySelected = "";
         else if (current_hour >= 17 && current_hour <= 24)
             greeting = "Good Evening";
 
-        //show the greting to
+        //show the greeting to
         greetingTextView.setText(greeting);
 
         createTabLayout(new OnNewCategorySelectedListener() {
@@ -114,6 +114,8 @@ String categorySelected = "";
 //                        displayPopularAuthor(authorName,authorProfilePhotoDownloadUrl,totalNumberOfLibrary);
                         modelArrayList.add(new AuthorDataModel(authorName,authorId,authorProfilePhotoDownloadUrl, (int) totalNumberOfLibrary,0,0,0,0,0));
                         popularAuthorAdapter.notifyItemChanged(modelArrayList.size());
+                        toggleContentsVisibility(true);
+
                     }
                     @Override
                     public void onFailed(String errorMessage) {
@@ -124,9 +126,12 @@ String categorySelected = "";
                     @Override
                     public void onSuccess(LibraryDataModel libraryDataModel) {
 //                        displayLibrary(libraryDataModel);
-                        libraryArrayList.add(new LibraryDataModel(libraryDataModel.getLibraryName(),libraryDataModel.getLibraryId(),libraryDataModel.getLibraryCategoryArrayList(),libraryDataModel.getLibraryCoverPhotoDownloadUrl(),libraryDataModel.getLibraryDescription(),libraryDataModel.getDateCreated(),libraryDataModel.getTotalNumberOfTutorials(),libraryDataModel.getTotalNumberOfLibraryViews(),libraryDataModel.getTotalNumberOfLibraryReach(),libraryDataModel.getAuthorUserId(),libraryDataModel.getTotalNumberOfOneStarRate(),libraryDataModel.getTotalNumberOfTwoStarRate(),libraryDataModel.getTotalNumberOfThreeStarRate(),libraryDataModel.getTotalNumberOfFourStarRate(),libraryDataModel.getTotalNumberOfFiveStarRate()));
+                        libraryArrayList.add(libraryDataModel);
+//                        libraryArrayList.add(new LibraryDataModel(libraryDataModel.getLibraryName(),libraryDataModel.getLibraryId(),libraryDataModel.getLibraryCategoryArrayList(),libraryDataModel.getLibraryCoverPhotoDownloadUrl(),libraryDataModel.getLibraryDescription(),libraryDataModel.getDateCreated(),libraryDataModel.getTotalNumberOfTutorials(),libraryDataModel.getTotalNumberOfLibraryViews(),libraryDataModel.getTotalNumberOfLibraryReach(),libraryDataModel.getAuthorUserId(),libraryDataModel.getTotalNumberOfOneStarRate(),libraryDataModel.getTotalNumberOfTwoStarRate(),libraryDataModel.getTotalNumberOfThreeStarRate(),libraryDataModel.getTotalNumberOfFourStarRate(),libraryDataModel.getTotalNumberOfFiveStarRate()));
                         homeBooksRecyclerListViewAdapter.notifyItemChanged(libraryArrayList.size());
 //                        Toast.makeText(getContext(), libraryDataModel.getDateCreated()+"--"+libraryDataModel.getLibraryName()+"---"+libraryDataModel.getLibraryId(), Toast.LENGTH_SHORT).show();
+                        toggleContentsVisibility(true);
+
                     }
 
                     @Override
@@ -388,31 +393,67 @@ String categorySelected = "";
 
 
 
-        TabLayout.Tab javaTabItem= tabLayout.newTab();
-        javaTabItem.setText("Java");
-        tabLayout.addTab(javaTabItem,0,true);
+        TabLayout.Tab softwareTabItem= tabLayout.newTab();
+        softwareTabItem.setText("Software Development");
+        tabLayout.addTab(softwareTabItem,0,true);
+
+        TabLayout.Tab webDevTabItem=tabLayout.newTab();
+        webDevTabItem.setText("Web Development");
+        tabLayout.addTab(webDevTabItem,1);
+
+        TabLayout.Tab graphicDesignTabItem= tabLayout.newTab();
+        graphicDesignTabItem.setText("Graphic Design");
+        tabLayout.addTab(graphicDesignTabItem,2);
+
+
+        TabLayout.Tab uiDesignTabItem= tabLayout.newTab();
+        uiDesignTabItem.setText("Ui Design");
+        tabLayout.addTab(uiDesignTabItem,3);
+
+
+        TabLayout.Tab ethicalHackingTabItem= tabLayout.newTab();
+        ethicalHackingTabItem.setText("Ethical Hacking");
+        tabLayout.addTab(ethicalHackingTabItem,4);
+
+
+        TabLayout.Tab gameDevTabItem= tabLayout.newTab();
+        gameDevTabItem.setText("Game Development");
+        tabLayout.addTab(gameDevTabItem,5);
+
+
+        TabLayout.Tab prototypingTabItem= tabLayout.newTab();
+        prototypingTabItem.setText("Prototyping");
+        tabLayout.addTab(prototypingTabItem,6);
+
+        TabLayout.Tab SEOTabItem= tabLayout.newTab();
+        SEOTabItem.setText("SEO");
+        tabLayout.addTab(SEOTabItem,7);
 
         TabLayout.Tab androidDevTabItem=tabLayout.newTab();
         androidDevTabItem.setText("Android Dev");
-        tabLayout.addTab(androidDevTabItem,1);
+        tabLayout.addTab(androidDevTabItem,8);
+
+        TabLayout.Tab javaTabItem=tabLayout.newTab();
+        javaTabItem.setText("Java");
+        tabLayout.addTab(javaTabItem,9);
 
         TabLayout.Tab pythonTabItem=tabLayout.newTab();
         pythonTabItem.setText("Python");
-        tabLayout.addTab(pythonTabItem,2);
+        tabLayout.addTab(pythonTabItem,10);
 
         TabLayout.Tab dataLearningTabItem =tabLayout.newTab();
         dataLearningTabItem.setText("Data Learning");
-        tabLayout.addTab(dataLearningTabItem,3);
+        tabLayout.addTab(dataLearningTabItem,11);
 
 
         TabLayout.Tab OOPsConceptTabItem =tabLayout.newTab();
         OOPsConceptTabItem.setText("OOPs Concept");
-        tabLayout.addTab(OOPsConceptTabItem,4);
+        tabLayout.addTab(OOPsConceptTabItem,12);
 
 
         TabLayout.Tab artificialIntelligenceTabItem =tabLayout.newTab();
         artificialIntelligenceTabItem.setText("Artificial Intelligence");
-        tabLayout.addTab(artificialIntelligenceTabItem,5);
+        tabLayout.addTab(artificialIntelligenceTabItem,13);
 
     }
 
@@ -475,7 +516,7 @@ private void changeCategory(String categorySelected){
 
     private void fetchPopularAuthor(String categoryTag, PopularAuthorFetchListener popularAuthorFetchListener){
 //        Query authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereEqualTo(GlobalConfig.IS_USER_AUTHOR_KEY,true).whereArrayContains(GlobalConfig.AUTHOR_CATEGORY_TAG_ARRAY_KEY,categoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY);
-        Query authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY);
+        Query authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereArrayContains(GlobalConfig.AUTHOR_CATEGORY_TAG_ARRAY_KEY,categoryTag);
         authorQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -505,7 +546,7 @@ private void changeCategory(String categorySelected){
 
     private void fetchLibrary(String categoryTag,LibraryFetchListener libraryFetchListener){
 //        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,categoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY);
-        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY);
+        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,categoryTag);
         libraryQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -562,6 +603,7 @@ private void changeCategory(String categorySelected){
                                                             totalNumberOfThreeStarRate,
                                                             totalNumberOfFourStarRate,
                                                             totalNumberOfFiveStarRate
+//                                                            documentSnapshot
                                                     ));
 
 
@@ -572,8 +614,8 @@ private void changeCategory(String categorySelected){
 
     private void fetchTutorial(String tutorialCategoryTag,TutorialFetchListener tutorialFetchListener){
 //        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY);
-        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY);
-        libraryQuery.get()
+        Query tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategoryTag);
+        tutorialQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -630,6 +672,7 @@ private void changeCategory(String categorySelected){
                                                                                      totalNumberOfThreeStarRate,
                                                                                      totalNumberOfFourStarRate,
                                                                                      totalNumberOfFiveStarRate
+//                                                            documentSnapshot
                                                                                      ));
 
 

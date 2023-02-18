@@ -27,6 +27,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.palria.learnera.models.LibraryDataModel;
 import com.palria.learnera.models.TutorialDataModel;
 import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
@@ -73,15 +74,16 @@ Button addActionButton;
     RatingBottomSheetWidget ratingBottomSheetWidget;
 
     LEBottomSheetDialog leBottomSheetDialog;
-
+    TutorialFetchListener tutorialFetchListener;
+    DocumentSnapshot intentTutorialDocumentSnapshot;
+    TutorialDataModel intentTutorialDataModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial);
         iniUI();
         fetchIntentData();
-
-        fetchTutorial(new TutorialFetchListener() {
+        tutorialFetchListener = new TutorialFetchListener() {
             @Override
             public void onSuccess(TutorialDataModel tutorialDataModel) {
 //                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY, authorId, libraryId, tutorialId,  null, null, null, null, new GlobalConfig.ActionCallback() {
@@ -143,7 +145,12 @@ Button addActionButton;
             public void onFailed(String errorMessage) {
 
             }
-        });
+        };
+        if(isFirstView) {
+            fetchTutorial();
+        }else{
+            tutorialFetchListener.onSuccess(intentTutorialDataModel);
+        }
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -176,7 +183,7 @@ Button addActionButton;
                         AllTutorialPageFragment allTutorialPageFragment = new AllTutorialPageFragment();
                         Bundle bundle = new Bundle();
                         bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
-                        bundle.putString(GlobalConfig.FOLDER_ID_KEY,"folderId");
+//                        bundle.putString(GlobalConfig.FOLDER_ID_KEY,"folderId");
                         bundle.putBoolean(GlobalConfig.IS_FOLDER_PAGE_KEY,false);
                         allTutorialPageFragment.setArguments(bundle);
                         initFragment(allTutorialPageFragment, pagesFrameLayout);
@@ -244,7 +251,7 @@ Button addActionButton;
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                GlobalConfig.addToBookmark(authorId, libraryId, tutorialId, false, true, new GlobalConfig.ActionCallback() {
+                                GlobalConfig.addToBookmark(authorId, libraryId, tutorialId, null,null,false,false, true,false,false,false,  new GlobalConfig.ActionCallback() {
                                     @Override
                                     public void onSuccess() {
                                         Toast.makeText(TutorialActivity.this, "bookmarked", Toast.LENGTH_SHORT).show();
@@ -412,12 +419,15 @@ Button addActionButton;
         libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
         isFirstView = intent.getBooleanExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
 
+
+        intentTutorialDataModel = (TutorialDataModel) intent.getSerializableExtra(GlobalConfig.TUTORIAL_DATA_MODEL_KEY);
+        intentTutorialDocumentSnapshot = intentTutorialDataModel.getTutorialDocumentSnapshot();
     }
 
     //
 
 
-    private void fetchTutorial(TutorialFetchListener tutorialFetchListener){
+    private void fetchTutorial(){
        GlobalConfig.getFirebaseFirestoreInstance()
                .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                .document(tutorialId)
@@ -478,6 +488,7 @@ Button addActionButton;
                                                             totalNumberOfThreeStarRate,
                                                             totalNumberOfFourStarRate,
                                                             totalNumberOfFiveStarRate
+//                                    documentSnapshot
                                                             ));
                                 }
                             });
@@ -498,6 +509,8 @@ Button addActionButton;
         HashMap<String,Object> folderDetails = new HashMap<>();
         folderDetails.put(GlobalConfig.FOLDER_NAME_KEY,folderName );
         folderDetails.put(GlobalConfig.FOLDER_ID_KEY,folderId );
+        folderDetails.put(GlobalConfig.AUTHOR_ID_KEY,authorId );
+        folderDetails.put(GlobalConfig.LIBRARY_ID_KEY,libraryId );
         folderDetails.put(GlobalConfig.TUTORIAL_ID_KEY,tutorialId );
         folderDetails.put(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY,authorId);
         folderDetails.put(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY, FieldValue.serverTimestamp());

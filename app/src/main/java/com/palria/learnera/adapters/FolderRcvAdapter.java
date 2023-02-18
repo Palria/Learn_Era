@@ -58,7 +58,12 @@ public class FolderRcvAdapter extends RecyclerView.Adapter<FolderRcvAdapter.View
                 Intent intent = new Intent(context, TutorialFolderActivity.class);
                 intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderDataModel.getId());
                 intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,folderDataModel.getTutorialId());
+                intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,folderDataModel.getLibraryId());
+                intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,folderDataModel.getAuthorId());
                 intent.putExtra(GlobalConfig.FOLDER_NAME_KEY,folderDataModel.getFolderName());
+                intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY,false);
+                intent.putExtra(GlobalConfig.FOLDER_DATA_MODEL_KEY,folderDataModel);
+
                 context.startActivity(intent);
             }
         });

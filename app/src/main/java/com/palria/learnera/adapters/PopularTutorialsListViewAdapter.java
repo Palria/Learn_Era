@@ -26,9 +26,10 @@ import com.palria.learnera.models.TutorialDataModel;
 
 import org.w3c.dom.Text;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class PopularTutorialsListViewAdapter extends RecyclerView.Adapter<PopularTutorialsListViewAdapter.ViewHolder> {
+public class PopularTutorialsListViewAdapter extends RecyclerView.Adapter<PopularTutorialsListViewAdapter.ViewHolder> implements Serializable {
 
     ArrayList<TutorialDataModel> tutorialDataModels;
     Context context;
@@ -77,13 +78,13 @@ public class PopularTutorialsListViewAdapter extends RecyclerView.Adapter<Popula
                         holder.authorName.setText(userDisplayName);
                         String authorPhotoDownloadUrl = "" + documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
 
-
-                        Glide.with(context)
-                                .load(authorPhotoDownloadUrl)
-                                .placeholder(R.drawable.default_profile)
-                                .centerCrop()
-                                .into(holder.authorPicture);
-
+try {
+    Glide.with(context)
+            .load(authorPhotoDownloadUrl)
+            .placeholder(R.drawable.default_profile)
+            .centerCrop()
+            .into(holder.authorPicture);
+}catch(Exception e){}
                     }
                 });
 
@@ -93,6 +94,8 @@ public class PopularTutorialsListViewAdapter extends RecyclerView.Adapter<Popula
             public void onClick(View view) {
                 Intent intent = new Intent(context, TutorialActivity.class);
                 intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY, tutorialDataModel.getTutorialId());
+                intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY,false);
+                intent.putExtra(GlobalConfig.TUTORIAL_DATA_MODEL_KEY,tutorialDataModel);
                 context.startActivity(intent);
                   }
         });

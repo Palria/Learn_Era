@@ -221,7 +221,7 @@ fetchLogs(new OnLogFetchListener() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         activityLogContainer = findViewById(R.id.activityLogContainer);
-
+/*
         //date divider model
         activityDataModelArrayList.add(new UserActivityDataModel("",
                 "Today", "","",0,"",true));
@@ -245,10 +245,11 @@ fetchLogs(new OnLogFetchListener() {
                 "15 Feb 2023", "","https://picsum.photos/400/200?random=56",1,"library",false));
         activityDataModelArrayList.add(new UserActivityDataModel("Deleted review from Hemans Tutorial.",
                 "15 Feb 2023", "Hello This is my first Tutorial...","https://picsum.photos/400/200?random=22",1,"rating",false));
-
+*/
         //date divider model
         activityDataModelArrayList.add(new UserActivityDataModel("",
                 "Earlier this week", "","",0,"",true));
+                /*
         activityDataModelArrayList.add(new UserActivityDataModel("Post a new book in "+ Html.fromHtml("<b style='color:black;'> Java Development &#9733; &#9733; &#9733; </b>") +" .",
                 "15 Feb 2023", "","https://picsum.photos/400/200?random=12",1,"post",false));
         activityDataModelArrayList.add(new UserActivityDataModel("Logs a new Rating to the Ram Magar Library.",
@@ -256,7 +257,7 @@ fetchLogs(new OnLogFetchListener() {
         activityDataModelArrayList.add(new UserActivityDataModel("Deleted review from Hemans Tutorial.",
                 "15 Feb 2023", "Hello This is my first Tutorial...","https://picsum.photos/400/200?random=22",1,"rating",false));
 
-
+*/
         userActivityItemRCVAdapter = new UserActivityItemRCVAdapter(activityDataModelArrayList,this);
 //        activityLogContainer.setHasFixedSize(true);
         activityLogContainer.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));

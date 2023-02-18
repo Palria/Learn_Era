@@ -3,6 +3,7 @@ package com.palria.learnera;
         import android.os.Bundle;
 
         import androidx.annotation.NonNull;
+        import androidx.cardview.widget.CardView;
         import androidx.fragment.app.Fragment;
         import androidx.recyclerview.widget.LinearLayoutManager;
         import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +13,7 @@ package com.palria.learnera;
         import android.view.LayoutInflater;
         import android.view.View;
         import android.view.ViewGroup;
+        import android.widget.ImageView;
         import android.widget.LinearLayout;
         import android.widget.Toast;
 
@@ -42,12 +44,22 @@ public class AllLibraryFragment extends Fragment {
     LinearLayout libraryContents;
     LinearLayout notFoundView;
 
+
+    LinearLayout searchLinearLayout;
+    CardView searchCardView;
+    CardView cardView;
+    ImageView imageView;
+
+
     public static String OPEN_TYPE_KEY = "OPEN_TYPE";
    public static String OPEN_TYPE_USER_LIBRARY = "OPEN_TYPE_USER_LIBRARY";
    public static String OPEN_TYPE_ALL_LIBRARY = "OPEN_TYPE_ALL_LIBRARY";
 
     String open_type = "ALL";
     String authorId = "";
+
+    boolean isFromSearchContext = false;
+    String searchKeyword = "";
 
     public AllLibraryFragment() {
         // Required empty public constructor
@@ -60,8 +72,10 @@ public class AllLibraryFragment extends Fragment {
         libraryDataModels=new ArrayList<>();
         libraryDataModelsBackup=new ArrayList<>();
 if(getArguments() != null){
-    open_type = getArguments().getString(OPEN_TYPE_KEY);
-    authorId = getArguments().getString(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
+    open_type = getArguments().getString(OPEN_TYPE_KEY,"");
+    authorId = getArguments().getString(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,"");
+    isFromSearchContext = getArguments().getBoolean(GlobalConfig.IS_FROM_SEARCH_CONTEXT_KEY,false);
+    searchKeyword = getArguments().getString(GlobalConfig.SEARCH_KEYWORD_KEY,"");
 }
 
     }
@@ -149,7 +163,20 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
         libraryContents=parentView.findViewById(R.id.libraryContents);
         notFoundView=parentView.findViewById(R.id.notFoundView);
 
+        //these views are search view which have to be hidden if we are searching libraries from the search activity
+        searchLinearLayout=parentView.findViewById(R.id.searchLinearLayoutId);
+        searchCardView=parentView.findViewById(R.id.searchCardViewId);
+        cardView=parentView.findViewById(R.id.cardViewId);
+        imageView=parentView.findViewById(R.id.imageViewId);
 
+
+        //hide if from context of search
+        if(isFromSearchContext){
+            searchLinearLayout.setVisibility(View.GONE);
+            searchCardView.setVisibility(View.GONE);
+            cardView.setVisibility(View.GONE);
+            imageView.setVisibility(View.GONE);
+        }
         adapter = new AllLibraryFragmentRcvAdapter(libraryDataModels,getContext());
         libraryListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         libraryListRecyclerView.setHasFixedSize(false);
@@ -165,6 +192,11 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
         }
         else if(open_type.equals(OPEN_TYPE_ALL_LIBRARY)){
             libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY);
+
+        }
+        else if(isFromSearchContext){
+           searchKeyword = searchKeyword.toLowerCase();
+            libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY,searchKeyword);
 
         }
 
@@ -221,6 +253,7 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
                                     totalNumberOfThreeStarRate,
                                     totalNumberOfFourStarRate,
                                     totalNumberOfFiveStarRate
+//                                    documentSnapshot
                             ));
                         }
                         //willl reload rcv

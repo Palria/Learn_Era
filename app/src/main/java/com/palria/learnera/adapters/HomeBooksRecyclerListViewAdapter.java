@@ -1,5 +1,6 @@
 package com.palria.learnera.adapters;
 
+import static com.palria.learnera.GlobalConfig.IS_FIRST_VIEW_KEY;
 import static com.palria.learnera.GlobalConfig.LIBRARY_AUTHOR_ID_KEY;
 import static com.palria.learnera.GlobalConfig.LIBRARY_ID_KEY;
 
@@ -85,6 +86,8 @@ public class HomeBooksRecyclerListViewAdapter extends RecyclerView.Adapter<HomeB
                 Intent intent = new Intent(context, LibraryActivity.class);
                 intent.putExtra(LIBRARY_ID_KEY, libraryDataModel.getLibraryId());
                 intent.putExtra(LIBRARY_AUTHOR_ID_KEY, libraryDataModel.getAuthorUserId());
+                intent.putExtra(IS_FIRST_VIEW_KEY, false);
+                intent.putExtra(GlobalConfig.LIBRARY_DATA_MODEL_KEY, libraryDataModel);
                 context.startActivity(intent);
             }
         });

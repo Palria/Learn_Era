@@ -96,13 +96,14 @@ public class UserProfileFragment extends Fragment {
     PopularTutorialsListViewAdapter tutorialsRcvAdapter;
 
     boolean isUserAuthor = false;
+    boolean isFirstLoad = true;
 
     //shimmer layout loading preloading effect container.
     ShimmerFrameLayout shimmerLayout;
 
     //replace all categories with categories from database
     String[] categories = {"Software Development", "Ui Design", "Web Development", "Machine Learning",
-    "Database Design", "Furniture", "Internet", "Communication", "Story", "Drama", "Podcasts"};
+    "Database Design", "Furniture", "Internet", "Communication", "Story", "Drama", "Podcasts","Java","Android Dev","Python","Data Learning","OOPs Concept","Artificial Intelligence"};
 
 
     boolean[] checkedCategories;
@@ -272,10 +273,13 @@ public class UserProfileFragment extends Fragment {
             public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, String joined_date,String numOfLibraryCreated,String numOfTutorialCreated,String numOfRatings, boolean isUserBlocked, boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor) {
                 swipeRefreshLayout.setRefreshing(false);
                 isUserAuthor = isUserAnAuthor;
-                Glide.with(getContext())
-                        .load(userProfilePhotoDownloadUrl)
-                        .centerCrop()
-                        .into(profileImageView);
+                try {
+                    Glide.with(getContext())
+                            .load(userProfilePhotoDownloadUrl)
+                            .centerCrop()
+                            .into(profileImageView);
+                }catch(Exception e){}
+
                 currentEmailView.setText(Html.fromHtml("Contact Email <b>"+contactEmail+"</b> "));
                 currentDisplayNameView.setText(userDisplayName);
                 currentCountryOfResidence.setText(Html.fromHtml("From <b>"+userCountryOfResidence+"</b> "));
@@ -291,18 +295,24 @@ public class UserProfileFragment extends Fragment {
                 parentScrollView.setVisibility(View.VISIBLE);
 //                Toast.makeText(getContext(), "Libraries loaded.", Toast.LENGTH_SHORT).show();
 
-                if(!isUserAuthor && authorId.equals(GlobalConfig.getCurrentUserId())){
-                    leBottomSheetDialog.addOptionItem("Become An Author", R.drawable.ic_baseline_edit_24, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            //show they are going to become an author
-                            leBottomSheetDialog.hide();
+//                if(!isUserAuthor && authorId.equals(GlobalConfig.getCurrentUserId())){
+                if(authorId.equals(GlobalConfig.getCurrentUserId())) {
+                 if(isFirstLoad) {
+                     leBottomSheetDialog.addOptionItem("Become An Author", R.drawable.ic_baseline_edit_24, new View.OnClickListener() {
+                         @Override
+                         public void onClick(View view) {
+                             //show they are going to become an author
+                             leBottomSheetDialog.hide();
 
-                            showPromptToBeAnAuthor();
+                             showPromptToBeAnAuthor();
 
-                        }
-                    },0);
+                         }
+                     }, 0);
+                     leBottomSheetDialog.render();
+                     isFirstLoad = false;
+                 }
                 }else{
+                    leBottomSheetDialog.render();
                     numOfLibraryTutorialRatingsLinearLayout.setVisibility(View.GONE);
 
                 }
@@ -416,7 +426,7 @@ public class UserProfileFragment extends Fragment {
 
 
 
-        leBottomSheetDialog.render();
+
 
         //init recycler list view here
         /*
@@ -840,6 +850,7 @@ public class UserProfileFragment extends Fragment {
                                     finalTotalNumberOfThreeStarRate,
                                     finalTotalNumberOfFourStarRate,
                                     finalTotalNumberOfFiveStarRate
+//                                    documentSnapshot
                             ));
                         }
                     }
@@ -908,6 +919,7 @@ public class UserProfileFragment extends Fragment {
                                     totalNumberOfThreeStarRate,
                                     totalNumberOfFourStarRate,
                                     totalNumberOfFiveStarRate
+//                                    documentSnapshot
                             ));
 
 

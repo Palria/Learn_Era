@@ -1,12 +1,19 @@
 package com.palria.learnera.models;
 
-public class FolderDataModel {
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.io.Serializable;
+
+public class FolderDataModel implements Serializable {
 
     private String id;
+    private String authorId;
+    private String libraryId;
     private String tutorialId;
     private String folderName;
     private String dateCreated;
     private long numOfPages;
+    private DocumentSnapshot folderDocumentSnapshot;
     //add more fields if required below and change constructor.
 
     /**
@@ -17,12 +24,15 @@ public class FolderDataModel {
      * @param dateCreated
      */
 
-    public FolderDataModel(String id, String tutorialId, String folderName, String dateCreated, long numOfPages) {
+    public FolderDataModel(String id, String authorId,String libraryId,String tutorialId, String folderName, String dateCreated, long numOfPages) {
         this.id = id;
+        this.authorId = authorId;
+        this.libraryId = libraryId;
         this.tutorialId = tutorialId;
         this.folderName = folderName;
         this.dateCreated = dateCreated;
         this.numOfPages = numOfPages;
+//        this.folderDocumentSnapshot = folderDocumentSnapshot;
     }
 
     public String getId() {
@@ -31,6 +41,22 @@ public class FolderDataModel {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
+    }
+
+    public String getLibraryId() {
+        return libraryId;
+    }
+
+    public void setLibraryId(String libraryId) {
+        this.libraryId = libraryId;
     }
 
     public String getTutorialId() {
@@ -63,6 +89,15 @@ public class FolderDataModel {
 
     public void setNumOfPages(long numOfPages) {
         this.numOfPages = numOfPages;
+    }
+
+
+    public DocumentSnapshot getFolderDocumentSnapshot() {
+        return folderDocumentSnapshot;
+    }
+
+    public void setFolderDocumentSnapshot(DocumentSnapshot folderDocumentSnapshot) {
+        this.folderDocumentSnapshot = folderDocumentSnapshot;
     }
 
     @Override

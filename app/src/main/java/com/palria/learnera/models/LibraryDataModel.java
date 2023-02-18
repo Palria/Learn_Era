@@ -1,12 +1,15 @@
 package com.palria.learnera.models;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  *
  * The model of a library*/
-public class LibraryDataModel {
+public class LibraryDataModel implements Serializable {
 
 /**The library name*/
     private  String libraryName;
@@ -56,6 +59,7 @@ public class LibraryDataModel {
      * */
     private   long totalNumberOfFiveStarRate;
 
+    private DocumentSnapshot libraryDocumentSnapshot;
     /**Empty constructor may be used to instantiate the class object if it is not
      * necessary to instantiate the global variables through the constructor. In this way
      *Setters are used to as an alternative instantiate the global variables .
@@ -83,6 +87,7 @@ public class LibraryDataModel {
             long totalNumberOfThreeStarRate,
             long totalNumberOfFourStarRate,
             long totalNumberOfFiveStarRate
+//            DocumentSnapshot libraryDocumentSnapshot
     ){
         this.libraryName = libraryName;
         this.libraryId = libraryId;
@@ -100,6 +105,7 @@ public class LibraryDataModel {
         this.totalNumberOfThreeStarRate = totalNumberOfThreeStarRate;
         this.totalNumberOfFourStarRate = totalNumberOfFourStarRate;
         this.totalNumberOfFiveStarRate = totalNumberOfFiveStarRate;
+//        this.libraryDocumentSnapshot = libraryDocumentSnapshot;
 
     }
 
@@ -230,5 +236,13 @@ public class LibraryDataModel {
 
     public  void setTotalNumberOfFiveStarRate(long totalNumberOfFiveStarRate) {
         this.totalNumberOfFiveStarRate = totalNumberOfFiveStarRate;
+    }
+
+    public DocumentSnapshot getLibraryDocumentSnapshot() {
+        return libraryDocumentSnapshot;
+    }
+
+    public  void setLibraryDocumentSnapshot(DocumentSnapshot libraryDocumentSnapshot) {
+        this.libraryDocumentSnapshot = libraryDocumentSnapshot;
     }
 }
