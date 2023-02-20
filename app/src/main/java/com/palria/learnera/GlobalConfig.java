@@ -78,6 +78,8 @@ public class GlobalConfig {
     public static final String LIBRARY_FRAGMENT_TYPE_KEY = "LIBRARY_FRAGMENT_TYPE";
     public static final String TUTORIAL_FRAGMENT_TYPE_KEY = "TUTORIAL_FRAGMENT_TYPE";
 
+    public static final String IS_AUTHOR_OPEN_TYPE_KEY = "IS_AUTHOR_OPEN_TYPE";
+
 
     //USER FIELD KEYS BEGIN
     public static final String ALL_USERS_KEY = "ALL_USERS";
@@ -235,15 +237,21 @@ public class GlobalConfig {
     public static final String TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR";
     public static final String TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR";
 //    public static final String PAGE_NAME_KEY = "PAGE_NAME";
+    public static final String DATE_TIME_STAMP_PAGE_CREATED_KEY = "DATE_TIME_STAMP_PAGE_CREATED";
     public static final String TOTAL_NUMBER_OF_PAGE_DATA_KEY = "TOTAL_NUMBER_OF_PAGE_DATA";
+    public static final String DATA_ARRAY_KEY = "DATA_ARRAY_";
     public static final String PAGE_TITLE_KEY = "PAGE_TITLE";
     public static final String PAGE_DATE_CREATED_TIME_STAMP_KEY = "PAGE_DATE_CREATED_TIME_STAMP";
     public static final String FOLDER_ID_KEY = "FOLDER_ID";
     public static final String IS_FOLDER_PAGE_KEY = "IS_FOLDER_PAGE";
     public static final String ALL_TUTORIAL_PAGES_KEY = "ALL_TUTORIAL_PAGES";
     public static final String ALL_FOLDER_PAGES_KEY = "ALL_FOLDER_PAGES";
+
     public static final String TUTORIAL_PAGE_ID_KEY = "TUTORIAL_PAGE_ID";
     public static final String FOLDER_PAGE_ID_KEY = "FOLDER_PAGE_ID";
+
+    public static final String PAGE_ID_KEY = "PAGE_ID";
+    public static final String IS_TUTORIAL_PAGE_KEY = "IS_TUTORIAL_PAGE";
     public static final String FOLDER_CREATED_DATE_TIME_STAMP_KEY = "FOLDER_CREATED_DATE_TIME_STAMP";
     public static final String TOTAL_NUMBER_OF_FOLDER_PAGES_KEY = "TOTAL_NUMBER_OF_FOLDER_PAGES";
 
@@ -1003,7 +1011,7 @@ public class GlobalConfig {
         return list;
     }
 //
-    public static void updateActivityLog(String activityLogType, String authorId, String libraryId, String tutorialId,String tutorialFolderId ,String tutorialPageId ,String folderPageId ,String reviewId , ActionCallback actionCallback){
+    public static void updateActivityLog(String activityLogType, String authorId, String libraryId, String tutorialId,String tutorialFolderId ,String pageId ,String reviewId , ActionCallback actionCallback){
             String activityLogId = getRandomString(10);
             HashMap<String,Object> activityLogDetails = new HashMap<>();
 //            activityLogDetails.put(LOG_NOTE_KEY,);
@@ -1021,8 +1029,9 @@ public class GlobalConfig {
             activityLogDetails.put(LIBRARY_ID_KEY,libraryId);
             activityLogDetails.put(TUTORIAL_ID_KEY,tutorialId);
             activityLogDetails.put(FOLDER_ID_KEY,tutorialFolderId);
-            activityLogDetails.put(TUTORIAL_PAGE_ID_KEY,tutorialPageId);
-            activityLogDetails.put(FOLDER_PAGE_ID_KEY,folderPageId);
+            activityLogDetails.put(PAGE_ID_KEY,pageId);
+//            activityLogDetails.put(TUTORIAL_PAGE_ID_KEY,tutorialPageId);
+//            activityLogDetails.put(FOLDER_PAGE_ID_KEY,folderPageId);
             activityLogDetails.put(REVIEWER_ID_KEY,reviewId);
 //
 //            activityLogDetails.put(IS_AUTHOR_AFFECTED_KEY,isAuthorAffected);
@@ -1337,8 +1346,9 @@ public class GlobalConfig {
         bookmarkOwnerDetails.put(LIBRARY_ID_KEY,libraryId);
         bookmarkOwnerDetails.put(TUTORIAL_ID_KEY,tutorialId);
         bookmarkOwnerDetails.put(FOLDER_ID_KEY,folderId);
-        bookmarkOwnerDetails.put(FOLDER_PAGE_ID_KEY,pageId);
-        bookmarkOwnerDetails.put(TUTORIAL_PAGE_ID_KEY,pageId);
+        bookmarkOwnerDetails.put(PAGE_ID_KEY,pageId);
+//        bookmarkOwnerDetails.put(FOLDER_PAGE_ID_KEY,pageId);
+//        bookmarkOwnerDetails.put(TUTORIAL_PAGE_ID_KEY,pageId);
         bookmarkOwnerDetails.put(DATE_TIME_STAMP_BOOK_MARKED_KEY, FieldValue.serverTimestamp());
         writeBatch.set(bookMarkOwnerReference,bookmarkOwnerDetails,SetOptions.merge());
 
@@ -1395,8 +1405,9 @@ public class GlobalConfig {
         bookmarkDetails.put(LIBRARY_ID_KEY,libraryId);
         bookmarkDetails.put(TUTORIAL_ID_KEY,tutorialId);
         bookmarkDetails.put(FOLDER_ID_KEY,folderId);
-        bookmarkDetails.put(TUTORIAL_PAGE_ID_KEY,pageId);
-        bookmarkDetails.put(FOLDER_PAGE_ID_KEY,pageId);
+        bookmarkDetails.put(PAGE_ID_KEY,pageId);
+//        bookmarkDetails.put(TUTORIAL_PAGE_ID_KEY,pageId);
+//        bookmarkDetails.put(FOLDER_PAGE_ID_KEY,pageId);
         bookmarkDetails.put(DATE_TIME_STAMP_BOOK_MARKED_KEY, FieldValue.serverTimestamp());
         writeBatch.set(bookMarkReference,bookmarkDetails,SetOptions.merge());
 
@@ -1495,7 +1506,7 @@ public class GlobalConfig {
 
                         }
 
-                            GlobalConfig.updateActivityLog(activityLogType, authorId, libraryId, tutorialId, folderId, pageId, pageId,null,  new GlobalConfig.ActionCallback() {
+                            GlobalConfig.updateActivityLog(activityLogType, authorId, libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
                                 @Override
                                 public void onSuccess() {
 //
@@ -1523,7 +1534,7 @@ public class GlobalConfig {
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
 
     if(isAuthor){
-        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_AUTHOR_TYPE_KEY, authorId, null, null, null, null, null, null, new GlobalConfig.ActionCallback() {
+        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_AUTHOR_TYPE_KEY, authorId, null, null, null,  null, null, new GlobalConfig.ActionCallback() {
             @Override
             public void onSuccess() {
 
@@ -1542,7 +1553,7 @@ public class GlobalConfig {
         return;
     }
     else if(isLibrary){
-        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY, authorId, libraryId, null, null, null, null, null, new GlobalConfig.ActionCallback() {
+        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY, authorId, libraryId, null, null, null, null, new GlobalConfig.ActionCallback() {
             @Override
             public void onSuccess() {
 
@@ -1561,7 +1572,7 @@ public class GlobalConfig {
         return;
     }
     else if(isTutorial){
-        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY, authorId, libraryId, tutorialId, null, null, null, null, new GlobalConfig.ActionCallback() {
+        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_TYPE_KEY, authorId, libraryId, tutorialId, null, null, null, new GlobalConfig.ActionCallback() {
             @Override
             public void onSuccess() {
 
@@ -1580,7 +1591,7 @@ public class GlobalConfig {
         return;
     }
     else if(isFolder){
-        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_FOLDER_TYPE_KEY, authorId, libraryId, tutorialId, folderId, null, null, null, new GlobalConfig.ActionCallback() {
+        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_FOLDER_TYPE_KEY, authorId, libraryId, tutorialId, folderId,  null, null, new GlobalConfig.ActionCallback() {
             @Override
             public void onSuccess() {
 
@@ -1599,7 +1610,7 @@ public class GlobalConfig {
         return;
     }
     else if(isTutorialPage){
-        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_PAGE_TYPE_KEY, authorId, libraryId, tutorialId, null, pageId, null, null, new GlobalConfig.ActionCallback() {
+        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_TUTORIAL_PAGE_TYPE_KEY, authorId, libraryId, tutorialId, null, pageId,  null, new GlobalConfig.ActionCallback() {
             @Override
             public void onSuccess() {
 
@@ -1618,7 +1629,7 @@ public class GlobalConfig {
         return;
     }
     else if(isFolderPage){
-        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_FOLDER_PAGE_TYPE_KEY, authorId, libraryId, tutorialId, null, null, pageId, null, new GlobalConfig.ActionCallback() {
+        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_FOLDER_PAGE_TYPE_KEY, authorId, libraryId, tutorialId, null,  pageId, null, new GlobalConfig.ActionCallback() {
             @Override
             public void onSuccess() {
 

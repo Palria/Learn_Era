@@ -14,8 +14,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -34,16 +36,16 @@ public class UploadPageManagerService extends Service {
     static OnPageUploadListener onPageUploadListener;
     static  ArrayList<String>allActivePagesIdArrayList = new ArrayList<>();
 
-    static HashMap<String, Integer>totalNumberOfTimesImageFailed = new HashMap<>();
-    static HashMap<String, Integer>totalNumberOfPartitionsWithImageHashMap = new HashMap<>();
-    static HashMap<String, Integer>pageUploadProgressCounterHashMap = new HashMap<>();
-    static HashMap<String, Integer>totalNumberOfPagePartitionsHashMap = new HashMap<>();
-    static HashMap<String, Integer>totalNumberOfPagePartitionUploadSuccessCounterHashMap = new HashMap<>();
-    static HashMap<String, Boolean>isTextIncludedHashMap = new HashMap<>();
-    static HashMap<String, Boolean>isPageTextPartitionsUploaded = new HashMap<>();
-    static HashMap<String, Boolean>isImageIncludedHashMap = new HashMap<>();
-    static HashMap<String, Boolean>isPageImagesPartitionsUploaded = new HashMap<>();
-    static HashMap<String, Boolean>isPageUploadedHashMap = new HashMap<>();
+    static HashMap<String, Integer> totalNumberOfTimesImageFailed = new HashMap<>();
+    static HashMap<String, Integer> totalNumberOfPartitionsWithImageHashMap = new HashMap<>();
+    static HashMap<String, Integer> pageUploadProgressCounterHashMap = new HashMap<>();
+    static HashMap<String, Integer> totalNumberOfPagePartitionsHashMap = new HashMap<>();
+    static HashMap<String, Integer> totalNumberOfPagePartitionUploadSuccessCounterHashMap = new HashMap<>();
+    static HashMap<String, Boolean> isTextIncludedHashMap = new HashMap<>();
+    static HashMap<String, Boolean> isPageTextPartitionsUploaded = new HashMap<>();
+    static HashMap<String, Boolean> isImageIncludedHashMap = new HashMap<>();
+    static HashMap<String, Boolean> isPageImagesPartitionsUploaded = new HashMap<>();
+    static HashMap<String, Boolean> isPageUploadedHashMap = new HashMap<>();
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
@@ -132,7 +134,6 @@ public class UploadPageManagerService extends Service {
 
         }
     }
-
     static  void uploadPartitionImageDataToPage(String libraryId, String bookId, String pageId,String partitionId, ArrayList<byte[]> imageUploadByteArrayPartitionArrayList, String imagePartitionArrayName, int totalNumberOfPartitions) {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             if (!imageUploadByteArrayPartitionArrayList.isEmpty()) {
@@ -250,24 +251,38 @@ public class UploadPageManagerService extends Service {
     }
 
 
-    static  void uploadTextDataToPage(String libraryId, String tutorialId, String folderId, String pageId, String pageTitle, ArrayList<ArrayList<String>> allPageTextDataDetailsArrayList, int totalNumberOfChildren) {
+    static  void uploadTextDataToPage(String libraryId, String tutorialId, String folderId, String pageId, String pageTitle, ArrayList<ArrayList<String>> allPageTextDataDetailsArrayList, int totalNumberOfChildren, boolean isTutorialPage) {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            DocumentReference pageDocumentReference = null;
+            if(isTutorialPage){
+                pageDocumentReference = firebaseFirestore.collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId);
+            }else{
+                pageDocumentReference = firebaseFirestore.collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageId);
+
+            }
+
+            HashMap<String, Object> pageTextPartitionsDataDetailsHashMap = new HashMap<>();
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_TITLE_KEY, pageTitle);
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.LIBRARY_ID_KEY, libraryId);
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.FOLDER_ID_KEY, folderId);
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_ID_KEY, pageId);
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY, totalNumberOfChildren);
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.DATE_TIME_STAMP_PAGE_CREATED_KEY, FieldValue.serverTimestamp());
+
             if (!allPageTextDataDetailsArrayList.isEmpty()) {
                 isTextIncludedHashMap.put(pageId,true);
-                HashMap<String, Object> pageTextPartitionsDataDetailsHashMap = new HashMap<>();
-                pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_TITLE_KEY, pageTitle);
-                pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY, totalNumberOfChildren);
-                for (int i = 0; i < allPageTextDataDetailsArrayList.size(); i++) {
+                  for (int i = 0; i < allPageTextDataDetailsArrayList.size(); i++) {
                     ArrayList<String> pageTextDataTypeDetailsArrayList = allPageTextDataDetailsArrayList.get(i);
                     String position = pageTextDataTypeDetailsArrayList.get(1);
-                    pageTextPartitionsDataDetailsHashMap.put("DATA_ARRAY_" + position , pageTextDataTypeDetailsArrayList);
+                    pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.DATA_ARRAY_KEY + position , pageTextDataTypeDetailsArrayList);
                 }
 
 //                firebaseFirestore.collection("ALL_USERS").document(currentUserId).collection("ALL_LIBRARY").document(libraryId).collection("ALL_BOOKS").document(bookId).collection("ALL_PAGES").document(pageId).set(pageTextPartitionsDataDetailsHashMap, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
-                firebaseFirestore.collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId).set(pageTextPartitionsDataDetailsHashMap, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
+                pageDocumentReference.set(pageTextPartitionsDataDetailsHashMap, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        uploadTextDataToPage(libraryId,  tutorialId,  folderId,  pageId,pageTitle,  allPageTextDataDetailsArrayList,  totalNumberOfChildren);
+                        uploadTextDataToPage(libraryId,  tutorialId,  folderId,  pageId,pageTitle,  allPageTextDataDetailsArrayList,  totalNumberOfChildren,isTutorialPage);
 
                     }
                 }).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -288,7 +303,7 @@ public class UploadPageManagerService extends Service {
 
         }
     }
-    static  void uploadImageDataToPage(String libraryId, String tutorialId, String folderId, String pageId, String pageTitle, ArrayList<ArrayList<Object>> allImageArrayList,final int totalNumberOfImages,final int numOfChildrenData) {
+    static  void uploadImageDataToPage(final String libraryId, final String tutorialId, final String folderId, final String pageId, final String pageTitle, final ArrayList<ArrayList<Object>> allImageArrayList,final int totalNumberOfImages,final int numOfChildrenData, final boolean isTutorialPage) {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             if (!allImageArrayList.isEmpty()) {
                 totalNumberOfPartitionsWithImageHashMap.put(pageId,totalNumberOfPartitionsWithImageHashMap.get(pageId)+1);
@@ -305,7 +320,7 @@ public class UploadPageManagerService extends Service {
                     ArrayList<Object> imageDataList = allImageArrayList.get(i);
                     String position =""+ imageDataList.get(0);
                     byte[] imageByteArray =(byte[]) imageDataList.get(1);
-                    uploadImageDataToPage( libraryId,  tutorialId,folderId,  pageId,  pageTitle, position,imageByteArray,  totalNumberOfImages,  numOfChildrenData);
+                    uploadImageDataToPage( libraryId,  tutorialId,folderId,  pageId,  pageTitle, position,imageByteArray,  totalNumberOfImages,  numOfChildrenData,isTutorialPage);
 
                 }
 
@@ -313,16 +328,24 @@ public class UploadPageManagerService extends Service {
             }
         }
     }
-    static  void uploadImageDataToPage(String libraryId, String tutorialId, String folderId, String pageId, String pageTitle,String position, byte[] imageUploadByteArray,final int totalNumberOfImages,final int numOfChildrenData) {
+    static  void uploadImageDataToPage(String libraryId, String tutorialId, String folderId, String pageId, String pageTitle,String position, byte[] imageUploadByteArray,final int totalNumberOfImages,final int numOfChildrenData, boolean isTutorialPage) {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             int[] imagePartitionSuccessCounter = new int[1];
             isImageIncludedHashMap.put(pageId,true);
             HashMap<String, Object> pageImageDataDetails = new HashMap<>();
+//
+//            pageImageDataDetails.put(GlobalConfig.PAGE_TITLE_KEY, pageTitle);
+//            pageImageDataDetails.put(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY, numOfChildrenData);
+            String imageId = GlobalConfig.getRandomString(15);
+            StorageReference storageReference = null;
+            if(isTutorialPage) {
+                storageReference = firebaseStorage.getReference().child(GlobalConfig.ALL_USERS_KEY + "/" + currentUserId + "/" + GlobalConfig.ALL_LIBRARY_KEY + "/" + libraryId + "/" + GlobalConfig.ALL_TUTORIAL_KEY + "/" + tutorialId + "/" + GlobalConfig.ALL_TUTORIAL_PAGES_KEY + "/" + pageId + "/ALL_IMAGES/" + imageId + ".PNG");
+            }else{
+                storageReference = firebaseStorage.getReference().child(GlobalConfig.ALL_USERS_KEY + "/" + currentUserId + "/" + GlobalConfig.ALL_LIBRARY_KEY + "/" + libraryId + "/" + GlobalConfig.ALL_TUTORIAL_KEY + "/" + tutorialId + "/" + GlobalConfig.ALL_FOLDERS_KEY+"/"+folderId+"/"+GlobalConfig.ALL_FOLDER_PAGES_KEY + "/" + pageId + "/ALL_IMAGES/" + imageId + ".PNG");
 
-            pageImageDataDetails.put(GlobalConfig.PAGE_TITLE_KEY, pageTitle);
-            pageImageDataDetails.put(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY, numOfChildrenData);
-            String imageId = GlobalConfig.getRandomString(10);
-            StorageReference storageReference = firebaseStorage.getReference().child(GlobalConfig.ALL_USERS_KEY+"/" + currentUserId + "/"+GlobalConfig.ALL_LIBRARY_KEY+"/" + libraryId + "/"+GlobalConfig.ALL_TUTORIAL_KEY+"/" + tutorialId + "/"+GlobalConfig.ALL_TUTORIAL_PAGES_KEY+"/" + pageId + "/ALL_IMAGES/" + imageId + ".PNG");
+            }
+           final StorageReference finalStorageReference = storageReference;
+
             UploadTask uploadTask = storageReference.putBytes(imageUploadByteArray);
             uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -345,7 +368,7 @@ public class UploadPageManagerService extends Service {
                                     public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
 
 
-                                        return storageReference.getDownloadUrl();
+                                        return finalStorageReference.getDownloadUrl();
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -360,32 +383,42 @@ public class UploadPageManagerService extends Service {
                                             ArrayList<String> dataImageList = new ArrayList<>();
                                             dataImageList.add(0,position+"");
                                             dataImageList.add(1,imageDownloadUrl);
-                                            dataImageList.add(2,storageReference.getPath());
-                                            pageImageDataDetails.put("DATA_ARRAY_"+position, dataImageList);
-                                            firebaseFirestore.collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId).set(pageImageDataDetails, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
+                                            dataImageList.add(2,finalStorageReference.getPath());
+                                            pageImageDataDetails.put(GlobalConfig.DATA_ARRAY_KEY+position, dataImageList);
 
-                                                }
-                                            }).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void unused) {
-                                                    //Succeeded in uploading image of a book page.
-                                                    imagePartitionSuccessCounter[0]++;
+                                            DocumentReference documentReference = null;
+                                            if(isTutorialPage) {
+                                                documentReference = firebaseFirestore.collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId);
+                                            }else{
+                                                documentReference = firebaseFirestore.collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageId);
 
-                                                    if(imagePartitionSuccessCounter[0] == totalNumberOfImages){
-                                                        //all images succeeded
-                                                        isPageImagesPartitionsUploaded.put(pageId,true);
-                                                        if(!isTextIncludedHashMap.get(pageId) || isPageTextPartitionsUploaded.get(pageId)){
+                                            }
 
-                                                            //succeeded
-                                                            allActivePagesIdArrayList.remove(pageId);
-                                                            isPageUploadedHashMap.put(pageId,true);
-                                                            onPageUploadListener.onSuccess(pageId);
+                                               documentReference.set(pageImageDataDetails, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+
+                                                    }
+                                                }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void unused) {
+                                                        //Succeeded in uploading image of a book page.
+                                                        imagePartitionSuccessCounter[0]++;
+
+                                                        if (imagePartitionSuccessCounter[0] == totalNumberOfImages) {
+                                                            //all images succeeded
+                                                            isPageImagesPartitionsUploaded.put(pageId, true);
+                                                            if (!isTextIncludedHashMap.get(pageId) || isPageTextPartitionsUploaded.get(pageId)) {
+
+                                                                //succeeded
+                                                                allActivePagesIdArrayList.remove(pageId);
+                                                                isPageUploadedHashMap.put(pageId, true);
+                                                                onPageUploadListener.onSuccess(pageId);
+                                                            }
                                                         }
                                                     }
-                                                }
-                                            });
+                                                });
+
 
                                         }
                                     }
@@ -396,7 +429,7 @@ public class UploadPageManagerService extends Service {
 
                                 if(totalNumberOfTimesImageFailed.containsKey(imageId)) {
                                     if(totalNumberOfTimesImageFailed.get(imageId) <=5){
-                                        uploadImageDataToPage( libraryId,  tutorialId,folderId,  pageId,pageTitle, position,imageUploadByteArray,  totalNumberOfImages,  numOfChildrenData);
+                                        uploadImageDataToPage( libraryId,  tutorialId,folderId,  pageId,pageTitle, position,imageUploadByteArray,  totalNumberOfImages,  numOfChildrenData, isTutorialPage);
                                     }
                                     totalNumberOfTimesImageFailed.put(imageId, totalNumberOfTimesImageFailed.get(imageId) + 1);
                                 }else{

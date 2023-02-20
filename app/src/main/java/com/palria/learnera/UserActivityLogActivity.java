@@ -299,8 +299,8 @@ fetchLogs(new OnLogFetchListener() {
                                 boolean isFolderPageAffected = documentSnapshot.get(GlobalConfig.IS_FOLDER_PAGE_AFFECTED_KEY) != null ? documentSnapshot.getBoolean(GlobalConfig.IS_FOLDER_PAGE_AFFECTED_KEY) : false;
 
                                 String tutorialFolderId = "" + documentSnapshot.get(GlobalConfig.FOLDER_ID_KEY);
-                                String tutorialPageId = "" + documentSnapshot.get(GlobalConfig.TUTORIAL_PAGE_ID_KEY);
-                                String folderPageId = "" + documentSnapshot.get(GlobalConfig.FOLDER_PAGE_ID_KEY);
+                                String tutorialPageId = "" + documentSnapshot.get(GlobalConfig.PAGE_ID_KEY);
+                                String folderPageId = "" + documentSnapshot.get(GlobalConfig.PAGE_ID_KEY);
 
                                 onLogFetchListener.onSuccess(activityLogType, authorId, libraryId, tutorialId, isAuthorAffected, isLibraryAffected, isTutorialAffected, tutorialFolderId, tutorialPageId, folderPageId, isTutorialFolderAffected, isTutorialPageAffected, isFolderPageAffected, eventDate, logId);
 

@@ -109,6 +109,12 @@ FolderDataModel intentFolderDataModel;
                         @Override
                         public void onClick(View view) {
 
+                            Intent intent = new Intent(TutorialFolderActivity.this,UploadPageActivity.class);
+                            intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderId);
+                            intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+                            intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+                            intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,false);
+                            startActivity(intent);
                         }
                     }, 0);
 //        }
@@ -195,7 +201,7 @@ FolderDataModel intentFolderDataModel;
     private void openAllPageFragment(){
         AllTutorialPageFragment pagesFragment = new AllTutorialPageFragment();
         Bundle bundle = new Bundle();
-        bundle.putBoolean(GlobalConfig.IS_FOLDER_PAGE_KEY,true);
+        bundle.putBoolean(GlobalConfig.IS_TUTORIAL_PAGE_KEY,false);
         bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
         bundle.putString(GlobalConfig.FOLDER_ID_KEY,folderId);
         pagesFragment.setArguments(bundle);

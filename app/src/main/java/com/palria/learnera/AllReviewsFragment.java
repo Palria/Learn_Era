@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -38,8 +39,8 @@ public class AllReviewsFragment extends Fragment {
         initUI(parentView);
         fetchReviews(new ReviewFetchListener() {
             @Override
-            public void onSuccess(String authorId, String libraryId, String tutorialId, String dateReviewed, String reviewComment, boolean isAuthorReview, boolean isLibraryReview, boolean isTutorialReview) {
-                displayReviews( authorId, libraryId, tutorialId, dateReviewed, reviewComment, isAuthorReview,isLibraryReview, isTutorialReview);;
+            public void onSuccess(String authorId, String libraryId, String tutorialId, String dateReviewed, String reviewComment,long starLevel, boolean isAuthorReview, boolean isLibraryReview, boolean isTutorialReview) {
+                displayReviews( authorId, libraryId, tutorialId, dateReviewed, reviewComment, starLevel, isAuthorReview,isLibraryReview, isTutorialReview);;
             }
 
             @Override
@@ -78,19 +79,25 @@ public class AllReviewsFragment extends Fragment {
                             String libraryId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
                             String tutorialId = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
                             String reviewComment = ""+ documentSnapshot.get(GlobalConfig.REVIEW_COMMENT_KEY);
-                            String dateReviewed = ""+ documentSnapshot.get(GlobalConfig.DATE_REVIEWED_KEY);
+                            long starLevel =  documentSnapshot.get(GlobalConfig.REVIEW_COMMENT_KEY)!=null && documentSnapshot.get(GlobalConfig.REVIEW_COMMENT_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.STAR_LEVEL_KEY) : 0L;
 
-                            final boolean isAuthorReview= (documentSnapshot.get(GlobalConfig.IS_AUTHOR_REVIEW_KEY))!=null ? (documentSnapshot.getBoolean(GlobalConfig.IS_AUTHOR_REVIEW_KEY))  :false;
-                            final boolean isLibraryReview= (documentSnapshot.get(GlobalConfig.IS_LIBRARY_REVIEW_KEY))!=null ? (documentSnapshot.getBoolean(GlobalConfig.IS_LIBRARY_REVIEW_KEY))  :false;
-                            final boolean isTutorialReview = (documentSnapshot.get(GlobalConfig.IS_TUTORIAL_REVIEW_KEY))!=null ? (documentSnapshot.getBoolean(GlobalConfig.IS_TUTORIAL_REVIEW_KEY))  :false;
+                                String dateReviewed = documentSnapshot.get(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY) instanceof Timestamp ? documentSnapshot.getTimestamp(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY).toDate().toString() : "Undefined";
 
-                            reviewFetchListener.onSuccess( authorId, libraryId, tutorialId, dateReviewed, reviewComment, isAuthorReview,isLibraryReview, isTutorialReview);
+                            if(dateReviewed.length()>10) {
+                                dateReviewed = dateReviewed.substring(0,10);
+                            }
+
+                            final boolean isAuthorReview= (documentSnapshot.get(GlobalConfig.IS_AUTHOR_REVIEW_KEY))!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_AUTHOR_REVIEW_KEY)  :false;
+                            final boolean isLibraryReview= (documentSnapshot.get(GlobalConfig.IS_LIBRARY_REVIEW_KEY))!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_LIBRARY_REVIEW_KEY)  :false;
+                            final boolean isTutorialReview = (documentSnapshot.get(GlobalConfig.IS_TUTORIAL_REVIEW_KEY))!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_TUTORIAL_REVIEW_KEY)  :false;
+
+                            reviewFetchListener.onSuccess( authorId, libraryId, tutorialId, dateReviewed, reviewComment, starLevel, isAuthorReview,isLibraryReview, isTutorialReview);
                         }
                     }
                 });
     }
 
-    private void displayReviews(String authorId,String libraryId,String tutorialId,String dateReviewed,String reviewComment,final boolean isAuthorReview,final boolean isLibraryReview,final boolean isTutorialReview){
+    private void displayReviews(String authorId,String libraryId,String tutorialId,String dateReviewed,String reviewComment,long starLevel,final boolean isAuthorReview,final boolean isLibraryReview,final boolean isTutorialReview){
         //<Uncomment and implement>
         /*
         if(getContext() != null) {
@@ -183,7 +190,7 @@ public class AllReviewsFragment extends Fragment {
 
 
     interface ReviewFetchListener{
-        void onSuccess(String authorId,String libraryId,String tutorialId,String dateReviewed,String reviewComment,final boolean isAuthorReview,final boolean isLibraryReview,final boolean isTutorialReview);
+        void onSuccess(String authorId,String libraryId,String tutorialId,String dateReviewed,String reviewComment,long starLevel,final boolean isAuthorReview,final boolean isLibraryReview,final boolean isTutorialReview);
         void onFailed(String errorMessage);
     }
 

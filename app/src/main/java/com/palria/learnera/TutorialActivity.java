@@ -184,7 +184,7 @@ Button addActionButton;
                         Bundle bundle = new Bundle();
                         bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
 //                        bundle.putString(GlobalConfig.FOLDER_ID_KEY,"folderId");
-                        bundle.putBoolean(GlobalConfig.IS_FOLDER_PAGE_KEY,false);
+                        bundle.putBoolean(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
                         allTutorialPageFragment.setArguments(bundle);
                         initFragment(allTutorialPageFragment, pagesFrameLayout);
                     }
@@ -402,10 +402,15 @@ Button addActionButton;
                 .addOptionItem("New page", R.drawable.baseline_pages_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent i = new Intent(TutorialActivity.this, CreateNewTutorialPageActivity.class);
-                        i.putExtra(GlobalConfig.TUTORIAL_ID_KEY,"some-id");
-                        //creating new
-                        startActivity(i);
+//                        Intent i = new Intent(TutorialActivity.this, CreateNewTutorialPageActivity.class);
+//                        i.putExtra(GlobalConfig.TUTORIAL_ID_KEY,"some-id");
+//                        //creating new
+
+                        Intent intent = new Intent(TutorialActivity.this,UploadPageActivity.class);
+                        intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+                        intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+                        intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
+                        startActivity(intent);
                     }
                 },0)
                 .render();
@@ -540,7 +545,7 @@ Button addActionButton;
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_FOLDER_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, null, null,null, new GlobalConfig.ActionCallback() {
+                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_FOLDER_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, null, null, new GlobalConfig.ActionCallback() {
                             @Override
                             public void onSuccess() {
 ////

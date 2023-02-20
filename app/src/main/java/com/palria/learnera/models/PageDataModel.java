@@ -10,20 +10,26 @@ public class PageDataModel implements Serializable {
     private String description;
     private String coverDownloadUrl;
     private String authorId;
+    private String pageId;
+    private String tutorialId;
     private String folderId;
+    private boolean  isTutorialPage;
 
     private String dateCreated;
     //add other fields below
     private DocumentSnapshot pageDocumentSnapshot;
 
-    public PageDataModel(String title, String description, String coverDownloadUrl, String authorId, String folderId, String dateCreated) {
+    public PageDataModel(String title, String description, String coverDownloadUrl, String authorId, String pageId,String tutorialId,String folderId, String dateCreated,boolean isTutorialPage) {
         this.title = title;
         this.description = description;
         this.coverDownloadUrl = coverDownloadUrl;
         this.authorId = authorId;
+        this.pageId = pageId;
+        this.tutorialId = tutorialId;
         this.folderId = folderId;
         this.dateCreated = dateCreated;
         this.pageDocumentSnapshot = pageDocumentSnapshot;
+        this.isTutorialPage = isTutorialPage;
     }
 
     public String getTitle() {
@@ -58,6 +64,21 @@ public class PageDataModel implements Serializable {
         this.authorId = authorId;
     }
 
+    public String getPageId() {
+        return pageId;
+    }
+
+    public void setPageId(String pageId) {
+        this.pageId = pageId;
+    }
+
+    public String getTutorialId() {
+        return tutorialId;
+    }
+
+    public void setTutorialId(String tutorialId) {
+        this.tutorialId = tutorialId;
+    }
     public String getFolderId() {
         return folderId;
     }
@@ -72,6 +93,13 @@ public class PageDataModel implements Serializable {
 
     public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
+    }
+    public boolean isTutorialPage() {
+        return isTutorialPage;
+    }
+
+    public void setIsTutorialPage(boolean isTutorialPage) {
+        this.isTutorialPage =isTutorialPage;
     }
 
     public DocumentSnapshot getPageDocumentSnapshot() {

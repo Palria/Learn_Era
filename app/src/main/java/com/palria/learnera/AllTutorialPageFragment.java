@@ -29,18 +29,18 @@ public class AllTutorialPageFragment extends Fragment {
         // Required empty public constructor
     }
 
-boolean isFolderPage = false;
+boolean isTutorialPage = true;
 String tutorialId = "";
 String folderId = "";
 
 ArrayList<PageDataModel> pageDataModels=new ArrayList<>();
 RecyclerView pagesRecyclerListView;
-
+    PagesRcvAdapter adapter;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 if(getArguments()!= null){
-    isFolderPage = getArguments().getBoolean(GlobalConfig.IS_FOLDER_PAGE_KEY);
+    isTutorialPage = getArguments().getBoolean(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
     tutorialId = getArguments().getString(GlobalConfig.TUTORIAL_ID_KEY);
     folderId = getArguments().getString(GlobalConfig.FOLDER_ID_KEY);
 }
@@ -54,8 +54,9 @@ if(getArguments()!= null){
         initUi(parentView);
         fetchPages(new FetchPageListener() {
             @Override
-            public void onSuccess(String pageId, String pageName, String dateCreated) {
-
+            public void onSuccess(PageDataModel pageDataModel) {
+                pageDataModels.add(pageDataModel);
+                adapter.notifyItemChanged(pageDataModels.size());
             }
 
             @Override
@@ -74,28 +75,36 @@ if(getArguments()!= null){
         pageDataModels.add(new PageDataModel("How to hold","this is content",
                 "",
                 "author",
+                "pageId",
+                "tutorialId",
                 "folderId",
-                "1 hrs ago"));
+                "1 hrs ago",true));
         pageDataModels.add(new PageDataModel("How to hold","this is content",
                 "",
                 "author",
+                "pageId",
+                "tutorialId",
                 "folderId",
-                "1 hrs ago"));
+                "1 hrs ago",true));
         pageDataModels.add(new PageDataModel("How to hold","this is content",
                 "",
                 "author",
+                "pageId",
+                "tutorialId",
                 "folderId",
-                "1 hrs ago"));
+                "1 hrs ago",true));
         pageDataModels.add(new PageDataModel("How to hold","this is content",
                 "",
                 "author",
+                "pageId",
+                "tutorialId",
                 "folderId",
-                "1 hrs ago"));
+                "1 hrs ago",true));
 
 
-        PagesRcvAdapter adapter = new PagesRcvAdapter(pageDataModels,getContext());
+        adapter = new PagesRcvAdapter(pageDataModels,getContext());
 
-        pagesRecyclerListView.setHasFixedSize(true);
+//        pagesRecyclerListView.setHasFixedSize(true);
         pagesRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         pagesRecyclerListView.setAdapter(adapter);
 
@@ -104,19 +113,19 @@ if(getArguments()!= null){
 
     private void fetchPages(FetchPageListener fetchPageListener){
         Query pageQuery = null;
-        if(isFolderPage){
+        if(isTutorialPage){
+            pageQuery =   GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                    .document(tutorialId)
+                    .collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY);
+        }else{
+
             pageQuery =  GlobalConfig.getFirebaseFirestoreInstance()
                     .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                     .document(tutorialId)
                     .collection(GlobalConfig.ALL_FOLDERS_KEY)
                     .document(folderId)
                     .collection(GlobalConfig.ALL_FOLDER_PAGES_KEY);
-
-        }else{
-            pageQuery =   GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_TUTORIAL_KEY)
-                    .document(tutorialId)
-                    .collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY);
 
         }
 
@@ -134,12 +143,12 @@ if(getArguments()!= null){
 
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             String pageId = documentSnapshot.getId();
-                            String pageName  = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
+                            String pageTitle  = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
                             String dateCreated  =  documentSnapshot.get(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY)!=null ? documentSnapshot.getTimestamp(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY).toDate()+"" : "Undefined";
                             if(dateCreated.length()>10){
                                 dateCreated = dateCreated.substring(0,10);
                             }
-                            fetchPageListener.onSuccess(pageId,pageName,dateCreated);
+                            fetchPageListener.onSuccess(new PageDataModel(pageTitle,"","","",pageId,tutorialId,folderId,dateCreated,isTutorialPage));
                         }
 
                     }
@@ -147,7 +156,8 @@ if(getArguments()!= null){
     }
 
     interface FetchPageListener{
-        void onSuccess(String pageId , String pageName, String dateCreated);
+//        void onSuccess(String pageId , String pageName, String dateCreated);
+        void onSuccess(PageDataModel pageDataModel);
         void onFailed(String errorMessage);
     }
 }

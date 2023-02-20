@@ -55,6 +55,7 @@ public class UploadPageActivity extends AppCompatActivity {
     Button btn ;
     EditText pageTitleEditText;
     String pageTitle;
+    boolean isTutorialPage = true;
     /**
      * A  variable for launching the gallery {@link Intent}
      * */
@@ -84,6 +85,8 @@ public class UploadPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_upload_page);
 
         initUI();
+        fetchIntentData();
+        pageId = GlobalConfig.getRandomString(60);
 
         openGalleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
 
@@ -164,10 +167,11 @@ public class UploadPageActivity extends AppCompatActivity {
                 }
             }
         });
+//
+//        tutorialId  = "TEST_ID-3";
+//        folderId  = "TEST_ID-3";
+//        pageId  = "TEST_ID-3";
 
-        tutorialId  = "TEST_ID-3";
-        folderId  = "TEST_ID-3";
-        pageId  = "TEST_ID-3";
 
         startService(new Intent(getApplicationContext(),UploadPageManagerService.class));
         addImageActionButton.setOnClickListener(new View.OnClickListener() {
@@ -227,6 +231,13 @@ private void initUI(){
             .create();
 }
 
+private void fetchIntentData(){
+        Intent intent = getIntent();
+        isTutorialPage = intent.getBooleanExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
+        tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
+        libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
+        folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
+}
 
 
     @Override
@@ -554,14 +565,14 @@ void addTableEditTextCell(LinearLayout rowLinearLayout){
     LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View tableCell  =  layoutInflater.inflate(R.layout.page_table_cell_edit_text,rowLinearLayout,false);
     EditText editTextCell =tableCell.findViewById(R.id.editTextCellId);
-    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,40,1);
-    layoutParams.setMargins(5,5,5,5);
+//    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,40,1);
+//    layoutParams.setMargins(5,5,5,5);
 //    editTextCell.setLayoutParams(layoutParams);
     editTextCell.setHint("?");
-    editTextCell.requestFocus();
+//    editTextCell.requestFocus();
 //    editTextCell.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
-    ColorDrawable gray = new ColorDrawable();
-    gray.setColor(getResources().getColor(R.color.gray));
+//    ColorDrawable gray = new ColorDrawable();
+//    gray.setColor(getResources().getColor(R.color.gray));
 //    editTextCell.setBackground(gray);
 
     rowLinearLayout.addView(tableCell);
@@ -745,8 +756,8 @@ preparePage();
 
         }
 
-    UploadPageManagerService.uploadImageDataToPage( libraryId,  tutorialId,  folderId,  pageId, pageTitle,allImageArrayList, totalNumberOfImages,numOfChildrenData);
-    UploadPageManagerService.uploadTextDataToPage( libraryId,  tutorialId,  folderId,  pageId, pageTitle, allPageTextDataDetailsArrayList,  numOfChildrenData);
+    UploadPageManagerService.uploadImageDataToPage( libraryId,  tutorialId,  folderId,  pageId, pageTitle,allImageArrayList, totalNumberOfImages,numOfChildrenData,isTutorialPage);
+    UploadPageManagerService.uploadTextDataToPage( libraryId,  tutorialId,  folderId,  pageId, pageTitle, allPageTextDataDetailsArrayList,  numOfChildrenData,isTutorialPage);
 
     }
 

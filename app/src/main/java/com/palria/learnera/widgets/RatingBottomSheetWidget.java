@@ -145,7 +145,7 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_AUTHOR_TYPE_KEY,authorId, null, null,  null, null, null,GlobalConfig.getCurrentUserId(),  new GlobalConfig.ActionCallback() {
+                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_AUTHOR_TYPE_KEY,authorId, null, null,  null, null, GlobalConfig.getCurrentUserId(),  new GlobalConfig.ActionCallback() {
                             @Override
                             public void onSuccess() {
 //                        toggleProgress(false);
@@ -216,7 +216,7 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_LIBRARY_TYPE_KEY,authorId, libraryId, null,  null, null, null,GlobalConfig.getCurrentUserId(), new GlobalConfig.ActionCallback() {
+                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_LIBRARY_TYPE_KEY,authorId, libraryId, null,  null, null, GlobalConfig.getCurrentUserId(), new GlobalConfig.ActionCallback() {
                             @Override
                             public void onSuccess() {
 //                        toggleProgress(false);
@@ -299,7 +299,7 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_TUTORIAL_TYPE_KEY,authorId, libraryId, tutorialId,  null, null, null,GlobalConfig.getCurrentUserId(),  new GlobalConfig.ActionCallback() {
+                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_TUTORIAL_TYPE_KEY,authorId, libraryId, tutorialId,  null, null, GlobalConfig.getCurrentUserId(),  new GlobalConfig.ActionCallback() {
                             @Override
                             public void onSuccess() {
 //                        toggleProgress(false);

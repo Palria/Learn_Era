@@ -20,10 +20,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 public class UserReviewsFragment extends Fragment {
-    public UserReviewsFragment() {
+    public UserReviewsFragment(){
         // Required empty public constructor
     }
-LinearLayout containerLinearLayout;
+    LinearLayout containerLinearLayout;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +33,7 @@ LinearLayout containerLinearLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState){
         // Inflate the layout for this fragment
         View parentView = inflater.inflate(R.layout.fragment_user_reviews, container, false);
         initUI(parentView);
@@ -49,7 +50,6 @@ LinearLayout containerLinearLayout;
         });
         return parentView;
     }
-
 
     private void initUI(View parentView){
         //use the parentView to find the by Id as in : parentView.findViewById(...);
@@ -74,8 +74,8 @@ LinearLayout containerLinearLayout;
                         for(DocumentSnapshot documentSnapshot: queryDocumentSnapshots){
                            final String reviewerId = documentSnapshot.getId();
                            final String comment = ""+ documentSnapshot.get(GlobalConfig.REVIEW_COMMENT_KEY);
-                           final String dateReviewed = ""+ documentSnapshot.get(GlobalConfig.DATE_REVIEWED_KEY);
-                           final long starLevel = documentSnapshot.get(GlobalConfig.STAR_LEVEL_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.STAR_LEVEL_KEY) : 0;
+                           final String dateReviewed =  documentSnapshot.get(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY)!=null ? documentSnapshot.getTimestamp(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY).toDate()+"" : "Undefined";
+                           final long starLevel = documentSnapshot.get(GlobalConfig.STAR_LEVEL_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.STAR_LEVEL_KEY) : 0L;
 
                            reviewFetchListener.onSuccess(reviewerId,comment ,dateReviewed,starLevel);
                         }
@@ -123,7 +123,7 @@ LinearLayout containerLinearLayout;
 
     interface ReviewFetchListener{
         void onSuccess(final String reviewerId,final String comment ,final String dateReviewed,final long starLevel);
-                void onFailed(String errorMessage);
+        void onFailed(String errorMessage);
     }
 
 }

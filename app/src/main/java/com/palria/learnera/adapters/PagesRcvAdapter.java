@@ -21,6 +21,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.palria.learnera.GlobalConfig;
 import com.palria.learnera.GlobalHelpers;
 import com.palria.learnera.LibraryActivity;
+import com.palria.learnera.PageActivity;
 import com.palria.learnera.R;
 import com.palria.learnera.models.LibraryDataModel;
 import com.palria.learnera.models.PageDataModel;
@@ -58,12 +59,13 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
         holder.dateCreated.setText("2 m ago");//view counts here
 
         holder.pageTitle.setText(pageDataModel.getTitle());
-        Glide.with(context)
-                .load(pageDataModel.getCoverDownloadUrl())
-                .centerCrop()
-                .placeholder(R.drawable.book_cover)
-                .into(holder.cover);
-
+        try {
+            Glide.with(context)
+                    .load(pageDataModel.getCoverDownloadUrl())
+                    .centerCrop()
+                    .placeholder(R.drawable.book_cover)
+                    .into(holder.cover);
+        }catch(Exception ignored){}
 
 
         holder.pageDescription.setText(pageDataModel.getDescription());
@@ -86,6 +88,14 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
             @Override
             public void onClick(View view) {
 //
+                Intent intent = new Intent(context, PageActivity.class);
+                intent.putExtra(GlobalConfig.PAGE_ID_KEY,pageDataModel.getPageId());
+                intent.putExtra(GlobalConfig.FOLDER_ID_KEY,pageDataModel.getFolderId());
+                intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,pageDataModel.getTutorialId());
+                intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,pageDataModel.getAuthorId());
+                intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,pageDataModel.isTutorialPage());
+                context.startActivity(intent);
+
             }
         });
 

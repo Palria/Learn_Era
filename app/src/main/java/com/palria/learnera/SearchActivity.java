@@ -19,12 +19,8 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.tabs.TabLayout;
 
 public class SearchActivity extends AppCompatActivity {
-
     TabLayout tabLayout ;
     FrameLayout allViewerFrameLayout;
-//    FrameLayout allPostsFrameLayout;
-//    FrameLayout allUsersFrameLayout;
-//    FrameLayout allPagesFrameLayout;
 
     boolean isAllLibrariesSearchOpen = false;
     boolean isAllTutorialsSearchOpen = false;
@@ -48,7 +44,7 @@ public class SearchActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-        EditText txtSearch = ((EditText)searchView.findViewById(androidx.appcompat.R.id.search_src_text));
+        EditText txtSearch = ((EditText) searchView.findViewById(androidx.appcompat.R.id.search_src_text));
         txtSearch.setHint("Search");
         txtSearch.setHintTextColor(Color.LTGRAY);
         txtSearch.setTextColor(Color.WHITE);
@@ -72,7 +68,7 @@ public class SearchActivity extends AppCompatActivity {
 
                 }
                 if(isAllAuthorsSearchOpen){
-                    openFragment(new AllLibraryFragment(),allViewerFrameLayout);
+                    openFragment(new AllUsersFragment(),allViewerFrameLayout);
 
                 }
 
@@ -125,7 +121,7 @@ public class SearchActivity extends AppCompatActivity {
                         break;
 
                     case 2:
-                        openFragment(new AllLibraryFragment(),allViewerFrameLayout);
+                        openFragment(new AllUsersFragment(),allViewerFrameLayout);
                         setAllAuthorsSearchOpen();
                         break;
 
@@ -185,23 +181,19 @@ public class SearchActivity extends AppCompatActivity {
 
 
     }
+
     public void openFragment(Fragment fragment, FrameLayout frameLayoutToBeReplaced){
 //        String searchKeyword = searchFieldEditText.getText().toString();
         searchKeyword = searchKeyword.toLowerCase();
         Bundle bundle = new Bundle();
         bundle.putString(GlobalConfig.SEARCH_KEYWORD_KEY, searchKeyword);
+        bundle.putBoolean(GlobalConfig.IS_AUTHOR_OPEN_TYPE_KEY, true);
         bundle.putBoolean(GlobalConfig.IS_FROM_SEARCH_CONTEXT_KEY,true);
 //        bundle.putString(GlobalValue.FRAGMENT_OPENING_PURPOSE,GlobalValue.FRAGMENT_OPENING_PURPOSE_DEFAULT);
 
         fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(frameLayoutToBeReplaced.getId(),fragment).commit();
     }
-//    public void setLayoutVisibility(FrameLayout layoutToBeVisible){
-//        allPostsFrameLayout.setVisibility(View.GONE);
-//       allUsersFrameLayout.setVisibility(View.GONE);
-//        allPagesFrameLayout.setVisibility(View.GONE);
-//        layoutToBeVisible.setVisibility(View.VISIBLE);
-//    }
 
 
     void setAllLibrariesSearchOpen(){
