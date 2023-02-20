@@ -95,14 +95,14 @@ FolderDataModel intentFolderDataModel;
          leBottomSheetDialog=new LEBottomSheetDialog(this);
          //if author id equal current logged in user
 
-        if(authorId.equals(GlobalConfig.getCurrentUserId())) {
-            leBottomSheetDialog.addOptionItem("Edit Folder", R.drawable.ic_baseline_edit_24,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                        }
-                    }, 0);
+//        if(authorId.equals(GlobalConfig.getCurrentUserId())) {
+//            leBottomSheetDialog.addOptionItem("Edit Folder", R.drawable.ic_baseline_edit_24,
+//                    new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//
+//                        }
+//                    }, 0);
 
             leBottomSheetDialog.addOptionItem("Add Page", R.drawable.ic_baseline_add_circle_24,
                     new View.OnClickListener() {
@@ -111,7 +111,7 @@ FolderDataModel intentFolderDataModel;
 
                         }
                     }, 0);
-        }
+//        }
         leBottomSheetDialog.addOptionItem("Add to Bookmark", R.drawable.ic_baseline_bookmarks_24,
                 new View.OnClickListener() {
                     @Override

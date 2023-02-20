@@ -8,94 +8,52 @@
     android:background="@color/white"
     tools:context=".SearchActivity">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/headerCardViewId"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/teal_700"
-        app:cardElevation="45dp"
+        app:navigationIconTint="@color/white"
+        app:titleTextColor="@color/white"
+        android:theme="@style/ToolbarColoredBackArrow"
+        android:background="@color/teal_700"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_height="?attr/actionBarSize">
 
-            <TextView
-                android:id="@+id/textHeaderTextViewId"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_gravity="center_horizontal"
-                android:textColor="@color/black"
-                android:ellipsize="end"
-                android:textStyle="bold"
-                android:text="Search Learn Era"
-                android:fontFamily="sans-serif-condensed"
-                android:textSize="25sp"/>
+      <LinearLayout
 
-            <!--            <ImageButton-->
-            <!--                android:id="@+id/popUpImageButtonId"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:backgroundTint="@color/transparent"-->
-            <!--                android:src="@drawable/ic_baseline_more_vert_24"-->
-            <!--                android:layout_gravity="end"-->
-            <!--                />-->
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+
+          <androidx.appcompat.widget.SearchView
+              android:id="@+id/searchViewId"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="1dp"
+              android:layout_marginEnd="1dp"
+              android:layout_marginBottom="1dp"
+              android:layout_marginTop="1dp"
+              android:theme="@style/WhiteCursorSearchView"
+              android:focusedByDefault="true"
+              android:focusableInTouchMode="true"
+              app:iconifiedByDefault="false"
+              app:searchIcon="@null"
+              app:queryBackground="@android:color/transparent"
+              />
+
+      </LinearLayout>
+    </com.google.android.material.appbar.MaterialToolbar>
+
+
 
     <LinearLayout
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        android:layout_marginHorizontal="5pt"
         android:id="@+id/searchLinearLayoutId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@color/teal_700"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/headerCardViewId"
         >
-        <EditText
-            android:id="@+id/searchFieldEditTextId"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/white"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
-            android:inputType="textPersonName"
-            android:paddingStart="10dp"
-            android:hint="Enter keyword"
-            android:visibility="gone"
-            />
-
-
-        <ImageButton
-            android:id="@+id/searchActionButtonId"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:backgroundTint="@color/white"
-            android:background="@drawable/ic_baseline_search_24"
-            android:visibility="gone"
-            />
-
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchViewId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:layout_marginStart="1dp"
-            android:layout_marginEnd="1dp"
-            android:layout_marginBottom="1dp"
-            android:layout_marginTop="1dp"
-            android:focusedByDefault="true"
-            android:focusableInTouchMode="true"
-            app:iconifiedByDefault="false"
-
-            />
 
     </LinearLayout>
     <com.google.android.material.tabs.TabLayout

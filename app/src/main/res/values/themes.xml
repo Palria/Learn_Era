@@ -44,4 +44,9 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="WhiteCursorSearchView" parent="Widget.AppCompat.SearchView">
+        <item name="colorControlActivated">#FFFFFF</item>
+        <item name="queryBackground">@null</item>
+    </style>
 </resources>

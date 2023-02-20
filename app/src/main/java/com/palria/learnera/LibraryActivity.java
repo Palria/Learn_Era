@@ -136,11 +136,11 @@ if(!authorId.equals(GlobalConfig.getCurrentUserId())){
                 }
                 initCategoriesChip(categories);
 
-                ratings[0] = (int) libraryDataModel.getTotalNumberOfOneStarRate();
-                ratings[1] = (int) libraryDataModel.getTotalNumberOfTwoStarRate();
-                ratings[2] = (int) libraryDataModel.getTotalNumberOfThreeStarRate();
-                ratings[3] = (int) libraryDataModel.getTotalNumberOfFourStarRate();
-                ratings[4] = (int) libraryDataModel.getTotalNumberOfFiveStarRate();
+                ratings[0] = Integer.parseInt(Long.toString(libraryDataModel.getTotalNumberOfOneStarRate()));
+                ratings[1] = Integer.parseInt(Long.toString(libraryDataModel.getTotalNumberOfTwoStarRate()));
+                ratings[2] = Integer.parseInt(Long.toString(libraryDataModel.getTotalNumberOfThreeStarRate()));
+                ratings[3] = Integer.parseInt(Long.toString(libraryDataModel.getTotalNumberOfFourStarRate()));
+                ratings[4] = Integer.parseInt(Long.toString(libraryDataModel.getTotalNumberOfFiveStarRate()));
 
 
                 dateCreated.setText(libraryDataModel.getDateCreated());

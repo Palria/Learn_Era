@@ -1,17 +1,21 @@
 package com.palria.learnera;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.tabs.TabLayout;
 
 public class SearchActivity extends AppCompatActivity {
@@ -27,9 +31,10 @@ public class SearchActivity extends AppCompatActivity {
     boolean isAllAuthorsSearchOpen = false;
 
     SearchView searchView;
-    EditText searchFieldEditText;
     ImageButton searchActionButton;
     static String searchKeyword = "";
+
+    MaterialToolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +42,17 @@ public class SearchActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tabLayoutId);
 
         searchView = findViewById(R.id.searchViewId);
+        toolbar=findViewById(R.id.topBar);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        EditText txtSearch = ((EditText)searchView.findViewById(androidx.appcompat.R.id.search_src_text));
+        txtSearch.setHint("Search");
+        txtSearch.setHintTextColor(Color.LTGRAY);
+        txtSearch.setTextColor(Color.WHITE);
+
         searchView.requestFocus();
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.toggleSoftInput(1,0);
@@ -71,25 +87,24 @@ public class SearchActivity extends AppCompatActivity {
                 return true;
             }
         });
-        searchFieldEditText = findViewById(R.id.searchFieldEditTextId);
-        searchActionButton = findViewById(R.id.searchActionButtonId);
-        searchActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(isAllLibrariesSearchOpen){
-                    openFragment(new AllLibraryFragment(),allViewerFrameLayout);
 
-                }
-                if(isAllTutorialsSearchOpen){
-                    openFragment(new AllTutorialFragment(),allViewerFrameLayout);
-
-                }
-                if(isAllAuthorsSearchOpen){
-                    openFragment(new AllLibraryFragment(),allViewerFrameLayout);
-
-                }
-            }
-        });
+//        searchActionButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(isAllLibrariesSearchOpen){
+//                    openFragment(new AllLibraryFragment(),allViewerFrameLayout);
+//
+//                }
+//                if(isAllTutorialsSearchOpen){
+//                    openFragment(new AllTutorialFragment(),allViewerFrameLayout);
+//
+//                }
+//                if(isAllAuthorsSearchOpen){
+//                    openFragment(new AllLibraryFragment(),allViewerFrameLayout);
+//
+//                }
+//            }
+//        });
 
 
         allViewerFrameLayout = findViewById(R.id.allViewerFrameLayoutId);
@@ -142,6 +157,16 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            onBackPressed();  return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     public void manageTabLayout(){
         TabLayout.Tab libraryTabItem= tabLayout.newTab();
