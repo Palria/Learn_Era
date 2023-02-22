@@ -3,12 +3,78 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".AllReviewsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content">
+        <TextView
+            android:textStyle="bold"
+            android:text="Posted Ratings"
+            android:layout_marginHorizontal="8pt"
+            android:textSize="8pt"
+            android:layout_marginTop="10pt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:text="@string/rating_are_sorted_on_the_basic_of_the_date_posted_in_descending_order"
+            android:layout_marginHorizontal="8pt"
+            android:textSize="7pt"
+            android:layout_marginTop="5pt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/ratingBarContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <com.google.android.material.tabs.TabLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="5pt"
+            android:layout_marginHorizontal="5pt"
+            android:layout_height="?actionBarSize"
+            android:id="@+id/tab_layout"
+            android:background="@color/white"
+            app:tabInlineLabel="false"
+            app:tabGravity="fill"
+            app:tabMode="fixed"
+            app:tabIndicatorColor="@color/teal_700"
+            app:tabSelectedTextColor="@color/teal_700"
+            app:tabIndicatorFullWidth="true"
+            app:tabTextAppearance="@style/TextAppearance.AppCompat.Small">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:text="Library"
+                android:id="@+id/libraryRatingsTab"
+                android:icon="@drawable/ic_baseline_dynamic_feed_24"
+                android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:text="Tutorials"
+                android:id="@+id/tutorialRatingsTab"
+                android:icon="@drawable/ic_baseline_stars_24"
+                android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:text="User"
+                android:id="@+id/userRatingsTab"
+                android:icon="@drawable/ic_baseline_stars_24"
+                android:layout_height="wrap_content"/>
+
+        </com.google.android.material.tabs.TabLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="10pt"
+            android:id="@+id/ratingsRecyclerListView"
+            tools:listitem="@layout/single_rating_layout_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
 
 </FrameLayout>

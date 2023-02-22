@@ -22,6 +22,7 @@
     <string name="rate">Rate</string>
     <string name="bookmark">Bookmark</string>
     <string name="add">Add</string>
+    <string name="rating_are_sorted_on_the_basic_of_the_date_posted_in_descending_order">Rating are sorted on the basic of the date posted in descending order.</string>
 
 
 </resources>
