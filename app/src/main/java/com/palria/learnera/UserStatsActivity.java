@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -38,23 +39,25 @@ public class UserStatsActivity extends AppCompatActivity {
     ViewPager viewPager;
 
     LinearLayout ratingContainer;
-
+    TextView profileViewsTextView;
+    TextView numOfLibraryTextView;
+    TextView numOfReachedTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_stats);
-
-
-      InitUi();
+        InitUi();
 
 
         toggleProgress(true);
-        initStatistics(new UserStatisticsFragment.InitStatsListener() {
+        initStatistics(new InitStatsListener() {
             @Override
             public void onSuccess(StatisticsDataModel statisticsDataModel) {
                 //access the public methods of StatisticsDataModel class
                 toggleProgress(false);
+                profileViewsTextView.setText(statisticsDataModel.getTotalNumberOfProfileVisitor() +"");
+                numOfLibraryTextView.setText(statisticsDataModel.getTotalNumberOfLibrariesCreated() +"");
 
             }
 
@@ -94,6 +97,9 @@ public class UserStatsActivity extends AppCompatActivity {
         viewPager=findViewById(R.id.layout_view_pager);
 
         ratingContainer = findViewById(R.id.ratingBarContainer);
+        profileViewsTextView = findViewById(R.id.profileViewsTextViewId);
+        numOfLibraryTextView = findViewById(R.id.numOfLibraryTextViewId);
+        numOfReachedTextView = findViewById(R.id.numOfReachedTextViewId);
         // Initialize array list
         ArrayList<String> arrayList=new ArrayList<>(0);
 
@@ -114,15 +120,15 @@ public class UserStatsActivity extends AppCompatActivity {
                 .create();
 
         //load rating bar
-        int[] ratings = {0,12,55,1,250};
-
-        RatingBarWidget ratingBarWidget = new RatingBarWidget();
-        ratingBarWidget.setContainer(ratingContainer)
-                .setContext(this)
-                .setMax_value(5)
-                .setRatings(ratings)
-                .setText_color(R.color.teal_700)
-                .render();
+//        int[] ratings = {0,12,55,1,250};
+//
+//        RatingBarWidget ratingBarWidget = new RatingBarWidget();
+//        ratingBarWidget.setContainer(ratingContainer)
+//                .setContext(this)
+//                .setMax_value(5)
+//                .setRatings(ratings)
+//                .setText_color(R.color.teal_700)
+//                .render();
     }
 
     private void prepareViewPager(ViewPager viewPager, ArrayList<String> arrayList) {
@@ -207,13 +213,22 @@ public class UserStatsActivity extends AppCompatActivity {
             imageView.getLayoutParams().height = 150;
             imageView.requestLayout();
             container.addView(item_view);
-            return item_view;
+
+
+            //add these three fragments to the statistics
+//            switch (position){
+//          case 0:   return new BookmarksFragment();
+//          case 1:   return new AllReviewsFragment();
+//          case 2:   return new UserReviewsFragment();
+//            }
+
+            return item_view ;
 
         }
 
         @Override
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-            container.removeView((LinearLayout)object);
+                        container.removeView((LinearLayout)object);
         }
 
         @Override
@@ -252,7 +267,7 @@ public class UserStatsActivity extends AppCompatActivity {
 
 
 
-    private  void initStatistics(UserStatisticsFragment.InitStatsListener initStatsListener){
+    private  void initStatistics(InitStatsListener initStatsListener){
         GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId())
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
@@ -288,6 +303,17 @@ public class UserStatsActivity extends AppCompatActivity {
                                 totalNumberOfFourStarRate,
                                 totalNumberOfFiveStarRate
                         ));
+                        int[] ratings = {(int) totalNumberOfOneStarRate,(int)totalNumberOfTwoStarRate,(int)totalNumberOfThreeStarRate,(int)totalNumberOfFourStarRate,(int)totalNumberOfFiveStarRate};
+
+                        RatingBarWidget ratingBarWidget = new RatingBarWidget();
+                        if(getApplicationContext()!=null) {
+                            ratingBarWidget.setContainer(ratingContainer)
+                                    .setContext(UserStatsActivity.this)
+                                    .setMax_value(5)
+                                    .setRatings(ratings)
+                                    .setText_color(R.color.teal_700)
+                                    .render();
+                        }
                     }
                 });
     }

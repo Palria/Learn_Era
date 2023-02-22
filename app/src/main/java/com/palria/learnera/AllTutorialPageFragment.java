@@ -71,35 +71,35 @@ if(getArguments()!= null){
     private void initUi(View parentView) {
 
         pagesRecyclerListView=parentView.findViewById(R.id.pagesRecyclerListView);
-
-        pageDataModels.add(new PageDataModel("How to hold","this is content",
-                "",
-                "author",
-                "pageId",
-                "tutorialId",
-                "folderId",
-                "1 hrs ago",true));
-        pageDataModels.add(new PageDataModel("How to hold","this is content",
-                "",
-                "author",
-                "pageId",
-                "tutorialId",
-                "folderId",
-                "1 hrs ago",true));
-        pageDataModels.add(new PageDataModel("How to hold","this is content",
-                "",
-                "author",
-                "pageId",
-                "tutorialId",
-                "folderId",
-                "1 hrs ago",true));
-        pageDataModels.add(new PageDataModel("How to hold","this is content",
-                "",
-                "author",
-                "pageId",
-                "tutorialId",
-                "folderId",
-                "1 hrs ago",true));
+//
+//        pageDataModels.add(new PageDataModel("How to hold","this is content",
+//                "",
+//                "author",
+//                "pageId",
+//                "tutorialId",
+//                "folderId",
+//                "1 hrs ago",true));
+//        pageDataModels.add(new PageDataModel("How to hold","this is content",
+//                "",
+//                "author",
+//                "pageId",
+//                "tutorialId",
+//                "folderId",
+//                "1 hrs ago",true));
+//        pageDataModels.add(new PageDataModel("How to hold","this is content",
+//                "",
+//                "author",
+//                "pageId",
+//                "tutorialId",
+//                "folderId",
+//                "1 hrs ago",true));
+//        pageDataModels.add(new PageDataModel("How to hold","this is content",
+//                "",
+//                "author",
+//                "pageId",
+//                "tutorialId",
+//                "folderId",
+//                "1 hrs ago",true));
 
 
         adapter = new PagesRcvAdapter(pageDataModels,getContext());

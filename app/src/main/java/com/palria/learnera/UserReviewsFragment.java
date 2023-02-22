@@ -1,10 +1,14 @@
 package com.palria.learnera;
 
+import static androidx.recyclerview.widget.LinearLayoutManager.VERTICAL;
+
 import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,18 +16,27 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.palria.learnera.adapters.RatingItemRecyclerViewAdapter;
+import com.palria.learnera.models.RatingDataModel;
+
+import java.util.ArrayList;
 
 public class UserReviewsFragment extends Fragment {
     public UserReviewsFragment(){
         // Required empty public constructor
     }
     LinearLayout containerLinearLayout;
+    RecyclerView recyclerView;
+    RatingItemRecyclerViewAdapter ratingItemRecyclerViewAdapter;
+    ArrayList<RatingDataModel> ratingDataModels = new ArrayList<>();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,8 +52,10 @@ public class UserReviewsFragment extends Fragment {
         initUI(parentView);
         fetchReviews(new ReviewFetchListener() {
             @Override
-            public void onSuccess(String reviewerId, String comment, String dateReviewed, long starLevel) {
-                displayReview(reviewerId,comment ,dateReviewed,starLevel);
+            public void onSuccess(RatingDataModel ratingDataModel) {
+            ratingDataModels.add(ratingDataModel);
+            ratingItemRecyclerViewAdapter.notifyItemChanged(ratingDataModels.size());
+
             }
 
             @Override
@@ -52,7 +67,13 @@ public class UserReviewsFragment extends Fragment {
     }
 
     private void initUI(View parentView){
-        //use the parentView to find the by Id as in : parentView.findViewById(...);
+        //use the parentView to find the  Id as in : parentView.findViewById(...);
+        ratingItemRecyclerViewAdapter = new RatingItemRecyclerViewAdapter(ratingDataModels,getContext());
+        recyclerView = parentView.findViewById(R.id.ratingsRecyclerListView);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL ,false);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(ratingItemRecyclerViewAdapter);
+        Toast.makeText(getContext(), "user reviews init", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -74,10 +95,33 @@ public class UserReviewsFragment extends Fragment {
                         for(DocumentSnapshot documentSnapshot: queryDocumentSnapshots){
                            final String reviewerId = documentSnapshot.getId();
                            final String comment = ""+ documentSnapshot.get(GlobalConfig.REVIEW_COMMENT_KEY);
-                           final String dateReviewed =  documentSnapshot.get(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY)!=null ? documentSnapshot.getTimestamp(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY).toDate()+"" : "Undefined";
+                           String dateReviewed =  documentSnapshot.get(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY)!=null ? documentSnapshot.getTimestamp(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY).toDate()+"" : "Undefined";
+                           if(dateReviewed.length()>10){
+                               dateReviewed = dateReviewed.substring(0,10);
+                           }
+                           final String finalDateReviewed = dateReviewed;
                            final long starLevel = documentSnapshot.get(GlobalConfig.STAR_LEVEL_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.STAR_LEVEL_KEY) : 0L;
+                            GlobalConfig.getFirebaseFirestoreInstance()
+                                    .collection(GlobalConfig.ALL_USERS_KEY)
+                                    .document(reviewerId)
+                                    .get()
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            reviewFetchListener.onSuccess(new RatingDataModel(reviewerId,"Error",GlobalConfig.getCurrentUserId(),"user",finalDateReviewed,comment, (int) starLevel,"Error"));
 
-                           reviewFetchListener.onSuccess(reviewerId,comment ,dateReviewed,starLevel);
+                                        }
+                                    })
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            String userName = ""+ documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                                            String userProfilePhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
+                                            reviewFetchListener.onSuccess(new RatingDataModel(reviewerId,userName,GlobalConfig.getCurrentUserId(),"user",finalDateReviewed,comment, (int) starLevel,userProfilePhotoDownloadUrl));
+
+                                        }
+                                    });
+//                           reviewFetchListener.onSuccess(reviewerId,comment ,dateReviewed,starLevel);
                         }
                     }
                 });
@@ -122,7 +166,8 @@ public class UserReviewsFragment extends Fragment {
     }
 
     interface ReviewFetchListener{
-        void onSuccess(final String reviewerId,final String comment ,final String dateReviewed,final long starLevel);
+//        void onSuccess(final String reviewerId,final String comment ,final String dateReviewed,final long starLevel);
+        void onSuccess(RatingDataModel ratingDataModel);
         void onFailed(String errorMessage);
     }
 

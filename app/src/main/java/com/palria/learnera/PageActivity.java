@@ -109,6 +109,9 @@ TextView pageTitleTextView;
                                             Toast.makeText(getApplicationContext(), "todo", Toast.LENGTH_SHORT).show();
 
                                             break;
+                                        default:
+                                            renderPageImageData(pageDataArrayList);
+                                            Toast.makeText(getApplicationContext(), "image", Toast.LENGTH_SHORT).show();
                                     }
                                 }else{
                                     Toast.makeText(getApplicationContext(), "array empty", Toast.LENGTH_SHORT).show();

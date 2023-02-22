@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -53,6 +54,7 @@ fetchBookmarks(new BookmarkFetchListener() {
 
     private void initUI(){
         //use the parentView to find the by Id as in : parentView.findViewById(...);
+        Toast.makeText(getContext(), "bookmarks init", Toast.LENGTH_SHORT).show();
 
 
     }

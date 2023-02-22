@@ -20,9 +20,11 @@ import android.text.style.ImageSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -90,7 +92,7 @@ initStatistics(new InitStatsListener() {
     public void onFailed(String errorMessage) {
         //it failed to load the statistics
         toggleProgress(false);
-
+        Toast.makeText(getContext(), "Failed to init stats", Toast.LENGTH_SHORT).show();
 
     }
 });
@@ -117,7 +119,7 @@ initStatistics(new InitStatsListener() {
         tabLayout.setupWithViewPager(viewPager);
 
         // Prepare view pager
-        prepareViewPager(viewPager,arrayList);
+        prepareViewPagerItems(viewPager,arrayList);
 
         alertDialog = new AlertDialog.Builder(getContext())
                 .setCancelable(false)
@@ -125,19 +127,43 @@ initStatistics(new InitStatsListener() {
                 .create();
 
         //load rating bar
-        int[] ratings = {0,12,55,1,250};
 
-        RatingBarWidget ratingBarWidget = new RatingBarWidget();
-        ratingBarWidget.setContainer(ratingContainer)
-                .setContext(getContext())
-                .setMax_value(5)
-                .setRatings(ratings)
-                .setText_color(R.color.teal_700)
-                .render();
     }
 
 
+    @Deprecated
     private void prepareViewPager(ViewPager viewPager, ArrayList<String> arrayList) {
+        // Initialize main adapter
+        MainAdapter adapter=new MainAdapter(fragmentManager);
+
+        // Initialize main fragment
+        TestFragment mainFragment=new TestFragment();
+
+        // Use for loop
+        for(int i=0;i<arrayList.size();i++)
+        {
+            // Initialize bundle
+            Bundle bundle=new Bundle();
+
+            // Put title
+            bundle.putString("title",arrayList.get(i));
+
+            // set argument
+            mainFragment.setArguments(bundle);
+
+            // Add fragment
+            adapter.addFragment(mainFragment,arrayList.get(i));
+            mainFragment=new TestFragment();
+        }
+        // set adapter
+        viewPager.setAdapter(adapter);
+
+        tabLayout.setupWithViewPager(viewPager);
+
+        setupTabIcons();
+    }
+
+    private void prepareViewPagerItems(ViewPager viewPager, ArrayList<String> arrayList) {
         // Initialize main adapter
         MainAdapter adapter=new MainAdapter(fragmentManager);
 
@@ -193,7 +219,7 @@ initStatistics(new InitStatsListener() {
         @Override
         public int getCount() {
             // Return fragment array list size
-            return fragmentArrayList.size();
+            return 3;
         }
 
         @NonNull
@@ -201,7 +227,6 @@ initStatistics(new InitStatsListener() {
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View item_view = layoutInflater.inflate(R.layout.welcome_activity_vpadapter_layout_item,container,false);
-
 
             ImageView imageView = item_view.findViewById(R.id.image);
             TextView titleTextView = item_view.findViewById(R.id.title);
@@ -219,6 +244,9 @@ initStatistics(new InitStatsListener() {
             imageView.getLayoutParams().height = 150;
             imageView.requestLayout();
             container.addView(item_view);
+
+
+
             return item_view;
 
         }
@@ -300,6 +328,17 @@ initStatistics(new InitStatsListener() {
                                 totalNumberOfFourStarRate,
                                 totalNumberOfFiveStarRate
                         ));
+                        int[] ratings = {(int) totalNumberOfOneStarRate,(int)totalNumberOfTwoStarRate,(int)totalNumberOfThreeStarRate,(int)totalNumberOfFourStarRate,(int)totalNumberOfFiveStarRate};
+
+                        RatingBarWidget ratingBarWidget = new RatingBarWidget();
+                        if(getContext()!=null) {
+                            ratingBarWidget.setContainer(ratingContainer)
+                                    .setContext(getContext())
+                                    .setMax_value(5)
+                                    .setRatings(ratings)
+                                    .setText_color(R.color.teal_700)
+                                    .render();
+                        }
                     }
                 });
     }

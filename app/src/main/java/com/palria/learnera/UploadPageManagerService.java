@@ -381,9 +381,10 @@ public class UploadPageManagerService extends Service {
                                         if (task.isSuccessful()) {
                                             String imageDownloadUrl = String.valueOf(task.getResult());
                                             ArrayList<String> dataImageList = new ArrayList<>();
-                                            dataImageList.add(0,position+"");
-                                            dataImageList.add(1,imageDownloadUrl);
-                                            dataImageList.add(2,finalStorageReference.getPath());
+                                            dataImageList.add(0,GlobalConfig.IMAGE_TYPE);
+                                            dataImageList.add(1,position+"");
+                                            dataImageList.add(2,imageDownloadUrl);
+                                            dataImageList.add(3,finalStorageReference.getPath());
                                             pageImageDataDetails.put(GlobalConfig.DATA_ARRAY_KEY+position, dataImageList);
 
                                             DocumentReference documentReference = null;

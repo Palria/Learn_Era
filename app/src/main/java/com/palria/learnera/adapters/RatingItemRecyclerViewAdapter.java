@@ -53,11 +53,13 @@ public class RatingItemRecyclerViewAdapter extends RecyclerView.Adapter<RatingIt
         RatingDataModel ratingDataModel = ratingDataModels.get(position);
 
         holder.userName.setText(ratingDataModel.getUserName());
-        Glide.with(context)
-                .load(ratingDataModel.getUserProfileDownlaodUrl())
-                .centerCrop()
-                .placeholder(R.drawable.default_profile)
-                .into(holder.cover);
+        try {
+            Glide.with(context)
+                    .load(ratingDataModel.getUserProfileDownlaodUrl())
+                    .centerCrop()
+                    .placeholder(R.drawable.default_profile)
+                    .into(holder.cover);
+        }catch(Exception ignored){}
 
         holder.message.setText(ratingDataModel.getMessage());
         holder.date.setText(ratingDataModel.getDate());

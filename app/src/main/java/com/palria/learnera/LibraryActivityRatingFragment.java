@@ -74,12 +74,15 @@ onReviewFetchListener = new OnReviewFetchListener() {
         //int[] ratings = {40,12,155,1,15};
 
         RatingBarWidget ratingBarWidget = new RatingBarWidget();
-        ratingBarWidget.setContainer(ratingBarContainer)
-                .setContext(getContext())
-                .setMax_value(5)
-                .setRatings(ratings)
-                .setText_color(R.color.teal_700)
-                .render();
+        if(getContext()!=null) {
+
+            ratingBarWidget.setContainer(ratingBarContainer)
+                    .setContext(getContext())
+                    .setMax_value(5)
+                    .setRatings(ratings)
+                    .setText_color(R.color.teal_700)
+                    .render();
+        }
     }
 
     @Override
