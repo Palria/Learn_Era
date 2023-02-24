@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_marginTop="5pt"
             android:layout_marginHorizontal="5pt"
-            android:layout_height="?actionBarSize"
+            android:layout_height="14pt"
             android:id="@+id/tab_layout"
             android:background="@color/white"
             app:tabInlineLabel="false"
@@ -43,26 +43,23 @@
             app:tabMode="fixed"
             app:tabIndicatorColor="@color/teal_700"
             app:tabSelectedTextColor="@color/teal_700"
-            app:tabIndicatorFullWidth="true"
+            app:tabIndicatorFullWidth="false"
             app:tabTextAppearance="@style/TextAppearance.AppCompat.Small">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:text="Library"
                 android:id="@+id/libraryRatingsTab"
-                android:icon="@drawable/ic_baseline_dynamic_feed_24"
                 android:layout_height="wrap_content"/>
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:text="Tutorials"
                 android:id="@+id/tutorialRatingsTab"
-                android:icon="@drawable/ic_baseline_stars_24"
                 android:layout_height="wrap_content"/>
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:text="User"
                 android:id="@+id/userRatingsTab"
-                android:icon="@drawable/ic_baseline_stars_24"
                 android:layout_height="wrap_content"/>
 
         </com.google.android.material.tabs.TabLayout>

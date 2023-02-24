@@ -36,7 +36,7 @@ public class UserReviewsFragment extends Fragment {
     RecyclerView recyclerView;
     RatingItemRecyclerViewAdapter ratingItemRecyclerViewAdapter;
     ArrayList<RatingDataModel> ratingDataModels = new ArrayList<>();
-
+    View noDataFound;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,13 +67,42 @@ public class UserReviewsFragment extends Fragment {
     }
 
     private void initUI(View parentView){
+
         //use the parentView to find the  Id as in : parentView.findViewById(...);
+
+        //add test
+//        ratingDataModels.add(new RatingDataModel(
+//                "sad",
+//                "Anish",
+//                "Anish Magar",
+//                "Author",
+//                "10 Mar",
+//                "Hello dami cha hai.",
+//                4,
+//                "null"
+//        ));
+//        ratingDataModels.add(new RatingDataModel(
+//                "sad",
+//                "Prajwal",
+//                "Prajwal",
+//                "Author",
+//                "15 Mar",
+//                "There is a quiet issue that helps me .",
+//                5,
+//                "null"
+//        ));
+        noDataFound=parentView.findViewById(R.id.noDataFound);
+
         ratingItemRecyclerViewAdapter = new RatingItemRecyclerViewAdapter(ratingDataModels,getContext());
         recyclerView = parentView.findViewById(R.id.ratingsRecyclerListView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL ,false);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(ratingItemRecyclerViewAdapter);
-        Toast.makeText(getContext(), "user reviews init", Toast.LENGTH_SHORT).show();
+        //show not found if no datas
+        if(ratingDataModels.size()==0){
+            noDataFound.setVisibility(View.VISIBLE);
+        }
+
 
     }
 

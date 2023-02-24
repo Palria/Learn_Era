@@ -7,8 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -29,6 +32,7 @@ import com.palria.learnera.models.StatisticsDataModel;
 import com.palria.learnera.widgets.RatingBarWidget;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class UserStatsActivity extends AppCompatActivity {
 
@@ -42,6 +46,16 @@ public class UserStatsActivity extends AppCompatActivity {
     TextView profileViewsTextView;
     TextView numOfLibraryTextView;
     TextView numOfReachedTextView;
+
+    FrameLayout bookmarksFrameLayout;
+    FrameLayout allRatingsFrameLayout;
+    FrameLayout myRatingsFrameLayout;
+
+    boolean isBookmarksFragmentOpened=false;
+    boolean isAllReviewsFragmentOpened=false;
+    boolean ismyReviewsFragmentOpened=false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -72,6 +86,67 @@ public class UserStatsActivity extends AppCompatActivity {
 
 
 
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                if(tab.getPosition()==0){
+                    if(isBookmarksFragmentOpened){
+                        //Just set the frame layout visibility
+                        setFrameLayoutVisibility(bookmarksFrameLayout);
+                    }else {
+                        isBookmarksFragmentOpened =true;
+                        setFrameLayoutVisibility(bookmarksFrameLayout);
+
+                        BookmarksFragment bookmarksFragment = new BookmarksFragment();
+
+                        initFragment(bookmarksFragment, bookmarksFrameLayout);
+                    }
+
+
+                }else if(tab.getPosition()==1)
+                {
+                    if(isAllReviewsFragmentOpened){
+                        //Just set the frame layout visibility
+                        setFrameLayoutVisibility(allRatingsFrameLayout);
+                    }else {
+                        isAllReviewsFragmentOpened =true;
+                        setFrameLayoutVisibility(allRatingsFrameLayout);
+                        AllReviewsFragment allReviewsFragment = new AllReviewsFragment();
+
+                        initFragment(allReviewsFragment, allRatingsFrameLayout);
+                    }
+                }else if(tab.getPosition()==2){
+                    if(ismyReviewsFragmentOpened){
+                        //Just set the frame layout visibility
+                        setFrameLayoutVisibility(myRatingsFrameLayout);
+                    }else {
+                        ismyReviewsFragmentOpened =true;
+                        setFrameLayoutVisibility(myRatingsFrameLayout);
+                        UserReviewsFragment userReviewsFragment = new UserReviewsFragment();
+
+                        initFragment(userReviewsFragment, myRatingsFrameLayout);
+                    }
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+        //set first frame layout init and visible
+        //or change here
+        isBookmarksFragmentOpened =true;
+        setFrameLayoutVisibility(bookmarksFrameLayout);
+        BookmarksFragment bookmarksFragment = new BookmarksFragment();
+        initFragment(bookmarksFragment, bookmarksFrameLayout);
 
     }
 
@@ -84,6 +159,30 @@ public class UserStatsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+
+
+
+    private void initFragment(Fragment fragment, FrameLayout frameLayout){
+//        Bundle bundle = new Bundle();
+//        bundle.putString(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+//        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+//        fragment.setArguments(bundle);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(frameLayout.getId(), fragment)
+                .commit();
+
+
+    }
+
+    private void setFrameLayoutVisibility(FrameLayout frameLayoutToSetVisible){
+        bookmarksFrameLayout.setVisibility(View.GONE);
+        allRatingsFrameLayout.setVisibility(View.GONE);
+        myRatingsFrameLayout.setVisibility(View.GONE);
+        frameLayoutToSetVisible.setVisibility(View.VISIBLE);
     }
 
     private void InitUi() {
@@ -100,160 +199,25 @@ public class UserStatsActivity extends AppCompatActivity {
         profileViewsTextView = findViewById(R.id.profileViewsTextViewId);
         numOfLibraryTextView = findViewById(R.id.numOfLibraryTextViewId);
         numOfReachedTextView = findViewById(R.id.numOfReachedTextViewId);
-        // Initialize array list
-        ArrayList<String> arrayList=new ArrayList<>(0);
 
-        // Add title in array list
-        arrayList.add("Basic");
-        arrayList.add("Advance");
-        arrayList.add("Pro");
+         bookmarksFrameLayout=findViewById(R.id.bookmarksFrameLayout);
+         allRatingsFrameLayout=findViewById(R.id.allRatingsFrameLayout);
+         myRatingsFrameLayout=findViewById(R.id.myRatingsFrameLayout);
 
-        // Setup tab layout
-        tabLayout.setupWithViewPager(viewPager);
-
-        // Prepare view pager
-        prepareViewPager(viewPager,arrayList);
 
         alertDialog = new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
                 .create();
 
-        //load rating bar
-//        int[] ratings = {0,12,55,1,250};
-//
-//        RatingBarWidget ratingBarWidget = new RatingBarWidget();
-//        ratingBarWidget.setContainer(ratingContainer)
-//                .setContext(this)
-//                .setMax_value(5)
-//                .setRatings(ratings)
-//                .setText_color(R.color.teal_700)
-//                .render();
-    }
+        tabLayout.addTab(tabLayout.newTab(),0,true);
+        tabLayout.addTab(tabLayout.newTab(),1,false);
+        tabLayout.addTab(tabLayout.newTab(),2,false);
 
-    private void prepareViewPager(ViewPager viewPager, ArrayList<String> arrayList) {
-        // Initialize main adapter
-        MainAdapter adapter=new MainAdapter(getSupportFragmentManager());
-
-        // Initialize main fragment
-        TestFragment mainFragment=new TestFragment();
-
-        // Use for loop
-        for(int i=0;i<arrayList.size();i++)
-        {
-            // Initialize bundle
-            Bundle bundle=new Bundle();
-
-            // Put title
-            bundle.putString("title",arrayList.get(i));
-
-            // set argument
-            mainFragment.setArguments(bundle);
-
-            // Add fragment
-            adapter.addFragment(mainFragment,arrayList.get(i));
-            mainFragment=new TestFragment();
-        }
-        // set adapter
-        viewPager.setAdapter(adapter);
-
-        tabLayout.setupWithViewPager(viewPager);
-
-        setupTabIcons();
-    }
-
-    private class MainAdapter extends PagerAdapter {
-        // Initialize arrayList
-        ArrayList<Fragment> fragmentArrayList= new ArrayList<>();
-        ArrayList<String> stringArrayList=new ArrayList<>();
-
-        int[] imageList={R.drawable.ic_baseline_bookmarks_24,R.drawable.ic_baseline_reviews_24,R.drawable.ic_baseline_photo_camera_24};
-
-        // Create constructor
-        public void addFragment(Fragment fragment,String s)
-        {
-            // Add fragment
-            fragmentArrayList.add(fragment);
-            // Add title
-            stringArrayList.add(s);
-        }
-
-        public MainAdapter(FragmentManager supportFragmentManager) {
-
-        }
-
-
-
-        @Override
-        public int getCount() {
-            // Return fragment array list size
-            return fragmentArrayList.size();
-        }
-
-        @NonNull
-        @Override
-        public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View item_view = layoutInflater.inflate(R.layout.welcome_activity_vpadapter_layout_item,container,false);
-
-
-            ImageView imageView = item_view.findViewById(R.id.image);
-            TextView titleTextView = item_view.findViewById(R.id.title);
-            TextView contentTextView = item_view.findViewById(R.id.body);
-
-
-            titleTextView.setText("No Data Found");
-            contentTextView.setText(
-                    position==0?"Please add Bookmarks to see here." : (
-                            position == 1 ? "Please Submit your reviews and visit again." :
-                                    "We cannot find any relating reviews for you at this time."
-                    )
-            );
-            imageView.setImageResource(R.drawable.undraw_no_data_re_kwbl);
-            imageView.getLayoutParams().height = 150;
-            imageView.requestLayout();
-            container.addView(item_view);
-
-
-            //add these three fragments to the statistics
-//            switch (position){
-//          case 0:   return new BookmarksFragment();
-//          case 1:   return new AllReviewsFragment();
-//          case 2:   return new UserReviewsFragment();
-//            }
-
-            return item_view ;
-
-        }
-
-        @Override
-        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-                        container.removeView((LinearLayout)object);
-        }
-
-        @Override
-        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-
-            return (LinearLayout) object == view;
-        }
-
-
-        @Nullable
-        @Override
-        public CharSequence getPageTitle(int position) {
-
-            return "";
-
-        }
-
-
-    }
-
-
-    private void setupTabIcons() {
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_baseline_bookmarks_24);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_baseline_reviews_24);
         tabLayout.getTabAt(2).setIcon(R.drawable.ic_baseline_stars_24);
+
     }
 
     private void toggleProgress(boolean show)
@@ -303,7 +267,13 @@ public class UserStatsActivity extends AppCompatActivity {
                                 totalNumberOfFourStarRate,
                                 totalNumberOfFiveStarRate
                         ));
-                        int[] ratings = {(int) totalNumberOfOneStarRate,(int)totalNumberOfTwoStarRate,(int)totalNumberOfThreeStarRate,(int)totalNumberOfFourStarRate,(int)totalNumberOfFiveStarRate};
+                        int[] ratings = {
+                                Integer.parseInt(Long.toString(totalNumberOfOneStarRate)),
+                                Integer.parseInt(Long.toString(totalNumberOfTwoStarRate)),
+                                Integer.parseInt(Long.toString(totalNumberOfThreeStarRate)),
+                                Integer.parseInt(Long.toString(totalNumberOfFourStarRate)),
+                                Integer.parseInt(Long.toString(totalNumberOfFiveStarRate))
+                        };
 
                         RatingBarWidget ratingBarWidget = new RatingBarWidget();
                         if(getApplicationContext()!=null) {

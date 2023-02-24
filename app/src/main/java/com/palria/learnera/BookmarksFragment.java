@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,8 +21,20 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.palria.learnera.adapters.BookmarksRcvAdapter;
+import com.palria.learnera.models.BookmarkDataModel;
+
+import org.checkerframework.checker.units.qual.A;
+
+import java.util.ArrayList;
 
 public class BookmarksFragment extends Fragment {
+
+    RecyclerView bookmarksRecyclerListView;
+    ArrayList<BookmarkDataModel> bookmarkDataModels = new ArrayList<>();
+    View noDataFound;
+    TextView bookmarksCountView;
+
     public BookmarksFragment() {
         // Required empty public constructor
     }
@@ -36,7 +50,7 @@ public class BookmarksFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View parentView =  inflater.inflate(R.layout.fragment_bookmarks, container, false);
-        initUI();
+        initUI(parentView);
 fetchBookmarks(new BookmarkFetchListener() {
     @Override
     public void onSuccess(boolean isLibraryBookmark, boolean isTutorialBookmark, String authorId, String libraryId, String tutorialId, String dateBookmarked) {
@@ -52,10 +66,54 @@ fetchBookmarks(new BookmarkFetchListener() {
         return parentView;
     }
 
-    private void initUI(){
+    private void initUI(View parent){
         //use the parentView to find the by Id as in : parentView.findViewById(...);
-        Toast.makeText(getContext(), "bookmarks init", Toast.LENGTH_SHORT).show();
 
+        noDataFound=parent.findViewById(R.id.noDataFound);
+        bookmarksCountView=parent.findViewById(R.id.bookmarksCount);
+        bookmarksRecyclerListView=parent.findViewById(R.id.bookmarksRecyclerListView);
+
+        //init bookmarks rcv
+        bookmarkDataModels.add(new BookmarkDataModel(
+                "",
+                "library",
+                "1250",
+                "\"How to crack a java interviwe for free in 2023",
+                "Manish - This is thw way how to crack a java inteview free for absolute be",
+                "https://api.lorem.space/image/movie?w=150&h=150&hash=lasdj",
+                "1 hrs "
+        ));
+
+        bookmarkDataModels.add(new BookmarkDataModel(
+                "",
+                "library",
+                "1250",
+                "\"Assigning a harcoded text in string files in android",
+                "Manish - This is thw way how to crack a java inteview free for absolute be",
+                "https://api.lorem.space/image/movie?w=150&h=150&hash=4a5ds4f",
+                "feb 20"
+        ));
+        bookmarkDataModels.add(new BookmarkDataModel(
+                "",
+                "library",
+                "1250",
+                "\"Creating a youtube thumbnail absolute for beginners in Englishh with subtitle.",
+                "Manish - This is thw way how to crack a java inteview free for absolute be",
+                "https://api.lorem.space/image/movie?w=150&h=150&hash=adsf4das4f4",
+                "jan 25"
+        ));
+
+        BookmarksRcvAdapter bookmarksRcvAdapter = new BookmarksRcvAdapter(bookmarkDataModels, getContext());
+
+        bookmarksRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL,false));
+        bookmarksRecyclerListView.setHasFixedSize(false);
+        bookmarksRecyclerListView.setAdapter(bookmarksRcvAdapter);
+
+        if(bookmarkDataModels.size()==0){
+            noDataFound.setVisibility(View.VISIBLE);
+        }
+
+        bookmarksCountView.setText("("+bookmarkDataModels.size()+")");
 
     }
 
