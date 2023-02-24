@@ -151,72 +151,7 @@ Button addActionButton;
         }else{
             tutorialFetchListener.onSuccess(intentTutorialDataModel);
         }
-
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                String tabTitle=tab.getText().toString().trim().toUpperCase();
-                if(tabTitle.equals("FOLDERS")){
-                    if(isFoldersFragmentOpened){
-                        //Just set the frame layout visibility
-                        setFrameLayoutVisibility(foldersFrameLayout);
-                    }else {
-                        isFoldersFragmentOpened =true;
-                        setFrameLayoutVisibility(foldersFrameLayout);
-
-                        FoldersFragment foldersFragment = new FoldersFragment();
-                        Bundle bundle = new Bundle();
-                        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
-                        foldersFragment.setArguments(bundle);
-                        initFragment(foldersFragment, foldersFrameLayout);
-                    }
-
-
-                }else if(tabTitle.equals("PAGES"))
-                {
-                    if(isPagesFragmentOpened){
-                        //Just set the frame layout visibility
-                        setFrameLayoutVisibility(pagesFrameLayout);
-                    }else {
-                        isPagesFragmentOpened =true;
-                        setFrameLayoutVisibility(pagesFrameLayout);
-                        AllTutorialPageFragment allTutorialPageFragment = new AllTutorialPageFragment();
-                        Bundle bundle = new Bundle();
-                        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
-//                        bundle.putString(GlobalConfig.FOLDER_ID_KEY,"folderId");
-                        bundle.putBoolean(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
-                        allTutorialPageFragment.setArguments(bundle);
-                        initFragment(allTutorialPageFragment, pagesFrameLayout);
-                    }
-                }else if(tabTitle.equals("RATINGS")){
-                    if(isRatingsFragmentOpened){
-                        //Just set the frame layout visibility
-                        setFrameLayoutVisibility(ratingsFrameLayout);
-                    }else {
-                        isRatingsFragmentOpened =true;
-                        setFrameLayoutVisibility(ratingsFrameLayout);
-                        LibraryActivityRatingFragment libraryActivityRatingFragment = new LibraryActivityRatingFragment();
-                        Bundle bundle = new Bundle();
-                        bundle.putBoolean(GlobalConfig.IS_LIBRARY_REVIEW_KEY,false);
-                        bundle.putString(GlobalConfig.LIBRARY_ID_KEY,libraryId);
-                        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
-                        bundle.putIntArray(GlobalConfig.STAR_RATING_ARRAY_KEY,ratings);
-                        libraryActivityRatingFragment.setArguments(bundle);
-                        initFragment(libraryActivityRatingFragment, ratingsFrameLayout);
-                    }
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
+createTabLayout();
 //        tabLayout.getChildAt(tabLayout.getTabAt(0).getPosition()).setSelected(true);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -431,7 +366,87 @@ Button addActionButton;
 
     //
 
+    public void createTabLayout() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                String tabTitle=tab.getText().toString().trim().toUpperCase();
+                if(tabTitle.equals("FOLDERS")){
+                    if(isFoldersFragmentOpened){
+                        //Just set the frame layout visibility
+                        setFrameLayoutVisibility(foldersFrameLayout);
+                    }else {
+                        isFoldersFragmentOpened =true;
+                        setFrameLayoutVisibility(foldersFrameLayout);
 
+                        FoldersFragment foldersFragment = new FoldersFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+                        foldersFragment.setArguments(bundle);
+                        initFragment(foldersFragment, foldersFrameLayout);
+                    }
+
+
+                }else if(tabTitle.equals("PAGES"))
+                {
+                    if(isPagesFragmentOpened){
+                        //Just set the frame layout visibility
+                        setFrameLayoutVisibility(pagesFrameLayout);
+                    }else {
+                        isPagesFragmentOpened =true;
+                        setFrameLayoutVisibility(pagesFrameLayout);
+                        AllTutorialPageFragment allTutorialPageFragment = new AllTutorialPageFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+//                        bundle.putString(GlobalConfig.FOLDER_ID_KEY,"folderId");
+                        bundle.putBoolean(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
+                        allTutorialPageFragment.setArguments(bundle);
+                        initFragment(allTutorialPageFragment, pagesFrameLayout);
+                    }
+                }else if(tabTitle.equals("RATINGS")){
+                    if(isRatingsFragmentOpened){
+                        //Just set the frame layout visibility
+                        setFrameLayoutVisibility(ratingsFrameLayout);
+                    }else {
+                        isRatingsFragmentOpened =true;
+                        setFrameLayoutVisibility(ratingsFrameLayout);
+                        LibraryActivityRatingFragment libraryActivityRatingFragment = new LibraryActivityRatingFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean(GlobalConfig.IS_LIBRARY_REVIEW_KEY,false);
+                        bundle.putString(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+                        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+                        bundle.putIntArray(GlobalConfig.STAR_RATING_ARRAY_KEY,ratings);
+                        libraryActivityRatingFragment.setArguments(bundle);
+                        initFragment(libraryActivityRatingFragment, ratingsFrameLayout);
+                    }
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+
+
+        TabLayout.Tab foldersTabItem = tabLayout.newTab();
+        foldersTabItem.setText("Folders");
+        tabLayout.addTab(foldersTabItem, 0, true);
+
+        TabLayout.Tab pagesTabItem = tabLayout.newTab();
+        pagesTabItem.setText("Pages");
+        tabLayout.addTab(pagesTabItem, 1);
+
+        TabLayout.Tab ratingsTabItem = tabLayout.newTab();
+        ratingsTabItem.setText("Ratings");
+        tabLayout.addTab(ratingsTabItem, 2);
+    }
     private void fetchTutorial(){
        GlobalConfig.getFirebaseFirestoreInstance()
                .collection(GlobalConfig.ALL_TUTORIAL_KEY)

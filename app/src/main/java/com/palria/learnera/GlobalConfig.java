@@ -5,9 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.telecom.Call;
+import android.text.Html;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -60,6 +65,22 @@ public class GlobalConfig {
     they are used to query a particular field within a document
     they have to be unique in a particular document
     */
+
+
+
+    /**
+     * TODO: style characters and symbols for manipulating page texts
+     * <p>paragraph</p>
+     * <b>bold</b>
+     * <h1>heading 1</h1>
+     * <h2>heading 2</h2>
+     * <h3>heading 3</h3>
+     * <h4>heading 4</h4>
+     * <h5>heading 5</h6>
+     * <h6>heading 6</h6>
+     * <h7>heading 7</h7>
+     *
+     * */
 
     public static final String TEXT_TYPE = "TEXT_TYPE";
     public static final String IMAGE_TYPE = "IMAGE_TYPE";
@@ -1648,6 +1669,58 @@ public class GlobalConfig {
         return;
     }
     }
+
+    public static void setHtmlText(Context context,@NonNull TextView textView, String text){
+        if(android.os.Build.VERSION.SDK_INT >=26){
+            textView.setText(Html.fromHtml(text,Html.FROM_HTML_MODE_LEGACY));
+
+        }else{
+            textView.setText(Html.fromHtml(text));
+
+        }
+    }
+
+    public static SpannableStringBuilder interpretStyles(Context context, StringBuilder stringBuilder){
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(stringBuilder);
+//        SpannableString spannableString = new SpannableString(string);
+
+        String stringForm = stringBuilder.toString();
+        if(stringForm.contains("<p>") && stringForm.contains("</p>") ) {
+            String[] strings = stringForm.split("<p>");
+            for (String stringHalfParagraph : strings) {
+                if(stringHalfParagraph.contains("</p>")){
+                    String stringFullParagraph = stringHalfParagraph.split("</p>")[0];
+
+                    int startIndex = stringForm.indexOf("<p>"+stringFullParagraph+"</p>");
+                    int endIndex = startIndex + ("<p>"+stringFullParagraph+"</p>").length();
+
+                    ForegroundColorSpan foregroundColorSpan1 = new ForegroundColorSpan(context.getResources().getColor(R.color.teal_200, context.getTheme()));
+                    spannableStringBuilder.setSpan(foregroundColorSpan1, startIndex, endIndex, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+//
+//                spannableStringBuilder.replace(endIndex, endIndex+4,"\n");
+//                spannableStringBuilder.replace(startIndex-3, startIndex ,"\n    ");
+//                stringBuilder.replace(endIndex , endIndex+4,"\n");
+//                stringBuilder.replace(startIndex-3, startIndex,  "\n    ");
+
+                    spannableStringBuilder.replace(endIndex-4, endIndex,"\n");
+                    spannableStringBuilder.replace(startIndex , startIndex +3,"\n    ");
+                    stringBuilder.replace(endIndex-4 , endIndex,"\n");
+                    stringBuilder.replace(startIndex, startIndex +3,  "\n    ");
+//
+//                spannableStringBuilder.delete(endIndex, endIndex+4);
+//                spannableStringBuilder.delete(startIndex-3, startIndex );
+//                stringBuilder.delete(endIndex , endIndex+4);
+//                stringBuilder.delete(startIndex-3, startIndex  );
+
+
+                    stringForm = stringBuilder.toString();
+                    strings = stringForm.split("<p>");
+                }
+            }
+        }
+        return spannableStringBuilder;
+    }
+
 
     /*
         static HashMap<String,Double> getStarMap(int fiveStar,int fourStar, int threeStar, int twoStar, int oneStar){

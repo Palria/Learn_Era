@@ -83,7 +83,8 @@ String tutorialId = "";
                                 dateCreated = dateCreated.substring(0,10);
                             }
                             long numOfPages  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY) : 0L;
-                            fetchTutorialFolderListener.onSuccess(new FolderDataModel(folderId,authorId,libraryId,tutorialId,folderName,dateCreated,numOfPages));
+                            long numOfViews  = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_VISITOR_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_VISITOR_KEY) : 0L ;
+                            fetchTutorialFolderListener.onSuccess(new FolderDataModel(folderId,authorId,libraryId,tutorialId,folderName,dateCreated,numOfPages,numOfViews));
                         }
 
                     }

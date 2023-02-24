@@ -29,9 +29,9 @@ public class AllTutorialPageFragment extends Fragment {
         // Required empty public constructor
     }
 
-boolean isTutorialPage = true;
-String tutorialId = "";
-String folderId = "";
+        boolean isTutorialPage = true;
+        String tutorialId = "";
+        String folderId = "";
 
 ArrayList<PageDataModel> pageDataModels=new ArrayList<>();
 RecyclerView pagesRecyclerListView;

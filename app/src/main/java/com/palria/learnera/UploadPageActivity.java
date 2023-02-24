@@ -12,6 +12,10 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
 import android.text.InputType;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -598,7 +602,7 @@ preparePage();
 
         @Override
         public void onProgress(String pageId, int progressCount) {
-            Toast.makeText(getApplicationContext(), "New page uploading: "+ pageId, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), progressCount+" page progressing: "+ pageId, Toast.LENGTH_SHORT).show();
 
         }
 
@@ -761,6 +765,13 @@ preparePage();
 
     }
 
+    private void recordTextStyles(){
+
+
+
+    }
+
+
 void preparePage(){
     Toast.makeText(getApplicationContext(), containerLinearLayout.getChildCount()+"", Toast.LENGTH_SHORT).show();
 
@@ -831,4 +842,6 @@ void preparePage(){
 */
         }
 }
+
+
 }

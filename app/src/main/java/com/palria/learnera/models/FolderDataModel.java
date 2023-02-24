@@ -13,6 +13,7 @@ public class FolderDataModel implements Serializable {
     private String folderName;
     private String dateCreated;
     private long numOfPages;
+    private long numOfViews;
     private DocumentSnapshot folderDocumentSnapshot;
     //add more fields if required below and change constructor.
 
@@ -24,7 +25,7 @@ public class FolderDataModel implements Serializable {
      * @param dateCreated
      */
 
-    public FolderDataModel(String id, String authorId,String libraryId,String tutorialId, String folderName, String dateCreated, long numOfPages) {
+    public FolderDataModel(String id, String authorId,String libraryId,String tutorialId, String folderName, String dateCreated, long numOfPages, long numOfViews) {
         this.id = id;
         this.authorId = authorId;
         this.libraryId = libraryId;
@@ -32,6 +33,7 @@ public class FolderDataModel implements Serializable {
         this.folderName = folderName;
         this.dateCreated = dateCreated;
         this.numOfPages = numOfPages;
+        this.numOfViews = numOfViews;
 //        this.folderDocumentSnapshot = folderDocumentSnapshot;
     }
 
@@ -89,6 +91,15 @@ public class FolderDataModel implements Serializable {
 
     public void setNumOfPages(long numOfPages) {
         this.numOfPages = numOfPages;
+    }
+
+
+    public long getNumOfViews() {
+        return numOfViews;
+    }
+
+    public void setNumOfViews(long numOfViews) {
+        this.numOfViews = numOfViews;
     }
 
 

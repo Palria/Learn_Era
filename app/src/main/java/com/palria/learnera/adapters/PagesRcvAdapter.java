@@ -44,7 +44,7 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
     @Override
     public PagesRcvAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View listItem= layoutInflater.inflate(R.layout.all_library_fragment_list_item_library, parent, false);
+        View listItem= layoutInflater.inflate(R.layout.all_page_item_layout, parent, false);
         PagesRcvAdapter.ViewHolder viewHolder = new PagesRcvAdapter.ViewHolder(listItem);
         return viewHolder;
     }
@@ -54,9 +54,9 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
 
         PageDataModel pageDataModel = pageDataModels.get(position);
 
-        holder.tutorialsContainer.setVisibility(View.GONE);
+//        holder.tutorialsContainer.setVisibility(View.GONE);
         holder.dateContainer.setVisibility(View.VISIBLE);
-        holder.dateCreated.setText("2 m ago");//view counts here
+        holder.dateCreated.setText("m ago");//view counts here
 
         holder.pageTitle.setText(pageDataModel.getTitle());
         try {
@@ -68,8 +68,8 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
         }catch(Exception ignored){}
 
 
-        holder.pageDescription.setText(pageDataModel.getDescription());
-        holder.pageViewCount.setText(45+"");
+        holder.pageCaptionTextView.setText(pageDataModel.getDescription());
+        holder.pageViewCount.setText(0+"");
 
 //        GlobalConfig.getFirebaseFirestoreInstance()
 //                .collection(GlobalConfig.ALL_USERS_KEY)
@@ -110,10 +110,10 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
 
         public ImageView cover;
         public TextView pageTitle;
-        public TextView authorName;
+//        public TextView authorName;
         public TextView pageViewCount;
-        public TextView ratingCount;
-        public TextView pageDescription;
+//        public TextView ratingCount;
+        public TextView pageCaptionTextView;
 
         public LinearLayout dateContainer;
         public LinearLayout tutorialsContainer;
@@ -123,12 +123,12 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
         public ViewHolder(View itemView) {
             super(itemView);
             this.cover = (ImageView) itemView.findViewById(R.id.cover);
-            this.pageTitle = (TextView) itemView.findViewById(R.id.libraryName);
-            authorName=itemView.findViewById(R.id.authorName);
-            pageViewCount=itemView.findViewById(R.id.libraryViewCount);
-            ratingCount=itemView.findViewById(R.id.ratingCount);
-            pageDescription=itemView.findViewById(R.id.libraryDescription);
-            tutorialsContainer=itemView.findViewById(R.id.tutorialsContainer);
+            this.pageTitle = (TextView) itemView.findViewById(R.id.pageName);
+//            authorName=itemView.findViewById(R.id.authorName);
+            pageViewCount=itemView.findViewById(R.id.pageViewCount);
+//            ratingCount=itemView.findViewById(R.id.ratingCount);
+            pageCaptionTextView=itemView.findViewById(R.id.pageCaptionTextViewId);
+//            tutorialsContainer=itemView.findViewById(R.id.tutorialsContainer);
             dateContainer=itemView.findViewById(R.id.dateContainer);
             dateCreated=itemView.findViewById(R.id.dateCreated);
 

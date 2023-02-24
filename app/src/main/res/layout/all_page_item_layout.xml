@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:paddingHorizontal="5pt"
+    android:layout_marginTop="2pt"
+    android:paddingVertical="3pt"
+    android:clickable="true"
+    android:layout_marginHorizontal="5pt"
+    android:background="@drawable/rounded_border_gray_bg"
+    android:layout_width="match_parent"
+    android:id="@+id/parentItem"
+
+    android:layout_height="wrap_content">
+
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/cover"
+        android:layout_width="40pt"
+        android:scaleType="centerCrop"
+        app:riv_corner_radius="5pt"
+        android:src="@drawable/book_cover"
+        android:layout_height="40pt"
+        android:visibility="gone"
+
+        />
+
+    <LinearLayout
+        android:gravity="start"
+        android:layout_gravity="start"
+        android:layout_marginLeft="4pt"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/pageName"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textStyle="bold"
+            android:textSize="8pt"
+            android:text=""
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+           />
+
+
+        <TextView
+            android:layout_marginTop="1pt"
+            android:id="@+id/pageCaptionTextViewId"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text=""
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+          />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_marginTop="1pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_gravity="center"
+                    app:tint="@color/grayDark"
+                    android:src="@drawable/ic_baseline_remove_red_eye_24"
+                    android:layout_width="7pt"
+                    android:layout_height="7pt"/>
+
+                <TextView
+                    android:layout_marginLeft="3pt"
+                    android:id="@+id/pageViewCount"
+                    android:text="0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/dateContainer"
+                android:layout_marginLeft="5pt"
+                android:layout_marginTop="1pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_gravity="center"
+                    app:tint="@color/grayDark"
+                    android:src="@drawable/ic_baseline_access_time_filled_24"
+                    android:layout_width="7pt"
+                    android:layout_height="7pt"/>
+
+                <TextView
+                    android:layout_marginLeft="3pt"
+                    android:id="@+id/dateCreated"
+                    android:text="0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

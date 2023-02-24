@@ -6,6 +6,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -84,6 +87,11 @@ TextView pageTitleTextView;
                         String pageTitle = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
                         pageTitleTextView.setText(pageTitle);
                         long totalNumberOfPageData =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY) : 0L;
+                        for(int i=0; i<totalNumberOfPageData; i++){
+                            View view = new View(getApplicationContext());
+                            containerLinearLayout.addView(view);
+                        }
+
                         if(totalNumberOfPageData != 0L){
                             for(int i =0; i<totalNumberOfPageData; i++){
 
@@ -138,14 +146,17 @@ TextView pageTitleTextView;
 
         View view = getLayoutInflater().inflate(R.layout.page_text_layout,containerLinearLayout,false);
         TextView pageTextDataTextView = view.findViewById(R.id.pageTextDataTextViewId);
-        pageTextDataTextView.setText(pageText);
+//        SpannableStringBuilder spannableStringBuilder =  GlobalConfig.interpretStyles(this,new StringBuilder(pageText));
+//        pageTextDataTextView.setText(spannableStringBuilder);
+
+        GlobalConfig.setHtmlText(this,pageTextDataTextView, pageText);
         containerLinearLayout.addView(view,position);
-        Toast.makeText(getApplicationContext(), "text added", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getApplicationContext(), position, Toast.LENGTH_SHORT).show();
 
     }
    void renderPageImageData(ArrayList<String> imageDetails){
-        int position = Integer.parseInt(imageDetails.get(0));
-        String imageDownloadUrl = imageDetails.get(1);
+        int position = Integer.parseInt(imageDetails.get(1));
+        String imageDownloadUrl = imageDetails.get(2);
 
            LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
            View view  =  layoutInflater.inflate(R.layout.page_image_layout,containerLinearLayout,false);
@@ -159,7 +170,7 @@ try {
 
            removeImage.setVisibility(View.GONE);
            containerLinearLayout.addView(view,position);
-       Toast.makeText(getApplicationContext(), "image added", Toast.LENGTH_SHORT).show();
+//       Toast.makeText(getApplicationContext(), "image added", Toast.LENGTH_SHORT).show();
 
    }
 
@@ -231,7 +242,7 @@ try {
        }
 
        containerLinearLayout.addView(todoGroupView,position);
-       Toast.makeText(getApplicationContext(), "todo added", Toast.LENGTH_SHORT).show();
+//       Toast.makeText(getApplicationContext(), "todo added", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -245,4 +256,6 @@ try {
 
         }
     }
+
+
 }

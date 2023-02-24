@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -267,10 +268,11 @@ public class UploadPageManagerService extends Service {
             pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
             pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.FOLDER_ID_KEY, folderId);
             pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_ID_KEY, pageId);
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.AUTHOR_ID_KEY, currentUserId);
             pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY, totalNumberOfChildren);
             pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.DATE_TIME_STAMP_PAGE_CREATED_KEY, FieldValue.serverTimestamp());
 
-            if (!allPageTextDataDetailsArrayList.isEmpty()) {
+//            if (!allPageTextDataDetailsArrayList.isEmpty()) {
                 isTextIncludedHashMap.put(pageId,true);
                   for (int i = 0; i < allPageTextDataDetailsArrayList.size(); i++) {
                     ArrayList<String> pageTextDataTypeDetailsArrayList = allPageTextDataDetailsArrayList.get(i);
@@ -288,21 +290,63 @@ public class UploadPageManagerService extends Service {
                 }).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        isPageTextPartitionsUploaded.put(pageId,true);
-                        if(!isImageIncludedHashMap.get(pageId) || isPageImagesPartitionsUploaded.get(pageId)){
+                        DocumentReference documentReference = null;
+                        if(isTutorialPage){
+                            documentReference = firebaseFirestore.collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
+                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                                @Override
+                                public void onSuccess() {
 
-                            //succeeded
-                            allActivePagesIdArrayList.remove(pageId);
-                            isPageUploadedHashMap.put(pageId,true);
-                            onPageUploadListener.onSuccess(pageId);
+                                }
+
+                                @Override
+                                public void onFailed(String errorMessage) {
+
+                                }
+                            });
+
+                        }else{
+                            documentReference = firebaseFirestore.collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId);
+                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onFailed(String errorMessage) {
+
+                                }
+                            });
+
                         }
+                        HashMap<String, Object> incrementPageNumberHashMap = new HashMap<>();
+                        incrementPageNumberHashMap.put(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY, FieldValue.increment(1L));
+                        documentReference.update(incrementPageNumberHashMap)
+                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+
+                                        isPageTextPartitionsUploaded.put(pageId,true);
+                                        if(!isImageIncludedHashMap.get(pageId) || isPageImagesPartitionsUploaded.get(pageId)){
+
+                                            //succeeded
+                                            allActivePagesIdArrayList.remove(pageId);
+                                            isPageUploadedHashMap.put(pageId,true);
+                                            onPageUploadListener.onSuccess(pageId);
+                                        }
+                                    }
+                                });
+
+
                     }
                 });
-            }
+//            }
 
 
         }
     }
+
     static  void uploadImageDataToPage(final String libraryId, final String tutorialId, final String folderId, final String pageId, final String pageTitle, final ArrayList<ArrayList<Object>> allImageArrayList,final int totalNumberOfImages,final int numOfChildrenData, final boolean isTutorialPage) {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             if (!allImageArrayList.isEmpty()) {
@@ -353,7 +397,7 @@ public class UploadPageManagerService extends Service {
 
                     long totalBytes = snapshot.getTotalByteCount();
                     long totalBytesTransferred = snapshot.getBytesTransferred();
-                    int progressCount = (int) ( (totalBytesTransferred /totalBytes) * 100 );
+                    int progressCount = (int) ( (totalBytesTransferred  * 100)/totalBytes) ;
                     pageUploadProgressCounterHashMap.put(pageId,progressCount);
                     onPageUploadListener.onProgress(pageId,progressCount);
 
@@ -398,7 +442,7 @@ public class UploadPageManagerService extends Service {
                                                documentReference.set(pageImageDataDetails, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
                                                     @Override
                                                     public void onFailure(@NonNull Exception e) {
-
+                                                    onPageUploadListener.onFailed(e.getMessage());
                                                     }
                                                 }).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
@@ -421,6 +465,9 @@ public class UploadPageManagerService extends Service {
                                                 });
 
 
+                                        }
+                                        else{
+                                            onPageUploadListener.onFailed(pageId);
                                         }
                                     }
                                 });

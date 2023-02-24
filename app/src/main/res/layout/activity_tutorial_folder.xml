@@ -98,7 +98,7 @@
                                     android:drawablePadding="5pt"
                                     android:drawableTint="@color/grayDark"
                                     android:gravity="center"
-                                    android:text="2 days ago" />
+                                    android:text="0 days ago" />
 
                                 <TextView
                                     android:id="@+id/authorName"
@@ -109,7 +109,9 @@
                                     android:drawablePadding="5pt"
                                     android:drawableTint="@color/teal_700"
                                     android:gravity="center"
-                                    android:text="Amrit Acharya" />
+                                    android:text="Amrit Acharya"
+                                    android:visibility="gone"
+                                    />
 
                                 <TextView
                                     android:id="@+id/libraryName"
@@ -120,7 +122,9 @@
                                     android:drawablePadding="5pt"
                                     android:drawableTint="@color/grayDark"
                                     android:gravity="center"
-                                    android:text="Data Structure and Algorighms" />
+                                    android:text="Data Structure and Algorithms"
+                                    android:visibility="gone"
+                                    />
 
 
                                 <LinearLayout
@@ -145,7 +149,7 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginLeft="2pt"
-                                            android:text="450" />
+                                            android:text="0" />
                                     </LinearLayout>
 
                                     <LinearLayout
@@ -165,7 +169,7 @@
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:layout_marginLeft="2pt"
-                                            android:text="12" />
+                                            android:text="0" />
                                     </LinearLayout>
 
 
