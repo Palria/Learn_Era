@@ -65,9 +65,9 @@ public class TutorialDataModel implements Serializable {
      * necessary to instantiate the global variables through the constructor. In this way
      *Setters are used to as an alternative instantiate the global variables .
      * */
-//    public    TutorialDataModel(){
-//
-//    }
+    public    TutorialDataModel(){
+
+    }
 
 
     /**This parameterized Constructor helps us in initializing all the global variables

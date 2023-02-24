@@ -186,7 +186,7 @@ createTabLayout();
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                GlobalConfig.addToBookmark(authorId, libraryId, tutorialId, null,null,false,false, true,false,false,false,  new GlobalConfig.ActionCallback() {
+                                GlobalConfig.addToBookmark(authorId, libraryId, tutorialId, null,null,GlobalConfig.TUTORIAL_TYPE_KEY,  new GlobalConfig.ActionCallback() {
                                     @Override
                                     public void onSuccess() {
                                         Toast.makeText(TutorialActivity.this, "bookmarked", Toast.LENGTH_SHORT).show();

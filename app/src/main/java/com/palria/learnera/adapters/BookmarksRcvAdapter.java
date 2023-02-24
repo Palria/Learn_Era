@@ -13,10 +13,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.GlobalConfig;
+import com.palria.learnera.LibraryActivity;
+import com.palria.learnera.PageActivity;
 import com.palria.learnera.R;
+import com.palria.learnera.TutorialActivity;
 import com.palria.learnera.TutorialFolderActivity;
 import com.palria.learnera.models.BookmarkDataModel;
 import com.palria.learnera.models.FolderDataModel;
+import com.palria.learnera.models.LibraryDataModel;
+import com.palria.learnera.models.TutorialDataModel;
 
 import java.util.ArrayList;
 
@@ -50,9 +55,9 @@ public class BookmarksRcvAdapter extends RecyclerView.Adapter<BookmarksRcvAdapte
 
         Glide.with(context)
                         .load(bookmarkDataModel.getIconDownloadUrl())
-                                .placeholder(R.drawable.book_cover2)
-                .centerCrop()
-                                        .into(holder.icon);
+                        .placeholder(R.drawable.book_cover2)
+                        .centerCrop()
+                        .into(holder.icon);
 
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -61,6 +66,57 @@ public class BookmarksRcvAdapter extends RecyclerView.Adapter<BookmarksRcvAdapte
 //                Toast.makeText(view.getContext(),"click on item: "+folderDataModel.getFolderName(),Toast.LENGTH_LONG).show();
 //                Intent intent = new Intent(context, TutorialFolderActivity.class);
 //                context.startActivity(intent);
+                Intent intent = null;
+                switch(bookmarkDataModel.getType()){
+                    case GlobalConfig.AUTHOR_TYPE_KEY:
+                        context.startActivity(GlobalConfig.getHostActivityIntent(context,null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY,bookmarkDataModel.getAuthorId()));
+                        break;
+                    case GlobalConfig.LIBRARY_TYPE_KEY:
+                        intent = new Intent(context, LibraryActivity.class);
+                        intent.putExtra(GlobalConfig.LIBRARY_ID_KEY, bookmarkDataModel.getLibraryId());
+                        intent.putExtra(GlobalConfig.LIBRARY_AUTHOR_ID_KEY, bookmarkDataModel.getAuthorId());
+                        intent.putExtra(GlobalConfig.LIBRARY_DATA_MODEL_KEY, new LibraryDataModel());
+                        intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY, true);
+                        context.startActivity(intent);
+                        break;
+                    case GlobalConfig.TUTORIAL_TYPE_KEY:
+                        intent = new Intent(context, TutorialActivity.class);
+                        intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY, bookmarkDataModel.getTutorialId());
+                        intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
+                        intent.putExtra(GlobalConfig.TUTORIAL_DATA_MODEL_KEY,new TutorialDataModel());
+                        context.startActivity(intent);
+                        break;
+                    case GlobalConfig.FOLDER_TYPE_KEY:
+                        intent = new Intent(context, TutorialFolderActivity.class);
+                        intent.putExtra(GlobalConfig.FOLDER_ID_KEY,bookmarkDataModel.getFolderId());
+                        intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,bookmarkDataModel.getTutorialId());
+                        intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,bookmarkDataModel.getLibraryId());
+                        intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,bookmarkDataModel.getAuthorId());
+                        intent.putExtra(GlobalConfig.FOLDER_NAME_KEY,bookmarkDataModel.getTitle());
+                        intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
+                        intent.putExtra(GlobalConfig.FOLDER_DATA_MODEL_KEY,new FolderDataModel());
+                        context.startActivity(intent);
+                        break;
+                    case GlobalConfig.TUTORIAL_PAGE_TYPE_KEY:
+                        intent = new Intent(context, PageActivity.class);
+                        intent.putExtra(GlobalConfig.PAGE_ID_KEY,bookmarkDataModel.getPageId());
+                        intent.putExtra(GlobalConfig.FOLDER_ID_KEY,bookmarkDataModel.getFolderId());
+                        intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,bookmarkDataModel.getTutorialId());
+                        intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,bookmarkDataModel.getAuthorId());
+                        intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
+                        context.startActivity(intent);
+                        break;
+                    case GlobalConfig.FOLDER_PAGE_TYPE_KEY:
+                        intent = new Intent(context, PageActivity.class);
+                        intent.putExtra(GlobalConfig.PAGE_ID_KEY,bookmarkDataModel.getPageId());
+                        intent.putExtra(GlobalConfig.FOLDER_ID_KEY,bookmarkDataModel.getFolderId());
+                        intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,bookmarkDataModel.getTutorialId());
+                        intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,bookmarkDataModel.getAuthorId());
+                        intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,false);
+                        context.startActivity(intent);
+                        break;
+                }
+
             }
         });
 

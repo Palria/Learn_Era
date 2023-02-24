@@ -17,6 +17,7 @@ public class FolderDataModel implements Serializable {
     private DocumentSnapshot folderDocumentSnapshot;
     //add more fields if required below and change constructor.
 
+    public FolderDataModel(){}
     /**
      *
      * @param id
@@ -24,7 +25,6 @@ public class FolderDataModel implements Serializable {
      * @param folderName
      * @param dateCreated
      */
-
     public FolderDataModel(String id, String authorId,String libraryId,String tutorialId, String folderName, String dateCreated, long numOfPages, long numOfViews) {
         this.id = id;
         this.authorId = authorId;

@@ -13,6 +13,7 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -46,7 +47,7 @@ public class UserStatsActivity extends AppCompatActivity {
     TextView profileViewsTextView;
     TextView numOfLibraryTextView;
     TextView numOfReachedTextView;
-
+    String userId;
     FrameLayout bookmarksFrameLayout;
     FrameLayout allRatingsFrameLayout;
     FrameLayout myRatingsFrameLayout;
@@ -61,9 +62,9 @@ public class UserStatsActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_stats);
+        fetchIntentData();
         InitUi();
-
-
+        initTabLayout();
         toggleProgress(true);
         initStatistics(new InitStatsListener() {
             @Override
@@ -86,67 +87,13 @@ public class UserStatsActivity extends AppCompatActivity {
 
 
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-
-                if(tab.getPosition()==0){
-                    if(isBookmarksFragmentOpened){
-                        //Just set the frame layout visibility
-                        setFrameLayoutVisibility(bookmarksFrameLayout);
-                    }else {
-                        isBookmarksFragmentOpened =true;
-                        setFrameLayoutVisibility(bookmarksFrameLayout);
-
-                        BookmarksFragment bookmarksFragment = new BookmarksFragment();
-
-                        initFragment(bookmarksFragment, bookmarksFrameLayout);
-                    }
-
-
-                }else if(tab.getPosition()==1)
-                {
-                    if(isAllReviewsFragmentOpened){
-                        //Just set the frame layout visibility
-                        setFrameLayoutVisibility(allRatingsFrameLayout);
-                    }else {
-                        isAllReviewsFragmentOpened =true;
-                        setFrameLayoutVisibility(allRatingsFrameLayout);
-                        AllReviewsFragment allReviewsFragment = new AllReviewsFragment();
-
-                        initFragment(allReviewsFragment, allRatingsFrameLayout);
-                    }
-                }else if(tab.getPosition()==2){
-                    if(ismyReviewsFragmentOpened){
-                        //Just set the frame layout visibility
-                        setFrameLayoutVisibility(myRatingsFrameLayout);
-                    }else {
-                        ismyReviewsFragmentOpened =true;
-                        setFrameLayoutVisibility(myRatingsFrameLayout);
-                        UserReviewsFragment userReviewsFragment = new UserReviewsFragment();
-
-                        initFragment(userReviewsFragment, myRatingsFrameLayout);
-                    }
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
 
         //set first frame layout init and visible
         //or change here
-        isBookmarksFragmentOpened =true;
-        setFrameLayoutVisibility(bookmarksFrameLayout);
-        BookmarksFragment bookmarksFragment = new BookmarksFragment();
-        initFragment(bookmarksFragment, bookmarksFrameLayout);
+//        isBookmarksFragmentOpened =true;
+//        setFrameLayoutVisibility(bookmarksFrameLayout);
+//        BookmarksFragment bookmarksFragment = new BookmarksFragment();
+//        initFragment(bookmarksFragment, bookmarksFrameLayout);
 
     }
 
@@ -162,14 +109,16 @@ public class UserStatsActivity extends AppCompatActivity {
     }
 
 
-
+  private void fetchIntentData(){
+        Intent intent = getIntent();
+        userId = intent.getStringExtra(GlobalConfig.USER_ID_KEY);
+  }
 
 
     private void initFragment(Fragment fragment, FrameLayout frameLayout){
-//        Bundle bundle = new Bundle();
-//        bundle.putString(GlobalConfig.LIBRARY_ID_KEY,libraryId);
-//        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
-//        fragment.setArguments(bundle);
+        Bundle bundle = new Bundle();
+        bundle.putString(GlobalConfig.USER_ID_KEY,userId);
+        fragment.setArguments(bundle);
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(frameLayout.getId(), fragment)
@@ -210,18 +159,9 @@ public class UserStatsActivity extends AppCompatActivity {
                 .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
                 .create();
 
-        tabLayout.addTab(tabLayout.newTab(),0,true);
-        tabLayout.addTab(tabLayout.newTab(),1,false);
-        tabLayout.addTab(tabLayout.newTab(),2,false);
-
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_baseline_bookmarks_24);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_baseline_reviews_24);
-        tabLayout.getTabAt(2).setIcon(R.drawable.ic_baseline_stars_24);
-
     }
 
-    private void toggleProgress(boolean show)
-    {
+    private void toggleProgress(boolean show){
         if(show){
             alertDialog.show();
         }else{
@@ -229,7 +169,79 @@ public class UserStatsActivity extends AppCompatActivity {
         }
     }
 
+      private void  initTabLayout(){
+          tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+              @Override
+              public void onTabSelected(TabLayout.Tab tab) {
 
+                  if(tab.getPosition()==0){
+                      if(ismyReviewsFragmentOpened){
+                          //Just set the frame layout visibility
+                          setFrameLayoutVisibility(myRatingsFrameLayout);
+                      }else {
+                          ismyReviewsFragmentOpened =true;
+                          setFrameLayoutVisibility(myRatingsFrameLayout);
+                          UserReviewsFragment userReviewsFragment = new UserReviewsFragment();
+
+                          initFragment(userReviewsFragment, myRatingsFrameLayout);
+                      }
+
+                  }else if(tab.getPosition()==1)
+                  {
+                      if(isAllReviewsFragmentOpened){
+                          //Just set the frame layout visibility
+                          setFrameLayoutVisibility(allRatingsFrameLayout);
+                      }else {
+                          isAllReviewsFragmentOpened =true;
+                          setFrameLayoutVisibility(allRatingsFrameLayout);
+                          AllReviewsFragment allReviewsFragment = new AllReviewsFragment();
+
+                          initFragment(allReviewsFragment, allRatingsFrameLayout);
+                      }
+                  }else if(tab.getPosition()==2){
+
+                      if(isBookmarksFragmentOpened){
+                          //Just set the frame layout visibility
+                          setFrameLayoutVisibility(bookmarksFrameLayout);
+                      }else {
+                          isBookmarksFragmentOpened =true;
+                          setFrameLayoutVisibility(bookmarksFrameLayout);
+
+                          BookmarksFragment bookmarksFragment = new BookmarksFragment();
+
+                          initFragment(bookmarksFragment, bookmarksFrameLayout);
+                      }
+
+
+                  }
+
+              }
+
+              @Override
+              public void onTabUnselected(TabLayout.Tab tab) {
+
+              }
+
+              @Override
+              public void onTabReselected(TabLayout.Tab tab) {
+
+              }
+          });
+
+          tabLayout.addTab(tabLayout.newTab(),0,true);
+          tabLayout.addTab(tabLayout.newTab(),1,false);
+          if(userId.equals(GlobalConfig.getCurrentUserId())) {
+              tabLayout.addTab(tabLayout.newTab(), 2, false);
+          }
+
+          tabLayout.getTabAt(0).setIcon(R.drawable.ic_baseline_stars_24);
+          tabLayout.getTabAt(1).setIcon(R.drawable.ic_baseline_reviews_24);
+
+          if(userId.equals(GlobalConfig.getCurrentUserId())) {
+              tabLayout.getTabAt(2).setIcon(R.drawable.ic_baseline_bookmarks_24);
+          }
+
+      }
 
     private  void initStatistics(InitStatsListener initStatsListener){
         GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId())

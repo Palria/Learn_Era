@@ -30,10 +30,12 @@ import java.util.ArrayList;
 
 public class BookmarksFragment extends Fragment {
 
+    BookmarksRcvAdapter bookmarksRcvAdapter;
     RecyclerView bookmarksRecyclerListView;
     ArrayList<BookmarkDataModel> bookmarkDataModels = new ArrayList<>();
     View noDataFound;
     TextView bookmarksCountView;
+    String userId;
 
     public BookmarksFragment() {
         // Required empty public constructor
@@ -43,6 +45,9 @@ public class BookmarksFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if(getArguments()!=null){
+            userId = getArguments().getString(GlobalConfig.USER_ID_KEY,"0");
+        }
     }
 
     @Override
@@ -51,18 +56,33 @@ public class BookmarksFragment extends Fragment {
         // Inflate the layout for this fragment
         View parentView =  inflater.inflate(R.layout.fragment_bookmarks, container, false);
         initUI(parentView);
-fetchBookmarks(new BookmarkFetchListener() {
-    @Override
-    public void onSuccess(boolean isLibraryBookmark, boolean isTutorialBookmark, String authorId, String libraryId, String tutorialId, String dateBookmarked) {
-        displayBookmark(isLibraryBookmark,isTutorialBookmark,authorId,libraryId ,tutorialId ,dateBookmarked );
-    }
+//fetchBookmarks(new BookmarkFetchListener() {
+//    @Override
+//    public void onSuccess(boolean isLibraryBookmark, boolean isTutorialBookmark, String authorId, String libraryId, String tutorialId, String dateBookmarked) {
+////        displayBookmark(isLibraryBookmark,isTutorialBookmark,authorId,libraryId ,tutorialId ,dateBookmarked );
+//
+//
+//    }
+//
+//    @Override
+//    public void onFailed(String errorMessage) {
+////it fails to get bookmarks
+//
+//    }
+//});
 
-    @Override
-    public void onFailed(String errorMessage) {
-//it fails to get bookmarks
+        fetchBookmarks(new BookmarkFetchListener() {
+            @Override
+            public void onSuccess(BookmarkDataModel bookmarkDataModel) {
+                bookmarkDataModels.add(bookmarkDataModel);
+                bookmarksRcvAdapter.notifyItemChanged(bookmarkDataModels.size());
+            }
 
-    }
-});
+            @Override
+            public void onFailed(String errorMessage) {
+
+            }
+        });
         return parentView;
     }
 
@@ -74,44 +94,37 @@ fetchBookmarks(new BookmarkFetchListener() {
         bookmarksRecyclerListView=parent.findViewById(R.id.bookmarksRecyclerListView);
 
         //init bookmarks rcv
-        bookmarkDataModels.add(new BookmarkDataModel(
-                "",
-                "library",
-                "1250",
-                "\"How to crack a java interviwe for free in 2023",
-                "Manish - This is thw way how to crack a java inteview free for absolute be",
-                "https://api.lorem.space/image/movie?w=150&h=150&hash=lasdj",
-                "1 hrs "
-        ));
+//        bookmarkDataModels.add(new BookmarkDataModel(
+//                GlobalConfig.LIBRARY_TYPE_KEY,
+//                "1250",
+//                "\"How to crack a java interviwe for free in 2023",
+//                "Manish - This is thw way how to crack a java inteview free for absolute be",
+//                "https://api.lorem.space/image/movie?w=150&h=150&hash=lasdj",
+//                "1 hrs "
+//        ));
+//
+//        bookmarkDataModels.add(new BookmarkDataModel(
+//                GlobalConfig.LIBRARY_TYPE_KEY,
+//                "1250",
+//                "\"Assigning a harcoded text in string files in android",
+//                "Manish - This is thw way how to crack a java inteview free for absolute be",
+//                "https://api.lorem.space/image/movie?w=150&h=150&hash=4a5ds4f",
+//                "feb 20"
+//        ));
+//        bookmarkDataModels.add(new BookmarkDataModel(
+//                GlobalConfig.LIBRARY_TYPE_KEY,
+//                "1250",
+//                "\"Creating a youtube thumbnail absolute for beginners in Englishh with subtitle.",
+//                "Manish - This is thw way how to crack a java inteview free for absolute be",
+//                "https://api.lorem.space/image/movie?w=150&h=150&hash=adsf4das4f4",
+//                "jan 25"
+//        ));
 
-        bookmarkDataModels.add(new BookmarkDataModel(
-                "",
-                "library",
-                "1250",
-                "\"Assigning a harcoded text in string files in android",
-                "Manish - This is thw way how to crack a java inteview free for absolute be",
-                "https://api.lorem.space/image/movie?w=150&h=150&hash=4a5ds4f",
-                "feb 20"
-        ));
-        bookmarkDataModels.add(new BookmarkDataModel(
-                "",
-                "library",
-                "1250",
-                "\"Creating a youtube thumbnail absolute for beginners in Englishh with subtitle.",
-                "Manish - This is thw way how to crack a java inteview free for absolute be",
-                "https://api.lorem.space/image/movie?w=150&h=150&hash=adsf4das4f4",
-                "jan 25"
-        ));
-
-        BookmarksRcvAdapter bookmarksRcvAdapter = new BookmarksRcvAdapter(bookmarkDataModels, getContext());
+        bookmarksRcvAdapter = new BookmarksRcvAdapter(bookmarkDataModels, getContext());
 
         bookmarksRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL,false));
         bookmarksRecyclerListView.setHasFixedSize(false);
         bookmarksRecyclerListView.setAdapter(bookmarksRcvAdapter);
-
-        if(bookmarkDataModels.size()==0){
-            noDataFound.setVisibility(View.VISIBLE);
-        }
 
         bookmarksCountView.setText("("+bookmarkDataModels.size()+")");
 
@@ -132,15 +145,169 @@ fetchBookmarks(new BookmarkFetchListener() {
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                        if(queryDocumentSnapshots.size()==0){
+                            noDataFound.setVisibility(View.VISIBLE);
+                        }
+
                         for(DocumentSnapshot documentSnapshot: queryDocumentSnapshots){
-                           final boolean isLibraryBookmark = (documentSnapshot.get(GlobalConfig.IS_LIBRARY_BOOK_MARK_KEY))!=null ? (documentSnapshot.getBoolean(GlobalConfig.IS_LIBRARY_BOOK_MARK_KEY))  :false;
-                           final boolean isTutorialBookmark = (documentSnapshot.get(GlobalConfig.IS_TUTORIAL_BOOK_MARK_KEY))!=null ? (documentSnapshot.getBoolean(GlobalConfig.IS_TUTORIAL_BOOK_MARK_KEY))  :false;
+//                           final boolean isLibraryBookmark = (documentSnapshot.get(GlobalConfig.IS_LIBRARY_BOOK_MARK_KEY))!=null ? (documentSnapshot.getBoolean(GlobalConfig.IS_LIBRARY_BOOK_MARK_KEY))  :false;
+//                           final boolean isTutorialBookmark = (documentSnapshot.get(GlobalConfig.IS_TUTORIAL_BOOK_MARK_KEY))!=null ? (documentSnapshot.getBoolean(GlobalConfig.IS_TUTORIAL_BOOK_MARK_KEY))  :false;
                            final String authorId = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
                            final String libraryId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
                            final String tutorialId = ""+  documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
-                           final String dateBookmarked = ""+  documentSnapshot.get(GlobalConfig.DATE_TIME_STAMP_BOOK_MARKED_KEY);
+                           final String folderId = ""+  documentSnapshot.get(GlobalConfig.FOLDER_ID_KEY);
+                           final String pageId = ""+  documentSnapshot.get(GlobalConfig.PAGE_ID_KEY);
+                           String timestampBookmark = documentSnapshot.get(GlobalConfig.DATE_TIME_STAMP_BOOK_MARKED_KEY)!=null ?  documentSnapshot.getTimestamp(GlobalConfig.DATE_TIME_STAMP_BOOK_MARKED_KEY).toDate().toString() :"Undefined";
+                           if(timestampBookmark.length()>10){
+                               timestampBookmark = timestampBookmark.substring(0,10);
+                           }
+                           final String dateBookmarked = timestampBookmark;
+                           final String type = ""+  documentSnapshot.get(GlobalConfig.TYPE_KEY);
 
-                            bookmarkFetchListener.onSuccess(isLibraryBookmark,isTutorialBookmark,authorId,libraryId ,tutorialId ,dateBookmarked );
+//                            bookmarkFetchListener.onSuccess(new BookmarkDataModel(type,,,,));
+
+                            switch(type){
+                                case GlobalConfig.AUTHOR_TYPE_KEY:
+
+                                    GlobalConfig.getFirebaseFirestoreInstance()
+                                            .collection(GlobalConfig.ALL_USERS_KEY)
+                                            .document(authorId).get().addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                        }
+                                    })
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    String userName = ""+ documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                                                    String profilePhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
+                                                    String description = documentSnapshot.get(GlobalConfig.USER_DESCRIPTION_KEY)!=null ? documentSnapshot.get(GlobalConfig.USER_DESCRIPTION_KEY)+"" :"";
+                                                    bookmarkFetchListener.onSuccess(new BookmarkDataModel(type,   authorId,  libraryId,  tutorialId,  folderId,  pageId,  userName,  description,  profilePhotoDownloadUrl,  dateBookmarked));
+                                                }
+                                            });
+                                    break;
+                                case GlobalConfig.LIBRARY_TYPE_KEY:
+
+                                    GlobalConfig.getFirebaseFirestoreInstance()
+                                            .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                                            .document(libraryId).get().addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                        }
+                                    })
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    String libraryName = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
+                                                    String profilePhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY);
+                                                    String description = documentSnapshot.get(GlobalConfig.LIBRARY_DESCRIPTION_KEY)!=null ? documentSnapshot.get(GlobalConfig.LIBRARY_DESCRIPTION_KEY)+"" :"";
+                                                    bookmarkFetchListener.onSuccess(new BookmarkDataModel(type,   authorId,  libraryId,  tutorialId,  folderId,  pageId,  libraryName,  description,  profilePhotoDownloadUrl,  dateBookmarked));
+                                                }
+                                            });
+
+                                    break;
+                                case GlobalConfig.TUTORIAL_TYPE_KEY:
+
+                                    GlobalConfig.getFirebaseFirestoreInstance()
+                                            .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                                            .document(tutorialId).get().addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                        }
+                                    })
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    String tutorialName = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
+                                                    String profilePhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_COVER_PHOTO_DOWNLOAD_URL_KEY);
+                                                    String description = documentSnapshot.get(GlobalConfig.TUTORIAL_DESCRIPTION_KEY)!=null ? documentSnapshot.get(GlobalConfig.TUTORIAL_DESCRIPTION_KEY)+"" :"";
+                                                    bookmarkFetchListener.onSuccess(new BookmarkDataModel(type,   authorId,  libraryId,  tutorialId,  folderId,  pageId,  tutorialName,  description,  profilePhotoDownloadUrl,  dateBookmarked));
+                                                }
+                                            });
+
+                                    break;
+                                case GlobalConfig.FOLDER_TYPE_KEY:
+
+                                    GlobalConfig.getFirebaseFirestoreInstance()
+                                            .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                                            .document(tutorialId)
+                                            .collection(GlobalConfig.ALL_FOLDERS_KEY)
+                                            .document(folderId)
+                                            .get().addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                        }
+                                    })
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    String folderName = ""+ documentSnapshot.get(GlobalConfig.FOLDER_NAME_KEY);
+                                                    bookmarkFetchListener.onSuccess(new BookmarkDataModel(type,   authorId,  libraryId,  tutorialId,  folderId,  pageId,  folderName,  "",  "",  dateBookmarked));
+                                                }
+                                            });
+
+                                    break;
+                                case GlobalConfig.TUTORIAL_PAGE_TYPE_KEY:
+
+                                    GlobalConfig.getFirebaseFirestoreInstance()
+                                            .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                                            .document(tutorialId)
+                                            .collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY)
+                                            .document(pageId)
+                                            .get().addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                        }
+                                    })
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    String pageName = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
+                                                    bookmarkFetchListener.onSuccess(new BookmarkDataModel(type,   authorId,  libraryId,  tutorialId,  folderId,  pageId,  pageName,  "",  "",  dateBookmarked));
+                                                }
+                                            });
+
+
+                                    break;
+                                case GlobalConfig.FOLDER_PAGE_TYPE_KEY:
+
+                                    GlobalConfig.getFirebaseFirestoreInstance()
+                                            .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                                            .document(tutorialId)
+                                            .collection(GlobalConfig.ALL_FOLDERS_KEY)
+                                            .document(folderId)
+                                            .collection(GlobalConfig.ALL_FOLDER_PAGES_KEY)
+                                            .document(pageId)
+                                            .get().addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                        }
+                                    })
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                                    String pageName = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
+                                                    bookmarkFetchListener.onSuccess(new BookmarkDataModel(type,   authorId,  libraryId,  tutorialId,  folderId,  pageId,  pageName,  "",  "",  dateBookmarked));
+                                                }
+                                            });
+
+
+
+                                    break;
+                                default:
+                                    bookmarkFetchListener.onSuccess(new BookmarkDataModel("type",   authorId,  libraryId,  tutorialId,  folderId,  pageId,  "Title unknown",  "",  "",  dateBookmarked));
+
+
+                            }
+
+                            //                            bookmarkFetchListener.onSuccess(isLibraryBookmark,isTutorialBookmark,authorId,libraryId ,tutorialId ,dateBookmarked );
 
                         }
                     }
@@ -226,7 +393,8 @@ viewTypeIndicatorTextView.setText("Tutorial");
     }
 
     interface BookmarkFetchListener{
-        void onSuccess(final boolean isLibraryBookmark,final boolean isTutorialBookmark,final String authorId,final String libraryId ,final String tutorialId ,final String dateBookmarked );
-        void onFailed(String errorMessage);
+//        void onSuccess(final boolean isLibraryBookmark,final boolean isTutorialBookmark,final String authorId,final String libraryId ,final String tutorialId ,final String dateBookmarked );
+        void onSuccess(BookmarkDataModel bookmarkDataModel);
+                void onFailed(String errorMessage);
     }
 }

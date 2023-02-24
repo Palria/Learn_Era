@@ -245,6 +245,7 @@ public class UserProfileFragment extends Fragment {
             public void onClick(View view) {
 
                 Intent intent = new Intent(getContext(), UserStatsActivity.class);
+                intent.putExtra(GlobalConfig.USER_ID_KEY,authorId);
                 startActivity(intent);
 
             }

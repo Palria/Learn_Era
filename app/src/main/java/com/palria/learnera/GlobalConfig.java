@@ -102,6 +102,16 @@ public class GlobalConfig {
     public static final String IS_AUTHOR_OPEN_TYPE_KEY = "IS_AUTHOR_OPEN_TYPE";
 
 
+    public static final String TYPE_KEY = "TYPE";
+    public static final String AUTHOR_TYPE_KEY = "AUTHOR_TYPE";
+    public static final String LIBRARY_TYPE_KEY = "LIBRARY_TYPE";
+    public static final String TUTORIAL_TYPE_KEY = "TUTORIAL_TYPE";
+    public static final String FOLDER_TYPE_KEY = "FOLDER_TYPE";
+    public static final String TUTORIAL_PAGE_TYPE_KEY = "TUTORIAL_PAGE_TYPE";
+    public static final String FOLDER_PAGE_TYPE_KEY = "FOLDER_PAGE_TYPE";
+
+
+
     //USER FIELD KEYS BEGIN
     public static final String ALL_USERS_KEY = "ALL_USERS";
     public static final String USER_PROFILE_KEY = "USER_PROFILE";
@@ -125,6 +135,7 @@ public class GlobalConfig {
     public static final String TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY = "TOTAL_NUMBER_OF_USER_PROFILE_VISITORS";
     public static final String TOTAL_NUMBER_OF_USER_PROFILE_REACH_KEY = "TOTAL_NUMBER_OF_USER_PROFILE_REACH";
 
+    public static final String USER_DESCRIPTION_KEY = "USER_DESCRIPTION";
     public static final String USER_PROFILE_PHOTO_KEY = "USER_PROFILE_PHOTO";
     public static final String IS_USER_PROFILE_PHOTO_INCLUDED_KEY = "IS_USER_PROFILE_PHOTO_INCLUDED";
     public static final String USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY = "USER_PROFILE_PHOTO_DOWNLOAD_URL";
@@ -1312,158 +1323,174 @@ public class GlobalConfig {
     }
 
 
-    public static void addToBookmark(String authorId, String libraryId, String tutorialId,String folderId,String pageId,boolean isAuthorBookmark, boolean isLibraryBookmark, boolean isTutorialBookmark,   boolean isFolderBookmark,   boolean isTutorialPageBookmark,   boolean isFolderPageBookmark, ActionCallback actionCallback){
-        WriteBatch writeBatch  =  getFirebaseFirestoreInstance().batch();
+    public static void addToBookmark(String authorId, String libraryId, String tutorialId,String folderId,String pageId,String type, ActionCallback actionCallback) {
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
 
         DocumentReference bookMarkOwnerReference = null;
-        if(isAuthorBookmark) {
-            bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_USERS_KEY)
-                    .document(GlobalConfig.getCurrentUserId())
-                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(authorId);
+        switch (type) {
+            case AUTHOR_TYPE_KEY:
+                bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(authorId);
+                break;
 
-        }else if(isLibraryBookmark) {
-            bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_USERS_KEY)
-                    .document(GlobalConfig.getCurrentUserId())
-                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(libraryId);
+            case LIBRARY_TYPE_KEY:
+                bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(libraryId);
+                break;
 
-        }else if(isTutorialBookmark){
-            bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_USERS_KEY)
-                    .document(GlobalConfig.getCurrentUserId())
-                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(tutorialId);
+            case TUTORIAL_TYPE_KEY:
+                bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(tutorialId);
+                break;
+
+
+            case FOLDER_TYPE_KEY:
+                bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(folderId);
+                break;
+
+            case TUTORIAL_PAGE_TYPE_KEY:
+                bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(pageId);
+                break;
+
+
+            case FOLDER_PAGE_TYPE_KEY:
+                bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(pageId);
+                break;
 
         }
-        else if(isFolderBookmark){
-            bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_USERS_KEY)
-                    .document(GlobalConfig.getCurrentUserId())
-                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(folderId);
 
-        }
-        else if(isTutorialPageBookmark){
-            bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_USERS_KEY)
-                    .document(GlobalConfig.getCurrentUserId())
-                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(pageId);
-
-        }
-        else if(isFolderPageBookmark){
-            bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_USERS_KEY)
-                    .document(GlobalConfig.getCurrentUserId())
-                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(pageId);
-
-        }
-        HashMap<String,Object> bookmarkOwnerDetails = new HashMap<>();
-        bookmarkOwnerDetails.put(IS_AUTHOR_BOOK_MARK_KEY,isAuthorBookmark);
-        bookmarkOwnerDetails.put(IS_LIBRARY_BOOK_MARK_KEY,isLibraryBookmark);
-        bookmarkOwnerDetails.put(IS_TUTORIAL_BOOK_MARK_KEY,isTutorialBookmark);
-        bookmarkOwnerDetails.put(IS_FOLDER_BOOK_MARK_KEY,isFolderBookmark);
-        bookmarkOwnerDetails.put(IS_TUTORIAL_PAGE_BOOK_MARK_KEY,isTutorialPageBookmark);
-        bookmarkOwnerDetails.put(IS_FOLDER_PAGE_BOOK_MARK_KEY,isFolderPageBookmark);
-        bookmarkOwnerDetails.put(AUTHOR_ID_KEY,authorId);
-        bookmarkOwnerDetails.put(LIBRARY_ID_KEY,libraryId);
-        bookmarkOwnerDetails.put(TUTORIAL_ID_KEY,tutorialId);
-        bookmarkOwnerDetails.put(FOLDER_ID_KEY,folderId);
-        bookmarkOwnerDetails.put(PAGE_ID_KEY,pageId);
+        HashMap<String, Object> bookmarkOwnerDetails = new HashMap<>();
+        bookmarkOwnerDetails.put(TYPE_KEY, type);
+        bookmarkOwnerDetails.put(AUTHOR_ID_KEY, authorId);
+        bookmarkOwnerDetails.put(LIBRARY_ID_KEY, libraryId);
+        bookmarkOwnerDetails.put(TUTORIAL_ID_KEY, tutorialId);
+        bookmarkOwnerDetails.put(FOLDER_ID_KEY, folderId);
+        bookmarkOwnerDetails.put(PAGE_ID_KEY, pageId);
 //        bookmarkOwnerDetails.put(FOLDER_PAGE_ID_KEY,pageId);
 //        bookmarkOwnerDetails.put(TUTORIAL_PAGE_ID_KEY,pageId);
         bookmarkOwnerDetails.put(DATE_TIME_STAMP_BOOK_MARKED_KEY, FieldValue.serverTimestamp());
-        writeBatch.set(bookMarkOwnerReference,bookmarkOwnerDetails,SetOptions.merge());
+        writeBatch.set(bookMarkOwnerReference, bookmarkOwnerDetails, SetOptions.merge());
 
 
-         DocumentReference bookMarkReference = null;
-        if(isAuthorBookmark) {
-           bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_USERS_KEY)
-                    .document(authorId)
-                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+        DocumentReference bookMarkReference = null;
+        switch (type) {
+            case AUTHOR_TYPE_KEY:
+                bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(authorId)
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+                break;
 
-        }else if(isLibraryBookmark) {
-           bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_LIBRARY_KEY)
-                    .document(libraryId)
-                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+            case LIBRARY_TYPE_KEY:
+                bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                        .document(libraryId)
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+                break;
 
-        }else if(isTutorialBookmark){
-            bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_TUTORIAL_KEY)
-                    .document(tutorialId)
-                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+            case TUTORIAL_TYPE_KEY:
+                bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                        .document(tutorialId)
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+                break;
 
-        }else if(isFolderBookmark){
-            bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_TUTORIAL_KEY)
-                    .document(tutorialId)
-                    .collection(ALL_FOLDERS_KEY)
-                    .document(folderId)
-                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+            case FOLDER_TYPE_KEY:
+                bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                        .document(tutorialId)
+                        .collection(ALL_FOLDERS_KEY)
+                        .document(folderId)
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+                break;
 
-        }else if(isTutorialPageBookmark){
-            bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_TUTORIAL_KEY)
-                    .document(tutorialId)
-                    .collection(ALL_TUTORIAL_PAGES_KEY)
-                    .document(pageId)
-                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+            case TUTORIAL_PAGE_TYPE_KEY:
+                bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                        .document(tutorialId)
+                        .collection(ALL_TUTORIAL_PAGES_KEY)
+                        .document(pageId)
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+                break;
 
-        }else if(isFolderPageBookmark){
-            bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_TUTORIAL_KEY)
-                    .document(tutorialId)
-                    .collection(ALL_FOLDERS_KEY)
-                    .document(folderId)
-                    .collection(ALL_FOLDER_PAGES_KEY)
-                    .document(pageId)
-                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+            case FOLDER_PAGE_TYPE_KEY:
+                bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                        .document(tutorialId)
+                        .collection(ALL_FOLDERS_KEY)
+                        .document(folderId)
+                        .collection(ALL_FOLDER_PAGES_KEY)
+                        .document(pageId)
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+                break;
+
 
         }
-        HashMap<String,Object> bookmarkDetails = new HashMap<>();
-        bookmarkDetails.put(BOOK_MARKER_USER_ID_KEY,getCurrentUserId());
-        bookmarkDetails.put(AUTHOR_ID_KEY,authorId);
-        bookmarkDetails.put(LIBRARY_ID_KEY,libraryId);
-        bookmarkDetails.put(TUTORIAL_ID_KEY,tutorialId);
-        bookmarkDetails.put(FOLDER_ID_KEY,folderId);
-        bookmarkDetails.put(PAGE_ID_KEY,pageId);
+        HashMap<String, Object> bookmarkDetails = new HashMap<>();
+        bookmarkDetails.put(BOOK_MARKER_USER_ID_KEY, getCurrentUserId());
+        bookmarkDetails.put(AUTHOR_ID_KEY, authorId);
+        bookmarkDetails.put(LIBRARY_ID_KEY, libraryId);
+        bookmarkDetails.put(TUTORIAL_ID_KEY, tutorialId);
+        bookmarkDetails.put(FOLDER_ID_KEY, folderId);
+        bookmarkDetails.put(PAGE_ID_KEY, pageId);
 //        bookmarkDetails.put(TUTORIAL_PAGE_ID_KEY,pageId);
 //        bookmarkDetails.put(FOLDER_PAGE_ID_KEY,pageId);
         bookmarkDetails.put(DATE_TIME_STAMP_BOOK_MARKED_KEY, FieldValue.serverTimestamp());
-        writeBatch.set(bookMarkReference,bookmarkDetails,SetOptions.merge());
+        writeBatch.set(bookMarkReference, bookmarkDetails, SetOptions.merge());
 
 
-         DocumentReference numOfBookMarkReference = null;
-        if(isAuthorBookmark) {
-            numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
-                    .collection(GlobalConfig.ALL_USERS_KEY)
-                    .document(authorId);
+        DocumentReference numOfBookMarkReference = null;
+        switch (type) {
+            case AUTHOR_TYPE_KEY:
+                numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(authorId);
+                break;
 
-        }else if(isLibraryBookmark) {
+            case LIBRARY_TYPE_KEY:
             numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
                     .collection(GlobalConfig.ALL_LIBRARY_KEY)
                     .document(libraryId);
+                break;
 
-        }else if(isTutorialBookmark){
+            case TUTORIAL_TYPE_KEY:
             numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
                     .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                     .document(tutorialId);
+                break;
 
-        }else if(isFolderBookmark){
+            case FOLDER_TYPE_KEY:
             numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
                     .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                     .document(tutorialId)
                     .collection(ALL_FOLDERS_KEY)
                     .document(folderId);
+                break;
 
-        }else if(isTutorialPageBookmark){
+            case TUTORIAL_PAGE_TYPE_KEY:
             numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
                     .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                     .document(tutorialId)
                     .collection(ALL_TUTORIAL_PAGES_KEY)
                     .document(pageId);
+                break;
 
-        }else if(isFolderPageBookmark){
+            case FOLDER_PAGE_TYPE_KEY:
             numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
                     .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                     .document(tutorialId)
@@ -1471,8 +1498,10 @@ public class GlobalConfig {
                     .document(folderId)
                     .collection(ALL_FOLDER_PAGES_KEY)
                     .document(pageId);
+            break;
 
-        }
+
+    }
         //INCREASE THE NUMBER OF BOOKMARKS MADE ON ANY OF THESE OBJECTS LIKE "AUTHOR,LIBRARY,TUTORIAL, etc..."
         HashMap<String,Object> numOfBookmarkDetails = new HashMap<>();
         numOfBookmarkDetails.put(TOTAL_NUMBER_OF_BOOK_MARKS_KEY, FieldValue.increment(1L));
@@ -1503,29 +1532,31 @@ public class GlobalConfig {
                     @Override
                     public void onSuccess(Void unused) {
                         String activityLogType = "NONE";
-                        if(isAuthorBookmark){
+                        switch (type) {
+                            case AUTHOR_TYPE_KEY:
                             activityLogType = GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_AUTHOR_TYPE_KEY;
-                        }
-                        else if(isLibraryBookmark){
-                            activityLogType = GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_LIBRARY_TYPE_KEY;
+                                break;
 
-                        }
-                        else if(isTutorialBookmark){
-                            activityLogType = GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_TUTORIAL_TYPE_KEY;
+                            case LIBRARY_TYPE_KEY:
+                                activityLogType = GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_LIBRARY_TYPE_KEY;
+                                break;
 
-                        }
-                        else if(isFolderBookmark){
-                            activityLogType = GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_FOLDER_TYPE_KEY;
+                            case TUTORIAL_TYPE_KEY:
+                                activityLogType = GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_TUTORIAL_TYPE_KEY;
+                                break;
 
-                        }
-                        else if(isTutorialPageBookmark){
-                            activityLogType = GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_TUTORIAL_PAGE_TYPE_KEY;
+                            case FOLDER_TYPE_KEY:
+                                activityLogType = GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_FOLDER_TYPE_KEY;
+                                break;
 
-                        }
-                        else if(isFolderPageBookmark){
-                            activityLogType = GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_FOLDER_PAGE_TYPE_KEY;
+                            case TUTORIAL_PAGE_TYPE_KEY:
+                                activityLogType = GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_TUTORIAL_PAGE_TYPE_KEY;
+                                break;
 
-                        }
+                            case FOLDER_PAGE_TYPE_KEY:
+                                activityLogType = GlobalConfig.ACTIVITY_LOG_USER_BOOK_MARK_FOLDER_PAGE_TYPE_KEY;
+                                break;
+                    }
 
                             GlobalConfig.updateActivityLog(activityLogType, authorId, libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
                                 @Override

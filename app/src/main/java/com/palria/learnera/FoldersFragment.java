@@ -121,7 +121,7 @@ public class FoldersFragment extends Fragment {
                             if(dateCreated.length()>10){
                                 dateCreated = dateCreated.substring(0,10);
                             }
-                            long numOfPages  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY) : 0L;
+                            long numOfPages  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY) : 0L;
                             fetchTutorialFolderListener.onSuccess(new FolderDataModel(folderId,authorId,libraryId,tutorialId,folderName,dateCreated,numOfPages,numOfViews));
                         }
 

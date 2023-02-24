@@ -125,7 +125,7 @@ FolderDataModel intentFolderDataModel;
                     public void onClick(View view) {
                         Toast.makeText(TutorialFolderActivity.this, "adding to bookmark", Toast.LENGTH_SHORT).show();
 
-                        GlobalConfig.addToBookmark(authorId, libraryId, tutorialId, folderId,null,false,false, false,true,false,false,  new GlobalConfig.ActionCallback() {
+                        GlobalConfig.addToBookmark(authorId, libraryId, tutorialId, folderId,null,GlobalConfig.FOLDER_TYPE_KEY, new GlobalConfig.ActionCallback() {
                             @Override
                             public void onSuccess() {
                                 Toast.makeText(TutorialFolderActivity.this, "bookmarked", Toast.LENGTH_SHORT).show();

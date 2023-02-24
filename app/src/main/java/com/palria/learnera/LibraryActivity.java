@@ -270,7 +270,7 @@ if(isFirstView) {
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                GlobalConfig.addToBookmark(authorId, libraryId, null, null,null,false,true, false,false,false,false, new GlobalConfig.ActionCallback() {
+                                GlobalConfig.addToBookmark(authorId, libraryId, null, null,null,GlobalConfig.LIBRARY_TYPE_KEY, new GlobalConfig.ActionCallback() {
                                     @Override
                                     public void onSuccess() {
                                         Toast.makeText(LibraryActivity.this, "bookmarked", Toast.LENGTH_SHORT).show();

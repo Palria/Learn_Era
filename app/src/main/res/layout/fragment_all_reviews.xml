@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -35,8 +36,8 @@
             android:layout_width="match_parent"
             android:layout_marginTop="5pt"
             android:layout_marginHorizontal="5pt"
-            android:layout_height="14pt"
-            android:id="@+id/tab_layout"
+            android:layout_height="wrap_content"
+            android:id="@+id/tabLayoutId"
             android:background="@color/white"
             app:tabInlineLabel="false"
             app:tabGravity="fill"
@@ -45,7 +46,7 @@
             app:tabSelectedTextColor="@color/teal_700"
             app:tabIndicatorFullWidth="false"
             app:tabTextAppearance="@style/TextAppearance.AppCompat.Small">
-
+<!--
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:text="Library"
@@ -61,10 +62,31 @@
                 android:text="User"
                 android:id="@+id/userRatingsTab"
                 android:layout_height="wrap_content"/>
+            -->
+            
 
         </com.google.android.material.tabs.TabLayout>
 
-
+<FrameLayout
+    android:id="@+id/libraryReviewFrameLayoutId"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    />
+    
+<FrameLayout
+    android:id="@+id/tutorialReviewFrameLayoutId"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    />
+    
+<FrameLayout
+    android:id="@+id/userReviewFrameLayoutId"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone"/>
+        
+        
         <androidx.recyclerview.widget.RecyclerView
             android:layout_marginTop="10pt"
             android:id="@+id/ratingsRecyclerListView"
