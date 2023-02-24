@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:paddingHorizontal="10pt"
+    android:paddingVertical="50pt"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_height="wrap_content">
+
+
+    <ImageView
+        android:id="@+id/image"
+        android:scaleType="fitCenter"
+        android:src="@drawable/undraw_no_data_re_kwbl"
+        android:layout_width="wrap_content"
+        android:layout_height="40pt"/>
+
+    <TextView
+        android:id="@+id/title"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="10pt"
+        android:textAlignment="center"
+        android:layout_marginTop="15pt"
+        android:text="Oops"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/body"
+        android:textColor="@color/grayDark"
+        android:textSize="7pt"
+        android:textAlignment="center"
+        android:layout_marginTop="15pt"
+        android:text="No data found."
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

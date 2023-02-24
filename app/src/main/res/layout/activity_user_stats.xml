@@ -33,7 +33,6 @@
 
             <LinearLayout
                 android:orientation="vertical"
-                android:paddingBottom="27pt"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -190,10 +189,6 @@
 
                 </androidx.cardview.widget.CardView>
 
-
-
-
-
                 <androidx.cardview.widget.CardView
                     app:cardCornerRadius="6pt"
                     android:layout_marginHorizontal="5pt"
@@ -212,30 +207,26 @@
                         app:tabIndicatorFullWidth="true"
                         app:tabTextAppearance="@style/TextAppearance.AppCompat.Small">
 
-                        <com.google.android.material.tabs.TabItem
-                            android:layout_width="wrap_content"
-                            android:text="hey There"
-                            android:icon="@drawable/ic_baseline_photo_camera_24"
-                            android:layout_height="wrap_content"/>
-                        <com.google.android.material.tabs.TabItem
-                            android:layout_width="wrap_content"
-                            android:text="hey There"
-                            android:icon="@drawable/ic_baseline_photo_camera_24"
-                            android:layout_height="wrap_content"/>
-                        <com.google.android.material.tabs.TabItem
-                            android:layout_width="wrap_content"
-                            android:text="hey There"
-                            android:icon="@drawable/ic_baseline_photo_camera_24"
-                            android:layout_height="wrap_content"/>
 
                     </com.google.android.material.tabs.TabLayout>
                 </androidx.cardview.widget.CardView>
 
-                <androidx.viewpager.widget.ViewPager
-                    android:layout_width="match_parent"
-                    android:layout_height="250pt"
-                    android:id="@+id/layout_view_pager"/>
 
+                <FrameLayout
+                    android:visibility="gone"
+                    android:id="@+id/bookmarksFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <FrameLayout
+                    android:visibility="gone"
+                    android:id="@+id/allRatingsFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <FrameLayout
+                    android:visibility="gone"
+                    android:id="@+id/myRatingsFrameLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
 
 

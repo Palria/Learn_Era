@@ -18,12 +18,14 @@
         android:layout_height="wrap_content">
 
         <com.makeramen.roundedimageview.RoundedImageView
-            android:layout_width="30pt"
-            android:id="@+id/profilePicture"
-            app:riv_corner_radius="7pt"
-            app:riv_oval="true"
-            android:src="@drawable/default_profile"
-            android:layout_height="30pt"/>
+            android:layout_width="20pt"
+            android:id="@+id/icon"
+            app:riv_corner_radius="4pt"
+            app:riv_oval="false"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/book_cover2"
+            android:layout_height="20pt"/>
 
         <LinearLayout
             android:paddingLeft="8pt"
@@ -32,32 +34,20 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:id="@+id/name"
+                android:id="@+id/title"
                 android:textStyle="bold"
+                android:maxLines="2"
+                android:ellipsize="end"
                 android:textSize="8pt"
-                android:text="Jhon Cena"
+                android:text="How to crack a java interview freshors for free"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
-            <RatingBar
-                style="?android:attr/ratingBarStyleSmall"
-                android:clickable="false"
-                android:focusable="false"
-                android:progressTint="@color/teal_700"
-                android:progress="3"
-                android:numStars="5"
-                android:max="5"
-                android:elevation="0pt"
-                android:stepSize="1"
-                android:layout_marginVertical="3pt"
-                android:id="@+id/ratingBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
 
             <TextView
-                android:id="@+id/message"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:id="@+id/description"
                 android:text="Thsi sis the amzain comment i like to have this app forever use and cool."
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -66,8 +56,8 @@
 
     </LinearLayout>
     <TextView
-        android:textSize="6pt"
-        android:id="@+id/date"
+        android:textSize="5pt"
+        android:id="@+id/dateCreated"
         android:text="Jan 05"
         android:layout_marginTop="3pt"
         android:textAlignment="textEnd"

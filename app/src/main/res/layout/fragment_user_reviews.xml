@@ -31,12 +31,19 @@
             android:layout_height="wrap_content"/>
 
 
+        <include
+            android:visibility="gone"
+            layout="@layout/layout_no_data_found"
+            android:id="@+id/noDataFound"
+            />
+
         <androidx.recyclerview.widget.RecyclerView
             android:layout_marginTop="10pt"
             android:id="@+id/ratingsRecyclerListView"
             tools:listitem="@layout/single_rating_layout_item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+
 
     </LinearLayout>
 
