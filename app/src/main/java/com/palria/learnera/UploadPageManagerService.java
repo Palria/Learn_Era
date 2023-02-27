@@ -323,6 +323,19 @@ public class UploadPageManagerService extends Service {
                         HashMap<String, Object> incrementPageNumberHashMap = new HashMap<>();
                         incrementPageNumberHashMap.put(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY, FieldValue.increment(1L));
                         documentReference.update(incrementPageNumberHashMap)
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                isPageTextPartitionsUploaded.put(pageId,false);
+                                                if(!isImageIncludedHashMap.get(pageId) || isPageImagesPartitionsUploaded.get(pageId)){
+
+                                                    //failed
+//                                                    allActivePagesIdArrayList.remove(pageId);
+                                                    isPageUploadedHashMap.put(pageId,false);
+                                                    onPageUploadListener.onFailed(e.getMessage());
+                                                }
+                                            }
+                                        })
                                          .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void unused) {

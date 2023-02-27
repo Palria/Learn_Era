@@ -4,14 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".HomeFragment">
+    tools:context=".HomeFragment"
+    >
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_below="@+id/bg"
        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingBottom="30dp"
+        
+        >
 
+        
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
