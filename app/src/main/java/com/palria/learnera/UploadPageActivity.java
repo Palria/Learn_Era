@@ -1,12 +1,15 @@
 package com.palria.learnera;
 
 
+import static com.google.android.exoplayer2.ExoPlayerLibraryInfo.TAG;
+
 import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -16,13 +19,16 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ValueCallback;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -40,7 +46,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.palria.learnera.lib.rcheditor.WYSIWYG;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -57,9 +64,10 @@ public class UploadPageActivity extends AppCompatActivity {
     ImageButton addImageActionButton ;
     ImageButton addTodoListActionButton ;
     ImageButton addTableActionButton ;
-    Button btn ;
+    FloatingActionButton btn ;
     EditText pageTitleEditText;
     String pageTitle;
+    String pageContent;
     boolean isTutorialPage = true;
     /**
      * A  variable for launching the gallery {@link Intent}
@@ -83,7 +91,46 @@ public class UploadPageActivity extends AppCompatActivity {
      *
      */
     AlertDialog alertDialog;
-    Snackbar pageCreationSnackBar;
+//editor views
+
+    WYSIWYG wysiwygEditor;
+    ImageView action_undo;
+    ImageView action_redo;
+    ImageView action_bold;
+    ImageView action_italic;
+    ImageView action_subscript;
+    ImageView action_superscript;
+    ImageView action_strikethrough;
+    ImageView action_underline;
+    ImageView action_heading1;
+      ImageView action_heading2;
+        ImageView action_heading3;
+        ImageView action_heading4;
+        ImageView action_heading5;
+        ImageView action_heading6;
+         ImageView action_txt_color;
+          ImageView  action_bg_color;
+          ImageView  action_indent;
+        ImageView action_align_left;
+    ImageView action_align_center;
+    ImageView action_align_right;
+    ImageView action_align_justify;
+    ImageView action_blockquote;
+    ImageView  action_insert_bullets;
+    ImageView action_insert_numbers;
+     ImageView action_insert_image;
+        ImageView action_insert_link;
+       ImageView action_insert_checkbox;
+    boolean visible = false;
+        ImageView preview;
+        ImageView insert_latex;
+        ImageView insert_code;
+       ImageView action_change_font_type;
+       HorizontalScrollView latex_editor;
+       Button submit_latex;
+       EditText latex_equation;
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,40 +140,7 @@ public class UploadPageActivity extends AppCompatActivity {
         initUI();
         fetchIntentData();
         pageId = GlobalConfig.getRandomString(60);
-        UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
-            @Override
-            public void onNewPage(String pageId) {
-                Toast.makeText(getApplicationContext(), "New page id: "+ pageId, Toast.LENGTH_SHORT).show();
-            }
 
-            @Override
-            public void onFailed(String pageId) {
-//                Toast.makeText(getApplicationContext(), "page upload failed: "+ pageId, Toast.LENGTH_SHORT).show();
-                toggleProgress(false);
-                if(pageCreationSnackBar!=null) {
-                    pageCreationSnackBar.setText(pageTitle + " page Failed to create").setDuration(Snackbar.LENGTH_SHORT);
-                }
-
-            }
-
-            @Override
-            public void onProgress(String pageId, int progressCount) {
-                Toast.makeText(getApplicationContext(), progressCount+" page progressing: "+ pageId, Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onSuccess(String pageId) {
-                Toast.makeText(getApplicationContext(), "New page upload succeeded: "+ pageId, Toast.LENGTH_SHORT).show();
-                toggleProgress(false);
-                GlobalHelpers.showAlertMessage("success",
-                        UploadPageActivity.this,
-                        "Page created successfully",
-                        "You have successfully created your page, go ahead and contribute to Learn Era ");
-
-
-            }
-        });
         openGalleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
 
             @Override
@@ -245,23 +259,64 @@ createTable();
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                uploadPage();
-                pageTitle = pageTitleEditText.getText().toString();
-                postPage();
+                //get the datas first to valid them
+                wysiwygEditor.evaluateJavascript(
+                        "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
+                        new ValueCallback<String>() {
+                            @Override
+                            public void onReceiveValue(String html) {
+                                pageContent = html;
+                                pageTitle = pageTitleEditText.getText().toString();
+
+                                if(validateForm()){
+                                    //if validate form reeturns error/false
+                                    return;
+                                }
+                                Log.e("html",html);
+                                //post here (just title and page content )
+                                //postPage();
+                                //uploadPage();
+                            }
+                        });
+
+
+
             }
         });
 
     }
-private void initUI(){
+
+    private boolean validateForm() {
+
+        if(pageTitleEditText.getText().toString().trim().equals("")){
+            pageTitleEditText.setError("Please enter a title for a page.");
+            pageTitleEditText.requestFocus();
+            return true;
+        }
+
+        if(pageContent == null || pageContent.equals("")){
+           Toast.makeText(UploadPageActivity.this, "Please enter a description.",Toast.LENGTH_LONG).show();
+           return true;
+        }
+        return false;
+    }
+
+    private void initUI(){
 
     pageTitleEditText = findViewById(R.id.pageTitleEditTextId);
-    containerLinearLayout = findViewById(R.id.containerLinearLayoutId);
+    //containerLinearLayout = findViewById(R.id.containerLinearLayoutId);
     addImageActionButton = findViewById(R.id.addImageActionButtonId);
     addTodoListActionButton = findViewById(R.id.addTodoListActionButtonId);
     addTableActionButton = findViewById(R.id.addTableActionButtonId);
     btn = findViewById(R.id.btn);
-    addEditText(0);
+    //addEditText(0);
     //createPartition();
+
+
+/**load the content editor for the user.
+ change any in this method here
+ */
+    loadContentEditor();
 
     //init progress.
     alertDialog = new AlertDialog.Builder(UploadPageActivity.this)
@@ -270,12 +325,313 @@ private void initUI(){
             .create();
 }
 
-private void fetchIntentData(){
+    private void loadContentEditor() {
+        //load the ocntent editor here and render there thats make it easy to handle without any external codes.
+        wysiwygEditor=findViewById(R.id.editor);
+        wysiwygEditor.setEditorHeight(200);
+        wysiwygEditor.setEditorFontSize(16);
+        wysiwygEditor.setPadding(10, 10, 10, 10);
+        wysiwygEditor.setPlaceholder("Insert your content here...");
+
+         action_undo=findViewById(R.id.action_undo);
+         action_redo=findViewById(R.id.action_redo);
+         action_bold=findViewById(R.id.action_bold);
+         action_italic=findViewById(R.id.action_italic);
+         action_subscript=findViewById(R.id.action_subscript);
+         action_superscript=findViewById(R.id.action_superscript);
+         action_strikethrough=findViewById(R.id.action_strikethrough);
+         action_underline=findViewById(R.id.action_underline);
+         action_heading1=findViewById(R.id.action_heading1);
+         action_heading2=findViewById(R.id.action_heading2);
+         action_heading3=findViewById(R.id.action_heading3);
+         action_heading4=findViewById(R.id.action_heading4);
+         action_heading5=findViewById(R.id.action_heading5);
+         action_heading6=findViewById(R.id.action_heading6);
+         action_txt_color=findViewById(R.id.action_txt_color);
+          action_bg_color=findViewById(R.id.action_bg_color);
+          action_indent=findViewById(R.id.action_indent);
+         action_align_left=findViewById(R.id.action_align_left);
+         action_align_center=findViewById(R.id.action_align_center);
+         action_align_right=findViewById(R.id.action_align_right);
+         action_align_justify=findViewById(R.id.action_align_justify);
+         action_blockquote=findViewById(R.id.action_blockquote);
+          action_insert_bullets=findViewById(R.id.action_insert_bullets);
+         action_insert_numbers=findViewById(R.id.action_insert_numbers);
+         action_insert_image=findViewById(R.id.action_insert_image);
+         action_insert_link=findViewById(R.id.action_insert_link);
+         action_insert_checkbox=findViewById(R.id.action_insert_checkbox);
+         preview=findViewById(R.id.preview);
+         insert_latex=findViewById(R.id.insert_latex);
+         insert_code=findViewById(R.id.insert_code);
+         action_change_font_type=findViewById(R.id.action_change_font_type);
+         latex_editor=findViewById(R.id.latext_editor);
+         submit_latex=findViewById(R.id.submit_latex);
+         latex_equation=findViewById(R.id.latex_equation);
+
+
+        action_undo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.undo();
+            }
+        });
+
+        action_redo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.redo();
+            }
+        });
+
+        action_bold.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setBold();
+            }
+        });
+
+        action_italic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setItalic();
+            }
+        });
+
+        action_subscript.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setSubscript();
+            }
+        });
+
+        action_superscript.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setSubscript();
+            }
+        });
+
+        action_strikethrough.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setStrikeThrough();
+            }
+        });
+
+        action_underline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setUnderline();
+            }
+        });
+
+        action_heading1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setHeading(1);
+            }
+        });
+
+
+        action_heading2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setHeading(2);
+            }
+        });
+        action_heading3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setHeading(3);
+            }
+        });
+
+        action_heading4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setHeading(4);
+            }
+        });
+
+        action_heading5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setHeading(5);
+            }
+        });
+
+        action_heading6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setHeading(6);
+            }
+        });
+
+        action_txt_color.setOnClickListener(new View.OnClickListener() {
+            boolean isChanged = false;
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setTextColor(isChanged ? Color.BLACK : Color.RED);
+//                isChanged = !isChanged
+            }
+        });
+
+
+
+        action_bg_color.setOnClickListener(new View.OnClickListener() {
+            private boolean isChanged = false;
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setTextBackgroundColor( isChanged ? Color.TRANSPARENT : Color.YELLOW);
+                isChanged = !isChanged;
+            }
+        });
+
+
+        action_indent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setIndent();
+            }
+        });
+
+
+        action_align_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setAlignLeft();
+            }
+        });
+
+        action_align_center.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setAlignCenter();
+            }
+        });
+
+        action_align_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setAlignRight();
+            }
+        });
+
+        action_align_justify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setAlignJustifyFull();
+            }
+        });
+
+        action_blockquote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setBlockquote();
+            }
+        });
+
+        action_insert_bullets.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setBullets();
+            }
+        });
+
+        action_insert_numbers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setNumbers();
+            }
+        });
+
+        action_insert_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.insertImage(
+                        "https://i.postimg.cc/JzL891Fm/maxresdefault.jpg",
+                        "Night Sky"
+                );
+            }
+        });
+
+        action_insert_link.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.insertLink(
+                        "https://github.com/onecode369",
+                        "One Code"
+                );
+            }
+        });
+
+        action_insert_checkbox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.insertTodo();
+            }
+        });
+
+
+        preview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!visible){
+                    wysiwygEditor.setInputEnabled(false);
+                    preview.setImageResource(R.drawable.visibility_off);
+                }else{
+                    wysiwygEditor.setInputEnabled(true);
+                    preview.setImageResource(R.drawable.visibility);
+                }
+                visible = !visible;
+            }
+        });
+
+
+
+
+        insert_code.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setCode();
+            }
+        });
+
+        insert_latex.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(latex_editor.getVisibility() == View.GONE) {
+                    latex_editor.setVisibility(View.VISIBLE);
+                    submit_latex.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            wysiwygEditor.insertLatex(latex_equation.toString());
+                        }
+                    });
+                }else{
+                    latex_editor.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        action_change_font_type.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wysiwygEditor.setFontType("Times New Roman");
+
+            }
+        });
+
+
+    }
+
+    private void fetchIntentData(){
         Intent intent = getIntent();
         isTutorialPage = intent.getBooleanExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
         tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
         libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
         folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
+
 }
 
 
@@ -619,13 +975,40 @@ void addTableEditTextCell(LinearLayout rowLinearLayout){
 }
 
 void postPage(){
-    pageId = GlobalConfig.getRandomString(60);
-    pageCreationSnackBar = GlobalConfig.createSnackBar(this,containerLinearLayout,"Creating "+pageTitleEditText.getText()+" page",Snackbar.LENGTH_INDEFINITE);
+        toggleProgress(true);
+preparePage();
 
-//    toggleProgress(true);
-    preparePage();
+    UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
+        @Override
+        public void onNewPage(String pageId) {
+            Toast.makeText(getApplicationContext(), "New page id: "+ pageId, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onFailed(String pageId) {
+            Toast.makeText(getApplicationContext(), "page upload failed: "+ pageId, Toast.LENGTH_SHORT).show();
+            toggleProgress(false);
+
+        }
+
+        @Override
+        public void onProgress(String pageId, int progressCount) {
+            Toast.makeText(getApplicationContext(), progressCount+" page progressing: "+ pageId, Toast.LENGTH_SHORT).show();
+
+        }
+
+        @Override
+        public void onSuccess(String pageId) {
+            Toast.makeText(getApplicationContext(), "New page upload succeeded: "+ pageId, Toast.LENGTH_SHORT).show();
+            toggleProgress(false);
+            GlobalHelpers.showAlertMessage("success",
+                    UploadPageActivity.this,
+                    "Page created successfully",
+                    "You have successfully created your page, go ahead and contribute to Learn Era ");
 
 
+        }
+    });
     UploadPageManagerService.setInitialVariables(pageId);
 
     ArrayList<ArrayList<String>> allPageTextDataDetailsArrayList = new ArrayList<>();
@@ -781,6 +1164,11 @@ void postPage(){
 
 
 void preparePage(){
+
+
+    //now save the html and title to the database here .
+    //pageContent;
+
     Toast.makeText(getApplicationContext(), containerLinearLayout.getChildCount()+"", Toast.LENGTH_SHORT).show();
 
     for(int i=0; i<containerLinearLayout.getChildCount(); i++){

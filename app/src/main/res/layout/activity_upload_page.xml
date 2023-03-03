@@ -6,10 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".UploadPageActivity">
+
     <LinearLayout
         android:id="@+id/topLinearLayoutId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingVertical="7pt"
+        android:paddingHorizontal="5pt"
         android:orientation="horizontal"
         android:background="@color/teal_700"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,6 +24,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:text="Title"
+        android:layout_marginRight="4pt"
         android:textSize="15sp"
         />
  <EditText
@@ -30,106 +34,18 @@
         android:layout_weight="1"
         android:layout_margin="2dp"
         android:hint="Title"
+     android:paddingHorizontal="3pt"
+     android:paddingVertical="5pt"
         android:textColor="@color/black"
         android:background="@color/white"
         />
 
     </LinearLayout>
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/topLinearLayoutId"
-    >
-    <LinearLayout
-        android:id="@+id/containerLinearLayoutId"
-        android:layout_width="match_parent"
+    <include
+        app:layout_constraintTop_toBottomOf="@id/topLinearLayoutId"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="100dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-
-        >
-        <!--
-        <LinearLayout
-            android:id="@+id/partitionContainerLinearLayoutId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-
-            >
-<EditText
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Android is a platform for mobile manipulations"
-    />
-            <LinearLayout
-                android:id="@+id/imageContainerLinearLayoutId"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-<ImageView
-    android:layout_width="100dp"
-    android:layout_height="100dp"
-    android:background="@color/light_blue_600"
-    />
-<ImageView
-    android:layout_width="100dp"
-    android:layout_height="100dp"
-    android:background="@color/error_red"
-    />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/partitionContainerLinearLayout2Id"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-
-            >
-<EditText
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="ios is a platform for mobile operations"
-    />
-            <LinearLayout
-                android:id="@+id/imageContainerLinearLayout2Id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-
-                >
-<ImageView
-    android:layout_width="100dp"
-    android:layout_height="100dp"
-    android:background="@color/purple_200"
-    />
-<ImageView
-    android:layout_width="100dp"
-    android:layout_height="100dp"
-    android:background="@color/purple_700"
-    />
-
-<ImageView
-    android:layout_width="100dp"
-    android:layout_height="100dp"
-    android:background="@color/error_red"
-    />
-
-            </LinearLayout>
-        </LinearLayout>
-
-        -->
-
-    </LinearLayout>
-</ScrollView>
+        layout="@layout/rich_text_editor_layout"
+        android:layout_width="match_parent" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -139,6 +55,7 @@
         >
 
         <ImageButton
+            android:visibility="gone"
             android:id="@+id/addImageActionButtonId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -148,6 +65,7 @@
 
 
         <ImageButton
+            android:visibility="gone"
             android:id="@+id/addTodoListActionButtonId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -157,6 +75,7 @@
 
 
         <ImageButton
+            android:visibility="gone"
             android:id="@+id/addTableActionButtonId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -165,13 +84,16 @@
             />
 
 
-        <Button
-        android:id="@+id/btn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Upload page"
-        />
 
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:id="@+id/btn"
+        android:layout_margin="10pt"
+        android:tint="@color/teal_700"
+        android:src="@drawable/baseline_check_circle_outline_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
