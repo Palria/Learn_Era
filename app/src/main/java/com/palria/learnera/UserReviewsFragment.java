@@ -53,6 +53,8 @@ public class UserReviewsFragment extends Fragment {
         fetchReviews(new ReviewFetchListener() {
             @Override
             public void onSuccess(RatingDataModel ratingDataModel) {
+
+
             ratingDataModels.add(ratingDataModel);
             ratingItemRecyclerViewAdapter.notifyItemChanged(ratingDataModels.size());
 
