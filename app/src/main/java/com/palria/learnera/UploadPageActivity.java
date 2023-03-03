@@ -47,6 +47,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.palria.learnera.lib.rcheditor.WYSIWYG;
 
 import java.io.ByteArrayOutputStream;
@@ -407,7 +408,7 @@ createTable();
         action_superscript.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                wysiwygEditor.setSubscript();
+                wysiwygEditor.setSuperscript();
             }
         });
 
@@ -975,7 +976,10 @@ void addTableEditTextCell(LinearLayout rowLinearLayout){
 }
 
 void postPage(){
-        toggleProgress(true);
+    pageId = GlobalConfig.getRandomString(60);
+GlobalConfig.createSnackBar(this,containerLinearLayout,"Creating "+pageTitleEditText.getText()+" page", Snackbar.LENGTH_INDEFINITE);
+
+//        toggleProgress(true);
 preparePage();
 
     UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
