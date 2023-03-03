@@ -244,7 +244,7 @@ public class UserStatsActivity extends AppCompatActivity {
       }
 
     private  void initStatistics(InitStatsListener initStatsListener){
-        GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId())
+        GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(userId)
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override

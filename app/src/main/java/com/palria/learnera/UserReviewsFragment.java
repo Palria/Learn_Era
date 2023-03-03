@@ -56,6 +56,7 @@ public class UserReviewsFragment extends Fragment {
             ratingDataModels.add(ratingDataModel);
             ratingItemRecyclerViewAdapter.notifyItemChanged(ratingDataModels.size());
 
+
             }
 
             @Override
@@ -99,9 +100,7 @@ public class UserReviewsFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(ratingItemRecyclerViewAdapter);
         //show not found if no datas
-        if(ratingDataModels.size()==0){
-            noDataFound.setVisibility(View.VISIBLE);
-        }
+
 
 
     }
@@ -151,6 +150,9 @@ public class UserReviewsFragment extends Fragment {
                                         }
                                     });
 //                           reviewFetchListener.onSuccess(reviewerId,comment ,dateReviewed,starLevel);
+                        }
+                        if(queryDocumentSnapshots.size()==0){
+                            noDataFound.setVisibility(View.VISIBLE);
                         }
                     }
                 });

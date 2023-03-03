@@ -143,33 +143,51 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
         fetchIntentData();
 
 
+        getDynamicCategories();
 
         if(isCreateNewLibrary){
             //User is creating new library
             libraryId = GlobalConfig.getRandomString(100);
 
             //helps to load the categories from server/firebase
-            getDynamicCategories();
 
 
 
         }else{
             //User is editing his library
+            if(getSupportActionBar()!=null) {
+                getSupportActionBar().setTitle("Edit Library");
+            }
+            createLibraryActionButton.setText("Edit");
+            toggleProgress(true);
             initializeLibraryProfile(new ProfileInitializationListener() {
                 @Override
-                public void onSuccess(String tutorialName, String tutorialDescription, ArrayList<String> libraryCategoryArray, String retrievedCoverPhotoDownloadUrl, String retrievedCoverPhotoStorageReference, boolean isLibraryCoverPhotoIncluded) {
+                public void onSuccess(String libraryName, String libraryDescription, ArrayList<String> libraryCategoryArray, String retrievedCoverPhotoDownloadUrl, String retrievedCoverPhotoStorageReference, boolean isLibraryCoverPhotoIncluded) {
 
                     libraryNameEditText.setText(libraryName);
                     libraryDescriptionEditText.setText(libraryDescription);
-//                    libraryCategoryEditText.setText(libraryCategory);
-                    libraryCategoryArrayList = libraryCategoryArray;
+                    for(int i=0; i<libraryCategoryArray.size(); i++) {
+                        chooseCategoryTextView.append(libraryCategoryArray.get(i));
+                        if(i!=libraryCategoryArray.size()-1){
+                            chooseCategoryTextView.append(",");
+
+                        }
+                    }
                     CreateNewLibraryActivity.this.isLibraryCoverPhotoIncluded = isLibraryCoverPhotoIncluded;
+                    if(isLibraryCoverPhotoIncluded){
+                        Glide.with(CreateNewLibraryActivity.this)
+                                .load(retrievedCoverPhotoDownloadUrl)
+                                .centerCrop()
+                                .into(pickImageActionButton);
+                    }
                     //Initialization succeeds, then start implementation
+                    toggleProgress(false);
 
                 }
 
                 @Override
                 public void onFailed(String errorMessage) {
+                    toggleProgress(false);
 
                 }
             });
@@ -233,11 +251,11 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                 libraryName = libraryNameEditText.getText().toString();
                 libraryCategory = chooseCategoryTextView.getText().toString();
                 libraryDescription = libraryDescriptionEditText.getText().toString();
-if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
-    categoryList.addAll(Arrays.asList(chooseCategoryTextView.getText().toString().split(",")));
-}else{
-    categoryList.add(chooseCategoryTextView.getText().toString());
-}
+                if(chooseCategoryTextView.getText().toString().split(",").length !=0) {
+                    categoryList.addAll(Arrays.asList(chooseCategoryTextView.getText().toString().split(",")));
+                }else{
+                    categoryList.add(chooseCategoryTextView.getText().toString());
+                }
 
                 if(isLibraryCoverPhotoIncluded){
                     if(isCreateNewLibrary){

@@ -13,7 +13,9 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
@@ -35,6 +37,7 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
     String libraryId;
     String tutorialId;
 
+    static Snackbar ratingSnackbar;
     //this is a descriptive word/tag illustrating the library's / tutorial's performance
     String performanceTag ="Teachable";
 
@@ -51,7 +54,7 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
     }
 
 
-    public void render(){
+    public RatingBottomSheetWidget render(View mainLayout,boolean isEdition){
         //initialize the view for the bottom sheet
 
         LayoutInflater layoutInflater= (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -66,19 +69,191 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                RatingBottomSheetWidget.this.dismiss();
+               ratingSnackbar = GlobalConfig.createSnackBar(context,mainLayout,"Rating in progress please wait...",Snackbar.LENGTH_INDEFINITE);
                 String comment = editText.getText().toString();
                 int starLevel = ratingBar.getProgress();
                      onPost.onPost(starLevel,comment.trim());
                     //onRatingPosted.onPost(ratingBar.getProgress(), editText.getText().toString().trim());
 
                 if(isAuthorReview){
-                    reviewAuthor(authorId,comment,starLevel);
+                    if(isEdition) {
+
+                        GlobalConfig.editAuthorReview(authorId, comment, performanceTag, starLevel, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_AUTHOR_REVIEW_TYPE_KEY, authorId, null, null, null, null, GlobalConfig.getCurrentUserId(), new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
+//                        toggleProgress(false);
+
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+//                        toggleProgress(false);
+
+                                    }
+                                });
+
+                                onPost.onSuccess(true, false, false);
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                onPost.onFailed(errorMessage);
+                            }
+                        });
+                    }else {
+
+                        GlobalConfig.reviewAuthor(authorId, comment, performanceTag, starLevel, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_AUTHOR_TYPE_KEY, authorId, null, null, null, null, GlobalConfig.getCurrentUserId(), new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
+//                        toggleProgress(false);
+
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+//                        toggleProgress(false);
+
+                                    }
+                                });
+
+                                onPost.onSuccess(true, false, false);
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                onPost.onFailed(errorMessage);
+
+                            }
+                        });
+                    }
+
                 }
                  else if(isLibraryReview){
-                    reviewLibrary(authorId,libraryId,comment,starLevel);
+                    if(isEdition) {
+                        GlobalConfig.editLibraryReview(authorId, libraryId, comment, performanceTag, starLevel, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_LIBRARY_TYPE_KEY, authorId, libraryId, null, null, null, GlobalConfig.getCurrentUserId(), new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
+//                        toggleProgress(false);
+
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+//                        toggleProgress(false);
+
+                                    }
+                                });
+
+                                onPost.onSuccess(false, true, false);
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                onPost.onFailed(errorMessage);
+
+                            }
+                        });
+                    }else {
+                        GlobalConfig.reviewLibrary(authorId, libraryId, comment, performanceTag, starLevel, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_LIBRARY_TYPE_KEY, authorId, libraryId, null, null, null, GlobalConfig.getCurrentUserId(), new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
+//                        toggleProgress(false);
+
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+//                        toggleProgress(false);
+
+                                    }
+                                });
+
+                                onPost.onSuccess(false, true, false);
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                onPost.onFailed(errorMessage);
+
+                            }
+                        });
+                    }
                 }
                 else  if(isTutorialReview){
-                    reviewTutorial(authorId,libraryId, tutorialId,comment,starLevel);
+                    if(isEdition) {
+                        GlobalConfig.editTutorialReview(authorId, libraryId, tutorialId, comment, performanceTag, starLevel, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_TUTORIAL_TYPE_KEY, authorId, libraryId, tutorialId, null, null, GlobalConfig.getCurrentUserId(), new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
+//                        toggleProgress(false);
+
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+//                        toggleProgress(false);
+
+                                    }
+                                });
+
+                                onPost.onSuccess(false, false, true);
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                onPost.onFailed(errorMessage);
+
+                            }
+                        });
+                    }else {
+                        GlobalConfig.reviewTutorial(authorId, libraryId, tutorialId, comment, performanceTag, starLevel, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_TUTORIAL_TYPE_KEY, authorId, libraryId, tutorialId, null, null, GlobalConfig.getCurrentUserId(), new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
+//                        toggleProgress(false);
+
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+//                        toggleProgress(false);
+
+                                    }
+                                });
+
+                                onPost.onSuccess(false, false, true);
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                onPost.onFailed(errorMessage);
+
+                            }
+                        });
+                    }
                 }
 
 
@@ -88,239 +263,9 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
 
 
         this.setContentView(view);
-
+return this;
     }
-
-
-    private void reviewAuthor(String authorId,String comment,long starLevel){
-        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
-
-        DocumentReference authorReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId).collection(GlobalConfig.REVIEWS_KEY).document(GlobalConfig.getCurrentUserId());
-        HashMap<String,Object> authorReviewDetails = new HashMap<>();
-        authorReviewDetails.put(GlobalConfig.REVIEWER_ID_KEY, GlobalConfig.getCurrentUserId());
-        authorReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
-        authorReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
-//        authorReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
-        authorReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-//        authorReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
-        writeBatch.set(authorReviewDocumentReference,authorReviewDetails);
-
-        DocumentReference authorDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId);
-        HashMap<String,Object> authorDetails = new HashMap<>();
-        authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY, FieldValue.increment(1L));
-        switch(Math.toIntExact(starLevel)){
-            case 1: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(1L));
-                return;
-            case 2: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,  FieldValue.increment(1L));
-                return;
-            case 3: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,  FieldValue.increment(1L));
-                return;
-            case 4: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(1L));
-                return;
-            case 5: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(1L));
-                return;
-        }
-        writeBatch.update(authorDocumentReference,authorDetails);
-
-
-
-        DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.OTHER_REVIEWS_KEY).document(authorId);
-        HashMap<String,Object> reviewerReviewDetails = new HashMap<>();
-        reviewerReviewDetails.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
-        reviewerReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
-        reviewerReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
-//        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
-        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-//        reviewerReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
-        reviewerReviewDetails.put(GlobalConfig.IS_AUTHOR_REVIEW_KEY, true);
-        writeBatch.set(reviewerDocumentReference,reviewerReviewDetails, SetOptions.merge());
-
-        writeBatch.commit()
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        onPost.onFailed(e.getMessage());
-                    }
-                })
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_AUTHOR_TYPE_KEY,authorId, null, null,  null, null, GlobalConfig.getCurrentUserId(),  new GlobalConfig.ActionCallback() {
-                            @Override
-                            public void onSuccess() {
-//                        toggleProgress(false);
-
-                            }
-
-                            @Override
-                            public void onFailed(String errorMessage) {
-//                        toggleProgress(false);
-
-                            }
-                        });
-
-                        onPost.onSuccess(true,false,false);
-                    }
-                });
-
-    }
-    private void reviewLibrary(String authorId,String libraryId,String comment,long starLevel){
-        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
-
-        DocumentReference libraryReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId).collection(GlobalConfig.REVIEWS_KEY).document(GlobalConfig.getCurrentUserId());
-        HashMap<String,Object> libraryReviewDetails = new HashMap<>();
-        libraryReviewDetails.put(GlobalConfig.REVIEWER_ID_KEY, GlobalConfig.getCurrentUserId());
-        libraryReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
-        libraryReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
-        libraryReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
-        libraryReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        libraryReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
-        writeBatch.set(libraryReviewDocumentReference,libraryReviewDetails,SetOptions.merge());
-
-        DocumentReference libraryDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
-        HashMap<String,Object> libraryDetails = new HashMap<>();
-        libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REVIEWS_KEY, FieldValue.increment(1L));
-        switch(Math.toIntExact(starLevel)){
-            case 1: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(1L));
-                break;
-            case 2: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,  FieldValue.increment(1L));
-                break;
-            case 3: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,  FieldValue.increment(1L));
-                break;
-            case 4: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(1L));
-                break;
-            case 5: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(1L));
-                break;
-        }
-        writeBatch.set(libraryDocumentReference,libraryDetails,SetOptions.merge());
-
-        DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.OTHER_REVIEWS_KEY).document(libraryId);
-        HashMap<String,Object> reviewerReviewDetails = new HashMap<>();
-        reviewerReviewDetails.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
-        reviewerReviewDetails.put(GlobalConfig.LIBRARY_ID_KEY, libraryId);
-        reviewerReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
-        reviewerReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
-//        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
-        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        reviewerReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
-        reviewerReviewDetails.put(GlobalConfig.IS_LIBRARY_REVIEW_KEY, true);
-        writeBatch.set(reviewerDocumentReference,reviewerReviewDetails, SetOptions.merge());
-
-        writeBatch.commit()
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        onPost.onFailed(e.getMessage());
-                    }
-                })
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_LIBRARY_TYPE_KEY,authorId, libraryId, null,  null, null, GlobalConfig.getCurrentUserId(), new GlobalConfig.ActionCallback() {
-                            @Override
-                            public void onSuccess() {
-//                        toggleProgress(false);
-
-                            }
-
-                            @Override
-                            public void onFailed(String errorMessage) {
-//                        toggleProgress(false);
-
-                            }
-                        });
-
-                        onPost.onSuccess(false,true,false);
-                    }
-                });
-
-    }
-    private void reviewTutorial(String authorId,String libraryId,String tutorialId,String comment,long starLevel){
-        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
-
-        DocumentReference tutorialReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
-                .collection(GlobalConfig.ALL_TUTORIAL_KEY)
-                .document(tutorialId).collection(GlobalConfig.REVIEWS_KEY)
-                .document(GlobalConfig.getCurrentUserId());
-
-        HashMap<String,Object> tutorialReviewDetails = new HashMap<>();
-        tutorialReviewDetails.put(GlobalConfig.REVIEWER_ID_KEY, GlobalConfig.getCurrentUserId());
-        tutorialReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
-        tutorialReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
-//        tutorialReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
-        tutorialReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        tutorialReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
-        writeBatch.set(tutorialReviewDocumentReference,tutorialReviewDetails, SetOptions.merge());
-
-
-        DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
-        HashMap<String,Object> tutorialDetails = new HashMap<>();
-        tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_REVIEWS_KEY, FieldValue.increment(1L));
-        switch(Math.toIntExact(starLevel)){
-            case 1: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(1L));
-                break;
-            case 2: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,  FieldValue.increment(1L));
-                break;
-            case 3: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,  FieldValue.increment(1L));
-                break;
-            case 4: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(1L));
-                break;
-            case 5: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(1L));
-                break;
-        }
-        writeBatch.set(tutorialDocumentReference,tutorialDetails,SetOptions.merge());
-
-
-        DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
-                .collection(GlobalConfig.ALL_USERS_KEY)
-                .document(GlobalConfig.getCurrentUserId())
-                .collection(GlobalConfig.OTHER_REVIEWS_KEY)
-                .document(tutorialId);
-
-        HashMap<String,Object> reviewerReviewDetails = new HashMap<>();
-        reviewerReviewDetails.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
-        reviewerReviewDetails.put(GlobalConfig.LIBRARY_CONTAINER_ID_KEY, libraryId);
-        reviewerReviewDetails.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
-        reviewerReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
-        reviewerReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
-        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
-        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        reviewerReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
-        reviewerReviewDetails.put(GlobalConfig.IS_TUTORIAL_REVIEW_KEY, true);
-        writeBatch.set(reviewerDocumentReference,reviewerReviewDetails, SetOptions.merge());
-
-        writeBatch.commit()
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        onPost.onFailed(e.getMessage());
-                    }
-                })
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_REVIEW_TUTORIAL_TYPE_KEY,authorId, libraryId, tutorialId,  null, null, GlobalConfig.getCurrentUserId(),  new GlobalConfig.ActionCallback() {
-                            @Override
-                            public void onSuccess() {
-//                        toggleProgress(false);
-
-                            }
-
-                            @Override
-                            public void onFailed(String errorMessage) {
-//                        toggleProgress(false);
-
-                            }
-                        });
-
-                        onPost.onSuccess(false,false,true);
-                    }
-                });
-
-    }
-
-
-    public RatingBottomSheetWidget setRatingPostListener(OnRatingPosted onRatingPosted){
+     public RatingBottomSheetWidget setRatingPostListener(OnRatingPosted onRatingPosted){
         this.onPost=onRatingPosted;
         return this;
     }
@@ -336,12 +281,13 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
 
         @Override
        public  void onFailed(String errorMessage){
+            RatingBottomSheetWidget.ratingSnackbar.setText("Failed: "+errorMessage).setDuration(Snackbar.LENGTH_SHORT);
 
         }
 
         @Override
        public void onSuccess(boolean isReviewAuthor,boolean isReviewLibrary,boolean isReviewTutorial){
-
+            RatingBottomSheetWidget.ratingSnackbar.setText("Rating succeeded!").setDuration(Snackbar.LENGTH_SHORT);
         }
 
     }

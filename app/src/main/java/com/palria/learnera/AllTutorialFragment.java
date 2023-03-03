@@ -3,6 +3,7 @@ package com.palria.learnera;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,6 +15,7 @@ import android.widget.LinearLayout;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
@@ -30,11 +32,15 @@ public class AllTutorialFragment extends Fragment {
     LinearLayout topContents;
     PopularTutorialsListViewAdapter popularTutorialsListViewAdapter;
     ArrayList<TutorialDataModel> tutorialDataModels = new ArrayList<>();
+    BottomAppBar bottomAppBar;
 
-
+    NestedScrollView parentScrollView;
 
     public AllTutorialFragment() {
         // Required empty public constructor
+    }
+    public AllTutorialFragment(BottomAppBar bottomAppBar) {
+         this.bottomAppBar =  bottomAppBar;
     }
 
 
@@ -84,6 +90,25 @@ if(getArguments() != null){
 
             }
         });
+        parentScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            float y = 0;
+            @Override
+            public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+
+                if(bottomAppBar!=null) {
+                    if (oldScrollY > scrollY) {
+                        bottomAppBar.performShow();
+
+                    } else {
+                        bottomAppBar.performHide();
+
+                    }
+                }
+
+
+            }
+        });
+
         return parentView;
     }
 
@@ -91,6 +116,7 @@ if(getArguments() != null){
 
         topContents=parentView.findViewById(R.id.topContents);
         tutorialsRecyclerListView=parentView.findViewById(R.id.tutorialsRecyclerListView);
+        parentScrollView=parentView.findViewById(R.id.scrollView);
 
         popularTutorialsListViewAdapter = new PopularTutorialsListViewAdapter(tutorialDataModels,getContext());
 

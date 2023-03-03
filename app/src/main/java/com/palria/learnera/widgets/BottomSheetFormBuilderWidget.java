@@ -96,7 +96,11 @@ public class BottomSheetFormBuilderWidget extends BottomSheetDialog {
                       i++;
                   }
               }
+              if(values[0]!=null && !values[0].equals("")){
+                  BottomSheetFormBuilderWidget.this.dismiss();
+              }
                 onSubmitListener.onSubmit(values);
+
             }
         });
 
@@ -178,6 +182,7 @@ public class BottomSheetFormBuilderWidget extends BottomSheetDialog {
     public static class OnSubmitHandler implements onSubmit{
         @Override
         public void onSubmit(String[] values) {
+
 
         }
     }

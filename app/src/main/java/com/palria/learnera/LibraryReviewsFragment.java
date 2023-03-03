@@ -98,7 +98,6 @@ public class LibraryReviewsFragment extends Fragment {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
                         for(DocumentSnapshot documentSnapshot: queryDocumentSnapshots){
-                            String authorId = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
                             String libraryId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
                             String tutorialId = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
                             String reviewComment = ""+ documentSnapshot.get(GlobalConfig.REVIEW_COMMENT_KEY);
@@ -130,8 +129,9 @@ public class LibraryReviewsFragment extends Fragment {
                                             @Override
                                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                                 String libraryName = "" + documentSnapshot.get(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
+                                                String authorId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
                                                 String libraryProfilePhotoDownloadUrl = "" + documentSnapshot.get(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY);
-                                                reviewFetchListener.onSuccess(new RatingDataModel(GlobalConfig.getCurrentUserId(), libraryName, libraryId, GlobalConfig.LIBRARY_TYPE_KEY, finalDateReviewed, reviewComment, (int) starLevel, libraryProfilePhotoDownloadUrl));
+                                                reviewFetchListener.onSuccess(new RatingDataModel(authorId, libraryName, libraryId, GlobalConfig.LIBRARY_TYPE_KEY, finalDateReviewed, reviewComment, (int) starLevel, libraryProfilePhotoDownloadUrl));
 
                                             }
                                         });

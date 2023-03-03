@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
@@ -318,6 +319,8 @@ public class GlobalConfig {
     public static final String IS_TUTORIAL_FOLDER_AFFECTED_KEY = "IS_TUTORIAL_FOLDER_AFFECTED";
     public static final String IS_TUTORIAL_PAGE_AFFECTED_KEY = "IS_TUTORIAL_PAGE_AFFECTED";
     public static final String IS_FOLDER_PAGE_AFFECTED_KEY = "IS_FOLDER_PAGE_AFFECTED";
+
+    //log keys start
     public static final String ACTIVITY_LOG_USER_BOOK_MARK_FOLDER_TYPE_KEY = "ACTIVITY_LOG_USER_BOOK_MARK_FOLDER_TYPE";
 
     public static final String ACTIVITY_LOG_USER_REVIEW_AUTHOR_TYPE_KEY = "ACTIVITY_LOG_USER_REVIEW_AUTHOR_TYPE";
@@ -328,6 +331,8 @@ public class GlobalConfig {
     public static final String ACTIVITY_LOG_USER_EDIT_AUTHOR_REVIEW_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_AUTHOR_REVIEW_TYPE";
     public static final String ACTIVITY_LOG_USER_VISIT_AUTHOR_TYPE_KEY = "ACTIVITY_LOG_USER_VISIT_AUTHOR_TYPE";
     public static final String ACTIVITY_LOG_USER_BOOK_MARK_AUTHOR_TYPE_KEY = "ACTIVITY_LOG_USER_BOOK_MARK_AUTHOR_TYPE";
+    public static final String ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_AUTHOR_TYPE_KEY = "ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_AUTHOR_TYPE";
+
 
 
     public static final String ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE_KEY = "ACTIVITY_LOG_USER_CREATE_NEW_LIBRARY_TYPE";
@@ -356,6 +361,8 @@ public class GlobalConfig {
     public static final String ACTIVITY_LOG_USER_EDIT_TUTORIAL_FOLDER_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_TUTORIAL_FOLDER_TYPE";
     public static final String ACTIVITY_LOG_USER_VISIT_FOLDER_TYPE_KEY = "ACTIVITY_LOG_USER_VISIT_FOLDER_TYPE";
     public static final String ACTIVITY_LOG_USER_DELETE_TUTORIAL_FOLDER_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_TUTORIAL_FOLDER_TYPE";
+    public static final String ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_TUTORIAL_FOLDER_TYPE_KEY = "ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_TUTORIAL_FOLDER_TYPE";
+
 
 
     public static final String ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE";
@@ -363,6 +370,7 @@ public class GlobalConfig {
     public static final String ACTIVITY_LOG_USER_VISIT_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_VISIT_TUTORIAL_PAGE_TYPE";
     public static final String ACTIVITY_LOG_USER_EDIT_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_TUTORIAL_PAGE_TYPE";
     public static final String ACTIVITY_LOG_USER_DELETE_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_TUTORIAL_PAGE_TYPE";
+    public static final String ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_TUTORIAL_PAGE_TYPE";
 
 
     public static final String ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE";
@@ -370,6 +378,8 @@ public class GlobalConfig {
     public static final String ACTIVITY_LOG_USER_VISIT_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_VISIT_FOLDER_PAGE_TYPE";
     public static final String ACTIVITY_LOG_USER_EDIT_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_FOLDER_PAGE_TYPE";
     public static final String ACTIVITY_LOG_USER_DELETE_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_FOLDER_PAGE_TYPE";
+    public static final String ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_FOLDER_PAGE_TYPE";
+//log keys ends
 
 
 
@@ -874,7 +884,20 @@ public class GlobalConfig {
         return arrayList;
     }
 
-    static  void checkIfDocumentExists(DocumentReference documentReference, OnDocumentExistStatusCallback onDocumentExistStatusCallback){
+   public static  Snackbar createSnackBar(Context context , View view,String text,int lengthPeriod){
+        Snackbar snackBar = Snackbar.make(view,text,lengthPeriod);
+        snackBar.setAction("Hide", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                snackBar.dismiss();
+            }
+        });
+        snackBar.show();
+
+        return snackBar;
+    }
+
+    public static  void checkIfDocumentExists(DocumentReference documentReference, OnDocumentExistStatusCallback onDocumentExistStatusCallback){
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -887,10 +910,764 @@ public class GlobalConfig {
                     }
                 }
                 else{
-                    onDocumentExistStatusCallback.onFailed(task.getException().getMessage());
+                        onDocumentExistStatusCallback.onFailed(task.getException().getMessage());
                 }
             }
         });
+    }
+
+
+
+    public static  void reviewAuthor(String authorId,String comment,String performanceTag,long starLevel,ActionCallback actionCallback){
+        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+
+        DocumentReference authorReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId).collection(GlobalConfig.REVIEWS_KEY).document(GlobalConfig.getCurrentUserId());
+        HashMap<String,Object> authorReviewDetails = new HashMap<>();
+        authorReviewDetails.put(GlobalConfig.REVIEWER_ID_KEY, GlobalConfig.getCurrentUserId());
+        authorReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
+        authorReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
+//        authorReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
+        authorReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+//        authorReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
+        writeBatch.set(authorReviewDocumentReference,authorReviewDetails);
+
+        DocumentReference authorDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId);
+        HashMap<String,Object> authorDetails = new HashMap<>();
+        authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY, FieldValue.increment(1L));
+
+        switch(Math.toIntExact(starLevel)){
+            case 1: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY,   FieldValue.increment(1L));
+                break;
+            case 2: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,   FieldValue.increment(1L));
+                break;
+            case 3: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY, FieldValue.increment(1L));
+                break;
+            case 4: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY,  FieldValue.increment(1L));
+                break;
+            case 5: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY,  FieldValue.increment(1L));
+                break;
+        }
+
+        writeBatch.update(authorDocumentReference,authorDetails);
+
+
+
+        DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.OTHER_REVIEWS_KEY).document(authorId);
+        HashMap<String,Object> reviewerReviewDetails = new HashMap<>();
+        reviewerReviewDetails.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
+        reviewerReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
+        reviewerReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
+//        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
+        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        reviewerReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
+        reviewerReviewDetails.put(GlobalConfig.IS_AUTHOR_REVIEW_KEY, true);
+        writeBatch.set(reviewerDocumentReference,reviewerReviewDetails, SetOptions.merge());
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+
+                    }
+                });
+
+    }
+    public static  void reviewLibrary(String authorId,String libraryId,String comment,String performanceTag,long starLevel,ActionCallback actionCallback){
+        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+
+        DocumentReference libraryReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId).collection(GlobalConfig.REVIEWS_KEY).document(GlobalConfig.getCurrentUserId());
+        HashMap<String,Object> libraryReviewDetails = new HashMap<>();
+        libraryReviewDetails.put(GlobalConfig.REVIEWER_ID_KEY, GlobalConfig.getCurrentUserId());
+        libraryReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
+        libraryReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
+        libraryReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
+        libraryReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        libraryReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
+        writeBatch.set(libraryReviewDocumentReference,libraryReviewDetails,SetOptions.merge());
+
+        DocumentReference libraryDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
+        HashMap<String,Object> libraryDetails = new HashMap<>();
+        libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REVIEWS_KEY, FieldValue.increment(1L));
+        switch(Math.toIntExact(starLevel)){
+            case 1: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(1L));
+                break;
+            case 2: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,  FieldValue.increment(1L));
+                break;
+            case 3: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,  FieldValue.increment(1L));
+                break;
+            case 4: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(1L));
+                break;
+            case 5: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(1L));
+                break;
+        }
+        writeBatch.set(libraryDocumentReference,libraryDetails,SetOptions.merge());
+
+        DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.OTHER_REVIEWS_KEY).document(libraryId);
+        HashMap<String,Object> reviewerReviewDetails = new HashMap<>();
+        reviewerReviewDetails.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
+        reviewerReviewDetails.put(GlobalConfig.LIBRARY_ID_KEY, libraryId);
+        reviewerReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
+        reviewerReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
+//        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
+        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        reviewerReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
+        reviewerReviewDetails.put(GlobalConfig.IS_LIBRARY_REVIEW_KEY, true);
+        writeBatch.set(reviewerDocumentReference,reviewerReviewDetails, SetOptions.merge());
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+
+                    }
+                });
+
+    }
+    public static  void reviewTutorial(String authorId,String libraryId,String tutorialId,String comment,String performanceTag,long starLevel,ActionCallback actionCallback){
+        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+
+        DocumentReference tutorialReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                .document(tutorialId).collection(GlobalConfig.REVIEWS_KEY)
+                .document(GlobalConfig.getCurrentUserId());
+
+        HashMap<String,Object> tutorialReviewDetails = new HashMap<>();
+        tutorialReviewDetails.put(GlobalConfig.REVIEWER_ID_KEY, GlobalConfig.getCurrentUserId());
+        tutorialReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
+        tutorialReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
+//        tutorialReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
+        tutorialReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        tutorialReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
+        writeBatch.set(tutorialReviewDocumentReference,tutorialReviewDetails, SetOptions.merge());
+
+
+        DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
+        HashMap<String,Object> tutorialDetails = new HashMap<>();
+        tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_REVIEWS_KEY, FieldValue.increment(1L));
+        switch(Math.toIntExact(starLevel)){
+            case 1: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(1L));
+                break;
+            case 2: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,  FieldValue.increment(1L));
+                break;
+            case 3: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,  FieldValue.increment(1L));
+                break;
+            case 4: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(1L));
+                break;
+            case 5: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(1L));
+                break;
+        }
+        writeBatch.set(tutorialDocumentReference,tutorialDetails,SetOptions.merge());
+
+
+        DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_USERS_KEY)
+                .document(GlobalConfig.getCurrentUserId())
+                .collection(GlobalConfig.OTHER_REVIEWS_KEY)
+                .document(tutorialId);
+
+        HashMap<String,Object> reviewerReviewDetails = new HashMap<>();
+        reviewerReviewDetails.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
+        reviewerReviewDetails.put(GlobalConfig.LIBRARY_CONTAINER_ID_KEY, libraryId);
+        reviewerReviewDetails.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
+        reviewerReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
+        reviewerReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, starLevel);
+        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
+        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        reviewerReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
+        reviewerReviewDetails.put(GlobalConfig.IS_TUTORIAL_REVIEW_KEY, true);
+        writeBatch.set(reviewerDocumentReference,reviewerReviewDetails, SetOptions.merge());
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+
+                    }
+                });
+
+    }
+
+    public static  void editAuthorReview(String authorId,String comment,String performanceTag,long newStarLevel,ActionCallback actionCallback){
+
+
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_USERS_KEY)
+                .document(authorId).collection(GlobalConfig.REVIEWS_KEY)
+                .document(GlobalConfig.getCurrentUserId()).get().addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                actionCallback.onFailed(e.getMessage());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+
+                long oldStarLevel = documentSnapshot.get(GlobalConfig.STAR_LEVEL_KEY) != null ? documentSnapshot.getLong(GlobalConfig.STAR_LEVEL_KEY) : 0L;
+
+                DocumentReference authorDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId);
+                HashMap<String, Object> authorDetails = new HashMap<>();
+
+                //remove the old star level
+                switch (Math.toIntExact(oldStarLevel)) {
+                    case 1:
+                        authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 2:
+                        authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 3:
+                        authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 4:
+                        authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 5:
+                        authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                }
+                switch(Math.toIntExact(newStarLevel)){
+                    case 1: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(1L));
+                        break;
+                    case 2: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,  FieldValue.increment(1L));
+                        break;
+                    case 3: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,  FieldValue.increment(1L));
+                        break;
+                    case 4: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(1L));
+                        break;
+                    case 5: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(1L));
+                        break;
+                }
+                writeBatch.set(authorDocumentReference,authorDetails,SetOptions.merge());
+
+                DocumentReference authorReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId).collection(GlobalConfig.REVIEWS_KEY).document(GlobalConfig.getCurrentUserId());
+                HashMap<String,Object> authorReviewDetails = new HashMap<>();
+                authorReviewDetails.put(GlobalConfig.REVIEWER_ID_KEY, GlobalConfig.getCurrentUserId());
+                authorReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
+                authorReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, newStarLevel);
+//        authorReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
+                authorReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        authorReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
+                writeBatch.set(authorReviewDocumentReference,authorReviewDetails);
+
+
+
+                DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.OTHER_REVIEWS_KEY).document(authorId);
+                HashMap<String,Object> reviewerReviewDetails = new HashMap<>();
+                reviewerReviewDetails.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
+                reviewerReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
+                reviewerReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, newStarLevel);
+//        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
+                reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        reviewerReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
+                reviewerReviewDetails.put(GlobalConfig.IS_AUTHOR_REVIEW_KEY, true);
+                writeBatch.set(reviewerDocumentReference,reviewerReviewDetails, SetOptions.merge());
+
+                writeBatch.commit()
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                actionCallback.onFailed(e.getMessage());
+
+                            }
+                        })
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                actionCallback.onSuccess();
+
+                            }
+                        });
+            }
+        });
+
+
+
+    }
+    public static  void editLibraryReview(String authorId,String libraryId,String comment,String performanceTag,long newStarLevel,ActionCallback actionCallback){
+
+
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                .document(libraryId).collection(GlobalConfig.REVIEWS_KEY)
+                .document(GlobalConfig.getCurrentUserId()).get().addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                actionCallback.onFailed(e.getMessage());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+
+                long oldStarLevel = documentSnapshot.get(GlobalConfig.STAR_LEVEL_KEY) != null ? documentSnapshot.getLong(GlobalConfig.STAR_LEVEL_KEY) : 0L;
+
+                DocumentReference libraryDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
+                HashMap<String, Object> libraryDetails = new HashMap<>();
+
+                //remove the old star level
+                switch (Math.toIntExact(oldStarLevel)) {
+                    case 1:
+                        libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 2:
+                        libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 3:
+                        libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 4:
+                        libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 5:
+                        libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                }
+                switch(Math.toIntExact(newStarLevel)){
+                    case 1: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(1L));
+                        break;
+                    case 2: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,  FieldValue.increment(1L));
+                        break;
+                    case 3: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,  FieldValue.increment(1L));
+                        break;
+                    case 4: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(1L));
+                        break;
+                    case 5: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(1L));
+                        break;
+                }
+                writeBatch.set(libraryDocumentReference,libraryDetails,SetOptions.merge());
+
+                DocumentReference libraryReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId).collection(GlobalConfig.REVIEWS_KEY).document(GlobalConfig.getCurrentUserId());
+                HashMap<String,Object> libraryReviewDetails = new HashMap<>();
+                libraryReviewDetails.put(GlobalConfig.REVIEWER_ID_KEY, GlobalConfig.getCurrentUserId());
+                libraryReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
+                libraryReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, newStarLevel);
+                libraryReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
+                libraryReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+                libraryReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
+                writeBatch.set(libraryReviewDocumentReference,libraryReviewDetails,SetOptions.merge());
+
+
+                DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.OTHER_REVIEWS_KEY).document(libraryId);
+                HashMap<String,Object> reviewerReviewDetails = new HashMap<>();
+                reviewerReviewDetails.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
+                reviewerReviewDetails.put(GlobalConfig.LIBRARY_ID_KEY, libraryId);
+                reviewerReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
+                reviewerReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, newStarLevel);
+//        reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
+                reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+                reviewerReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
+                reviewerReviewDetails.put(GlobalConfig.IS_LIBRARY_REVIEW_KEY, true);
+                writeBatch.set(reviewerDocumentReference,reviewerReviewDetails, SetOptions.merge());
+
+                writeBatch.commit()
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                actionCallback.onFailed(e.getMessage());
+
+                            }
+                        })
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                actionCallback.onSuccess();
+
+                            }
+                        });
+            }
+        });
+
+
+
+    }
+    public static  void editTutorialReview(String authorId,String libraryId,String tutorialId,String comment,String performanceTag,long newStarLevel,ActionCallback actionCallback){
+
+
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                .document(tutorialId).collection(GlobalConfig.REVIEWS_KEY)
+                .document(GlobalConfig.getCurrentUserId()).get().addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                actionCallback.onFailed(e.getMessage());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+
+                long oldStarLevel = documentSnapshot.get(GlobalConfig.STAR_LEVEL_KEY) != null ? documentSnapshot.getLong(GlobalConfig.STAR_LEVEL_KEY) : 0L;
+
+                DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
+                HashMap<String, Object> tutorialDetails = new HashMap<>();
+
+                //remove the old star level
+                switch (Math.toIntExact(oldStarLevel)) {
+                    case 1:
+                        tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 2:
+                        tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 3:
+                        tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 4:
+                        tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 5:
+                        tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                }
+                switch(Math.toIntExact(newStarLevel)){
+                    case 1: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(1L));
+                        break;
+                    case 2: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,  FieldValue.increment(1L));
+                        break;
+                    case 3: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,  FieldValue.increment(1L));
+                        break;
+                    case 4: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(1L));
+                        break;
+                    case 5: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(1L));
+                        break;
+                }
+                writeBatch.set(tutorialDocumentReference,tutorialDetails,SetOptions.merge());
+
+                DocumentReference tutorialReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                        .document(tutorialId).collection(GlobalConfig.REVIEWS_KEY)
+                        .document(GlobalConfig.getCurrentUserId());
+
+                HashMap<String,Object> tutorialReviewDetails = new HashMap<>();
+                tutorialReviewDetails.put(GlobalConfig.REVIEWER_ID_KEY, GlobalConfig.getCurrentUserId());
+                tutorialReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
+                tutorialReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, newStarLevel);
+//        tutorialReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
+                tutorialReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+                tutorialReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
+                writeBatch.set(tutorialReviewDocumentReference,tutorialReviewDetails, SetOptions.merge());
+
+                DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.OTHER_REVIEWS_KEY)
+                        .document(tutorialId);
+
+                HashMap<String,Object> reviewerReviewDetails = new HashMap<>();
+                reviewerReviewDetails.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
+                reviewerReviewDetails.put(GlobalConfig.LIBRARY_CONTAINER_ID_KEY, libraryId);
+                reviewerReviewDetails.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
+                reviewerReviewDetails.put(GlobalConfig.REVIEW_COMMENT_KEY, comment);
+                reviewerReviewDetails.put(GlobalConfig.STAR_LEVEL_KEY, newStarLevel);
+//                reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_KEY, GlobalConfig.getDate());
+                reviewerReviewDetails.put(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+                reviewerReviewDetails.put(GlobalConfig.PERFORMANCE_TAG_KEY, performanceTag);
+                reviewerReviewDetails.put(GlobalConfig.IS_TUTORIAL_REVIEW_KEY, true);
+                writeBatch.set(reviewerDocumentReference,reviewerReviewDetails, SetOptions.merge());
+
+                writeBatch.commit()
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                actionCallback.onFailed(e.getMessage());
+
+                            }
+                        })
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                actionCallback.onSuccess();
+
+                            }
+                        });
+            }
+        });
+
+
+
+    }
+
+    public static  void removeAuthorReview(String authorId,ActionCallback actionCallback){
+
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_USERS_KEY)
+                .document(authorId).collection(GlobalConfig.REVIEWS_KEY)
+                .document(GlobalConfig.getCurrentUserId())
+                .get()
+                .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                actionCallback.onFailed(e.getMessage());
+            }
+        }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+
+                long starLevel = documentSnapshot.get(GlobalConfig.STAR_LEVEL_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.STAR_LEVEL_KEY) : 0L;
+
+                DocumentReference authorDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId);
+                HashMap<String,Object> authorDetails = new HashMap<>();
+                authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY, FieldValue.increment(-1L));
+                switch(Math.toIntExact(starLevel)){
+                    case 1: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 2: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,  FieldValue.increment(-1L));
+                        break;
+                    case 3: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,  FieldValue.increment(-1L));
+                        break;
+                    case 4: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 5: authorDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                }
+                writeBatch.set(authorDocumentReference,authorDetails,SetOptions.merge());
+
+
+                DocumentReference authorReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(authorId).collection(GlobalConfig.REVIEWS_KEY)
+                        .document(GlobalConfig.getCurrentUserId());
+                writeBatch.delete(authorReviewDocumentReference);
+
+
+
+                DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.OTHER_REVIEWS_KEY)
+                        .document(authorId);
+                writeBatch.delete(reviewerDocumentReference);
+                writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                    }
+                });
+
+            }
+        });
+    }
+    public static  void removeLibraryReview(String libraryId,ActionCallback actionCallback){
+
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                .document(libraryId).collection(GlobalConfig.REVIEWS_KEY)
+                .document(GlobalConfig.getCurrentUserId()).get().addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                actionCallback.onFailed(e.getMessage());
+            }
+        })
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+
+                long starLevel = documentSnapshot.get(GlobalConfig.STAR_LEVEL_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.STAR_LEVEL_KEY) : 0L;
+
+                DocumentReference libraryDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
+                HashMap<String,Object> libraryDetails = new HashMap<>();
+                libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REACH_KEY, FieldValue.increment(-1L));
+                switch(Math.toIntExact(starLevel)){
+                    case 1: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 2: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,  FieldValue.increment(-1L));
+                        break;
+                    case 3: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,  FieldValue.increment(-1L));
+                        break;
+                    case 4: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 5: libraryDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                }
+                writeBatch.set(libraryDocumentReference,libraryDetails,SetOptions.merge());
+
+
+                DocumentReference libraryReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                        .document(libraryId).collection(GlobalConfig.REVIEWS_KEY)
+                        .document(GlobalConfig.getCurrentUserId());
+                writeBatch.delete(libraryReviewDocumentReference);
+
+
+
+                DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.OTHER_REVIEWS_KEY)
+                        .document(libraryId);
+                writeBatch.delete(reviewerDocumentReference);
+                writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                    }
+                });
+
+            }
+        });
+
+
+
+
+
+
+    }
+    public static  void removeTutorialReview(String tutorialId,ActionCallback actionCallback){
+
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                .document(tutorialId).collection(GlobalConfig.REVIEWS_KEY)
+                .document(GlobalConfig.getCurrentUserId()).get().addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                actionCallback.onFailed(e.getMessage());
+            }
+        })
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+
+                long starLevel = documentSnapshot.get(GlobalConfig.STAR_LEVEL_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.STAR_LEVEL_KEY) : 0L;
+
+                DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
+                HashMap<String,Object> tutorialDetails = new HashMap<>();
+                tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_REVIEWS_KEY, FieldValue.increment(-1L));
+                switch(Math.toIntExact(starLevel)){
+                    case 1: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 2: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TWO_STAR_RATE_KEY,  FieldValue.increment(-1L));
+                        break;
+                    case 3: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY,  FieldValue.increment(-1L));
+                        break;
+                    case 4: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                    case 5: tutorialDetails.put(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY, FieldValue.increment(-1L));
+                        break;
+                }
+                writeBatch.set(tutorialDocumentReference,tutorialDetails,SetOptions.merge());
+
+
+                DocumentReference tutorialReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                        .document(tutorialId).collection(GlobalConfig.REVIEWS_KEY)
+                        .document(GlobalConfig.getCurrentUserId());
+                writeBatch.delete(tutorialReviewDocumentReference);
+
+
+
+                DocumentReference reviewerDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.OTHER_REVIEWS_KEY)
+                        .document(tutorialId);
+                writeBatch.delete(reviewerDocumentReference);
+                writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                    }
+                });
+
+            }
+        });
+
+
+
+
+
+
+    }
+
+
+    public static void deletePage(String authorId,String tutorialId,String folderId,String pageId,boolean isTutorialPage, ActionCallback actionCallback){
+        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+
+        if(isTutorialPage){
+            DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
+            HashMap<String,Object> details = new HashMap<>();
+            details.put(TOTAL_NUMBER_OF_PAGES_CREATED_KEY,FieldValue.increment(-1L));
+            writeBatch.update(tutorialDocumentReference,details);
+
+            DocumentReference pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_TUTORIAL_PAGES_KEY).document(pageId);
+            writeBatch.delete(pageDocumentReference);
+
+            writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    actionCallback.onFailed(e.getMessage());
+                }
+            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    actionCallback.onSuccess();
+                }
+            });
+
+
+        }else{
+            DocumentReference folderDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_FOLDERS_KEY).document(folderId);
+            HashMap<String,Object> details = new HashMap<>();
+            details.put(TOTAL_NUMBER_OF_PAGES_CREATED_KEY,FieldValue.increment(-1L));
+            writeBatch.update(folderDocumentReference,details);
+
+            DocumentReference pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_FOLDERS_KEY).document(folderId).collection(ALL_FOLDER_PAGES_KEY).document(pageId);
+            writeBatch.delete(pageDocumentReference);
+
+            writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    actionCallback.onFailed(e.getMessage());
+
+                }
+            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    actionCallback.onSuccess();
+                }
+            });
+        }
     }
 
     /**
@@ -985,7 +1762,7 @@ public class GlobalConfig {
         }
 
         /**
-         * Returns the local date at when an action was performed
+         * Returns the local date when an action was performed
          * @return {@link String} the string that represents the date value
          * */
         @Deprecated
@@ -1322,6 +2099,237 @@ public class GlobalConfig {
         return  intent;
     }
 
+
+    public static void removeBookmark(String authorId, String libraryId, String tutorialId,String folderId,String pageId,String type, ActionCallback actionCallback) {
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+
+        DocumentReference bookMarkOwnerReference = null;
+        switch (type) {
+            case AUTHOR_TYPE_KEY:
+                bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(authorId);
+                break;
+
+            case LIBRARY_TYPE_KEY:
+                bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(libraryId);
+                break;
+
+            case TUTORIAL_TYPE_KEY:
+                bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(tutorialId);
+                break;
+
+
+            case FOLDER_TYPE_KEY:
+                bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(folderId);
+                break;
+
+            case TUTORIAL_PAGE_TYPE_KEY:
+                bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(pageId);
+                break;
+
+
+            case FOLDER_PAGE_TYPE_KEY:
+                bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(pageId);
+                break;
+
+        }
+        writeBatch.delete(bookMarkOwnerReference);
+
+
+        DocumentReference bookMarkReference = null;
+        switch (type) {
+            case AUTHOR_TYPE_KEY:
+                bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(authorId)
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+                break;
+
+            case LIBRARY_TYPE_KEY:
+                bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                        .document(libraryId)
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+                break;
+
+            case TUTORIAL_TYPE_KEY:
+                bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                        .document(tutorialId)
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+                break;
+
+            case FOLDER_TYPE_KEY:
+                bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                        .document(tutorialId)
+                        .collection(ALL_FOLDERS_KEY)
+                        .document(folderId)
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+                break;
+
+            case TUTORIAL_PAGE_TYPE_KEY:
+                bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                        .document(tutorialId)
+                        .collection(ALL_TUTORIAL_PAGES_KEY)
+                        .document(pageId)
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+                break;
+
+            case FOLDER_PAGE_TYPE_KEY:
+                bookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                        .document(tutorialId)
+                        .collection(ALL_FOLDERS_KEY)
+                        .document(folderId)
+                        .collection(ALL_FOLDER_PAGES_KEY)
+                        .document(pageId)
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(GlobalConfig.getCurrentUserId());
+                break;
+
+
+        }
+        writeBatch.delete(bookMarkReference);
+
+
+        DocumentReference numOfBookMarkReference = null;
+        switch (type) {
+            case AUTHOR_TYPE_KEY:
+                numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(authorId);
+                break;
+
+            case LIBRARY_TYPE_KEY:
+            numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                    .document(libraryId);
+                break;
+
+            case TUTORIAL_TYPE_KEY:
+            numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                    .document(tutorialId);
+                break;
+
+            case FOLDER_TYPE_KEY:
+            numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                    .document(tutorialId)
+                    .collection(ALL_FOLDERS_KEY)
+                    .document(folderId);
+                break;
+
+            case TUTORIAL_PAGE_TYPE_KEY:
+            numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                    .document(tutorialId)
+                    .collection(ALL_TUTORIAL_PAGES_KEY)
+                    .document(pageId);
+                break;
+
+            case FOLDER_PAGE_TYPE_KEY:
+            numOfBookMarkReference = GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                    .document(tutorialId)
+                    .collection(ALL_FOLDERS_KEY)
+                    .document(folderId)
+                    .collection(ALL_FOLDER_PAGES_KEY)
+                    .document(pageId);
+            break;
+
+
+    }
+        //INCREASE THE NUMBER OF BOOKMARKS MADE ON ANY OF THESE OBJECTS LIKE "AUTHOR,LIBRARY,TUTORIAL, etc..."
+        HashMap<String,Object> numOfBookmarkDetails = new HashMap<>();
+        numOfBookmarkDetails.put(TOTAL_NUMBER_OF_BOOK_MARKS_KEY, FieldValue.increment(-1L));
+        writeBatch.set(numOfBookMarkReference,numOfBookmarkDetails,SetOptions.merge());
+
+
+        //INCREASE NUMBER OF BOOKMARKS THIS USER HAS MADE
+      DocumentReference  bookMarkerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_USERS_KEY)
+                .document(GlobalConfig.getCurrentUserId());
+
+        HashMap<String,Object> bookMarkerDetails = new HashMap<>();
+        bookMarkerDetails.put(TOTAL_NUMBER_OF_OTHER_BOOK_MARKS_KEY, FieldValue.increment(-1L));
+        writeBatch.set(bookMarkerReference,bookMarkerDetails,SetOptions.merge());
+
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        String activityLogType = "NONE";
+                        switch (type) {
+                            case AUTHOR_TYPE_KEY:
+                            activityLogType = GlobalConfig.ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_AUTHOR_TYPE_KEY;
+                                break;
+
+                            case LIBRARY_TYPE_KEY:
+                                activityLogType = GlobalConfig.ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_LIBRARY_TYPE_KEY;
+                                break;
+
+                            case TUTORIAL_TYPE_KEY:
+                                activityLogType = GlobalConfig.ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_TUTORIAL_TYPE_KEY;
+                                break;
+
+                            case FOLDER_TYPE_KEY:
+                                activityLogType = GlobalConfig.ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_TUTORIAL_FOLDER_TYPE_KEY;
+                                break;
+
+                            case TUTORIAL_PAGE_TYPE_KEY:
+                                activityLogType = GlobalConfig.ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_TUTORIAL_PAGE_TYPE_KEY;
+                                break;
+
+                            case FOLDER_PAGE_TYPE_KEY:
+                                activityLogType = GlobalConfig.ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_FOLDER_PAGE_TYPE_KEY;
+                                break;
+                    }
+
+                            GlobalConfig.updateActivityLog(activityLogType, authorId, libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                                @Override
+                                public void onSuccess() {
+                                actionCallback.onSuccess();
+                                }
+
+                                @Override
+                                public void onFailed(String errorMessage) {
+                                    actionCallback.onSuccess();
+
+                                }
+                            });
+
+
+                    }
+                });
+
+    }
 
     public static void addToBookmark(String authorId, String libraryId, String tutorialId,String folderId,String pageId,String type, ActionCallback actionCallback) {
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
@@ -1753,6 +2761,8 @@ public class GlobalConfig {
     }
 
 
+
+
     /*
         static HashMap<String,Double> getStarMap(int fiveStar,int fourStar, int threeStar, int twoStar, int oneStar){
         HashMap<String,Double> starHashMap = new HashMap<>();
@@ -1825,7 +2835,7 @@ public class GlobalConfig {
 
     }
 
-    interface OnDocumentExistStatusCallback{
+    public interface OnDocumentExistStatusCallback{
 
         void onExist();
         void onNotExist();
@@ -1833,14 +2843,14 @@ public class GlobalConfig {
 
     }
 
-public interface ActionCallback{
-        void onSuccess();
-        void onFailed(String errorMessage);
-}
-interface OnCurrentUserProfileFetchListener{
-        void onSuccess(CurrentUserProfileDataModel currentUserProfileDataModel);
-        void onFailed(String errorMessage);
-}
+    public interface ActionCallback{
+            void onSuccess();
+            void onFailed(String errorMessage);
+    }
+    interface OnCurrentUserProfileFetchListener{
+            void onSuccess(CurrentUserProfileDataModel currentUserProfileDataModel);
+            void onFailed(String errorMessage);
+    }
 //public static void setOnCurrentUserProfileFetchListener(OnCurrentUserProfileFetchListener onCurrentUserProfileFetchListener){
 //    onCurrentUserProfileFetchListener = GlobalConfig.onCurrentUserProfileFetchListener ;
 //}

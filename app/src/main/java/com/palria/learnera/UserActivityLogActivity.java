@@ -270,6 +270,7 @@ fetchLogs(new OnLogFetchListener() {
         GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY)
                 .document(GlobalConfig.getCurrentUserId())
                 .collection(GlobalConfig.USER_ACTIVITY_LOG_KEY)
+                .limit(20L)
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override

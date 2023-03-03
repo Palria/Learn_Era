@@ -94,6 +94,8 @@ try {
             public void onClick(View view) {
                 Intent intent = new Intent(context, TutorialActivity.class);
                 intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY, tutorialDataModel.getTutorialId());
+                intent.putExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY, tutorialDataModel.getLibraryId());
+                intent.putExtra(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY, tutorialDataModel.getAuthorId());
                 intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY,false);
                 intent.putExtra(GlobalConfig.TUTORIAL_DATA_MODEL_KEY,tutorialDataModel);
                 context.startActivity(intent);

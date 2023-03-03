@@ -29,7 +29,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.palria.learnera.models.*;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
@@ -46,12 +48,15 @@ import jp.wasabeef.glide.transformations.BitmapTransformation;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
 public class LibraryActivity extends AppCompatActivity implements Serializable {
+
+
 boolean isFirstView = true;
 String libraryId;
 String authorId;
 String authorName;
 String authorProfilePhotoDownloadUrl;
 AlertDialog alertDialog;
+FrameLayout mainLayout;
 FrameLayout tutorialsFrameLayout;
 FrameLayout ratingsFrameLayout;
 FrameLayout booksFrameLayout;
@@ -69,6 +74,7 @@ Button saveActionButton;
 Button rateActionButton;
 int[] ratings = {0,0,0,0,0};
 ImageButton backButton;
+ImageButton editLibraryActionButton;
 
 TextView dateCreated;
 ChipGroup categoriesChipGroup;
@@ -87,8 +93,9 @@ LibraryDataModel intentLibraryDataModel;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
-        initUI();
         fetchIntentData();
+        initUI();
+
         toggleProgress(true);
 if(!authorId.equals(GlobalConfig.getCurrentUserId())){
     //this user is not the owner of this library, so hide some widgets to limit access
@@ -252,46 +259,222 @@ if(isFirstView) {
 
             }
         });
+        authorPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(GlobalConfig.getHostActivityIntent(getApplicationContext(),null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY,authorId));
+
+            }
+        });
+        authorNameView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(GlobalConfig.getHostActivityIntent(getApplicationContext(),null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY,authorId));
+
+            }
+        });
 
         rateActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ratingBottomSheetWidget.show();
+                rateActionButton.setEnabled(false);
+                DocumentReference authorReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                        .document(libraryId).collection(GlobalConfig.REVIEWS_KEY)
+                        .document(GlobalConfig.getCurrentUserId());
+                Snackbar snackbar = GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Initializing rating details...", Snackbar.LENGTH_INDEFINITE);
+                //Check if he has already rated this library, else if not rated then rate but if rated edit the rating
+                GlobalConfig.checkIfDocumentExists(authorReviewDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+                    @Override
+                    public void onExist() {
+                        rateActionButton.setEnabled(true);
+
+                        snackbar.dismiss();
+
+                        new AlertDialog.Builder(LibraryActivity.this)
+                                .setTitle("Library already reviewed!")
+                                .setMessage("Chose what to do with the already reviewed library:")
+                                .setCancelable(true)
+                                .setPositiveButton("Edit review", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                        ratingBottomSheetWidget.render(mainLayout,true).show();
+
+                                    }
+                                })
+                                .setNegativeButton("Delete review", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Snackbar deleteReviewSnackBar = GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Deleting review...", Snackbar.LENGTH_INDEFINITE);
+
+                                        GlobalConfig.removeLibraryReview(libraryId, new GlobalConfig.ActionCallback() {
+                                            @Override
+                                            public void onSuccess() {
+                                                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_DELETE_LIBRARY_REVIEW_TYPE_KEY, authorId, null, null, null, null, GlobalConfig.getCurrentUserId(), new GlobalConfig.ActionCallback() {
+                                                    @Override
+                                                    public void onSuccess() {
+                                                        deleteReviewSnackBar.dismiss();
+                                                        GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Review Deleted!", Snackbar.LENGTH_SHORT);
+
+                                                        rateActionButton.setTextColor(getResources().getColor(R.color.black_overlay,getTheme()));
+                                                        rateActionButton.setText("Rate");
+
+                                                    }
+
+                                                    @Override
+                                                    public void onFailed(String errorMessage) {
+                                                        deleteReviewSnackBar.dismiss();
+                                                        GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Review Deleted!", Snackbar.LENGTH_SHORT);
+
+                                                        rateActionButton.setTextColor(getResources().getColor(R.color.black_overlay,getTheme()));
+                                                        rateActionButton.setText("Rate");
+
+
+                                                    }
+                                                });
+
+                                            }
+
+                                            @Override
+                                            public void onFailed(String errorMessage) {
+                                                deleteReviewSnackBar.dismiss();
+                                                GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Review failed to delete!", Snackbar.LENGTH_SHORT);
+
+                                            }
+                                        });
+                                    }
+                                })
+                                .show();
+                    }
+
+                    @Override
+                    public void onNotExist() {
+                        rateActionButton.setEnabled(true);
+
+                        snackbar.dismiss();
+
+                        ratingBottomSheetWidget.render(mainLayout,false).show();
+
+                    }
+
+                    @Override
+                    public void onFailed(@NonNull String errorMessage) {
+                        rateActionButton.setEnabled(true);
+
+                        snackbar.dismiss();
+                        GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Failed to initialize rating", Snackbar.LENGTH_SHORT);
+
+
+                    }
+                });
             }
         });
 
         saveActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new AlertDialog.Builder(LibraryActivity.this)
-                        .setTitle("Add this to bookmark?")
-                        .setMessage("when you save to bookmark you are able to view it in your bookmarked" +
-                                "ks for future.")
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                GlobalConfig.addToBookmark(authorId, libraryId, null, null,null,GlobalConfig.LIBRARY_TYPE_KEY, new GlobalConfig.ActionCallback() {
+                Snackbar saveSnackBar = GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Initializing bookmark please wait...", Snackbar.LENGTH_INDEFINITE);
+                saveActionButton.setEnabled(false);
+                //CHECK IF THE CURRENT USER HAS ALREADY SAVED THIS LIBRARY, IF SO DO STH
+                DocumentReference bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(GlobalConfig.getCurrentUserId())
+                        .collection(GlobalConfig.BOOK_MARKS_KEY).document(libraryId);
+                GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+                    @Override
+                    public void onExist() {
+                        saveSnackBar.dismiss();
+                        saveActionButton.setEnabled(true);
+
+                        new AlertDialog.Builder(LibraryActivity.this)
+                                .setTitle("Remove this  bookmark?")
+                                .setMessage("You have already added this library to your bookmarks")
+                                .setCancelable(false)
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                     @Override
-                                    public void onSuccess() {
-                                        Toast.makeText(LibraryActivity.this, "bookmarked", Toast.LENGTH_SHORT).show();
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Snackbar snackBar = GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Removing from bookmark...", Snackbar.LENGTH_INDEFINITE);
 
+                                        GlobalConfig.removeBookmark(authorId, libraryId, null, null,null,GlobalConfig.LIBRARY_TYPE_KEY, new GlobalConfig.ActionCallback() {
+                                            @Override
+                                            public void onSuccess() {
+                                                Toast.makeText(LibraryActivity.this, "bookmark removed", Toast.LENGTH_SHORT).show();
+                                                snackBar.dismiss();
+                                                GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Bookmark removed!", Snackbar.LENGTH_SHORT);
+                                                saveActionButton.setText(R.string.save);
+                                            }
+
+                                            @Override
+                                            public void onFailed(String errorMessage) {
+                                                Toast.makeText(LibraryActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                                snackBar.dismiss();
+                                                GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Failed to remove from bookmark please try again!", Snackbar.LENGTH_SHORT);
+                                            }
+                                        });
                                     }
-
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                     @Override
-                                    public void onFailed(String errorMessage) {
-                                        Toast.makeText(LibraryActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Toast.makeText(LibraryActivity.this, "undo remove bookmark.", Toast.LENGTH_SHORT).show();
                                     }
-                                });
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Toast.makeText(LibraryActivity.this, "cancelled bookmark.", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .show();
+                                })
+                                .show();
+                    }
+
+                    @Override
+                    public void onNotExist() {
+                        saveSnackBar.dismiss();
+                        saveActionButton.setEnabled(true);
+
+                        new AlertDialog.Builder(LibraryActivity.this)
+                                .setTitle("Add this to bookmark?")
+                                .setMessage("when you save to bookmark you are able to view it in your bookmarked")
+                                .setCancelable(false)
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Snackbar snackBar = GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Adding to bookmark...", Snackbar.LENGTH_INDEFINITE);
+
+                                        GlobalConfig.addToBookmark(authorId, libraryId, null, null,null,GlobalConfig.LIBRARY_TYPE_KEY, new GlobalConfig.ActionCallback() {
+                                            @Override
+                                            public void onSuccess() {
+//                                                Toast.makeText(LibraryActivity.this, "bookmark added", Toast.LENGTH_SHORT).show();
+                                                snackBar.dismiss();
+                                                GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Bookmark added!", Snackbar.LENGTH_SHORT);
+                                                saveActionButton.setText(R.string.un_save);
+
+                                            }
+
+                                            @Override
+                                            public void onFailed(String errorMessage) {
+                                                Toast.makeText(LibraryActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                                snackBar.dismiss();
+                                                GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Failed to add to bookmark please try again!", Snackbar.LENGTH_SHORT);
+                                            }
+                                        });
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Toast.makeText(LibraryActivity.this, "cancelled bookmark.", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .show();
+                    }
+
+                    @Override
+                    public void onFailed(@NonNull String errorMessage) {
+                        saveSnackBar.dismiss();
+                        GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,"Failed to Fetch bookmark details please try again", Snackbar.LENGTH_SHORT);
+                        saveActionButton.setEnabled(true);
+
+                    }
+                });
+
+
             }
         });
 
@@ -301,31 +484,99 @@ if(isFirstView) {
                 LibraryActivity.this.onBackPressed();
             }
         });
+        editLibraryActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),CreateNewLibraryActivity.class);
+                intent.putExtra(GlobalConfig.IS_CREATE_NEW_LIBRARY_KEY,false);
+                intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+                startActivity(intent);
+
+
+            }
+        });
 
         openAllTutorialFragment();
 
+        //CHECK IF THE CURRENT USER HAS ALREADY SAVED THIS LIBRARY, IF SO DO STH
+        DocumentReference bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_USERS_KEY)
+                .document(GlobalConfig.getCurrentUserId())
+                .collection(GlobalConfig.BOOK_MARKS_KEY).document(libraryId);
+        GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+            @Override
+            public void onExist() {
+                saveActionButton.setTextColor(getResources().getColor(R.color.teal_700,getTheme()));
+                saveActionButton.setText(R.string.un_save);
 
-        ratingBottomSheetWidget= new RatingBottomSheetWidget(this, authorId, libraryId,  null,false, true,false);
+            }
+
+            @Override
+            public void onNotExist() {
+
+            }
+
+            @Override
+            public void onFailed(@NonNull String errorMessage) {
+
+            }
+        });
+
+
+        //CHECK IF THE CURRENT USER HAS ALREADY RATED THIS LIBRARY, IF SO DO STH
+        DocumentReference authorReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                .document(libraryId).collection(GlobalConfig.REVIEWS_KEY)
+                .document(GlobalConfig.getCurrentUserId());
+        GlobalConfig.checkIfDocumentExists(authorReviewDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+            @Override
+            public void onExist() {
+                rateActionButton.setTextColor(getResources().getColor(R.color.teal_700,getTheme()));
+                rateActionButton.setText("Rated");
+
+            }
+
+            @Override
+            public void onNotExist() {
+
+            }
+
+            @Override
+            public void onFailed(@NonNull String errorMessage) {
+
+            }
+        });
+
+        ratingBottomSheetWidget= new RatingBottomSheetWidget(this, authorId, libraryId,  null,false, true,false){
+
+        };
         ratingBottomSheetWidget.setRatingPostListener(new RatingBottomSheetWidget.OnRatingPosted(){
 
             @Override
             public void onPost(int star, String message) {
-                Toast.makeText(LibraryActivity.this,star + "-"+ message, Toast.LENGTH_SHORT).show();
+                super.onPost(star,message);
+//                Toast.makeText(LibraryActivity.this,star + "-"+ message, Toast.LENGTH_SHORT).show();
 
             }
 
             @Override
             public  void onFailed(String errorMessage){
-                Toast.makeText(LibraryActivity.this,"failed", Toast.LENGTH_SHORT).show();
+                super.onFailed(errorMessage);
+
+//                Toast.makeText(LibraryActivity.this,"failed", Toast.LENGTH_SHORT).show();
 
             }
 
             @Override
             public void onSuccess(boolean isReviewAuthor,boolean isReviewLibrary,boolean isReviewTutorial){
-                Toast.makeText(LibraryActivity.this,"You rated this library", Toast.LENGTH_SHORT).show();
+                super.onSuccess(isReviewAuthor,isReviewLibrary,isReviewTutorial);
+//                Toast.makeText(LibraryActivity.this,"You rated this library", Toast.LENGTH_SHORT).show();
+
+                rateActionButton.setTextColor(getResources().getColor(R.color.teal_700,getTheme()));
+                rateActionButton.setText("Rated");
 
             }
-        }).render();
+        });
 
     }
 
@@ -348,6 +599,7 @@ if(isFirstView) {
     private void initUI(){
 
 
+        mainLayout=findViewById(R.id.mainLayout);
         tutorialsFrameLayout=findViewById(R.id.tutorialsFrameLayout);
         booksFrameLayout=findViewById(R.id.booksFrameLayout);
         ratingsFrameLayout=findViewById(R.id.booksFrameLayout);
@@ -365,6 +617,7 @@ if(isFirstView) {
         rateActionButton=findViewById(R.id.rateActionButton);
 
         backButton=findViewById(R.id.backButton);
+        editLibraryActionButton=findViewById(R.id.editLibraryActionButtonId);
         dateCreated=findViewById(R.id.dateCreated);
         categoriesChipGroup=findViewById(R.id.categoriesChipGroup);
 
@@ -409,6 +662,10 @@ if(isFirstView) {
 //                    }
 //                },0)
                 .render();
+        if(!authorId.equals(GlobalConfig.getCurrentUserId())) {
+            addActionButton.setVisibility(View.GONE);
+            editLibraryActionButton.setVisibility(View.GONE);
+        }
 
 
 }
@@ -442,9 +699,10 @@ if(isFirstView) {
         libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
         authorId = intent.getStringExtra(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
         isFirstView = intent.getBooleanExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
-
-        intentLibraryDataModel = (LibraryDataModel) intent.getSerializableExtra(GlobalConfig.LIBRARY_DATA_MODEL_KEY);
-        intentLibraryDocumentSnapshot = intentLibraryDataModel.getLibraryDocumentSnapshot();
+if(!isFirstView) {
+    intentLibraryDataModel = (LibraryDataModel) intent.getSerializableExtra(GlobalConfig.LIBRARY_DATA_MODEL_KEY);
+    intentLibraryDocumentSnapshot = intentLibraryDataModel.getLibraryDocumentSnapshot();
+}
 
     }
 

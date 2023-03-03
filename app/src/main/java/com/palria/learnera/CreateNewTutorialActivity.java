@@ -159,15 +159,26 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
 
         }else{
             //User is editing his tutorial
+            if(getSupportActionBar()!=null) {
+                getSupportActionBar().setTitle("Edit Tutorial");
+            }
+            toggleProgress(true);
             initializeTutorialProfile(new ProfileInitializationListener() {
                 @Override
-                public void onSuccess(String tutorialName, String tutorialDescription, String retrievedCoverPhotoDownloadUrl, boolean isTutorialCoverPhotoIncluded) {
+                public void onSuccess(String tutorialName, String tutorialDescription, String tutorialCategory, String retrievedCoverPhotoDownloadUrl, boolean isTutorialCoverPhotoIncluded) {
 
                     tutorialNameEditText.setText(tutorialName);
                     tutorialDescriptionEditText.setText(tutorialDescription);
+                    chooseCategoryTextView.setText(tutorialCategory);
                     CreateNewTutorialActivity.this.isTutorialCoverPhotoIncluded = isTutorialCoverPhotoIncluded;
-
+                    if(isTutorialCoverPhotoIncluded){
+                        Glide.with(CreateNewTutorialActivity.this)
+                                .load(retrievedCoverPhotoDownloadUrl)
+                                .centerCrop()
+                                .into(pickImageActionButton);
+                    }
                     //start implementations from here
+                    toggleProgress(false);
 
 
                 }
@@ -175,9 +186,12 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                 @Override
                 public void onFailed(String errorMessage) {
                     //Inform the user of the failure and suggest possible solutions or try reload else exit
+                    toggleProgress(false);
 
                 }
             });
+            createTutorialActionButton.setText("Edit");
+            setTitle("Edit Tutorial");
         }
 
         openGalleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -477,9 +491,11 @@ toggleProgress(false);
 
                 // Initialize alert dialog
                 MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(CreateNewTutorialActivity.this);
-
+                if(categoryArrayList.isEmpty()){
+                    getLibraryInfo();
+                }
                 // set title
-                builder.setTitle("Select categories for tutorial.");
+                builder.setTitle("Select category for this tutorial.");
 
                 // set dialog non cancelable
                 builder.setCancelable(true);
@@ -630,16 +646,19 @@ toggleProgress(false);
         isCreateNewTutorial = intent.getBooleanExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY,false);
         if(!isCreateNewTutorial){
             tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
+            libraryNameView.setText("Edit your tutorial");
 
         }else{
             if(intent.getSerializableExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY) != null) {
                 categoryArrayList = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
-            }
-        }
 
-        selectedLibraryName=intent.getStringExtra(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
-        libraryNameView.setText("Creating new tutorial in : "+ Html.fromHtml("<b>"+selectedLibraryName+" </b>"));
-        libraryContainerId = intent.getStringExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
+            }
+
+            selectedLibraryName=intent.getStringExtra(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
+            libraryNameView.setText("Creating new tutorial in : "+ Html.fromHtml("<b>"+selectedLibraryName+" </b>"));
+
+        }
+ libraryContainerId = intent.getStringExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
 //        tutorialCategory = intent.getStringExtra(GlobalConfig.TUTORIAL_CATEGORY_KEY);
     }
 
@@ -871,6 +890,7 @@ toggleProgress(false);
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         String tutorialName = documentSnapshot.getString(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
                         String tutorialDescription = documentSnapshot.getString(GlobalConfig.TUTORIAL_DESCRIPTION_KEY);
+                        String tutorialCategory = documentSnapshot.getString(GlobalConfig.TUTORIAL_CATEGORY_KEY);
                         retrievedCoverPhotoDownloadUrl = documentSnapshot.getString(GlobalConfig.TUTORIAL_COVER_PHOTO_DOWNLOAD_URL_KEY);
                         retrievedCoverPhotoStorageReference = documentSnapshot.getString(GlobalConfig.TUTORIAL_COVER_PHOTO_STORAGE_REFERENCE_KEY);
                         boolean isTutorialCoverPhotoIncluded = false;
@@ -878,11 +898,11 @@ toggleProgress(false);
                             isTutorialCoverPhotoIncluded = documentSnapshot.getBoolean(GlobalConfig.IS_TUTORIAL_COVER_PHOTO_INCLUDED_KEY);
                         }
 
-                        profileInitializationListener.onSuccess( tutorialName, tutorialDescription  , retrievedCoverPhotoDownloadUrl,  isTutorialCoverPhotoIncluded);
+                        profileInitializationListener.onSuccess( tutorialName, tutorialDescription  ,tutorialCategory  , retrievedCoverPhotoDownloadUrl,  isTutorialCoverPhotoIncluded);
 
                     }
                 });
-
+                getLibraryInfo();
     }
 
     private void gotoNewlyCreatedTutorial(){
@@ -894,13 +914,32 @@ toggleProgress(false);
         startActivity(intent);
     }
 
+    void getLibraryInfo(){
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_LIBRARY_KEY)
+                .document(libraryContainerId)
+                .get()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        categoryArrayList = (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
+
+                    }
+                });
+    }
+
     interface CoverPhotoUploadListener{
         void onSuccess(String coverPhotoDownloadUrl,String coverPhotoStorageReference);
         void onFailed(String errorMessage);
 
     }
     interface ProfileInitializationListener{
-        void onSuccess(String tutorialName,String tutorialDescription  ,String retrievedCoverPhotoDownloadUrl, boolean isTutorialCoverPhotoIncluded);
+        void onSuccess(String tutorialName,String tutorialDescription  ,String tutorialCategory  ,String retrievedCoverPhotoDownloadUrl, boolean isTutorialCoverPhotoIncluded);
         void onFailed(String errorMessage);
 
     }

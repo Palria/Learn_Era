@@ -1,13 +1,16 @@
 package com.palria.learnera;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,9 +19,16 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 import com.palria.learnera.models.FolderDataModel;
+import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
+
+import java.util.HashMap;
 
 public class TutorialFolderActivity extends AppCompatActivity {
 String authorId = "";
@@ -34,6 +44,7 @@ TextView authorName;
 TextView libraryName;
 TextView folderViewCount;
 TextView pagesCount;
+Button editFolderActionButton;
 LEBottomSheetDialog leBottomSheetDialog;
 ExtendedFloatingActionButton floatingActionButton;
 MaterialToolbar toolbar;
@@ -44,7 +55,7 @@ FolderDataModel intentFolderDataModel;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial_folder);
         fetchIntentData();
-        iniUI();
+        initUI();
         folderNameView.setText(folderName);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,9 +86,10 @@ FolderDataModel intentFolderDataModel;
         }
         openAllPageFragment();
 
+
     }
 
-    private void iniUI(){
+    private void initUI(){
         toolbar=findViewById(R.id.topBar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -95,8 +107,9 @@ FolderDataModel intentFolderDataModel;
 
          leBottomSheetDialog=new LEBottomSheetDialog(this);
          //if author id equal current logged in user
+//        Snackbar saveSnackBar = GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,authorId +" id ", Snackbar.LENGTH_INDEFINITE);
 
-//        if(authorId.equals(GlobalConfig.getCurrentUserId())) {
+        if(authorId.equals(GlobalConfig.getCurrentUserId())) {
 //            leBottomSheetDialog.addOptionItem("Edit Folder", R.drawable.ic_baseline_edit_24,
 //                    new View.OnClickListener() {
 //                        @Override
@@ -109,7 +122,7 @@ FolderDataModel intentFolderDataModel;
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
+                            leBottomSheetDialog.hide();
                             Intent intent = new Intent(TutorialFolderActivity.this,UploadPageActivity.class);
                             intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderId);
                             intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
@@ -118,26 +131,146 @@ FolderDataModel intentFolderDataModel;
                             startActivity(intent);
                         }
                     }, 0);
-//        }
-        leBottomSheetDialog.addOptionItem("Add to Bookmark", R.drawable.ic_baseline_bookmarks_24,
+      leBottomSheetDialog.addOptionItem("Edit folder", R.drawable.ic_baseline_edit_24,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            leBottomSheetDialog.hide();
+
+                            new BottomSheetFormBuilderWidget(TutorialFolderActivity.this)
+                                    .setTitle("Edit your folder")
+                                    .setPositiveTitle("Edit")
+                                    .addInputField(new BottomSheetFormBuilderWidget.EditTextInput(TutorialFolderActivity.this)
+                                            .setHint(folderNameView.getText()+"")
+                                            .autoFocus())
+                                    .setOnSubmit(new BottomSheetFormBuilderWidget.OnSubmitHandler() {
+                                        @Override
+                                        public void onSubmit(String[] values) {
+                                            super.onSubmit(values);
+
+                                            Toast.makeText(TutorialFolderActivity.this, values[0], Toast.LENGTH_SHORT).show();
+                                            //values will be returned as array of strings as per input list position
+                                            //eg first added input has first value
+                                            String folderName = values[0];
+                                            if (folderName.trim().equals("")) {
+//                                           leBottomSheetDialog.setTitle("Folder needs name, must enter name for the folder");
+
+//                                           Toast.makeText(TutorialActivity.this, "Please enter name",Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                editFolder(folderName);
+//                                           leBottomSheetDialog.setTitle("Creating "+values[0]+" folder in progress...");
+//                                           leBottomSheetDialog.hide();
+                                            }
+                                            //create folder process here
+                                        }
+                                    })
+                                    .render()
+                                    .show();
+                        }
+                    }, 0);
+        }
+        leBottomSheetDialog.addOptionItem("Bookmark", R.drawable.ic_baseline_bookmarks_24,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(TutorialFolderActivity.this, "adding to bookmark", Toast.LENGTH_SHORT).show();
+                        Snackbar saveSnackBar = GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Fetching bookmark details...", Snackbar.LENGTH_INDEFINITE);
 
-                        GlobalConfig.addToBookmark(authorId, libraryId, tutorialId, folderId,null,GlobalConfig.FOLDER_TYPE_KEY, new GlobalConfig.ActionCallback() {
+
+
+                        //CHECK IF THE CURRENT USER HAS ALREADY SAVED THIS FOLDER, IF SO DO STH
+                        DocumentReference bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                                .collection(GlobalConfig.ALL_USERS_KEY)
+                                .document(GlobalConfig.getCurrentUserId())
+                                .collection(GlobalConfig.BOOK_MARKS_KEY).document(folderId);
+                        GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                             @Override
-                            public void onSuccess() {
-                                Toast.makeText(TutorialFolderActivity.this, "bookmarked", Toast.LENGTH_SHORT).show();
+                            public void onExist() {
+                                saveSnackBar.dismiss();
 
+                                new AlertDialog.Builder(TutorialFolderActivity.this)
+                                        .setTitle("Remove this  bookmark?")
+                                        .setMessage("You have already added this folder to your bookmarks")
+                                        .setCancelable(false)
+                                        .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                Snackbar snackBar = GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Removing from bookmark...", Snackbar.LENGTH_INDEFINITE);
+
+                                                GlobalConfig.removeBookmark(authorId, libraryId, tutorialId, folderId,null,GlobalConfig.FOLDER_TYPE_KEY, new GlobalConfig.ActionCallback() {
+                                                    @Override
+                                                    public void onSuccess() {
+//                                                Toast.makeText(TutorialActivity.this, "bookmark removed", Toast.LENGTH_SHORT).show();
+                                                        snackBar.dismiss();
+                                                        GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Bookmark removed!", Snackbar.LENGTH_SHORT);
+                                                    }
+
+                                                    @Override
+                                                    public void onFailed(String errorMessage) {
+//                                                Toast.makeText(TutorialActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                                        snackBar.dismiss();
+                                                        GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Failed to remove from bookmark please try again!", Snackbar.LENGTH_SHORT);
+                                                    }
+                                                });
+                                            }
+                                        })
+                                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                Toast.makeText(TutorialFolderActivity.this, "undo remove bookmark.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .show();
                             }
 
                             @Override
-                            public void onFailed(String errorMessage) {
-                                Toast.makeText(TutorialFolderActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                            public void onNotExist() {
+                                saveSnackBar.dismiss();
+
+                                new AlertDialog.Builder(TutorialFolderActivity.this)
+                                        .setTitle("Add this to bookmark?")
+                                        .setMessage("when you save to bookmark you are able to view it in your bookmarked tab")
+                                        .setCancelable(false)
+                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                Snackbar snackBar = GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Adding to bookmark...", Snackbar.LENGTH_INDEFINITE);
+
+                                                GlobalConfig.addToBookmark(authorId, libraryId, tutorialId, folderId,null,GlobalConfig.FOLDER_TYPE_KEY, new GlobalConfig.ActionCallback() {
+                                                    @Override
+                                                    public void onSuccess() {
+//                                                Toast.makeText(LibraryActivity.this, "bookmark added", Toast.LENGTH_SHORT).show();
+                                                        snackBar.dismiss();
+                                                        GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Bookmark added!", Snackbar.LENGTH_SHORT);
+
+                                                    }
+
+                                                    @Override
+                                                    public void onFailed(String errorMessage) {
+//                                                Toast.makeText(TutorialActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                                        snackBar.dismiss();
+                                                        GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Failed to add to bookmark please try again!", Snackbar.LENGTH_SHORT);
+                                                    }
+                                                });
+                                            }
+                                        })
+                                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                Toast.makeText(TutorialFolderActivity.this, "cancelled bookmark.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .show();
+                            }
+
+                            @Override
+                            public void onFailed(@NonNull String errorMessage) {
+                                saveSnackBar.dismiss();
+                                GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Failed to Fetch bookmark details please try again", Snackbar.LENGTH_SHORT);
 
                             }
                         });
+
+
                         leBottomSheetDialog.hide();
 
                     }
@@ -212,7 +345,52 @@ FolderDataModel intentFolderDataModel;
                 .replace(pagesFrameLayout.getId(),pagesFragment)
                 .commit();
     }
+    private void editFolder(final String folderName) {
+        Snackbar editSnackBar = GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Editing folder, please wait...", Snackbar.LENGTH_INDEFINITE);
 
+        String folderId = GlobalConfig.getRandomString(50);
+        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+        DocumentReference documentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                .document(tutorialId)
+                .collection(GlobalConfig.ALL_FOLDERS_KEY)
+                .document(folderId);
+
+        HashMap<String, Object> folderDetails = new HashMap<>();
+        folderDetails.put(GlobalConfig.FOLDER_NAME_KEY, folderName);
+        writeBatch.update(documentReference,folderDetails);
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        editSnackBar.dismiss();
+                        GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Failed to edit your folder", Snackbar.LENGTH_SHORT);
+
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_FOLDER_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, null, null, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+                                editSnackBar.dismiss();
+                                GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Folder successfully edited", Snackbar.LENGTH_SHORT);
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                editSnackBar.dismiss();
+                                GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Folder successfully edited", Snackbar.LENGTH_SHORT);
+
+                            }
+                        });
+
+                    }
+                });
+    }
     public interface OnFolderFetchListener{
         void onSuccess(FolderDataModel folderDataModel);
         void onFailed(String errorMessage);

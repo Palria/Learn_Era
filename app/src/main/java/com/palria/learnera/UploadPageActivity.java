@@ -40,6 +40,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -82,6 +83,7 @@ public class UploadPageActivity extends AppCompatActivity {
      *
      */
     AlertDialog alertDialog;
+    Snackbar pageCreationSnackBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,7 +93,40 @@ public class UploadPageActivity extends AppCompatActivity {
         initUI();
         fetchIntentData();
         pageId = GlobalConfig.getRandomString(60);
+        UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
+            @Override
+            public void onNewPage(String pageId) {
+                Toast.makeText(getApplicationContext(), "New page id: "+ pageId, Toast.LENGTH_SHORT).show();
+            }
 
+            @Override
+            public void onFailed(String pageId) {
+//                Toast.makeText(getApplicationContext(), "page upload failed: "+ pageId, Toast.LENGTH_SHORT).show();
+                toggleProgress(false);
+                if(pageCreationSnackBar!=null) {
+                    pageCreationSnackBar.setText(pageTitle + " page Failed to create").setDuration(Snackbar.LENGTH_SHORT);
+                }
+
+            }
+
+            @Override
+            public void onProgress(String pageId, int progressCount) {
+                Toast.makeText(getApplicationContext(), progressCount+" page progressing: "+ pageId, Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onSuccess(String pageId) {
+                Toast.makeText(getApplicationContext(), "New page upload succeeded: "+ pageId, Toast.LENGTH_SHORT).show();
+                toggleProgress(false);
+                GlobalHelpers.showAlertMessage("success",
+                        UploadPageActivity.this,
+                        "Page created successfully",
+                        "You have successfully created your page, go ahead and contribute to Learn Era ");
+
+
+            }
+        });
         openGalleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
 
             @Override
@@ -584,40 +619,13 @@ void addTableEditTextCell(LinearLayout rowLinearLayout){
 }
 
 void postPage(){
-        toggleProgress(true);
-preparePage();
+    pageId = GlobalConfig.getRandomString(60);
+    pageCreationSnackBar = GlobalConfig.createSnackBar(this,containerLinearLayout,"Creating "+pageTitleEditText.getText()+" page",Snackbar.LENGTH_INDEFINITE);
 
-    UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
-        @Override
-        public void onNewPage(String pageId) {
-            Toast.makeText(getApplicationContext(), "New page id: "+ pageId, Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onFailed(String pageId) {
-            Toast.makeText(getApplicationContext(), "page upload failed: "+ pageId, Toast.LENGTH_SHORT).show();
-            toggleProgress(false);
-
-        }
-
-        @Override
-        public void onProgress(String pageId, int progressCount) {
-            Toast.makeText(getApplicationContext(), progressCount+" page progressing: "+ pageId, Toast.LENGTH_SHORT).show();
-
-        }
-
-        @Override
-        public void onSuccess(String pageId) {
-            Toast.makeText(getApplicationContext(), "New page upload succeeded: "+ pageId, Toast.LENGTH_SHORT).show();
-            toggleProgress(false);
-            GlobalHelpers.showAlertMessage("success",
-                    UploadPageActivity.this,
-                    "Page created successfully",
-                    "You have successfully created your page, go ahead and contribute to Learn Era ");
+//    toggleProgress(true);
+    preparePage();
 
 
-        }
-    });
     UploadPageManagerService.setInitialVariables(pageId);
 
     ArrayList<ArrayList<String>> allPageTextDataDetailsArrayList = new ArrayList<>();

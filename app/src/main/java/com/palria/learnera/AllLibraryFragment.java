@@ -4,6 +4,7 @@ package com.palria.learnera;
 
         import androidx.annotation.NonNull;
         import androidx.cardview.widget.CardView;
+        import androidx.core.widget.NestedScrollView;
         import androidx.fragment.app.Fragment;
         import androidx.recyclerview.widget.LinearLayoutManager;
         import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +21,7 @@ package com.palria.learnera;
         import com.facebook.shimmer.ShimmerFrameLayout;
         import com.google.android.gms.tasks.OnFailureListener;
         import com.google.android.gms.tasks.OnSuccessListener;
+        import com.google.android.material.bottomappbar.BottomAppBar;
         import com.google.android.material.textfield.TextInputEditText;
         import com.google.firebase.Timestamp;
         import com.google.firebase.firestore.DocumentSnapshot;
@@ -60,9 +62,15 @@ public class AllLibraryFragment extends Fragment {
 
     boolean isFromSearchContext = false;
     String searchKeyword = "";
+    BottomAppBar bottomAppBar;
 
+    NestedScrollView parentScrollView;
     public AllLibraryFragment() {
         // Required empty public constructor
+    }
+    public AllLibraryFragment(BottomAppBar bottomAppBar) {
+        this.bottomAppBar =  bottomAppBar;
+
     }
 
     @Override
@@ -136,6 +144,24 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
 
     }
 });
+        parentScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            float y = 0;
+            @Override
+            public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+
+                if(bottomAppBar!=null) {
+                    if (oldScrollY > scrollY) {
+                        bottomAppBar.performShow();
+
+                    } else {
+                        bottomAppBar.performHide();
+
+                    }
+                }
+
+
+            }
+        });
 
 
 
@@ -159,6 +185,7 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
         libraryListRecyclerView=parentView.findViewById(R.id.libraryListRecyclerView);
         searchKeywordInput=parentView.findViewById(R.id.searchKeywordInput);
 
+        parentScrollView=parentView.findViewById(R.id.scrollView);
         shimmerFrameLayout=parentView.findViewById(R.id.shimmerLayout);
         libraryContents=parentView.findViewById(R.id.libraryContents);
         notFoundView=parentView.findViewById(R.id.notFoundView);
@@ -232,7 +259,10 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
                             String libraryDescription = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DESCRIPTION_KEY);
                             ArrayList<String> libraryCategoryArray = (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
                             String dateCreated =documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY)!=null && documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? ""+ documentSnapshot.getTimestamp(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY).toDate() :"Undefined";
-                            String authorUserId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
+                            if(dateCreated.length()>10){
+                                dateCreated = dateCreated.substring(0,10);
+                            }
+                                String authorUserId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
                             String libraryCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_COVER_PHOTO_DOWNLOAD_URL_KEY);
 
 

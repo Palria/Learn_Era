@@ -327,7 +327,7 @@ if(GlobalConfig.isUserLoggedIn()) {
                 }else {
                     isAllTutorialFragmentOpen =true;
                     setFrameLayoutVisibility(allTutorialFrameLayout);
-                    AllTutorialFragment allTutorialFragment = new AllTutorialFragment();
+                    AllTutorialFragment allTutorialFragment = new AllTutorialFragment(bottomAppBar);
                     Bundle bundle = new Bundle();
                     bundle.putString(AllTutorialFragment.OPEN_TYPE_KEY,AllTutorialFragment.OPEN_TYPE_ALL_TUTORIAL);
                     allTutorialFragment.setArguments(bundle);
@@ -343,7 +343,7 @@ if(GlobalConfig.isUserLoggedIn()) {
                     isHomeFragmentOpen =true;
 
                     setFrameLayoutVisibility(homeFrameLayout);
-                    initFragment(new HomeFragment(), homeFrameLayout);
+                    initFragment(new HomeFragment(bottomAppBar), homeFrameLayout);
                 }
                 return true;
             case R.id.library_item:
@@ -355,7 +355,7 @@ if(GlobalConfig.isUserLoggedIn()) {
                     isLibraryFragmentOpen =true;
 
                     setFrameLayoutVisibility(libraryFrameLayout);
-                   AllLibraryFragment allLibraryFragment = new AllLibraryFragment();
+                   AllLibraryFragment allLibraryFragment = new AllLibraryFragment(bottomAppBar);
                    Bundle bundle = new Bundle();
                    bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY,AllLibraryFragment.OPEN_TYPE_ALL_LIBRARY);
                    allLibraryFragment.setArguments(bundle);

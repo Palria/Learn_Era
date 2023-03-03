@@ -82,6 +82,7 @@ public class BookmarksRcvAdapter extends RecyclerView.Adapter<BookmarksRcvAdapte
                     case GlobalConfig.TUTORIAL_TYPE_KEY:
                         intent = new Intent(context, TutorialActivity.class);
                         intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY, bookmarkDataModel.getTutorialId());
+                        intent.putExtra(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY, bookmarkDataModel.getAuthorId());
                         intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
                         intent.putExtra(GlobalConfig.TUTORIAL_DATA_MODEL_KEY,new TutorialDataModel());
                         context.startActivity(intent);
