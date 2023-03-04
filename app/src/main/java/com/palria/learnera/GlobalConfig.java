@@ -61,6 +61,9 @@ public class GlobalConfig {
     private static String CURRENT_USER_ID;
     private static String CURRENT_USER_TOKEN_ID;
     static OnCurrentUserProfileFetchListener onCurrentUserProfileFetchListener;
+    private static ArrayList<String> lastViewedAuthorsIdArray = new ArrayList<>();
+    private static ArrayList<String> lastViewedLibraryIdArray = new ArrayList<>();
+    private static ArrayList<String> lastViewedTutorialsIdArray = new ArrayList<>();
     /*FIRESTORE VARIABLE KEYS
     These String keys which will be  unique in  the database
     they are used to query a particular field within a document
@@ -132,6 +135,11 @@ public class GlobalConfig {
     public static final String AUTHOR_DATE_KEY = "AUTHOR_DATE";
     public static final String AUTHOR_DATE_TIME_STAMP_KEY = "AUTHOR_DATE_TIME_STAMP";
     static final String USER_ACTIVITY_LOG_KEY = "USER_ACTIVITY_LOG";
+
+
+    static final String LAST_VIEWED_AUTHORS_ARRAY_KEY = "LAST_VIEWED_AUTHORS_ARRAY";
+    static final String LAST_VIEWED_LIBRARY_ARRAY_KEY = "LAST_VIEWED_LIBRARY_ARRAY";
+    static final String LAST_VIEWED_TUTORIALS_ARRAY_KEY = "LAST_VIEWED_TUTORIALS_ARRAY";
 
     public static final String TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY = "TOTAL_NUMBER_OF_USER_PROFILE_VISITORS";
     public static final String TOTAL_NUMBER_OF_USER_PROFILE_REACH_KEY = "TOTAL_NUMBER_OF_USER_PROFILE_REACH";
@@ -2761,6 +2769,70 @@ public class GlobalConfig {
     }
 
 
+    public static ArrayList<String> getLastViewedTutorialsArray(){
+
+           return lastViewedTutorialsIdArray;
+    }
+    public static void setLastViewedTutorialsArray(ArrayList<String> lastViewedTutorialsIdArray){
+
+            GlobalConfig.lastViewedTutorialsIdArray = lastViewedTutorialsIdArray;
+    }
+    public static void recordLastViewedTutorials(String tutorialId){
+        if(getLastViewedTutorialsArray().contains(tutorialId))return;
+        int index = new Random().nextInt(getLastViewedTutorialsArray().size());
+        ArrayList<String> lastViewedTutorialsIdList = getLastViewedTutorialsArray();
+        HashMap<String,Object> lastViewDetails = new HashMap<>();
+        if(lastViewedTutorialsIdList.size()<10){
+            index = lastViewedTutorialsIdList.size();
+        }
+        lastViewedTutorialsIdList.add(index,tutorialId);
+        lastViewDetails.put(LAST_VIEWED_LIBRARY_ARRAY_KEY,lastViewedTutorialsIdList);
+        getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).update(lastViewDetails);
+    }
+
+
+    public static ArrayList<String> getLastViewedLibraryArray(){
+
+           return lastViewedLibraryIdArray;
+    }
+    public static void setLastViewedLibraryArray(ArrayList<String> lastViewedLibraryIdArray){
+
+            GlobalConfig.lastViewedLibraryIdArray = lastViewedLibraryIdArray;
+    }
+    public static void recordLastViewedLibrary(String libraryId){
+        if(getLastViewedLibraryArray().contains(libraryId))return;
+        int index = new Random().nextInt(getLastViewedLibraryArray().size());
+        ArrayList<String> lastViewedLibraryIdList = getLastViewedLibraryArray();
+        HashMap<String,Object> lastViewDetails = new HashMap<>();
+        if(lastViewedLibraryIdList.size()<10){
+            index = lastViewedLibraryIdList.size();
+        }
+        lastViewedLibraryIdList.add(index,libraryId);
+        lastViewDetails.put(LAST_VIEWED_LIBRARY_ARRAY_KEY,lastViewedLibraryIdList);
+        getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).update(lastViewDetails);
+    }
+
+
+    public static ArrayList<String> getLastViewedAuthorsArray(){
+
+           return lastViewedAuthorsIdArray;
+    }
+    public static void setLastViewedAuthorsArray(ArrayList<String> lastViewedAuthorsIdArray){
+
+            GlobalConfig.lastViewedAuthorsIdArray = lastViewedAuthorsIdArray;
+    }
+    public static void recordLastViewedAuthors(String authorId){
+        if(getLastViewedAuthorsArray().contains(authorId))return;
+        int index = new Random().nextInt(getLastViewedAuthorsArray().size());
+        ArrayList<String> lastViewedAuthorsIdList = getLastViewedAuthorsArray();
+        HashMap<String,Object> lastViewDetails = new HashMap<>();
+        if(lastViewedAuthorsIdList.size()<10){
+            index = lastViewedAuthorsIdList.size();
+        }
+        lastViewedAuthorsIdList.add(index,authorId);
+        lastViewDetails.put(LAST_VIEWED_AUTHORS_ARRAY_KEY,lastViewedAuthorsIdList);
+        getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).update(lastViewDetails);
+    }
 
 
     /*

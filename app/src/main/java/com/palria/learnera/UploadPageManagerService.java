@@ -518,9 +518,16 @@ public class UploadPageManagerService extends Service {
     static int getPageUploadedProgress(String pageId){
         return  pageUploadProgressCounterHashMap.get(pageId);
     }
+
     static boolean isPageUploaded(String pageId){
         return  isPageUploadedHashMap.get(pageId);
     }
+
+    static ArrayList<String> getAllActivePagesIdArrayList(){
+
+        return allActivePagesIdArrayList;
+    }
+
 
     interface OnPageUploadListener{
         void onNewPage(String pageId);

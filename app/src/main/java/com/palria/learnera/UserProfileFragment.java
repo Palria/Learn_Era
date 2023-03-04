@@ -518,7 +518,7 @@ public class UserProfileFragment extends Fragment {
                         DocumentReference bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
                                 .collection(GlobalConfig.ALL_USERS_KEY)
                                 .document(GlobalConfig.getCurrentUserId())
-                                .collection(GlobalConfig.OTHER_REVIEWS_KEY).document(authorId);
+                                .collection(GlobalConfig.BOOK_MARKS_KEY).document(authorId);
                         GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                             @Override
                             public void onExist() {

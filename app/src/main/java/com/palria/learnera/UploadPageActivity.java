@@ -28,6 +28,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.ValueCallback;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -58,7 +60,6 @@ import com.palria.learnera.widgets.LEBottomSheetDialog;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-
 
 public class UploadPageActivity extends AppCompatActivity {
 
@@ -128,7 +129,7 @@ public class UploadPageActivity extends AppCompatActivity {
      ImageView action_insert_image;
         ImageView action_insert_link;
        ImageView action_insert_checkbox;
-    boolean visible = false;
+       boolean visible = false;
         ImageView preview;
         ImageView insert_latex;
         ImageView insert_code;
@@ -294,6 +295,8 @@ createTable();
                                     //if validate form reeturns error/false
                                     return;
                                 }
+                                wysiwygEditor.setHtml(html);
+
                                 Log.e("html",html);
                                 //post here (just title and page content )
                                 //postPage();
@@ -734,8 +737,13 @@ openCamera();
 
             }
         });
+//WebView w;
+//WebViewClient wc;
+//wc.
 
+//        Toast.makeText(UploadPageActivity.this,wysiwygEditor.getHtml() , Toast.LENGTH_LONG).show();
 
+       // wysiwygEditor.setHtml("\"\\u003Chtml>\\u003Chead>\\n    \\u003Cmeta name=\\\"viewport\\\" content=\\\"user-scalable=no\\\">\\n    \\u003Cmeta http-equiv=\\\"Content-Type\\\" content=\\\"text/html; charset=UTF-8\\\">\\n    \\u003Clink rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"normalize.css\\\">\\n    \\u003Clink rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"style.css\\\">\\n    \\u003Clink rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"w3.css\\\">\\n\\u003C/head>\\n\\u003Cbody>\\n\\u003Cdiv id=\\\"editor\\\" class=\\\"w3-container\\\" contenteditable=\\\"true\\\" placeholder=\\\"Insert your content here...\\\" style=\\\"height: 600px; font-size: 16px; padding: 10px;\\\">\\u003Cp>https://accounts.google.com/SignOutOptions?hl=en&amp;continue=https://myaccount.google.co\\u003Ciframe width=\\\"100%\\\" height=\\\"240px\\\" src=\\\"https://www.youtube.com/embed/VlvRfTmleDI\\\" frameborder=\\\"0\\\" allowfullscreen=\\\"\\\">\\u003C/iframe>\\u003C/p>\\u003Cp> &nbsp;\\u003C/p> \\u003Cp>&nbsp;m/%3Futm_source%3Dsign_in_no_continue%26pli%3D1\\u003C/p> \\u003Cp>&nbsp;&nbsp;\\u003C/p>\\u003C/div>\\n\\u003Cscript type=\\\"text/javascript\\\" src=\\\"wysiwyg.js\\\">\\u003C/script>\\n\\n\\u003C/body>\\u003C/html>\"");
     }
 
 
@@ -1090,11 +1098,12 @@ void addTableEditTextCell(LinearLayout rowLinearLayout){
 }
 
 void postPage(){
-    pageId = GlobalConfig.getRandomString(60);
-GlobalConfig.createSnackBar(this,containerLinearLayout,"Creating "+pageTitleEditText.getText()+" page", Snackbar.LENGTH_INDEFINITE);
 
-//        toggleProgress(true);
-preparePage();
+    pageId = GlobalConfig.getRandomString(60);
+    GlobalConfig.createSnackBar(this,containerLinearLayout,"Creating "+pageTitleEditText.getText()+" page", Snackbar.LENGTH_INDEFINITE);
+
+    //        toggleProgress(true);
+    preparePage();
 
     UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
         @Override
