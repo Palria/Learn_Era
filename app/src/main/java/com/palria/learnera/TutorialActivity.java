@@ -315,6 +315,7 @@ createTabLayout();
                                         Toast.makeText(TutorialActivity.this, "undo remove bookmark.", Toast.LENGTH_SHORT).show();
                                     }
                                 })
+
                                 .show();
                     }
 

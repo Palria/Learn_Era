@@ -45,6 +45,7 @@
                 android:value="" />
         </activity>
         <activity
+            android:windowSoftInputMode="adjustResize"
             android:name=".UploadPageActivity"
             android:exported="true"
             android:theme="@style/Theme.LearnEra" />

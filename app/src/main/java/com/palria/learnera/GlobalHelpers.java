@@ -1,7 +1,13 @@
 package com.palria.learnera;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,10 +16,17 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.common.util.IOUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GlobalHelpers {
 
@@ -127,5 +140,53 @@ public class GlobalHelpers {
         return rating_string_average;
     }
 
+//url validator
+
+    /**
+     *
+     * @param url to match/test
+     * @return boolean (true if valid url otherwise false)
+     */
+    public static boolean isValidUrl(String url) {
+        // Regular expression pattern to match URLs
+        Pattern pattern = Pattern.compile("^(http|https)://[a-z0-9]+([-.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(/.*)?$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(url);
+        return matcher.matches();
+    }
+
+    public static String uriToBase64(String link, Context context) throws IOException {
+        Uri uri = Uri.parse(link);
+        InputStream inputStream = context.getContentResolver().openInputStream(uri);
+
+        byte[] bytes = IOUtils.toByteArray(inputStream);
+
+        String base64String = Base64.encodeToString(bytes, Base64.DEFAULT);
+        return base64String;
+
+    }
+
+    public static String uriToFullPathUri(String u, Context context){
+        Uri uri = Uri.parse(u);
+
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            @SuppressLint("Range")
+            String filePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            String fileUrl = Uri.fromFile(new File(filePath)).toString();
+            cursor.close();
+            // use the fileUrl as needed
+            return filePath;
+        }
+        return null;
+    }
+
+    // Helper method to get a data URI from a Bitmap
+    public static Uri getImageUri(Context context, Bitmap bitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null);
+        return Uri.parse(path);
+    }
 
 }

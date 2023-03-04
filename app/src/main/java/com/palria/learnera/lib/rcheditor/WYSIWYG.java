@@ -392,10 +392,18 @@ public final class WYSIWYG extends WebView {
     }
 
     public final void insertImage(@NotNull String url, @NotNull String alt) {
+
         Intrinsics.checkNotNullParameter(url, "url");
         Intrinsics.checkNotNullParameter(alt, "alt");
         this.exec("javascript:editor.prepareInsert();");
         this.exec("javascript:editor.insertImage('" + url + "', '" + alt + "');");
+    }
+
+
+    public final void insertVideo(@NotNull String url) {
+        Intrinsics.checkNotNullParameter(url, "url");
+        this.exec("javascript:editor.prepareInsert();");
+        this.exec("javascript:editor.insertVideo('" + url + "')");
     }
 
     public final void insertLink(@NotNull String href, @NotNull String title) {

@@ -1,5 +1,8 @@
 var editor = {};
 
+
+
+
 editor.currentSelection = {
     "startContainer": 0,
     "startOffset": 0,
@@ -194,8 +197,28 @@ editor.setFontType = function(font) {
 }
 
 editor.insertImage = function(url, alt) {
-    var html = '<img style="width:100%;max-width:400px" src="' + url + '" alt="' + alt + '" />';
+alert(url);
+    var html = `<img style="width:100%;max-width:400px" src="${url}" alt="${alt}" />`;
     editor.insertHTML(html);
+}
+
+editor.insertVideo = function(url, alt) {
+ var html = ``;
+ let id = getYouTubeID(url);
+if(id && id.length){
+
+html = `<iframe width="100%" height="240px" src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>
+<p> &nbsp;</p> <p> &nbsp;</p>`;
+
+}else{
+html= ` <div class="video-container">
+           <video width="100%" height="240" controls>
+                 <source src="${url}">
+               </video>
+        </div> <p> &nbsp; </p> <p> &nbsp; </p>`;
+
+}
+      editor.insertHTML(html);
 }
 
 editor.insertLatex = function(latex) {
@@ -337,3 +360,13 @@ editor.editor.addEventListener("keyup", function(e) {
     }
 });
 editor.editor.addEventListener("click", editor.enabledEditingItems);
+
+
+//my function
+function getYouTubeID(url) {
+    var match = url.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})(?:(?:\?|\&)t=([\dhm]+s))?/);
+    if (match) {
+        return match[1];
+    }
+    return null;
+}

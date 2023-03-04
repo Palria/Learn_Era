@@ -6,9 +6,11 @@ import static com.google.android.exoplayer2.ExoPlayerLibraryInfo.TAG;
 import android.Manifest;
 import android.app.Service;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -48,9 +50,13 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.palria.learnera.lib.rcheditor.Utils;
 import com.palria.learnera.lib.rcheditor.WYSIWYG;
+import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
+import com.palria.learnera.widgets.LEBottomSheetDialog;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -130,6 +136,10 @@ public class UploadPageActivity extends AppCompatActivity {
        HorizontalScrollView latex_editor;
        Button submit_latex;
        EditText latex_equation;
+       ImageView action_insert_video;
+
+    LEBottomSheetDialog choosePhotoPickerModal;
+
 
 
 
@@ -148,6 +158,13 @@ public class UploadPageActivity extends AppCompatActivity {
             public void onActivityResult(ActivityResult result) {
                 if (result.getData() != null) {
                     Intent data=result.getData();
+
+                    //upload this image when uploading the page as index
+                    //insert image to
+                    wysiwygEditor.insertImage(data.getData().toString(),"-");
+
+                    return;
+
 ////                    galleryImageUri = data.getData();
 ////                        Picasso.get().load(galleryImageUri)
 ////                                .centerCrop()
@@ -156,26 +173,26 @@ public class UploadPageActivity extends AppCompatActivity {
 //                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(70,70);
 //                    partitionImage.setLayoutParams(layoutParams);
 //
-                   ImageView image = getImage();
-                    Glide.with(UploadPageActivity.this)
-                            .load(data.getData())
-                            .centerCrop()
-                            .into(image);
-                    if(containerLinearLayout.getChildCount() == (containerLinearLayout.indexOfChild(currentFocusView)+1)) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                             //   createPartition();
-
-                            }
-                        });
+//                   ImageView image = getImage();
+//                    Glide.with(UploadPageActivity.this)
+//                            .load(data.getData())
+//                            .centerCrop()
+//                            .into(image);
+//                    if(containerLinearLayout.getChildCount() == (containerLinearLayout.indexOfChild(currentFocusView)+1)) {
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                             //   createPartition();
+//
+//                            }
+//                        });
                     }
 
 //                    isLibraryCoverPhotoIncluded = true;
 //                    isLibraryCoverPhotoChanged = true;
 
 
-                }
+
             }
         });
         openCameraLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
@@ -187,7 +204,11 @@ public class UploadPageActivity extends AppCompatActivity {
                         Intent data = result.getData();
                         Bitmap  bitmapFromCamera =(Bitmap) data.getExtras().get("data");
 
+
                         if(bitmapFromCamera != null) {
+                            String imageUriString = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmapFromCamera).toString();
+                            //insert image also upload image in uploading page with indexing.
+                            wysiwygEditor.insertImage(imageUriString,"-");
 //                            cameraImageBitmap = bitmapFromCamera;
                             //coverPhotoImageView.setImageBitmap(cameraImageBitmap);
 
@@ -195,22 +216,22 @@ public class UploadPageActivity extends AppCompatActivity {
 //                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(70,70);
 //                            partitionImage.setLayoutParams(layoutParams);
 //                            receiverLinearLayout.addView(partitionImage);
-
-                            ImageView image = getImage();
-
-                            Glide.with(UploadPageActivity.this)
-                                    .load(bitmapFromCamera)
-                                    .centerCrop()
-                                    .into(image);
-                            if(containerLinearLayout.getChildCount() == (containerLinearLayout.indexOfChild(receiverLinearLayout)+1)) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                      //  createPartition();
-
-                                    }
-                                });
-                            }
+//
+//                            ImageView image = getImage();
+//
+//                            Glide.with(UploadPageActivity.this)
+//                                    .load(bitmapFromCamera)
+//                                    .centerCrop()
+//                                    .into(image);
+//                            if(containerLinearLayout.getChildCount() == (containerLinearLayout.indexOfChild(receiverLinearLayout)+1)) {
+//                                runOnUiThread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                      //  createPartition();
+//
+//                                    }
+//                                });
+//                            }
 //                            isLibraryCoverPhotoIncluded = true;
 //                            isLibraryCoverPhotoChanged = true;
                         }
@@ -329,7 +350,7 @@ createTable();
     private void loadContentEditor() {
         //load the ocntent editor here and render there thats make it easy to handle without any external codes.
         wysiwygEditor=findViewById(R.id.editor);
-        wysiwygEditor.setEditorHeight(200);
+        wysiwygEditor.setEditorHeight(600);
         wysiwygEditor.setEditorFontSize(16);
         wysiwygEditor.setPadding(10, 10, 10, 10);
         wysiwygEditor.setPlaceholder("Insert your content here...");
@@ -368,6 +389,61 @@ createTable();
          latex_editor=findViewById(R.id.latext_editor);
          submit_latex=findViewById(R.id.submit_latex);
          latex_equation=findViewById(R.id.latex_equation);
+
+        action_insert_video=findViewById(R.id.action_insert_video);
+
+
+        choosePhotoPickerModal= new LEBottomSheetDialog(UploadPageActivity.this)
+                .addOptionItem("Camera", R.drawable.ic_baseline_photo_camera_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+choosePhotoPickerModal.hide();
+openCamera();
+                    }
+                },0)
+                .addOptionItem("Gallery", R.drawable.baseline_insert_photo_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        choosePhotoPickerModal.hide();
+                        openGallery();
+                    }
+                },0)
+                .addOptionItem("URL", R.drawable.baseline_link_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        choosePhotoPickerModal.hide();
+
+                        LayoutInflater inflater = getLayoutInflater();
+                        View dialogView = inflater.inflate(R.layout.single_edit_text_layout, null);
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(UploadPageActivity.this);
+                        builder.setView(dialogView);
+                        builder.setTitle("Insert Photo from url:")
+                                .setMessage("Enter or paste photo url to insert");
+
+                        builder.setPositiveButton("Insert", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // handle OK button click
+                                EditText editText = dialogView.findViewById(R.id.edit_text);
+                                String inputText = editText.getText().toString();
+                                // do something with the input text
+                                if(GlobalHelpers.isValidUrl(inputText)){
+                                    wysiwygEditor.insertImage(inputText,"");
+                                }
+
+                            }
+                        });
+
+                        builder.setNegativeButton("Cancel", null);
+
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+
+                    }
+                },0)
+                .render();
+
 
 
         action_undo.setOnClickListener(new View.OnClickListener() {
@@ -549,10 +625,11 @@ createTable();
         action_insert_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                wysiwygEditor.insertImage(
-                        "https://i.postimg.cc/JzL891Fm/maxresdefault.jpg",
-                        "Night Sky"
-                );
+                choosePhotoPickerModal.show();
+//                wysiwygEditor.insertImage(
+//                        "https://i.postimg.cc/JzL891Fm/maxresdefault.jpg",
+//                        "Night Sky"
+//                );
             }
         });
 
@@ -588,6 +665,41 @@ createTable();
             }
         });
 
+
+        action_insert_video.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                wysiwygEditor.insertVideo("https://www.youtube.com/watch?v=ZChsMjm5-mk");
+               // wysiwygEditor.insertVideo("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4");
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.single_edit_text_layout, null);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(UploadPageActivity.this);
+                builder.setView(dialogView);
+                builder.setTitle("Insert video url:")
+                                .setMessage("enter or paste video url to insert");
+
+                builder.setPositiveButton("Insert", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // handle OK button click
+                        EditText editText = dialogView.findViewById(R.id.edit_text);
+                        String inputText = editText.getText().toString();
+                        // do something with the input text
+                        if(GlobalHelpers.isValidUrl(inputText)){
+                            wysiwygEditor.insertVideo(inputText);
+                        }
+
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", null);
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+            }
+        });
 
 
 
@@ -625,6 +737,8 @@ createTable();
 
 
     }
+
+
 
     private void fetchIntentData(){
         Intent intent = getIntent();

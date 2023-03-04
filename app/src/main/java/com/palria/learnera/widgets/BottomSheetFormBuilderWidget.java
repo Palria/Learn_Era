@@ -1,13 +1,22 @@
 package com.palria.learnera.widgets;
 
+import static android.app.PendingIntent.getActivity;
+
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Rect;
+import android.os.Bundle;
 import android.os.LocaleList;
 import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +24,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputEditText;
 import com.palria.learnera.R;
@@ -34,6 +44,8 @@ public class BottomSheetFormBuilderWidget extends BottomSheetDialog {
     ArrayList<View> inputLists=new ArrayList<>();
     private OnSubmitHandler onSubmitListener;
     View dialogView;
+    Activity activity;
+
 
 
     public BottomSheetFormBuilderWidget(@NonNull Context context) {
@@ -42,6 +54,8 @@ public class BottomSheetFormBuilderWidget extends BottomSheetDialog {
         //init parent container.
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         dialogView = (View) layoutInflater.inflate(R.layout.bottom_sheet_dialog_host_layout,null);
+
+
 
         parentLayout=dialogView.findViewById(R.id.container);
 
@@ -52,8 +66,11 @@ public class BottomSheetFormBuilderWidget extends BottomSheetDialog {
         formLayout.setOrientation(LinearLayout.VERTICAL);
 
 
+    }
 
-
+    public BottomSheetFormBuilderWidget setActivity(Activity a){
+        this.activity=a;
+        return this;
     }
 
     public BottomSheetFormBuilderWidget render(){
@@ -108,6 +125,8 @@ public class BottomSheetFormBuilderWidget extends BottomSheetDialog {
       parentLayout.addView(positiveButton);
 
       setContentView(dialogView);
+
+
 
         return this;
     }
@@ -187,8 +206,10 @@ public class BottomSheetFormBuilderWidget extends BottomSheetDialog {
         }
     }
 
+
     interface onSubmit{
         void onSubmit(String[] values);
     }
+
 
 }
