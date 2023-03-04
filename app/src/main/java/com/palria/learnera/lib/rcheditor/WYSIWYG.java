@@ -26,6 +26,8 @@ import kotlin.jvm.internal.Intrinsics;
 import kotlin.jvm.internal.StringCompanionObject;
 import kotlin.text.Regex;
 import kotlin.text.StringsKt;
+
+import org.apache.commons.text.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -171,7 +173,7 @@ public final class WYSIWYG extends WebView {
         if (contents == null) {
             contents = "";
         }
-
+        contents = StringEscapeUtils.unescapeJava(contents);
         try {
             this.exec("javascript:editor.setHtml('" + URLEncoder.encode(contents, "UTF-8").toString() + "');");
         } catch (UnsupportedEncodingException var4) {

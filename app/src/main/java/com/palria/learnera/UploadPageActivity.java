@@ -16,6 +16,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
+import android.text.Html;
 import android.text.InputType;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -28,8 +29,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.ValueCallback;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -57,9 +56,12 @@ import com.palria.learnera.lib.rcheditor.WYSIWYG;
 import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+
 
 public class UploadPageActivity extends AppCompatActivity {
 
@@ -129,7 +131,7 @@ public class UploadPageActivity extends AppCompatActivity {
      ImageView action_insert_image;
         ImageView action_insert_link;
        ImageView action_insert_checkbox;
-       boolean visible = false;
+    boolean visible = false;
         ImageView preview;
         ImageView insert_latex;
         ImageView insert_code;
@@ -140,6 +142,8 @@ public class UploadPageActivity extends AppCompatActivity {
        ImageView action_insert_video;
 
     LEBottomSheetDialog choosePhotoPickerModal;
+
+    ArrayList<String> uploadedImagesList = new ArrayList<>();
 
 
 
@@ -162,6 +166,7 @@ public class UploadPageActivity extends AppCompatActivity {
 
                     //upload this image when uploading the page as index
                     //insert image to
+                    uploadedImagesList.add(data.getData().toString());
                     wysiwygEditor.insertImage(data.getData().toString(),"-");
 
                     return;
@@ -209,6 +214,7 @@ public class UploadPageActivity extends AppCompatActivity {
                         if(bitmapFromCamera != null) {
                             String imageUriString = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmapFromCamera).toString();
                             //insert image also upload image in uploading page with indexing.
+                            uploadedImagesList.add(imageUriString);
                             wysiwygEditor.insertImage(imageUriString,"-");
 //                            cameraImageBitmap = bitmapFromCamera;
                             //coverPhotoImageView.setImageBitmap(cameraImageBitmap);
@@ -284,23 +290,31 @@ createTable();
             public void onClick(View view) {
                 //get the datas first to valid them
                 wysiwygEditor.evaluateJavascript(
-                        "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
+                        "(function() { return document.getElementById('editor').innerHTML; })();",
                         new ValueCallback<String>() {
                             @Override
                             public void onReceiveValue(String html) {
-                                pageContent = html;
+                                pageContent = html.substring(1,html.length()-1);//substring use for remove double quotes.
                                 pageTitle = pageTitleEditText.getText().toString();
 
                                 if(validateForm()){
                                     //if validate form reeturns error/false
                                     return;
                                 }
-                                wysiwygEditor.setHtml(html);
+                               //if form is valid now get the image to upload to store
+                                ArrayList<String> imagesFinalListToUpload = new ArrayList<>();
 
-                                Log.e("html",html);
-                                //post here (just title and page content )
-                                //postPage();
-                                //uploadPage();
+                                for(String localUrl : uploadedImagesList){
+                                    if(pageContent.contains(localUrl)){
+                                        //remove dublicate upload multiple times
+                                       if(!imagesFinalListToUpload.contains(localUrl)){
+                                           imagesFinalListToUpload.add(localUrl);
+                                       }
+                                    }
+                                }
+
+                                startUploadService(pageTitle,pageContent,imagesFinalListToUpload);
+
                             }
                         });
 
@@ -309,6 +323,89 @@ createTable();
             }
         });
 
+    }
+    //upuloaded images count tracker all complete or not
+    int  uploaded = 0;
+    private void startUploadService(String postTitle, String postContent, ArrayList<String> imagesListToUpload) {
+        /**
+         * implement upload service here and other here
+         *
+         */
+
+        final String[] postContentHtml = {postContent};
+        //first upload all the images
+
+        if(imagesListToUpload.size()==0){
+            //upload page directly here no need to upload images
+
+            //postTitle,postContentHtml[0]
+            Log.e("pageContentInUploadService",postContentHtml[0]);
+
+            return;
+        }
+
+       for(String localUrl : imagesListToUpload){
+           uploadImageToServer(localUrl, new ImageUploadListener(){
+               @Override
+               public void onComplete(String localUrl, String downloadUrl) {
+                   super.onComplete(localUrl, downloadUrl);
+                   //replace the url when completed.
+                   postContentHtml[0] = postContentHtml[0].replaceAll(localUrl, downloadUrl);
+                   uploaded++;
+                   if(uploaded==imagesListToUpload.size()){
+                       //if all images uploaded successfully save page to database now.
+                       //postTitle,postContentHtml[0]
+                       Log.e("pageContentInUploadService_withImages_",postContentHtml[0]);
+
+
+                   }
+               }
+
+               @Override
+               public void onFailed(Throwable throwable) {
+                   super.onFailed(throwable);
+               }
+           });
+
+
+       }
+
+        //post here (just title and page content )
+        //postPage();
+        //uploadPage();
+
+
+    }
+
+    public void uploadImageToServer(String url, ImageUploadListener listener){
+        //upload the image here
+
+        //call this on success (test listener like this)
+        //imageUploader.uploadOnServer(new Listener(){
+        // public void onSuccess(String downloadUrl){
+        // listener.onComplete(url, downloadUrl);
+        // }
+        // })
+        String downloadUrl = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png";
+        listener.onComplete(url, downloadUrl);
+    }
+
+    public class ImageUploadListener implements  ImageUploadInterface{
+
+        @Override
+        public void onComplete(String localUrl, String downloadUrl) {
+
+        }
+
+        @Override
+        public void onFailed(Throwable throwable) {
+
+        }
+    }
+
+    interface ImageUploadInterface{
+        public void onComplete(String localUrl, String downloadUrl);
+        public void onFailed(Throwable throwable);
     }
 
     private boolean validateForm() {
@@ -737,13 +834,8 @@ openCamera();
 
             }
         });
-//WebView w;
-//WebViewClient wc;
-//wc.
 
-//        Toast.makeText(UploadPageActivity.this,wysiwygEditor.getHtml() , Toast.LENGTH_LONG).show();
 
-       // wysiwygEditor.setHtml("\"\\u003Chtml>\\u003Chead>\\n    \\u003Cmeta name=\\\"viewport\\\" content=\\\"user-scalable=no\\\">\\n    \\u003Cmeta http-equiv=\\\"Content-Type\\\" content=\\\"text/html; charset=UTF-8\\\">\\n    \\u003Clink rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"normalize.css\\\">\\n    \\u003Clink rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"style.css\\\">\\n    \\u003Clink rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"w3.css\\\">\\n\\u003C/head>\\n\\u003Cbody>\\n\\u003Cdiv id=\\\"editor\\\" class=\\\"w3-container\\\" contenteditable=\\\"true\\\" placeholder=\\\"Insert your content here...\\\" style=\\\"height: 600px; font-size: 16px; padding: 10px;\\\">\\u003Cp>https://accounts.google.com/SignOutOptions?hl=en&amp;continue=https://myaccount.google.co\\u003Ciframe width=\\\"100%\\\" height=\\\"240px\\\" src=\\\"https://www.youtube.com/embed/VlvRfTmleDI\\\" frameborder=\\\"0\\\" allowfullscreen=\\\"\\\">\\u003C/iframe>\\u003C/p>\\u003Cp> &nbsp;\\u003C/p> \\u003Cp>&nbsp;m/%3Futm_source%3Dsign_in_no_continue%26pli%3D1\\u003C/p> \\u003Cp>&nbsp;&nbsp;\\u003C/p>\\u003C/div>\\n\\u003Cscript type=\\\"text/javascript\\\" src=\\\"wysiwyg.js\\\">\\u003C/script>\\n\\n\\u003C/body>\\u003C/html>\"");
     }
 
 
@@ -1098,12 +1190,11 @@ void addTableEditTextCell(LinearLayout rowLinearLayout){
 }
 
 void postPage(){
-
     pageId = GlobalConfig.getRandomString(60);
-    GlobalConfig.createSnackBar(this,containerLinearLayout,"Creating "+pageTitleEditText.getText()+" page", Snackbar.LENGTH_INDEFINITE);
+GlobalConfig.createSnackBar(this,containerLinearLayout,"Creating "+pageTitleEditText.getText()+" page", Snackbar.LENGTH_INDEFINITE);
 
-    //        toggleProgress(true);
-    preparePage();
+//        toggleProgress(true);
+preparePage();
 
     UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
         @Override
