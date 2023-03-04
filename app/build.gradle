@@ -88,6 +88,8 @@ dependencies {
 
     implementation 'androidx.core:core-splashscreen:1.0.0-beta02'
 
+    implementation 'org.apache.commons:commons-text:1.9'
+
 
 }
 //dependencies {

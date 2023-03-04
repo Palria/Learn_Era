@@ -16,6 +16,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
+import android.text.Html;
 import android.text.InputType;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -54,6 +55,8 @@ import com.palria.learnera.lib.rcheditor.Utils;
 import com.palria.learnera.lib.rcheditor.WYSIWYG;
 import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
+
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -140,6 +143,8 @@ public class UploadPageActivity extends AppCompatActivity {
 
     LEBottomSheetDialog choosePhotoPickerModal;
 
+    ArrayList<String> uploadedImagesList = new ArrayList<>();
+
 
 
 
@@ -161,6 +166,7 @@ public class UploadPageActivity extends AppCompatActivity {
 
                     //upload this image when uploading the page as index
                     //insert image to
+                    uploadedImagesList.add(data.getData().toString());
                     wysiwygEditor.insertImage(data.getData().toString(),"-");
 
                     return;
@@ -208,6 +214,7 @@ public class UploadPageActivity extends AppCompatActivity {
                         if(bitmapFromCamera != null) {
                             String imageUriString = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmapFromCamera).toString();
                             //insert image also upload image in uploading page with indexing.
+                            uploadedImagesList.add(imageUriString);
                             wysiwygEditor.insertImage(imageUriString,"-");
 //                            cameraImageBitmap = bitmapFromCamera;
                             //coverPhotoImageView.setImageBitmap(cameraImageBitmap);
@@ -283,21 +290,31 @@ createTable();
             public void onClick(View view) {
                 //get the datas first to valid them
                 wysiwygEditor.evaluateJavascript(
-                        "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
+                        "(function() { return document.getElementById('editor').innerHTML; })();",
                         new ValueCallback<String>() {
                             @Override
                             public void onReceiveValue(String html) {
-                                pageContent = html;
+                                pageContent = html.substring(1,html.length()-1);//substring use for remove double quotes.
                                 pageTitle = pageTitleEditText.getText().toString();
 
                                 if(validateForm()){
                                     //if validate form reeturns error/false
                                     return;
                                 }
-                                Log.e("html",html);
-                                //post here (just title and page content )
-                                //postPage();
-                                //uploadPage();
+                               //if form is valid now get the image to upload to store
+                                ArrayList<String> imagesFinalListToUpload = new ArrayList<>();
+
+                                for(String localUrl : uploadedImagesList){
+                                    if(pageContent.contains(localUrl)){
+                                        //remove dublicate upload multiple times
+                                       if(!imagesFinalListToUpload.contains(localUrl)){
+                                           imagesFinalListToUpload.add(localUrl);
+                                       }
+                                    }
+                                }
+
+                                startUploadService(pageTitle,pageContent,imagesFinalListToUpload);
+
                             }
                         });
 
@@ -306,6 +323,89 @@ createTable();
             }
         });
 
+    }
+    //upuloaded images count tracker all complete or not
+    int  uploaded = 0;
+    private void startUploadService(String postTitle, String postContent, ArrayList<String> imagesListToUpload) {
+        /**
+         * implement upload service here and other here
+         *
+         */
+
+        final String[] postContentHtml = {postContent};
+        //first upload all the images
+
+        if(imagesListToUpload.size()==0){
+            //upload page directly here no need to upload images
+
+            //postTitle,postContentHtml[0]
+            Log.e("pageContentInUploadService",postContentHtml[0]);
+
+            return;
+        }
+
+       for(String localUrl : imagesListToUpload){
+           uploadImageToServer(localUrl, new ImageUploadListener(){
+               @Override
+               public void onComplete(String localUrl, String downloadUrl) {
+                   super.onComplete(localUrl, downloadUrl);
+                   //replace the url when completed.
+                   postContentHtml[0] = postContentHtml[0].replaceAll(localUrl, downloadUrl);
+                   uploaded++;
+                   if(uploaded==imagesListToUpload.size()){
+                       //if all images uploaded successfully save page to database now.
+                       //postTitle,postContentHtml[0]
+                       Log.e("pageContentInUploadService_withImages_",postContentHtml[0]);
+
+
+                   }
+               }
+
+               @Override
+               public void onFailed(Throwable throwable) {
+                   super.onFailed(throwable);
+               }
+           });
+
+
+       }
+
+        //post here (just title and page content )
+        //postPage();
+        //uploadPage();
+
+
+    }
+
+    public void uploadImageToServer(String url, ImageUploadListener listener){
+        //upload the image here
+
+        //call this on success (test listener like this)
+        //imageUploader.uploadOnServer(new Listener(){
+        // public void onSuccess(String downloadUrl){
+        // listener.onComplete(url, downloadUrl);
+        // }
+        // })
+        String downloadUrl = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png";
+        listener.onComplete(url, downloadUrl);
+    }
+
+    public class ImageUploadListener implements  ImageUploadInterface{
+
+        @Override
+        public void onComplete(String localUrl, String downloadUrl) {
+
+        }
+
+        @Override
+        public void onFailed(Throwable throwable) {
+
+        }
+    }
+
+    interface ImageUploadInterface{
+        public void onComplete(String localUrl, String downloadUrl);
+        public void onFailed(Throwable throwable);
     }
 
     private boolean validateForm() {
