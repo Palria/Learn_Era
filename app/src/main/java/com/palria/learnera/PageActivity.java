@@ -31,6 +31,7 @@ import java.util.HashMap;
 public class PageActivity extends AppCompatActivity {
 boolean isTutorialPage = true;
 
+String authorId = "";
 String tutorialId = "";
 String folderId = "";
 String pageId = "";
@@ -56,6 +57,7 @@ TextView pageTitleTextView;
 
         isTutorialPage = intent.getBooleanExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
         tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
+        authorId = intent.getStringExtra(GlobalConfig.AUTHOR_ID_KEY);
         folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
         pageId = intent.getStringExtra(GlobalConfig.PAGE_ID_KEY);
 
@@ -85,54 +87,58 @@ TextView pageTitleTextView;
 //                        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.DATE_TIME_STAMP_PAGE_CREATED_KEY, FieldValue.serverTimestamp());
 
                         String pageTitle = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
+                        String html = ""+ documentSnapshot.get(GlobalConfig.PAGE_CONTENT_KEY);
                         pageTitleTextView.setText(pageTitle);
-                        long totalNumberOfPageData =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY) : 0L;
-                        for(int i=0; i<totalNumberOfPageData; i++){
-                            View view = new View(getApplicationContext());
-                            containerLinearLayout.addView(view);
-                        }
+//                        long totalNumberOfPageData =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY) : 0L;
 
-                        if(totalNumberOfPageData != 0L){
-                            for(int i =0; i<totalNumberOfPageData; i++){
+                        renderHtmlFromDatabase(html);
+                        GlobalConfig.incrementNumberOfVisitors(authorId,null,tutorialId,folderId,pageId,false,false,false,false,isTutorialPage,!isTutorialPage);
 
-                                ArrayList<String> pageDataArrayList = documentSnapshot.get(GlobalConfig.DATA_ARRAY_KEY+i)!=null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.DATA_ARRAY_KEY+i) : new ArrayList<>();
-                                if(pageDataArrayList!=null && pageDataArrayList.size() != 0){
-                                    switch (pageDataArrayList.get(0)) {
-                                        case GlobalConfig.TEXT_TYPE:
-                                            renderPageTextData(pageDataArrayList);
-                                            Toast.makeText(getApplicationContext(), "text", Toast.LENGTH_SHORT).show();
-                                            break;
-                                        case GlobalConfig.IMAGE_TYPE:
-                                            renderPageImageData(pageDataArrayList);
-                                            Toast.makeText(getApplicationContext(), "image", Toast.LENGTH_SHORT).show();
-
-                                            break;
-                                        case GlobalConfig.TABLE_TYPE:
-                                            renderPageTableData(pageDataArrayList);
-                                            Toast.makeText(getApplicationContext(), "table", Toast.LENGTH_SHORT).show();
-
-                                            break;
-                                        case GlobalConfig.TODO_TYPE:
-                                            renderPageTodoData(pageDataArrayList);
-                                            Toast.makeText(getApplicationContext(), "todo", Toast.LENGTH_SHORT).show();
-
-                                            break;
-                                        default:
-                                            renderPageImageData(pageDataArrayList);
-                                            Toast.makeText(getApplicationContext(), "image", Toast.LENGTH_SHORT).show();
-                                    }
-                                }else{
-                                    Toast.makeText(getApplicationContext(), "array empty", Toast.LENGTH_SHORT).show();
-
-                                }
-                            }
-                        }
+//                        for(int i=0; i<totalNumberOfPageData; i++){
+//                            View view = new View(getApplicationContext());
+//                            containerLinearLayout.addView(view);
+//                        }
+//
+//                        if(totalNumberOfPageData != 0L){
+//                            for(int i =0; i<totalNumberOfPageData; i++){
+//
+//                                ArrayList<String> pageDataArrayList = documentSnapshot.get(GlobalConfig.DATA_ARRAY_KEY+i)!=null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.DATA_ARRAY_KEY+i) : new ArrayList<>();
+//                                if(pageDataArrayList!=null && pageDataArrayList.size() != 0){
+//                                    switch (pageDataArrayList.get(0)) {
+//                                        case GlobalConfig.TEXT_TYPE:
+//                                            renderPageTextData(pageDataArrayList);
+//                                            Toast.makeText(getApplicationContext(), "text", Toast.LENGTH_SHORT).show();
+//                                            break;
+//                                        case GlobalConfig.IMAGE_TYPE:
+//                                            renderPageImageData(pageDataArrayList);
+//                                            Toast.makeText(getApplicationContext(), "image", Toast.LENGTH_SHORT).show();
+//
+//                                            break;
+//                                        case GlobalConfig.TABLE_TYPE:
+//                                            renderPageTableData(pageDataArrayList);
+//                                            Toast.makeText(getApplicationContext(), "table", Toast.LENGTH_SHORT).show();
+//
+//                                            break;
+//                                        case GlobalConfig.TODO_TYPE:
+//                                            renderPageTodoData(pageDataArrayList);
+//                                            Toast.makeText(getApplicationContext(), "todo", Toast.LENGTH_SHORT).show();
+//
+//                                            break;
+//
+//                                    }
+//                                }else{
+//                                    Toast.makeText(getApplicationContext(), "array empty", Toast.LENGTH_SHORT).show();
+//
+//                                }
+//                            }
+//                        }
 
                     }
                 });
 
     }
 
+    @Deprecated
     void renderPageTextData(ArrayList<String> textDetails){
 
 
@@ -154,7 +160,8 @@ TextView pageTitleTextView;
 //        Toast.makeText(getApplicationContext(), position, Toast.LENGTH_SHORT).show();
 
     }
-   void renderPageImageData(ArrayList<String> imageDetails){
+    @Deprecated
+    void renderPageImageData(ArrayList<String> imageDetails){
         int position = Integer.parseInt(imageDetails.get(1));
         String imageDownloadUrl = imageDetails.get(2);
 
@@ -173,8 +180,8 @@ try {
 //       Toast.makeText(getApplicationContext(), "image added", Toast.LENGTH_SHORT).show();
 
    }
-
-   void renderPageTableData(ArrayList<String> tableDetails){
+    @Deprecated
+    void renderPageTableData(ArrayList<String> tableDetails){
 //
 //       pageTableTextDataTypeDetailsArrayList.add(1,containerLinearLayout.indexOfChild(containerLinearLayout.getChildAt(i)) +"");
 //       pageTableTextDataTypeDetailsArrayList.add(2,numberOfRows+"");
@@ -210,8 +217,8 @@ try {
        Toast.makeText(getApplicationContext(), "table added", Toast.LENGTH_SHORT).show();
 
     }
-
-   void renderPageTodoData(ArrayList<String> todoDetails){
+    @Deprecated
+    void renderPageTodoData(ArrayList<String> todoDetails){
 //
 //       pageTodoTextDataTypeDetailsArrayList.add(1,""+containerLinearLayout.indexOfChild(containerLinearLayout.getChildAt(i)));
 //       pageTodoTextDataTypeDetailsArrayList.add(2,numberOfItems+"");
@@ -245,7 +252,7 @@ try {
 //       Toast.makeText(getApplicationContext(), "todo added", Toast.LENGTH_SHORT).show();
 
     }
-
+    @Deprecated
     void setTableRowCell(String[] cellArray, LinearLayout rowLinearLayout){
         for(int i=0; i<cellArray.length; i++){
 
@@ -257,6 +264,16 @@ try {
         }
     }
 
+    /**this is used to test the html from the database
+     * i used it for only test purposes
+     * */
+    private void renderHtmlFromDatabase(String html){
 
+        View view = getLayoutInflater().inflate(R.layout.page_text_layout,containerLinearLayout,false);
+        TextView pageTextDataTextView = view.findViewById(R.id.pageTextDataTextViewId);
+        pageTextDataTextView.setTextIsSelectable(true);
+        GlobalConfig.setHtmlText(this,pageTextDataTextView, html);
+        containerLinearLayout.addView(view);
+    }
 
 }

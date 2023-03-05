@@ -277,6 +277,7 @@ public class GlobalConfig {
     public static final String TOTAL_NUMBER_OF_FOLDER_VISITOR_KEY = "TOTAL_NUMBER_OF_FOLDER_VISITOR";
     public static final String TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR";
     public static final String TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR";
+    public static final String PAGE_CONTENT_KEY = "PAGE_CONTENT";
 //    public static final String PAGE_NAME_KEY = "PAGE_NAME";
     public static final String DATE_TIME_STAMP_PAGE_CREATED_KEY = "DATE_TIME_STAMP_PAGE_CREATED";
     public static final String TOTAL_NUMBER_OF_PAGE_DATA_KEY = "TOTAL_NUMBER_OF_PAGE_DATA";
@@ -479,6 +480,7 @@ public class GlobalConfig {
      * @return {@link FirebaseStorage}
      * */
     static FirebaseStorage getFirebaseStorageInstance(){
+
        return GlobalConfig.firebaseStorageInstance;
     }
 
@@ -2618,6 +2620,7 @@ public class GlobalConfig {
         writeBatch.update(documentReference,details);
 
         writeBatch.commit();
+        recordLastViewedAuthors(authorId);
         return;
     }
     else if(isLibrary){
@@ -2637,6 +2640,7 @@ public class GlobalConfig {
         writeBatch.update(documentReference,details);
 
         writeBatch.commit();
+        recordLastViewedLibrary(libraryId);
         return;
     }
     else if(isTutorial){
@@ -2656,6 +2660,7 @@ public class GlobalConfig {
         writeBatch.update(documentReference,details);
 
         writeBatch.commit();
+        recordLastViewedTutorials(tutorialId);
         return;
     }
     else if(isFolder){
@@ -2779,7 +2784,12 @@ public class GlobalConfig {
     }
     public static void recordLastViewedTutorials(String tutorialId){
         if(getLastViewedTutorialsArray().contains(tutorialId))return;
-        int index = new Random().nextInt(getLastViewedTutorialsArray().size());
+        int index;
+        if(getLastViewedTutorialsArray().size()==0){
+            index = 0;
+        }else{
+            index = new Random().nextInt(getLastViewedLibraryArray().size());
+        }
         ArrayList<String> lastViewedTutorialsIdList = getLastViewedTutorialsArray();
         HashMap<String,Object> lastViewDetails = new HashMap<>();
         if(lastViewedTutorialsIdList.size()<10){
@@ -2801,7 +2811,12 @@ public class GlobalConfig {
     }
     public static void recordLastViewedLibrary(String libraryId){
         if(getLastViewedLibraryArray().contains(libraryId))return;
-        int index = new Random().nextInt(getLastViewedLibraryArray().size());
+        int index;
+        if(getLastViewedLibraryArray().size()==0){
+            index = 0;
+        }else{
+            index = new Random().nextInt(getLastViewedLibraryArray().size());
+        }
         ArrayList<String> lastViewedLibraryIdList = getLastViewedLibraryArray();
         HashMap<String,Object> lastViewDetails = new HashMap<>();
         if(lastViewedLibraryIdList.size()<10){
@@ -2823,7 +2838,12 @@ public class GlobalConfig {
     }
     public static void recordLastViewedAuthors(String authorId){
         if(getLastViewedAuthorsArray().contains(authorId))return;
-        int index = new Random().nextInt(getLastViewedAuthorsArray().size());
+        int index;
+        if(getLastViewedAuthorsArray().size()==0){
+            index = 0;
+        }else{
+            index = new Random().nextInt(getLastViewedLibraryArray().size());
+        }
         ArrayList<String> lastViewedAuthorsIdList = getLastViewedAuthorsArray();
         HashMap<String,Object> lastViewDetails = new HashMap<>();
         if(lastViewedAuthorsIdList.size()<10){

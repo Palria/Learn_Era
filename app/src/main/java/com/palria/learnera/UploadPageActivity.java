@@ -13,7 +13,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
 import android.text.Html;
@@ -49,8 +51,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.palria.learnera.lib.rcheditor.Utils;
 import com.palria.learnera.lib.rcheditor.WYSIWYG;
 import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
@@ -61,6 +76,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class UploadPageActivity extends AppCompatActivity {
@@ -79,6 +95,9 @@ public class UploadPageActivity extends AppCompatActivity {
     String pageTitle;
     String pageContent;
     boolean isTutorialPage = true;
+    Snackbar pageUploadSnackBar;
+    OnPageUploadListener onPageUploadListener;
+
     /**
      * A  variable for launching the gallery {@link Intent}
      * */
@@ -166,8 +185,21 @@ public class UploadPageActivity extends AppCompatActivity {
 
                     //upload this image when uploading the page as index
                     //insert image to
-                    uploadedImagesList.add(data.getData().toString());
-                    wysiwygEditor.insertImage(data.getData().toString(),"-");
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),data.getData());
+                        bitmap.compress(Bitmap.CompressFormat.PNG,10,new ByteArrayOutputStream());
+
+                            String imageUriString = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmap).toString();
+                            //insert image also upload image in uploading page with indexing.
+                            uploadedImagesList.add(imageUriString);
+                            wysiwygEditor.insertImage(imageUriString,"-");
+
+//                        uploadedImagesList.add(data.getData().toString());
+//                        wysiwygEditor.insertImage(data.getData().toString(),"-");
+
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
 
                     return;
 
@@ -209,7 +241,7 @@ public class UploadPageActivity extends AppCompatActivity {
                     if (result.getData() != null) {
                         Intent data = result.getData();
                         Bitmap  bitmapFromCamera =(Bitmap) data.getExtras().get("data");
-
+                        bitmapFromCamera.compress(Bitmap.CompressFormat.PNG,10,new ByteArrayOutputStream());
 
                         if(bitmapFromCamera != null) {
                             String imageUriString = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmapFromCamera).toString();
@@ -249,6 +281,39 @@ public class UploadPageActivity extends AppCompatActivity {
                 }
             }
         });
+
+        onPageUploadListener = new OnPageUploadListener() {
+            @Override
+            public void onNewPage(String pageId) {
+            pageUploadSnackBar =  GlobalConfig.createSnackBar(UploadPageActivity.this,wysiwygEditor, pageTitle + " is uploading...", Snackbar.LENGTH_INDEFINITE);
+            }
+
+            @Override
+            public void onFailed(String pageId, String errorMessage) {
+                pageUploadSnackBar.dismiss();
+                GlobalConfig.createSnackBar(UploadPageActivity.this,wysiwygEditor, "Page failed "+pageTitle + " please try again", Snackbar.LENGTH_SHORT);
+
+            }
+
+            @Override
+            public void onProgress(String pageId, int progressCount) {
+                pageUploadSnackBar.dismiss();
+                pageUploadSnackBar =  GlobalConfig.createSnackBar(UploadPageActivity.this,wysiwygEditor, "Progress: "+ progressCount, Snackbar.LENGTH_INDEFINITE);
+
+            }
+
+            @Override
+            public void onSuccess(String pageId) {
+                pageUploadSnackBar.dismiss();
+                GlobalHelpers.showAlertMessage("success",
+                        UploadPageActivity.this,
+                        "Page created successfully",
+                        "You have successfully created your page, go ahead and contribute to Learn Era ");
+
+
+            }
+        };
+
 //
 //        tutorialId  = "TEST_ID-3";
 //        folderId  = "TEST_ID-3";
@@ -281,7 +346,7 @@ public class UploadPageActivity extends AppCompatActivity {
         addTableActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-createTable();
+            createTable();
             }
         });
 
@@ -294,8 +359,12 @@ createTable();
                         new ValueCallback<String>() {
                             @Override
                             public void onReceiveValue(String html) {
-                                pageContent = html.substring(1,html.length()-1);//substring use for remove double quotes.
+//                                pageContent = html.substring(1,html.length()-1);//substring use for remove double quotes.
+                                pageContent = wysiwygEditor.getHtml();
                                 pageTitle = pageTitleEditText.getText().toString();
+
+                                pageTitleEditText.setText(wysiwygEditor.getHtml());
+                                wysiwygEditor.setHtml(wysiwygEditor.getHtml());
 
                                 if(validateForm()){
                                     //if validate form reeturns error/false
@@ -306,7 +375,7 @@ createTable();
 
                                 for(String localUrl : uploadedImagesList){
                                     if(pageContent.contains(localUrl)){
-                                        //remove dublicate upload multiple times
+                                        //remove duplicate upload multiple times
                                        if(!imagesFinalListToUpload.contains(localUrl)){
                                            imagesFinalListToUpload.add(localUrl);
                                        }
@@ -324,9 +393,12 @@ createTable();
         });
 
     }
-    //upuloaded images count tracker all complete or not
+    //uploaded images count tracker all complete or not
     int  uploaded = 0;
     private void startUploadService(String postTitle, String postContent, ArrayList<String> imagesListToUpload) {
+        pageId = GlobalConfig.getRandomString(60);
+
+        onPageUploadListener.onNewPage(pageId);
         /**
          * implement upload service here and other here
          *
@@ -340,41 +412,43 @@ createTable();
 
             //postTitle,postContentHtml[0]
             Log.e("pageContentInUploadService",postContentHtml[0]);
-
+                writePageToDatabase(postTitle,postContent);
             return;
+        }else {
+
+            for (String localUrl : imagesListToUpload) {
+                uploadImageToServer(localUrl, new ImageUploadListener() {
+                    @Override
+                    public void onComplete(String localUrl, String downloadUrl) {
+                        super.onComplete(localUrl, downloadUrl);
+                        //replace the url when completed.
+                        postContentHtml[0] = postContentHtml[0].replaceAll(localUrl, downloadUrl);
+                        uploaded++;
+                        if (uploaded == imagesListToUpload.size()) {
+                            //if all images uploaded successfully save page to database now.
+                            //postTitle,postContentHtml[0]
+                            Log.e("pageContentInUploadService_withImages_", postContentHtml[0]);
+
+                            writePageToDatabase(postTitle, postContentHtml[0]);
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        super.onFailed(throwable);
+                        onPageUploadListener.onFailed(pageId, throwable.getMessage());
+                    }
+                });
+
+
+            }
+
+            //post here (just title and page content )
+            //postPage();
+            //uploadPage();
+
         }
-
-       for(String localUrl : imagesListToUpload){
-           uploadImageToServer(localUrl, new ImageUploadListener(){
-               @Override
-               public void onComplete(String localUrl, String downloadUrl) {
-                   super.onComplete(localUrl, downloadUrl);
-                   //replace the url when completed.
-                   postContentHtml[0] = postContentHtml[0].replaceAll(localUrl, downloadUrl);
-                   uploaded++;
-                   if(uploaded==imagesListToUpload.size()){
-                       //if all images uploaded successfully save page to database now.
-                       //postTitle,postContentHtml[0]
-                       Log.e("pageContentInUploadService_withImages_",postContentHtml[0]);
-
-
-                   }
-               }
-
-               @Override
-               public void onFailed(Throwable throwable) {
-                   super.onFailed(throwable);
-               }
-           });
-
-
-       }
-
-        //post here (just title and page content )
-        //postPage();
-        //uploadPage();
-
-
     }
 
     public void uploadImageToServer(String url, ImageUploadListener listener){
@@ -386,8 +460,74 @@ createTable();
         // listener.onComplete(url, downloadUrl);
         // }
         // })
-        String downloadUrl = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png";
-        listener.onComplete(url, downloadUrl);
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            String imageId = GlobalConfig.getRandomString(15);
+            StorageReference storageReference = null;
+            if(isTutorialPage) {
+                storageReference = GlobalConfig.getFirebaseStorageInstance().getReference().child(GlobalConfig.ALL_USERS_KEY + "/" + GlobalConfig.getCurrentUserId() + "/" + GlobalConfig.ALL_LIBRARY_KEY + "/" + libraryId + "/" + GlobalConfig.ALL_TUTORIAL_KEY + "/" + tutorialId + "/" + GlobalConfig.ALL_TUTORIAL_PAGES_KEY + "/" + pageId + "/ALL_IMAGES/" + imageId + ".PNG");
+            }else{
+                storageReference = GlobalConfig.getFirebaseStorageInstance().getReference().child(GlobalConfig.ALL_USERS_KEY + "/" + GlobalConfig.getCurrentUserId() + "/" + GlobalConfig.ALL_LIBRARY_KEY + "/" + libraryId + "/" + GlobalConfig.ALL_TUTORIAL_KEY + "/" + tutorialId + "/" + GlobalConfig.ALL_FOLDERS_KEY+"/"+folderId+"/"+GlobalConfig.ALL_FOLDER_PAGES_KEY + "/" + pageId + "/ALL_IMAGES/" + imageId + ".PNG");
+
+            }
+            final StorageReference finalStorageReference = storageReference;
+
+            UploadTask uploadTask = storageReference.putFile(Uri.parse(url));
+            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+
+                    long totalBytes = snapshot.getTotalByteCount();
+                    long totalBytesTransferred = snapshot.getBytesTransferred();
+                    int progressCount = (int) ( (totalBytesTransferred  /totalBytes)* 100) ;
+                    onPageUploadListener.onProgress(pageId,progressCount);
+
+                }
+            })
+                    .addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                    @Override
+                                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+
+
+                                        return finalStorageReference.getDownloadUrl();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                    }
+                                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Uri> task) {
+                                        if (task.isSuccessful()) {
+                                            String imageDownloadUrl = String.valueOf(task.getResult());
+
+                                            listener.onComplete(url,imageDownloadUrl);
+
+                                        }
+                                        else{
+                                       listener.onFailed(new Throwable(task.getException().getMessage()));
+
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                //failed to upload the image
+                                listener.onFailed(new Throwable(task.getException().getMessage()));
+
+
+                            }
+                        }
+                    });
+
+        }
+
+//        String downloadUrl = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png";
+//        listener.onComplete(url, downloadUrl);
     }
 
     public class ImageUploadListener implements  ImageUploadInterface{
@@ -497,8 +637,8 @@ createTable();
                 .addOptionItem("Camera", R.drawable.ic_baseline_photo_camera_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-choosePhotoPickerModal.hide();
-openCamera();
+                choosePhotoPickerModal.hide();
+                openCamera();
                     }
                 },0)
                 .addOptionItem("Gallery", R.drawable.baseline_insert_photo_24, new View.OnClickListener() {
@@ -529,7 +669,7 @@ openCamera();
                                 String inputText = editText.getText().toString();
                                 // do something with the input text
                                 if(GlobalHelpers.isValidUrl(inputText)){
-                                    wysiwygEditor.insertImage(inputText,"");
+                                    wysiwygEditor.insertImage(inputText,"IMG");
                                 }
 
                             }
@@ -838,6 +978,123 @@ openCamera();
 
     }
 
+    /**This posts the page content to database*/
+    private void writePageToDatabase(String pageTitle, String pageContent) {
+        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+        DocumentReference pageDocumentReference = null;
+        if(isTutorialPage){
+            pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId);
+        }else{
+            pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageId);
+
+        }
+
+        HashMap<String, Object> pageTextPartitionsDataDetailsHashMap = new HashMap<>();
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_TITLE_KEY, pageTitle);
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.LIBRARY_ID_KEY, libraryId);
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.FOLDER_ID_KEY, folderId);
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_ID_KEY, pageId);
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.AUTHOR_ID_KEY, GlobalConfig.getCurrentUserId());
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_CONTENT_KEY, pageContent);
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.DATE_TIME_STAMP_PAGE_CREATED_KEY, FieldValue.serverTimestamp());
+
+        writeBatch.set(pageDocumentReference,pageTextPartitionsDataDetailsHashMap, SetOptions.merge());
+
+        DocumentReference documentReference = null;
+        if(isTutorialPage){
+            documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
+            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onFailed(String errorMessage) {
+
+                }
+            });
+
+        }else{
+            documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId);
+            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onFailed(String errorMessage) {
+
+                }
+            });
+
+        }
+        HashMap<String, Object> incrementPageNumberHashMap = new HashMap<>();
+        incrementPageNumberHashMap.put(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY, FieldValue.increment(1L));
+        writeBatch.update(documentReference,incrementPageNumberHashMap);
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        writePageToDatabase( pageTitle, pageContent);
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                if(isTutorialPage){
+                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onFailed(String errorMessage) {
+
+                        }
+                    });
+
+                }else{
+                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onFailed(String errorMessage) {
+
+                        }
+                    });
+
+                }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //delay the success for some seconds to allow some asynchronous processes to finish
+                        onPageUploadListener.onSuccess(pageId);
+
+                    }
+                },2000);
+            }
+        });
+//            }
+
+
+    }
+
+    //interface for page upload callbacks
+    interface OnPageUploadListener{
+        void onNewPage(String pageId);
+        void onFailed(String pageId, String errorMessage);
+        void onProgress(String pageId, int progressCount);
+        void onSuccess(String pageId);
+
+
+    }
+
 
 
     private void fetchIntentData(){
@@ -909,6 +1166,7 @@ openCamera();
         }
     }
 
+    @Deprecated
     void createPartition(){
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View partitionView  =  layoutInflater.inflate(R.layout.page_partition_layout,containerLinearLayout,false);
@@ -936,7 +1194,7 @@ openCamera();
         });
         containerLinearLayout.addView(partitionView);
     }
-
+    @Deprecated
     void addEditText(int validPosition){
 
                     EditText editText = new EditText(getApplicationContext());
@@ -963,7 +1221,7 @@ openCamera();
 
 
     }
-
+    @Deprecated
     private ImageView getImage(){
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View imageView  =  layoutInflater.inflate(R.layout.page_image_layout,containerLinearLayout,false);
@@ -986,7 +1244,7 @@ openCamera();
         addEditText(containerLinearLayout.indexOfChild(imageView)+1);
         return image;
     }
-
+    @Deprecated
     void uploadPage(){
         ArrayList<ArrayList<String>> allPageTextPartitionsDataDetailsArrayList = new ArrayList<>();
 
@@ -1056,7 +1314,7 @@ openCamera();
         UploadPageManagerService.uploadPartitionTextDataToPage(libraryId,tutorialId,pageId,allPageTextPartitionsDataDetailsArrayList,containerLinearLayout.getChildCount());
 
     }
-
+    @Deprecated
     void addTodoItem(View todoGroupView,LinearLayout linearLayout){
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View todoItemView  =  layoutInflater.inflate(R.layout.page_to_do_item_layout,linearLayout,false);
@@ -1081,8 +1339,8 @@ openCamera();
         });
         linearLayout.addView(todoItemView);
     }
-
- void addTodoGroup(){
+    @Deprecated
+    void addTodoGroup(){
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View todoGroupView  =  layoutInflater.inflate(R.layout.page_to_do_group_layout,containerLinearLayout,false);
         LinearLayout todoLinearLayout = todoGroupView.findViewById(R.id.todoItemLinearLayoutId);
@@ -1101,7 +1359,8 @@ openCamera();
      addEditText(containerLinearLayout.indexOfChild(todoGroupView)+1);
 
  }
-void createTable(){
+    @Deprecated
+    void createTable(){
     LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View tableView  =  layoutInflater.inflate(R.layout.page_table_layout,containerLinearLayout,false);
     LinearLayout tableLinearLayout = tableView.findViewById(R.id.tableLinearLayoutId);
@@ -1127,8 +1386,8 @@ void createTable(){
     addEditText(containerLinearLayout.indexOfChild(tableView)+1);
 
 }
-
-void createTableRow(View tableView,LinearLayout tableLinearLayout){
+    @Deprecated
+    void createTableRow(View tableView,LinearLayout tableLinearLayout){
     LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View tableRowView  =  layoutInflater.inflate(R.layout.page_table_row_layout,containerLinearLayout,false);
     ImageView removeRowActionImageView = tableRowView.findViewById(R.id.removeRowActionImageViewId);
@@ -1160,8 +1419,8 @@ void createTableRow(View tableView,LinearLayout tableLinearLayout){
     });
     tableLinearLayout.addView(tableRowView);
 }
-
-void createTableColumn(LinearLayout tableLinearLayout){
+    @Deprecated
+    void createTableColumn(LinearLayout tableLinearLayout){
         if(tableLinearLayout.getChildCount()!=0){
             for(int i=0; i<tableLinearLayout.getChildCount(); i++){
                 LinearLayout rowContainerLinearLayout = (LinearLayout) tableLinearLayout.getChildAt(i);
@@ -1170,8 +1429,8 @@ void createTableColumn(LinearLayout tableLinearLayout){
             }
         }
 }
-
-void addTableEditTextCell(LinearLayout rowLinearLayout){
+    @Deprecated
+    void addTableEditTextCell(LinearLayout rowLinearLayout){
     LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     View tableCell  =  layoutInflater.inflate(R.layout.page_table_cell_edit_text,rowLinearLayout,false);
     EditText editTextCell =tableCell.findViewById(R.id.editTextCellId);
@@ -1189,7 +1448,8 @@ void addTableEditTextCell(LinearLayout rowLinearLayout){
 
 }
 
-void postPage(){
+    @Deprecated
+    void postPage(){
     pageId = GlobalConfig.getRandomString(60);
 GlobalConfig.createSnackBar(this,containerLinearLayout,"Creating "+pageTitleEditText.getText()+" page", Snackbar.LENGTH_INDEFINITE);
 
@@ -1373,15 +1633,15 @@ preparePage();
     UploadPageManagerService.uploadTextDataToPage( libraryId,  tutorialId,  folderId,  pageId, pageTitle, allPageTextDataDetailsArrayList,  numOfChildrenData,isTutorialPage);
 
     }
-
+    @Deprecated
     private void recordTextStyles(){
 
 
 
     }
 
-
-void preparePage(){
+    @Deprecated
+    void preparePage(){
 
 
     //now save the html and title to the database here .

@@ -342,7 +342,6 @@ public class UploadPageManagerService extends Service {
 
                                         isPageTextPartitionsUploaded.put(pageId,true);
                                         if(!isImageIncludedHashMap.get(pageId) || isPageImagesPartitionsUploaded.get(pageId)){
-
                                             //succeeded
                                             allActivePagesIdArrayList.remove(pageId);
                                             isPageUploadedHashMap.put(pageId,true);
