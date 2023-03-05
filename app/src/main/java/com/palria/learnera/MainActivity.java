@@ -37,6 +37,7 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
 import com.palria.learnera.models.StatisticsDataModel;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
+import com.palria.learnera.widgets.Test;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        startActivity(new Intent(MainActivity.this, TestActivity.class));
 
 
         Toolbar tp = findViewById(R.id.topBar);

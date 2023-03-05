@@ -1,0 +1,62 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="48dp"
+        app:riv_corner_radius="5pt"
+        android:scaleType="centerCrop"
+        android:layout_height="60dp"
+        android:src="@drawable/book_cover" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_toEndOf="@id/icon"
+        android:text="Uploading Page..."
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        android:layout_marginTop="4pt"
+        android:layout_marginLeft="60dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:max="100"
+        android:layout_below="@id/title"
+        android:progress="0"
+        android:progressDrawable="@drawable/progress_bar_drawable"
+        android:progressTint="@color/teal_700"
+        android:secondaryProgress="75" />
+
+
+<!--    <com.google.android.material.progressindicator.LinearProgressIndicator-->
+<!--        android:indeterminate="false"-->
+<!--        app:trackThickness="8dp"-->
+<!--        android:id="@+id/progress_bar"-->
+<!--        android:max="100"-->
+<!--        android:progress="50"-->
+<!--        android:progressTint="@color/teal_700"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:minHeight="5pt"-->
+<!--        android:layout_height="9pt"/>-->
+
+    <TextView
+        android:id="@+id/percent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/progress_bar"
+        android:textAlignment="textEnd"
+        android:text="0%"
+        android:layout_marginLeft="50dp"
+        android:textSize="14sp" />
+
+</RelativeLayout>
