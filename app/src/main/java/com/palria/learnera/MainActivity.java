@@ -77,7 +77,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        startActivity(new Intent(MainActivity.this, TestActivity.class));
+
+//        startActivity(new Intent(MainActivity.this, TestActivity.class));
 
 
         Toolbar tp = findViewById(R.id.topBar);

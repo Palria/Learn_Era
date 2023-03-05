@@ -34,7 +34,7 @@
         android:progress="0"
         android:progressDrawable="@drawable/progress_bar_drawable"
         android:progressTint="@color/teal_700"
-        android:secondaryProgress="75" />
+        android:secondaryProgress="5" />
 
 
 <!--    <com.google.android.material.progressindicator.LinearProgressIndicator-->

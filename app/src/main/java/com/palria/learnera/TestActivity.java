@@ -98,7 +98,7 @@ public class TestActivity extends AppCompatActivity {
 
         //intent where to redirect the user
         Intent intent = new Intent(TestActivity.this, PageActivity.class);
-        intent.putExtra("PAGE_ID",pageId);
+        intent.putExtra(GlobalConfig.PAGE_ID_KEY,pageId);
 
         // Create a PendingIntent from the intent
         PendingIntent pendingIntent = PendingIntent.getActivity(TestActivity.this, 0, intent, 0);

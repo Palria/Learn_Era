@@ -1,25 +1,37 @@
 
 package com.palria.learnera;
 
+import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -28,13 +40,13 @@ import com.google.firebase.storage.UploadTask;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class UploadPageManagerService extends Service {
+public class UploadPageManagerService extends Service implements OnPageUploadListener {
     public UploadPageManagerService() {
     }
     static FirebaseFirestore firebaseFirestore;
     static String currentUserId = "0";
     static FirebaseStorage firebaseStorage;
-    static OnPageUploadListener onPageUploadListener;
+//    static OnPageUploadListener onPageUploadListener;
     static  ArrayList<String>allActivePagesIdArrayList = new ArrayList<>();
 
     static HashMap<String, Integer> totalNumberOfTimesImageFailed = new HashMap<>();
@@ -73,16 +85,27 @@ public class UploadPageManagerService extends Service {
         }
 
 
+        String pageId = intent.getStringExtra(GlobalConfig.PAGE_ID_KEY);
+        String libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
+        String tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
+        String folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
+        String pageTitle = intent.getStringExtra(GlobalConfig.PAGE_TITLE_KEY);
+        String pageContent = intent.getStringExtra(GlobalConfig.PAGE_CONTENT_KEY);
+        ArrayList<String> imageListToUpload = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.PAGE_MEDIA_URL_LIST_KEY);
+        boolean isTutorialPage = intent.getBooleanExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
+        UploadPageManagerService.this.onNewPage( pageId,  folderId,  tutorialId,  libraryId,  isTutorialPage,  pageTitle,  pageContent,imageListToUpload);
+
+
         return Service.START_STICKY;
     }
 
 
     static void addUploadListeners(OnPageUploadListener onPageUploadListener){
-        UploadPageManagerService.onPageUploadListener = onPageUploadListener;
+//        UploadPageManagerService.onPageUploadListener = onPageUploadListener;
     }
 
     static void setInitialVariables(String pageId){
-        onPageUploadListener.onNewPage(pageId);
+//        onPageUploadListener.onNewPage(pageId);
         if(!allActivePagesIdArrayList.contains(pageId)){
             allActivePagesIdArrayList.add(pageId);
         }
@@ -126,7 +149,7 @@ public class UploadPageManagerService extends Service {
                             //succeeded
                             allActivePagesIdArrayList.remove(pageId);
                             isPageUploadedHashMap.put(pageId,true);
-                            onPageUploadListener.onSuccess(pageId);
+//                            onPageUploadListener.onSuccess(pageId);
                         }
                     }
                 });
@@ -173,7 +196,7 @@ public class UploadPageManagerService extends Service {
                     long totalBytesTransferred = snapshot.getBytesTransferred();
                     int progressCount = (int) ( (totalBytesTransferred /totalBytes) * 100 );
                     pageUploadProgressCounterHashMap.put(pageId,progressCount);
-                    onPageUploadListener.onProgress(pageId,progressCount);
+//                    onPageUploadListener.onProgress(pageId,progressCount);
 
                 }
             })
@@ -219,7 +242,7 @@ public class UploadPageManagerService extends Service {
                                                             //succeeded
                                                             allActivePagesIdArrayList.remove(pageId);
                                                             isPageUploadedHashMap.put(pageId,true);
-                                                            onPageUploadListener.onSuccess(pageId);
+//                                                            onPageUploadListener.onSuccess(pageId);
                                                         }
                                                     }
                                                 }
@@ -332,7 +355,7 @@ public class UploadPageManagerService extends Service {
                                                     //failed
 //                                                    allActivePagesIdArrayList.remove(pageId);
                                                     isPageUploadedHashMap.put(pageId,false);
-                                                    onPageUploadListener.onFailed(e.getMessage());
+//                                                    onPageUploadListener.onFailed(pageId,e.getMessage());
                                                 }
                                             }
                                         })
@@ -345,7 +368,7 @@ public class UploadPageManagerService extends Service {
                                             //succeeded
                                             allActivePagesIdArrayList.remove(pageId);
                                             isPageUploadedHashMap.put(pageId,true);
-                                            onPageUploadListener.onSuccess(pageId);
+//                                            onPageUploadListener.onSuccess(pageId);
                                         }
                                     }
                                 });
@@ -411,7 +434,8 @@ public class UploadPageManagerService extends Service {
                     long totalBytesTransferred = snapshot.getBytesTransferred();
                     int progressCount = (int) ( (totalBytesTransferred  * 100)/totalBytes) ;
                     pageUploadProgressCounterHashMap.put(pageId,progressCount);
-                    onPageUploadListener.onProgress(pageId,progressCount);
+//                    onPageUploadListener.onProgress(pageId,progressCount);
+
 
                 }
             })
@@ -454,7 +478,7 @@ public class UploadPageManagerService extends Service {
                                                documentReference.set(pageImageDataDetails, SetOptions.merge()).addOnFailureListener(new OnFailureListener() {
                                                     @Override
                                                     public void onFailure(@NonNull Exception e) {
-                                                    onPageUploadListener.onFailed(e.getMessage());
+//                                                    onPageUploadListener.onFailed(pageId,e.getMessage());
                                                     }
                                                 }).addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
@@ -470,7 +494,7 @@ public class UploadPageManagerService extends Service {
                                                                 //succeeded
                                                                 allActivePagesIdArrayList.remove(pageId);
                                                                 isPageUploadedHashMap.put(pageId, true);
-                                                                onPageUploadListener.onSuccess(pageId);
+//                                                                onPageUploadListener.onSuccess(pageId);
                                                             }
                                                         }
                                                     }
@@ -479,7 +503,7 @@ public class UploadPageManagerService extends Service {
 
                                         }
                                         else{
-                                            onPageUploadListener.onFailed(pageId);
+//                                            onPageUploadListener.onFailed(pageId,task.getException().getMessage());
                                         }
                                     }
                                 });
@@ -528,14 +552,462 @@ public class UploadPageManagerService extends Service {
     }
 
 
-    interface OnPageUploadListener{
-        void onNewPage(String pageId);
-        void onFailed(String pageId);
-        void onProgress(String pageId, int progressCount);
-        void onSuccess(String pageId);
+
+
+
+
+
+
+
+    /**new implementations begin*/
+HashMap<String,Integer> numberOfMedia = new HashMap<>();
+HashMap<String,Integer> numberOfMediaUploaded = new HashMap<>();
+HashMap<String,Integer> numberOfProgressingMedia = new HashMap<>();
+HashMap<String,Long> totalBytesTransferred = new HashMap<>();
+HashMap<String,Long> totalBytes = new HashMap<>();
+HashMap<String,Integer> progressCount = new HashMap<>();
+HashMap<String,RemoteViews> notificationLayout = new HashMap<>();
+HashMap<String,NotificationCompat.Builder> builder = new HashMap<>();
+HashMap<String,NotificationManagerCompat> notificationManager = new HashMap<>();
+HashMap<String,Integer> notificationId = new HashMap<>();
+//ends
+
+    private void startUploadService(String libraryId, String tutorialId, String folderId, String pageId,String pageTitle, String pageContent, ArrayList<String> imagesListToUpload,boolean isTutorialPage) {
+//        pageId = GlobalConfig.getRandomString(60);
+
+        /**
+         * implement upload service here and other here
+         *
+         */
+
+        final String[] postContentHtml = {pageContent};
+        //first upload all the images
+
+        if(imagesListToUpload.size()==0){
+            //upload page directly here no need to upload images
+
+            //postTitle,postContentHtml[0]
+            Log.e("pageContentInUploadService",postContentHtml[0]);
+            writePageToDatabase( libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  postContentHtml[0], isTutorialPage);
+
+            return;
+        }else {
+            //store the number of media to be uploaded
+            numberOfMedia.put(pageId,imagesListToUpload.size());
+
+            for (String localUrl : imagesListToUpload) {
+                uploadImageToServer( libraryId,  tutorialId,  folderId,  pageId,pageTitle, localUrl, isTutorialPage, new ImageUploadListener() {
+                    @Override
+                    public void onComplete(String localUrl, String downloadUrl) {
+                        super.onComplete(localUrl, downloadUrl);
+                        //replace the url when completed.
+                        postContentHtml[0] = postContentHtml[0].replaceAll(localUrl, downloadUrl);
+                        //increment the number of successfully uploaded media from the Hashmap
+                        numberOfMediaUploaded.put(pageId,numberOfMediaUploaded.get(pageId)+1);
+                        if (numberOfMediaUploaded.get(pageId) == imagesListToUpload.size()) {
+                            //if all images uploaded successfully save page to database now.
+                            //postTitle,postContentHtml[0]
+                            Log.e("pageContentInUploadService_withImages_", postContentHtml[0]);
+
+                            writePageToDatabase( libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  postContentHtml[0], isTutorialPage);
+
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailed(Throwable throwable) {
+                        super.onFailed(throwable);
+                        UploadPageManagerService.this.onFailed(pageId, throwable.getMessage());
+                    }
+                });
+
+
+            }
+
+            //post here (just title and page content )
+            //postPage();
+            //uploadPage();
+
+        }
+    }
+
+    public void uploadImageToServer(String libraryId, String tutorialId, String folderId, String pageId,String pageTitle,String url,boolean isTutorialPage, ImageUploadListener listener){
+        //upload the image here
+
+        //call this on success (test listener like this)
+        //imageUploader.uploadOnServer(new Listener(){
+        // public void onSuccess(String downloadUrl){
+        // listener.onComplete(url, downloadUrl);
+        // }
+        // })
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            String imageId = GlobalConfig.getRandomString(15);
+            StorageReference storageReference = null;
+            if(isTutorialPage) {
+                storageReference = GlobalConfig.getFirebaseStorageInstance().getReference().child(GlobalConfig.ALL_USERS_KEY + "/" + GlobalConfig.getCurrentUserId() + "/" + GlobalConfig.ALL_LIBRARY_KEY + "/" + libraryId + "/" + GlobalConfig.ALL_TUTORIAL_KEY + "/" + tutorialId + "/" + GlobalConfig.ALL_TUTORIAL_PAGES_KEY + "/" + pageId + "/ALL_IMAGES/" + imageId + ".PNG");
+            }else{
+                storageReference = GlobalConfig.getFirebaseStorageInstance().getReference().child(GlobalConfig.ALL_USERS_KEY + "/" + GlobalConfig.getCurrentUserId() + "/" + GlobalConfig.ALL_LIBRARY_KEY + "/" + libraryId + "/" + GlobalConfig.ALL_TUTORIAL_KEY + "/" + tutorialId + "/" + GlobalConfig.ALL_FOLDERS_KEY+"/"+folderId+"/"+GlobalConfig.ALL_FOLDER_PAGES_KEY + "/" + pageId + "/ALL_IMAGES/" + imageId + ".PNG");
+
+            }
+            final StorageReference finalStorageReference = storageReference;
+
+            UploadTask uploadTask = storageReference.putFile(Uri.parse(url));
+
+            //increment the number of media that are already in progress
+            numberOfProgressingMedia.put(pageId,numberOfProgressingMedia.get(pageId)+1);
+
+
+            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+
+                    totalBytes.put(pageId,totalBytes.get(pageId)+snapshot.getTotalByteCount());
+                    totalBytesTransferred.put(pageId,totalBytesTransferred.get(pageId)+snapshot.getBytesTransferred());
+
+                    progressCount.put(pageId,(int) ((100.0 * totalBytesTransferred.get(pageId)  /totalBytes.get(pageId)) ));
+
+                    Toast.makeText(UploadPageManagerService.this, ""+progressCount.get(pageId), Toast.LENGTH_SHORT).show();
+
+                    if((int)numberOfMedia.get(pageId) == (int) (numberOfProgressingMedia.get(pageId))) {
+                        Toast.makeText(UploadPageManagerService.this, "was true  tt"+totalBytes.get(pageId)+" :" +progressCount.get(pageId)+" yes true ttr : "+totalBytesTransferred.get(pageId), Toast.LENGTH_SHORT).show();
+
+                        UploadPageManagerService.this.onProgress(pageId, progressCount.get(pageId),folderId,  tutorialId,  isTutorialPage,  pageTitle);
+                    }
+
+                }
+            }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                    @Override
+                                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+
+
+                                        return finalStorageReference.getDownloadUrl();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                    }
+                                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Uri> task) {
+                                        if (task.isSuccessful()) {
+                                            String imageDownloadUrl = String.valueOf(task.getResult());
+
+                                            listener.onComplete(url,imageDownloadUrl);
+
+                                        }
+                                        else{
+                                            listener.onFailed(new Throwable(task.getException().getMessage()));
+
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                //failed to upload the image
+                                listener.onFailed(new Throwable(task.getException().getMessage()));
+
+
+                            }
+                        }
+                    });
+
+        }
+
+//        String downloadUrl = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png";
+//        listener.onComplete(url, downloadUrl);
+    }
+
+    /**This posts the page content to database*/
+    private void writePageToDatabase(String libraryId, String tutorialId, String folderId, String pageId, String pageTitle, String pageContent,boolean isTutorialPage) {
+        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+        DocumentReference pageDocumentReference = null;
+        if(isTutorialPage){
+            pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId);
+        }else{
+            pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageId);
+
+        }
+
+        HashMap<String, Object> pageTextPartitionsDataDetailsHashMap = new HashMap<>();
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_TITLE_KEY, pageTitle);
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.LIBRARY_ID_KEY, libraryId);
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.FOLDER_ID_KEY, folderId);
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_ID_KEY, pageId);
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.AUTHOR_ID_KEY, GlobalConfig.getCurrentUserId());
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_CONTENT_KEY, pageContent);
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.DATE_TIME_STAMP_PAGE_CREATED_KEY, FieldValue.serverTimestamp());
+
+        writeBatch.set(pageDocumentReference,pageTextPartitionsDataDetailsHashMap, SetOptions.merge());
+
+        DocumentReference documentReference = null;
+        if(isTutorialPage){
+            documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
+            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onFailed(String errorMessage) {
+
+                }
+            });
+
+        }else{
+            documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId);
+            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onFailed(String errorMessage) {
+
+                }
+            });
+
+        }
+        HashMap<String, Object> incrementPageNumberHashMap = new HashMap<>();
+        incrementPageNumberHashMap.put(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY, FieldValue.increment(1L));
+        writeBatch.update(documentReference,incrementPageNumberHashMap);
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        writePageToDatabase( libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  pageContent, isTutorialPage);
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                if(isTutorialPage){
+                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onFailed(String errorMessage) {
+
+                        }
+                    });
+
+                }else{
+                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onFailed(String errorMessage) {
+
+                        }
+                    });
+
+                }
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //delay the success for some seconds to allow some asynchronous processes to finish
+                        UploadPageManagerService.this.onSuccess( pageId, folderId, tutorialId, isTutorialPage, pageTitle);
+
+                    }
+                },2000);
+            }
+        });
+//            }
+
+
+    }
+    private void showPageProgressNotification(String pageId){
+        // Create a notification channel (required for Android Oreo and above)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("my_channel_id", "My Channel", NotificationManager.IMPORTANCE_HIGH);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+
+// Create a custom layout for the notification
+//        @SuppressLint("RemoteViewLayout")
+        notificationLayout.put(pageId,new RemoteViews(getPackageName(), R.layout.notification_layout));
+        //set image cover icon here
+        notificationLayout.get(pageId).setImageViewResource(R.id.icon, R.drawable.book_cover2);
+        // Create an explicit intent for launching the MainActivity
+        Intent intent = new Intent(this, MainActivity.class);
+        // Create a PendingIntent from the intent
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+//        notificationId = (int) System.currentTimeMillis(); // generate a unique ID
+        builder.put(pageId,new NotificationCompat.Builder(UploadPageManagerService.this, "my_channel_id")
+                .setSmallIcon(R.drawable.baseline_notifications_24) //notification icon
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCustomBigContentView(notificationLayout.get(pageId))
+                .setCustomHeadsUpContentView(notificationLayout.get(pageId))
+                .setContentIntent(pendingIntent) //intent to start when click notification
+                .setOnlyAlertOnce(true) //only show once not when updating progress
+                .setStyle(new NotificationCompat.BigTextStyle().bigText("Page uploading..."))
+                .setOngoing(true) //set ongoing which is not cancelable by user
+                .setAutoCancel(false) //auto cancel false
+        );
+        notificationManager.put(pageId,NotificationManagerCompat.from(this));
+        notificationManager.get(pageId).notify(notificationId.get(pageId), builder.get(pageId).build());
+
+        // Create a Handler to update the notification loader and percent every second
+//        Handler handler = new Handler();
+//        Runnable runnable = new Runnable() {
+//            //uplod percentage count .
+////            int percentageCompleted = 0;
+//            @Override
+//            public void run() {
+//                if(percentageCompleted==100){
+//                    handler.removeCallbacks(this);
+//                    //cancel all or single notification
+//                    notificationManager.cancelAll();
+//                    showCompletedNotification( pageId, folderId, tutorialId, isTutorialPage, pageTitle);
+//                }else{
+//                    updatePageProgressNotification(notificationLayout,percentageCompleted,builder);
+//                    // Update the  with the current time
+////                    percentageCompleted++;
+////
+////                    notificationLayout.setProgressBar(R.id.progress_bar,100,0,false);
+////                    notificationLayout.setTextViewText(R.id.percent,percentageCompleted+"% completed");
+//
+//                    // Update the notification
+////                    NotificationManagerCompat.from(getApplicationContext()).notify(notificationId, builder.build());
+//                    // Schedule the next update in 1 second
+//                    //handler.postDelayed(this, 100);//make it 1000
+//                }
+//            }
+//        };
+//// Start the periodic updates
+//        handler.postDelayed(runnable, 100);//make it 1000
+
+    }
+
+    private void updatePageProgressNotification(String pageId,RemoteViews notificationLayout,int percentageCompleted, NotificationCompat.Builder builder){
+
+        notificationLayout.setProgressBar(R.id.progress_bar,100,percentageCompleted,false);
+        notificationLayout.setTextViewText(R.id.percent,percentageCompleted+"% completed");
+        NotificationManagerCompat.from(getApplicationContext()).notify(notificationId.get(pageId), builder.build());
+
+    }
+
+    public void showCompletedNotification(String pageId,String folderId,String tutorialId,boolean isTutorialPage,String pageTitle){
+        @SuppressLint("RemoteViewLayout")
+        //customize notification
+        String pageTitle1 = pageTitle.length()>20 ? pageTitle.substring(0,20) :pageTitle;
+        RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_layout);
+        notificationLayout.setTextViewText(R.id.title, "\""+pageTitle1+"\"" + " Page Uploaded");
+        notificationLayout.setProgressBar(R.id.progress_bar,100,100,false);
+        notificationLayout.setTextViewText(R.id.percent, "100% completed");
+        notificationLayout.setImageViewResource(R.id.icon,R.drawable.book_cover2);
+
+
+        //intent where to redirect the user
+        Intent intent = new Intent(UploadPageManagerService.this, PageActivity.class);
+        intent.putExtra(GlobalConfig.PAGE_ID_KEY,pageId);
+        intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderId);
+        intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+        intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,GlobalConfig.getCurrentUserId());
+        intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,isTutorialPage);
+        // Create a PendingIntent from the intent
+        PendingIntent pendingIntent = PendingIntent.getActivity(UploadPageManagerService.this, 0, intent, 0);
+
+        int notificationId = (int) System.currentTimeMillis(); // generate a unique ID
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(UploadPageManagerService.this, "my_channel_id")
+                .setSmallIcon(R.drawable.baseline_notifications_24) //notification icon
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCustomBigContentView(notificationLayout)
+                .setCustomHeadsUpContentView(notificationLayout)
+                .setContentIntent(pendingIntent)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText("Page uploaded"))
+                .setAutoCancel(false);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(UploadPageManagerService.this);
+        notificationManager.notify(notificationId, builder.build());
+
+    }
+
+
+    @Override
+    public void onNewPage(String pageId,String  folderId,String  tutorialId,String  libraryId, boolean isTutorialPage,String  pageTitle,String  pageContent,ArrayList<String>imageListToUpload) {
+//initialize the hashmaps to avoid null pointer exception
+        numberOfMedia.put(pageId,imageListToUpload.size());
+        numberOfMediaUploaded.put(pageId,0);
+        numberOfProgressingMedia.put(pageId,0);
+        totalBytesTransferred.put(pageId,0L);
+        totalBytes.put(pageId,0L);
+        progressCount.put(pageId,0);
+        notificationLayout.put(pageId,new RemoteViews(getPackageName(), R.layout.notification_layout));
+        builder.put(pageId,new NotificationCompat.Builder(UploadPageManagerService.this, "my_channel_id"));
+        notificationManager.put(pageId,NotificationManagerCompat.from(this));
+        notificationId.put(pageId,(int)System.currentTimeMillis());
+
+        startUploadService(libraryId,tutorialId,folderId,pageId,pageTitle,pageContent,imageListToUpload,isTutorialPage);
+
+        showPageProgressNotification(pageId);
+    }
+
+    @Override
+    public void onFailed(String pageId, String errorMessage) {
+
+    }
+
+    @Override
+    public void onProgress(String pageId, int progressCounter,String  folderId,String  tutorialId, boolean isTutorialPage,String  pageTitle) {
+
+        if(progressCounter==100){
+            notificationManager.get(pageId).cancelAll();
+            showCompletedNotification( pageId, folderId, tutorialId, isTutorialPage, pageTitle);
+        }else{
+            updatePageProgressNotification(pageId,notificationLayout.get(pageId),progressCount.get(pageId),builder.get(pageId));
+            // Update the  with the current time
+//                    percentageCompleted++;
+//
+//                    notificationLayout.setProgressBar(R.id.progress_bar,100,0,false);
+//                    notificationLayout.setTextViewText(R.id.percent,percentageCompleted+"% completed");
+
+            // Update the notification
+//                    NotificationManagerCompat.from(getApplicationContext()).notify(notificationId, builder.build());
+            // Schedule the next update in 1 second
+            //handler.postDelayed(this, 100);//make it 1000
+        }
+    }
+
+    @Override
+    public void onSuccess(String pageId,String  folderId,String  tutorialId, boolean isTutorialPage,String  pageTitle) {
+
+        notificationManager.get(pageId).cancelAll();
+        showCompletedNotification( pageId, folderId, tutorialId, isTutorialPage, pageTitle);
 
 
     }
 
+    public class ImageUploadListener implements ImageUploadInterface {
+
+        @Override
+        public void onComplete(String localUrl, String downloadUrl) {
+
+        }
+
+        @Override
+        public void onFailed(Throwable throwable) {
+
+        }
+    }
+
+    interface ImageUploadInterface{
+        public void onComplete(String localUrl, String downloadUrl);
+        public void onFailed(Throwable throwable);
+    }
 
 }

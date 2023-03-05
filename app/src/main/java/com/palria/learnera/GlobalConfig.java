@@ -278,6 +278,7 @@ public class GlobalConfig {
     public static final String TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR";
     public static final String TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR";
     public static final String PAGE_CONTENT_KEY = "PAGE_CONTENT";
+    public static final String PAGE_MEDIA_URL_LIST_KEY = "PAGE_MEDIA_URL_LIST";
 //    public static final String PAGE_NAME_KEY = "PAGE_NAME";
     public static final String DATE_TIME_STAMP_PAGE_CREATED_KEY = "DATE_TIME_STAMP_PAGE_CREATED";
     public static final String TOTAL_NUMBER_OF_PAGE_DATA_KEY = "TOTAL_NUMBER_OF_PAGE_DATA";

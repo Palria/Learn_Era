@@ -4,6 +4,10 @@ package com.palria.learnera;
 import static com.google.android.exoplayer2.ExoPlayerLibraryInfo.TAG;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +18,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
@@ -37,6 +42,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +55,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
@@ -97,6 +105,15 @@ public class UploadPageActivity extends AppCompatActivity {
     boolean isTutorialPage = true;
     Snackbar pageUploadSnackBar;
     OnPageUploadListener onPageUploadListener;
+    RemoteViews notificationLayout;
+    NotificationCompat.Builder builder;
+    NotificationManagerCompat notificationManager;
+    int notificationId;
+    int numberOfProgressingMedia= 0;
+    int numberOfMedia = 0;
+    int progressCount = 0;
+    long totalBytes = 0;
+    long totalBytesTransferred = 0;
 
     /**
      * A  variable for launching the gallery {@link Intent}
@@ -150,7 +167,7 @@ public class UploadPageActivity extends AppCompatActivity {
      ImageView action_insert_image;
         ImageView action_insert_link;
        ImageView action_insert_checkbox;
-    boolean visible = false;
+        boolean visible = false;
         ImageView preview;
         ImageView insert_latex;
         ImageView insert_code;
@@ -286,6 +303,7 @@ public class UploadPageActivity extends AppCompatActivity {
             @Override
             public void onNewPage(String pageId) {
             pageUploadSnackBar =  GlobalConfig.createSnackBar(UploadPageActivity.this,wysiwygEditor, pageTitle + " is uploading...", Snackbar.LENGTH_INDEFINITE);
+//            showPageProgressNotification();
             }
 
             @Override
@@ -300,6 +318,22 @@ public class UploadPageActivity extends AppCompatActivity {
                 pageUploadSnackBar.dismiss();
                 pageUploadSnackBar =  GlobalConfig.createSnackBar(UploadPageActivity.this,wysiwygEditor, "Progress: "+ progressCount, Snackbar.LENGTH_INDEFINITE);
 
+                if(progressCount==100){
+                    notificationManager.cancelAll();
+                    showCompletedNotification( pageId, folderId, tutorialId, isTutorialPage, pageTitle);
+                }else{
+                    updatePageProgressNotification(notificationLayout,progressCount,builder);
+                    // Update the  with the current time
+//                    percentageCompleted++;
+//
+//                    notificationLayout.setProgressBar(R.id.progress_bar,100,0,false);
+//                    notificationLayout.setTextViewText(R.id.percent,percentageCompleted+"% completed");
+
+                    // Update the notification
+//                    NotificationManagerCompat.from(getApplicationContext()).notify(notificationId, builder.build());
+                    // Schedule the next update in 1 second
+                    //handler.postDelayed(this, 100);//make it 1000
+                }
             }
 
             @Override
@@ -309,6 +343,8 @@ public class UploadPageActivity extends AppCompatActivity {
                         UploadPageActivity.this,
                         "Page created successfully",
                         "You have successfully created your page, go ahead and contribute to Learn Era ");
+                notificationManager.cancelAll();
+                showCompletedNotification( pageId, folderId, tutorialId, isTutorialPage, pageTitle);
 
 
             }
@@ -320,7 +356,6 @@ public class UploadPageActivity extends AppCompatActivity {
 //        pageId  = "TEST_ID-3";
 
 
-        startService(new Intent(getApplicationContext(),UploadPageManagerService.class));
         addImageActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -363,14 +398,19 @@ public class UploadPageActivity extends AppCompatActivity {
                                 pageContent = wysiwygEditor.getHtml();
                                 pageTitle = pageTitleEditText.getText().toString();
 
-                                pageTitleEditText.setText(wysiwygEditor.getHtml());
-                                wysiwygEditor.setHtml(wysiwygEditor.getHtml());
+//                                pageTitleEditText.setText(wysiwygEditor.getHtml());
+//                                wysiwygEditor.setHtml(wysiwygEditor.getHtml());
 
                                 if(validateForm()){
                                     //if validate form reeturns error/false
                                     return;
                                 }
-                               //if form is valid now get the image to upload to store
+
+
+
+//                                showPageProgressNotification();
+//
+//                                //if form is valid now get the image to upload to store
                                 ArrayList<String> imagesFinalListToUpload = new ArrayList<>();
 
                                 for(String localUrl : uploadedImagesList){
@@ -382,7 +422,7 @@ public class UploadPageActivity extends AppCompatActivity {
                                     }
                                 }
 
-                                startUploadService(pageTitle,pageContent,imagesFinalListToUpload);
+                               startPageUploadService(imagesFinalListToUpload);
 
                             }
                         });
@@ -415,6 +455,7 @@ public class UploadPageActivity extends AppCompatActivity {
                 writePageToDatabase(postTitle,postContent);
             return;
         }else {
+            numberOfMedia =imagesListToUpload.size();
 
             for (String localUrl : imagesListToUpload) {
                 uploadImageToServer(localUrl, new ImageUploadListener() {
@@ -472,14 +513,18 @@ public class UploadPageActivity extends AppCompatActivity {
             final StorageReference finalStorageReference = storageReference;
 
             UploadTask uploadTask = storageReference.putFile(Uri.parse(url));
+            numberOfProgressingMedia++;
+
             uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
 
-                    long totalBytes = snapshot.getTotalByteCount();
-                    long totalBytesTransferred = snapshot.getBytesTransferred();
-                    int progressCount = (int) ( (totalBytesTransferred  /totalBytes)* 100) ;
-                    onPageUploadListener.onProgress(pageId,progressCount);
+                     totalBytes =totalBytes+ snapshot.getTotalByteCount();
+                     totalBytesTransferred =totalBytesTransferred+ snapshot.getBytesTransferred();
+                     progressCount = (int) ((totalBytesTransferred  /totalBytes) *100.0);
+                     if(numberOfMedia == numberOfProgressingMedia) {
+                         onPageUploadListener.onProgress(pageId, progressCount);
+                     }
 
                 }
             })
@@ -548,6 +593,20 @@ public class UploadPageActivity extends AppCompatActivity {
         public void onFailed(Throwable throwable);
     }
 
+    //this is the method that triggers the page upload from the UploadPageManagerService class
+    private void startPageUploadService(ArrayList<String> imagesFinalListToUpload){
+        Intent intent = new Intent(getApplicationContext(),UploadPageManagerService.class);
+        intent.putExtra(GlobalConfig.PAGE_ID_KEY,pageId);
+        intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+        intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+        intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderId);
+        intent.putExtra(GlobalConfig.PAGE_TITLE_KEY,pageTitle);
+        intent.putExtra(GlobalConfig.PAGE_CONTENT_KEY,pageContent);
+        intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,isTutorialPage);
+        intent.putExtra(GlobalConfig.PAGE_MEDIA_URL_LIST_KEY,imagesFinalListToUpload);
+        startService(intent);
+
+    }
     private boolean validateForm() {
 
         if(pageTitleEditText.getText().toString().trim().equals("")){
@@ -1091,8 +1150,6 @@ public class UploadPageActivity extends AppCompatActivity {
         void onFailed(String pageId, String errorMessage);
         void onProgress(String pageId, int progressCount);
         void onSuccess(String pageId);
-
-
     }
 
 
@@ -1164,6 +1221,114 @@ public class UploadPageActivity extends AppCompatActivity {
         }else{
             alertDialog.cancel();
         }
+    }
+
+    private void showPageProgressNotification(){
+        // Create a notification channel (required for Android Oreo and above)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("my_channel_id", "My Channel", NotificationManager.IMPORTANCE_HIGH);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+
+// Create a custom layout for the notification
+//        @SuppressLint("RemoteViewLayout")
+        notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_layout);
+        //set image cover icon here
+        notificationLayout.setImageViewResource(R.id.icon, R.drawable.book_cover2);
+        // Create an explicit intent for launching the MainActivity
+        Intent intent = new Intent(this, MainActivity.class);
+        // Create a PendingIntent from the intent
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+         notificationId = (int) System.currentTimeMillis(); // generate a unique ID
+                 builder = new NotificationCompat.Builder(UploadPageActivity.this, "my_channel_id")
+                .setSmallIcon(R.drawable.baseline_notifications_24) //notification icon
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCustomBigContentView(notificationLayout)
+                .setCustomHeadsUpContentView(notificationLayout)
+                .setContentIntent(pendingIntent) //intent to start when click notification
+                .setOnlyAlertOnce(true) //only show once not when updating progress
+                .setStyle(new NotificationCompat.BigTextStyle().bigText("Expanded content"))
+                .setOngoing(true) //set ongoing with is not cancelable by user
+                .setAutoCancel(false); //auto cancel false
+
+        notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(notificationId, builder.build());
+
+        // Create a Handler to update the notification loader and percent every second
+//        Handler handler = new Handler();
+//        Runnable runnable = new Runnable() {
+//            //uplod percentage count .
+////            int percentageCompleted = 0;
+//            @Override
+//            public void run() {
+//                if(percentageCompleted==100){
+//                    handler.removeCallbacks(this);
+//                    //cancel all or single notification
+//                    notificationManager.cancelAll();
+//                    showCompletedNotification( pageId, folderId, tutorialId, isTutorialPage, pageTitle);
+//                }else{
+//                    updatePageProgressNotification(notificationLayout,percentageCompleted,builder);
+//                    // Update the  with the current time
+////                    percentageCompleted++;
+////
+////                    notificationLayout.setProgressBar(R.id.progress_bar,100,0,false);
+////                    notificationLayout.setTextViewText(R.id.percent,percentageCompleted+"% completed");
+//
+//                    // Update the notification
+////                    NotificationManagerCompat.from(getApplicationContext()).notify(notificationId, builder.build());
+//                    // Schedule the next update in 1 second
+//                    //handler.postDelayed(this, 100);//make it 1000
+//                }
+//            }
+//        };
+//// Start the periodic updates
+//        handler.postDelayed(runnable, 100);//make it 1000
+
+    }
+
+    private void updatePageProgressNotification(RemoteViews notificationLayout,int percentageCompleted, NotificationCompat.Builder builder){
+
+        notificationLayout.setProgressBar(R.id.progress_bar,100,percentageCompleted,false);
+        notificationLayout.setTextViewText(R.id.percent,percentageCompleted+"% completed");
+        NotificationManagerCompat.from(getApplicationContext()).notify(notificationId, builder.build());
+
+    }
+
+    public void showCompletedNotification(String pageId,String folderId,String tutorialId,boolean isTutorialPage,String pageTitle){
+        @SuppressLint("RemoteViewLayout")
+        //customize notification
+                String pageTitle1 = pageTitle.length()>10 ? pageTitle.substring(0,10) :pageTitle;
+        RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_layout);
+        notificationLayout.setTextViewText(R.id.title, pageTitle1 + " page Upload Completed");
+        notificationLayout.setProgressBar(R.id.progress_bar,100,100,false);
+        notificationLayout.setTextViewText(R.id.percent, "100% completed");
+        notificationLayout.setImageViewResource(R.id.icon,R.drawable.book_cover2);
+
+
+        //intent where to redirect the user
+        Intent intent = new Intent(UploadPageActivity.this, PageActivity.class);
+        intent.putExtra(GlobalConfig.PAGE_ID_KEY,pageId);
+        intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderId);
+        intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+        intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,GlobalConfig.getCurrentUserId());
+        intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,isTutorialPage);
+        // Create a PendingIntent from the intent
+        PendingIntent pendingIntent = PendingIntent.getActivity(UploadPageActivity.this, 0, intent, 0);
+
+        int notificationId = (int) System.currentTimeMillis(); // generate a unique ID
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(UploadPageActivity.this, "my_channel_id")
+                .setSmallIcon(R.drawable.baseline_notifications_24) //notification icon
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCustomBigContentView(notificationLayout)
+                .setCustomHeadsUpContentView(notificationLayout)
+                .setContentIntent(pendingIntent)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText("Expanded content"))
+                .setAutoCancel(false);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(UploadPageActivity.this);
+        notificationManager.notify(notificationId, builder.build());
+
     }
 
     @Deprecated
@@ -1248,30 +1413,30 @@ public class UploadPageActivity extends AppCompatActivity {
     void uploadPage(){
         ArrayList<ArrayList<String>> allPageTextPartitionsDataDetailsArrayList = new ArrayList<>();
 
-        UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
-            @Override
-            public void onNewPage(String pageId) {
-                Toast.makeText(getApplicationContext(), "New page id: "+ pageId, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailed(String pageId) {
-                Toast.makeText(getApplicationContext(), "page upload failed: "+ pageId, Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onProgress(String pageId, int progressCount) {
-                Toast.makeText(getApplicationContext(), "New page uploading: "+ pageId, Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onSuccess(String pageId) {
-                Toast.makeText(getApplicationContext(), "New page upload succeeded: "+ pageId, Toast.LENGTH_SHORT).show();
-
-            }
-        });
+//        UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
+//            @Override
+//            public void onNewPage(String pageId) {
+//                Toast.makeText(getApplicationContext(), "New page id: "+ pageId, Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onFailed(String pageId) {
+//                Toast.makeText(getApplicationContext(), "page upload failed: "+ pageId, Toast.LENGTH_SHORT).show();
+//
+//            }
+//
+//            @Override
+//            public void onProgress(String pageId, int progressCount) {
+//                Toast.makeText(getApplicationContext(), "New page uploading: "+ pageId, Toast.LENGTH_SHORT).show();
+//
+//            }
+//
+//            @Override
+//            public void onSuccess(String pageId) {
+//                Toast.makeText(getApplicationContext(), "New page upload succeeded: "+ pageId, Toast.LENGTH_SHORT).show();
+//
+//            }
+//        });
         UploadPageManagerService.setInitialVariables(pageId);
 
         for(int i=0; i<containerLinearLayout.getChildCount(); i++){
@@ -1455,38 +1620,38 @@ GlobalConfig.createSnackBar(this,containerLinearLayout,"Creating "+pageTitleEdit
 
 //        toggleProgress(true);
 preparePage();
-
-    UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
-        @Override
-        public void onNewPage(String pageId) {
-            Toast.makeText(getApplicationContext(), "New page id: "+ pageId, Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onFailed(String pageId) {
-            Toast.makeText(getApplicationContext(), "page upload failed: "+ pageId, Toast.LENGTH_SHORT).show();
-            toggleProgress(false);
-
-        }
-
-        @Override
-        public void onProgress(String pageId, int progressCount) {
-            Toast.makeText(getApplicationContext(), progressCount+" page progressing: "+ pageId, Toast.LENGTH_SHORT).show();
-
-        }
-
-        @Override
-        public void onSuccess(String pageId) {
-            Toast.makeText(getApplicationContext(), "New page upload succeeded: "+ pageId, Toast.LENGTH_SHORT).show();
-            toggleProgress(false);
-            GlobalHelpers.showAlertMessage("success",
-                    UploadPageActivity.this,
-                    "Page created successfully",
-                    "You have successfully created your page, go ahead and contribute to Learn Era ");
-
-
-        }
-    });
+//
+//    UploadPageManagerService.addUploadListeners(new UploadPageManagerService.OnPageUploadListener() {
+//        @Override
+//        public void onNewPage(String pageId) {
+//            Toast.makeText(getApplicationContext(), "New page id: "+ pageId, Toast.LENGTH_SHORT).show();
+//        }
+//
+//        @Override
+//        public void onFailed(String pageId) {
+//            Toast.makeText(getApplicationContext(), "page upload failed: "+ pageId, Toast.LENGTH_SHORT).show();
+//            toggleProgress(false);
+//
+//        }
+//
+//        @Override
+//        public void onProgress(String pageId, int progressCount) {
+//            Toast.makeText(getApplicationContext(), progressCount+" page progressing: "+ pageId, Toast.LENGTH_SHORT).show();
+//
+//        }
+//
+//        @Override
+//        public void onSuccess(String pageId) {
+//            Toast.makeText(getApplicationContext(), "New page upload succeeded: "+ pageId, Toast.LENGTH_SHORT).show();
+//            toggleProgress(false);
+//            GlobalHelpers.showAlertMessage("success",
+//                    UploadPageActivity.this,
+//                    "Page created successfully",
+//                    "You have successfully created your page, go ahead and contribute to Learn Era ");
+//
+//
+//        }
+//    });
     UploadPageManagerService.setInitialVariables(pageId);
 
     ArrayList<ArrayList<String>> allPageTextDataDetailsArrayList = new ArrayList<>();
