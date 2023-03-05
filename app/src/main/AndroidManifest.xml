@@ -17,9 +17,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting">
         <activity
+            android:theme="@style/Theme.LearnEra"
+            android:name=".TestActivity"
+            android:exported="false" />
+        <activity
             android:name=".PageActivity"
             android:exported="true"
-            android:theme="@style/Theme.LearnEra"/>
+            android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".HostActivity"
             android:exported="false"
@@ -45,10 +49,10 @@
                 android:value="" />
         </activity>
         <activity
-            android:windowSoftInputMode="adjustResize"
             android:name=".UploadPageActivity"
             android:exported="true"
-            android:theme="@style/Theme.LearnEra" />
+            android:theme="@style/Theme.LearnEra"
+            android:windowSoftInputMode="adjustResize" />
 
         <service
             android:name=".UploadPageManagerService"
