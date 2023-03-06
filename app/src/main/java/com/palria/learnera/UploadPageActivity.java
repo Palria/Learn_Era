@@ -16,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -30,11 +31,13 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.ValueCallback;
 import android.widget.Button;
 import android.widget.EditText;
@@ -74,6 +77,7 @@ import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.lib.rcheditor.Utils;
 import com.palria.learnera.lib.rcheditor.WYSIWYG;
 import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
@@ -124,7 +128,8 @@ public class UploadPageActivity extends AppCompatActivity {
      * A  variable for launching the camera {@link Intent}
      * */
     ActivityResultLauncher<Intent> openCameraLauncher;
-
+    ActivityResultLauncher<Intent> openCoverImageLauncher;
+    int COVER_IMAGE_GALLERY_REQUEST_CODE=123012;
     int CAMERA_PERMISSION_REQUEST_CODE = 2002;
     int GALLERY_PERMISSION_REQUEST_CODE = 23;
     int imageDisplayPosition = 0;
@@ -176,11 +181,13 @@ public class UploadPageActivity extends AppCompatActivity {
        Button submit_latex;
        EditText latex_equation;
        ImageView action_insert_video;
+    RoundedImageView coverImageView;
+    ImageView coverUploadButton;
 
     LEBottomSheetDialog choosePhotoPickerModal;
 
     ArrayList<String> uploadedImagesList = new ArrayList<>();
-
+    String coverImageUrl;
 
 
 
@@ -192,6 +199,25 @@ public class UploadPageActivity extends AppCompatActivity {
         initUI();
         fetchIntentData();
         pageId = GlobalConfig.getRandomString(60);
+        openCoverImageLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if (result.getData() != null) {
+                    Intent data=result.getData();
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),data.getData());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    bitmap.compress(Bitmap.CompressFormat.PNG,10,new ByteArrayOutputStream());
+                    coverImageUrl=GlobalHelpers.getImageUri(UploadPageActivity.this, bitmap).toString();
+                        Glide.with(UploadPageActivity.this)
+                                .load(coverImageUrl)
+                                .into(coverImageView);
+                }
+            }
+        });
 
         openGalleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
 
@@ -432,6 +458,13 @@ public class UploadPageActivity extends AppCompatActivity {
             }
         });
 
+        coverUploadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestForPermissionAndPickImage(COVER_IMAGE_GALLERY_REQUEST_CODE);
+            }
+        });
+
     }
     //uploaded images count tracker all complete or not
     int  uploaded = 0;
@@ -615,8 +648,13 @@ public class UploadPageActivity extends AppCompatActivity {
             return true;
         }
 
+        if(coverImageUrl == null || coverImageUrl.equals("")){
+            Toast.makeText(UploadPageActivity.this, "Please choose a cover image for page.",Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
         if(pageContent == null || pageContent.equals("")){
-           Toast.makeText(UploadPageActivity.this, "Please enter a description.",Toast.LENGTH_LONG).show();
+           Toast.makeText(UploadPageActivity.this, "Please enter a description.",Toast.LENGTH_SHORT).show();
            return true;
         }
         return false;
@@ -630,6 +668,7 @@ public class UploadPageActivity extends AppCompatActivity {
     addTodoListActionButton = findViewById(R.id.addTodoListActionButtonId);
     addTableActionButton = findViewById(R.id.addTableActionButtonId);
     btn = findViewById(R.id.btn);
+        coverUploadButton=findViewById(R.id.coverImagePicker);
     //addEditText(0);
     //createPartition();
 
@@ -648,11 +687,18 @@ public class UploadPageActivity extends AppCompatActivity {
 
     private void loadContentEditor() {
         //load the ocntent editor here and render there thats make it easy to handle without any external codes.
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int screenHeight = size.y;
+
         wysiwygEditor=findViewById(R.id.editor);
-        wysiwygEditor.setEditorHeight(600);
+        wysiwygEditor.setEditorHeight(screenHeight-820);
         wysiwygEditor.setEditorFontSize(16);
         wysiwygEditor.setPadding(10, 10, 10, 10);
-        wysiwygEditor.setPlaceholder("Insert your content here...");
+       // wysiwygEditor.setPlaceholder("Insert your content here...");
+        wysiwygEditor.setHtml("<p> your content...</p><br> <br> <br> &nbsp;");
 
          action_undo=findViewById(R.id.action_undo);
          action_redo=findViewById(R.id.action_redo);
@@ -690,6 +736,10 @@ public class UploadPageActivity extends AppCompatActivity {
          latex_equation=findViewById(R.id.latex_equation);
 
         action_insert_video=findViewById(R.id.action_insert_video);
+        coverImageView =findViewById(R.id.coverImage);
+        Glide.with(this)
+                .load("https://via.placeholder.com/640x360?text=Cover%20Image")
+                .into(coverImageView);
 
 
         choosePhotoPickerModal= new LEBottomSheetDialog(UploadPageActivity.this)
@@ -1194,6 +1244,7 @@ public class UploadPageActivity extends AppCompatActivity {
         galleryIntent.setType("image/*");
         openGalleryLauncher.launch(galleryIntent);
     }
+
     public void fireCameraIntent(){
         Intent cameraIntent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         openCameraLauncher.launch(cameraIntent);
@@ -1207,6 +1258,12 @@ public class UploadPageActivity extends AppCompatActivity {
             }
             if(requestCode == GALLERY_PERMISSION_REQUEST_CODE) {
                 fireGalleryIntent();
+            }
+            if(requestCode== COVER_IMAGE_GALLERY_REQUEST_CODE){
+                Intent galleryCoverIntent = new Intent();
+                galleryCoverIntent.setAction(Intent.ACTION_PICK);
+                galleryCoverIntent.setType("image/*");
+                openCoverImageLauncher.launch(galleryCoverIntent);
             }
         }
 

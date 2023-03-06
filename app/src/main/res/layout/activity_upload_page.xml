@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/teal_700"
     android:layout_height="match_parent"
     tools:context=".UploadPageActivity">
 
@@ -19,14 +20,7 @@
         app:layout_constraintTop_toTopOf="parent"
         >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:text="Title"
-        android:layout_marginRight="4pt"
-        android:textSize="15sp"
-        />
+
  <EditText
         android:id="@+id/pageTitleEditTextId"
         android:layout_width="0dp"
@@ -37,12 +31,34 @@
      android:paddingHorizontal="3pt"
      android:paddingVertical="5pt"
         android:textColor="@color/black"
-        android:background="@color/white"
+        android:background="@drawable/default_input_bg"
         />
 
+        <ImageView
+            android:layout_marginLeft="4pt"
+            android:layout_gravity="center"
+            app:tint="@color/white"
+            android:id="@+id/coverImagePicker"
+            android:src="@drawable/ic_baseline_add_photo_alternate_24"
+            android:layout_width="48dp"
+            android:layout_height="48dp"/>
+
     </LinearLayout>
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/coverImage"
+        app:riv_corner_radius="4pt"
+        app:riv_border_width="1pt"
+        app:riv_border_color="@color/white"
+        android:src="@drawable/book_cover2"
+        android:layout_marginHorizontal="5pt"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toBottomOf="@+id/topLinearLayoutId"
+        android:layout_marginVertical="2pt"
+        android:layout_width="match_parent"
+        android:layout_height="45pt"/>
     <include
-        app:layout_constraintTop_toBottomOf="@id/topLinearLayoutId"
+        android:layout_marginTop="2pt"
+        app:layout_constraintTop_toBottomOf="@id/coverImage"
         android:layout_height="wrap_content"
         layout="@layout/rich_text_editor_layout"
         android:layout_width="match_parent" />
@@ -92,6 +108,7 @@
         android:id="@+id/btn"
         android:layout_margin="10pt"
         android:tint="@color/teal_700"
+        android:backgroundTint="@color/teal_700"
         android:src="@drawable/baseline_check_circle_outline_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
