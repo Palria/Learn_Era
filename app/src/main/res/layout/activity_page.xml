@@ -19,13 +19,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/coverImage"
+        app:riv_corner_radius="4pt"
+        app:riv_border_width="1pt"
+        app:riv_border_color="@color/white"
+        android:src="@drawable/book_cover2"
+        android:layout_marginHorizontal="5pt"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toBottomOf="@+id/pageTitleTextViewId"
+        android:layout_marginVertical="2pt"
+        android:layout_width="match_parent"
+        android:layout_height="45pt"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pageTitleTextViewId"
+        app:layout_constraintTop_toBottomOf="@id/coverImage"
         >
     <LinearLayout
         android:id="@+id/containerLinearLayoutId"

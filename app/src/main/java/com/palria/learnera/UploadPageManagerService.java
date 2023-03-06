@@ -582,13 +582,15 @@ HashMap<String,Integer> notificationId = new HashMap<>();
 
         final String[] postContentHtml = {pageContent};
         //first upload all the images
+        String[] coverImageDownloadUrl = new String[1];
+
 
         if(imagesListToUpload.size()==0){
             //upload page directly here no need to upload images
 
             //postTitle,postContentHtml[0]
             Log.e("pageContentInUploadService",postContentHtml[0]);
-            writePageToDatabase( libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  postContentHtml[0], isTutorialPage);
+            writePageToDatabase( libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  postContentHtml[0],"", isTutorialPage);
 
             return;
         }else {
@@ -596,20 +598,25 @@ HashMap<String,Integer> notificationId = new HashMap<>();
             numberOfMedia.put(pageId,imagesListToUpload.size());
 
             for (String localUrl : imagesListToUpload) {
-                uploadImageToServer( libraryId,  tutorialId,  folderId,  pageId,pageTitle, localUrl, isTutorialPage, new ImageUploadListener() {
+                uploadImageToServer( libraryId,  tutorialId,  folderId,  pageId,pageTitle, localUrl, isTutorialPage,imagesListToUpload, new ImageUploadListener() {
                     @Override
-                    public void onComplete(String localUrl, String downloadUrl) {
-                        super.onComplete(localUrl, downloadUrl);
+                    public void onComplete(String localUrl, String downloadUrl,ArrayList<String> imagesListToUpload) {
+                        super.onComplete(localUrl, downloadUrl,imagesListToUpload);
                         //replace the url when completed.
                         postContentHtml[0] = postContentHtml[0].replaceAll(localUrl, downloadUrl);
                         //increment the number of successfully uploaded media from the Hashmap
                         numberOfMediaUploaded.put(pageId,numberOfMediaUploaded.get(pageId)+1);
+
+                        if(imagesListToUpload.indexOf(localUrl) == 0){
+                            coverImageDownloadUrl[0] = downloadUrl;
+                        }
                         if (numberOfMediaUploaded.get(pageId) == imagesListToUpload.size()) {
                             //if all images uploaded successfully save page to database now.
                             //postTitle,postContentHtml[0]
                             Log.e("pageContentInUploadService_withImages_", postContentHtml[0]);
 
-                            writePageToDatabase( libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  postContentHtml[0], isTutorialPage);
+                            writePageToDatabase( libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  postContentHtml[0],coverImageDownloadUrl[0], isTutorialPage);
+
 
 
                         }
@@ -632,7 +639,7 @@ HashMap<String,Integer> notificationId = new HashMap<>();
         }
     }
 
-    public void uploadImageToServer(String libraryId, String tutorialId, String folderId, String pageId,String pageTitle,String url,boolean isTutorialPage, ImageUploadListener listener){
+    public void uploadImageToServer(String libraryId, String tutorialId, String folderId, String pageId,String pageTitle,String url,boolean isTutorialPage,ArrayList<String>imageUrlUploadList, ImageUploadListener listener){
         //upload the image here
 
         //call this on success (test listener like this)
@@ -669,11 +676,11 @@ HashMap<String,Integer> notificationId = new HashMap<>();
 
                     Toast.makeText(UploadPageManagerService.this, ""+progressCount.get(pageId), Toast.LENGTH_SHORT).show();
 
-                    if((int)numberOfMedia.get(pageId) == (int) (numberOfProgressingMedia.get(pageId))) {
+                   // if((int)numberOfMedia.get(pageId) == (int) (numberOfProgressingMedia.get(pageId))) {
                         Toast.makeText(UploadPageManagerService.this, "was true  tt"+totalBytes.get(pageId)+" :" +progressCount.get(pageId)+" yes true ttr : "+totalBytesTransferred.get(pageId), Toast.LENGTH_SHORT).show();
 
                         UploadPageManagerService.this.onProgress(pageId, progressCount.get(pageId),folderId,  tutorialId,  isTutorialPage,  pageTitle);
-                    }
+                   /// }
 
                 }
             }).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -698,7 +705,7 @@ HashMap<String,Integer> notificationId = new HashMap<>();
                                         if (task.isSuccessful()) {
                                             String imageDownloadUrl = String.valueOf(task.getResult());
 
-                                            listener.onComplete(url,imageDownloadUrl);
+                                            listener.onComplete(url,imageDownloadUrl,imageUrlUploadList);
 
                                         }
                                         else{
@@ -724,7 +731,7 @@ HashMap<String,Integer> notificationId = new HashMap<>();
     }
 
     /**This posts the page content to database*/
-    private void writePageToDatabase(String libraryId, String tutorialId, String folderId, String pageId, String pageTitle, String pageContent,boolean isTutorialPage) {
+    private void writePageToDatabase(String libraryId, String tutorialId, String folderId, String pageId, String pageTitle, String pageContent,String coverImageDownloadUrl,boolean isTutorialPage) {
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
         DocumentReference pageDocumentReference = null;
         if(isTutorialPage){
@@ -738,6 +745,7 @@ HashMap<String,Integer> notificationId = new HashMap<>();
         pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_TITLE_KEY, pageTitle);
         pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.LIBRARY_ID_KEY, libraryId);
         pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY, coverImageDownloadUrl);
         pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.FOLDER_ID_KEY, folderId);
         pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_ID_KEY, pageId);
         pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.AUTHOR_ID_KEY, GlobalConfig.getCurrentUserId());
@@ -783,7 +791,7 @@ HashMap<String,Integer> notificationId = new HashMap<>();
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        writePageToDatabase( libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  pageContent, isTutorialPage);
+                        writePageToDatabase( libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  pageContent,coverImageDownloadUrl, isTutorialPage);
                     }
                 }).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -995,7 +1003,7 @@ HashMap<String,Integer> notificationId = new HashMap<>();
     public class ImageUploadListener implements ImageUploadInterface {
 
         @Override
-        public void onComplete(String localUrl, String downloadUrl) {
+        public void onComplete(String localUrl, String downloadUrl, ArrayList<String> imagesListToUpload) {
 
         }
 
@@ -1006,7 +1014,7 @@ HashMap<String,Integer> notificationId = new HashMap<>();
     }
 
     interface ImageUploadInterface{
-        public void onComplete(String localUrl, String downloadUrl);
+        public void onComplete(String localUrl, String downloadUrl, ArrayList<String> imagesListToUpload);
         public void onFailed(Throwable throwable);
     }
 

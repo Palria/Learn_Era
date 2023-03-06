@@ -24,6 +24,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
+import com.makeramen.roundedimageview.RoundedImageView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +39,8 @@ String pageId = "";
 
 LinearLayout containerLinearLayout;
 TextView pageTitleTextView;
+    RoundedImageView coverImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +53,8 @@ TextView pageTitleTextView;
     void initUI(){
         containerLinearLayout = findViewById(R.id.containerLinearLayoutId);
         pageTitleTextView = findViewById(R.id.pageTitleTextViewId);
+        coverImageView =findViewById(R.id.coverImage);
+
     }
 
     void fetchIntentData(){
@@ -85,8 +90,17 @@ TextView pageTitleTextView;
 //                        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.LIBRARY_ID_KEY, libraryId);
 //                        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY, totalNumberOfChildren);
 //                        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.DATE_TIME_STAMP_PAGE_CREATED_KEY, FieldValue.serverTimestamp());
-
+                        //THIS IS THE TITLE OF THE PAGE
                         String pageTitle = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
+
+                        //USE THIS URL TO DOWNLOAD PAGE'S COVER IMAGE
+                        String pageCoverImageDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
+                        Toast.makeText(getApplicationContext(), pageCoverImageDownloadUrl, Toast.LENGTH_LONG).show();
+                        Glide.with(PageActivity.this)
+                                .load(pageCoverImageDownloadUrl)
+                                .into(coverImageView);
+
+                        //THIS IS THE PAGE CONTENT IN HTML FORMAT , USE IT AND RENDER TO READABLE TEXT
                         String html = ""+ documentSnapshot.get(GlobalConfig.PAGE_CONTENT_KEY);
                         pageTitleTextView.setText(pageTitle);
 //                        long totalNumberOfPageData =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY) : 0L;

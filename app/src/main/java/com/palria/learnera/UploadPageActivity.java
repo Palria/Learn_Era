@@ -106,7 +106,12 @@ public class UploadPageActivity extends AppCompatActivity {
     EditText pageTitleEditText;
     String pageTitle;
     String pageContent;
+
     boolean isTutorialPage = true;
+    boolean isCoverImageIncluded = false;
+    String coverImageUrl = "";
+
+
     Snackbar pageUploadSnackBar;
     OnPageUploadListener onPageUploadListener;
     RemoteViews notificationLayout;
@@ -187,7 +192,6 @@ public class UploadPageActivity extends AppCompatActivity {
     LEBottomSheetDialog choosePhotoPickerModal;
 
     ArrayList<String> uploadedImagesList = new ArrayList<>();
-    String coverImageUrl;
 
 
 
@@ -215,6 +219,7 @@ public class UploadPageActivity extends AppCompatActivity {
                         Glide.with(UploadPageActivity.this)
                                 .load(coverImageUrl)
                                 .into(coverImageView);
+                        isCoverImageIncluded = true;
                 }
             }
         });
@@ -438,7 +443,9 @@ public class UploadPageActivity extends AppCompatActivity {
 //
 //                                //if form is valid now get the image to upload to store
                                 ArrayList<String> imagesFinalListToUpload = new ArrayList<>();
-
+                                if(isCoverImageIncluded){
+                                    imagesFinalListToUpload.add(0,coverImageUrl);
+                                }
                                 for(String localUrl : uploadedImagesList){
                                     if(pageContent.contains(localUrl)){
                                         //remove duplicate upload multiple times
@@ -1226,6 +1233,9 @@ public class UploadPageActivity extends AppCompatActivity {
             if (requestCode == GALLERY_PERMISSION_REQUEST_CODE){
                 fireGalleryIntent();
             }
+            if (requestCode == COVER_IMAGE_GALLERY_REQUEST_CODE){
+                fireCoverImageGalleryIntent();
+            }
 
         }
     }
@@ -1244,6 +1254,12 @@ public class UploadPageActivity extends AppCompatActivity {
         galleryIntent.setType("image/*");
         openGalleryLauncher.launch(galleryIntent);
     }
+    public void fireCoverImageGalleryIntent(){
+        Intent galleryCoverIntent = new Intent();
+        galleryCoverIntent.setAction(Intent.ACTION_PICK);
+        galleryCoverIntent.setType("image/*");
+        openCoverImageLauncher.launch(galleryCoverIntent);
+    }
 
     public void fireCameraIntent(){
         Intent cameraIntent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -1260,10 +1276,7 @@ public class UploadPageActivity extends AppCompatActivity {
                 fireGalleryIntent();
             }
             if(requestCode== COVER_IMAGE_GALLERY_REQUEST_CODE){
-                Intent galleryCoverIntent = new Intent();
-                galleryCoverIntent.setAction(Intent.ACTION_PICK);
-                galleryCoverIntent.setType("image/*");
-                openCoverImageLauncher.launch(galleryCoverIntent);
+                fireCoverImageGalleryIntent();
             }
         }
 
