@@ -60,6 +60,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
@@ -82,13 +83,20 @@ import com.palria.learnera.lib.rcheditor.Utils;
 import com.palria.learnera.lib.rcheditor.WYSIWYG;
 import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
+import com.skydoves.colorpickerview.ActionMode;
+import com.skydoves.colorpickerview.ColorEnvelope;
+import com.skydoves.colorpickerview.ColorPickerView;
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.checkerframework.checker.units.qual.A;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 
 
 public class UploadPageActivity extends AppCompatActivity {
@@ -904,7 +912,38 @@ public class UploadPageActivity extends AppCompatActivity {
             boolean isChanged = false;
             @Override
             public void onClick(View view) {
-                wysiwygEditor.setTextColor(isChanged ? Color.BLACK : Color.RED);
+                // Java Code
+                ColorPickerView colorPickerView = new ColorPickerView.Builder(UploadPageActivity.this)
+                        .setColorListener(new ColorEnvelopeListener() {
+                            @Override
+                            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                                wysiwygEditor.setTextColor(envelope.getColor());
+                            }
+                        })
+                        .setPreferenceName("MyColorPicker")
+                        .setActionMode(ActionMode.LAST)
+                        .setPaletteDrawable(ContextCompat.getDrawable(UploadPageActivity.this, R.drawable.palette))
+                        .build();
+                colorPickerView.setPadding(20,20,20,20);
+
+                new AlertDialog.Builder(UploadPageActivity.this)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .setTitle("Pick text Color")
+                        .setView(colorPickerView)
+                        .show();
+
+                //wysiwygEditor.setTextColor(isChanged ? Color.BLACK : Color.RED);
 //                isChanged = !isChanged
             }
         });
@@ -915,8 +954,35 @@ public class UploadPageActivity extends AppCompatActivity {
             private boolean isChanged = false;
             @Override
             public void onClick(View view) {
-                wysiwygEditor.setTextBackgroundColor( isChanged ? Color.TRANSPARENT : Color.YELLOW);
-                isChanged = !isChanged;
+                ColorPickerView colorPickerView = new ColorPickerView.Builder(UploadPageActivity.this)
+                        .setColorListener(new ColorEnvelopeListener() {
+                            @Override
+                            public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
+                                wysiwygEditor.setTextBackgroundColor(envelope.getColor());
+                            }
+                        })
+                        .setPreferenceName("MyColorPicker")
+                        .setActionMode(ActionMode.LAST)
+                        .setPaletteDrawable(ContextCompat.getDrawable(UploadPageActivity.this, R.drawable.palette))
+                        .build();
+                colorPickerView.setPadding(20,20,20,20);
+
+                new AlertDialog.Builder(UploadPageActivity.this)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .setTitle("Pick Background Color")
+                        .setView(colorPickerView)
+                        .show();
             }
         });
 

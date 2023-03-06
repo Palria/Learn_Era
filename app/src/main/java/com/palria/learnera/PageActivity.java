@@ -25,6 +25,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.palria.learnera.lib.rcheditor.WYSIWYG;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ String pageId = "";
 LinearLayout containerLinearLayout;
 TextView pageTitleTextView;
     RoundedImageView coverImageView;
+    WYSIWYG pageContentViewer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +53,14 @@ TextView pageTitleTextView;
     }
 
     void initUI(){
-        containerLinearLayout = findViewById(R.id.containerLinearLayoutId);
-        pageTitleTextView = findViewById(R.id.pageTitleTextViewId);
-        coverImageView =findViewById(R.id.coverImage);
+//        containerLinearLayout = findViewById(R.id.containerLinearLayoutId);
+        pageTitleTextView = findViewById(R.id.pageTitle);
+        coverImageView =findViewById(R.id.pageCover);
+        pageContentViewer=findViewById(R.id.pageContentViewer);
+
+        pageContentViewer.setPadding(10,10,10,10);
+        pageContentViewer.setEnabled(false);//disable editing.
+        pageContentViewer.setEditorFontSize(16);
 
     }
 
@@ -164,13 +171,14 @@ TextView pageTitleTextView;
         String pageText = textDetails.get(2);
 
 
-        View view = getLayoutInflater().inflate(R.layout.page_text_layout,containerLinearLayout,false);
-        TextView pageTextDataTextView = view.findViewById(R.id.pageTextDataTextViewId);
+
+       // View view = getLayoutInflater().inflate(R.layout.page_text_layout,containerLinearLayout,false);
+        //TextView pageTextDataTextView = view.findViewById(R.id.pageTextDataTextViewId);
 //        SpannableStringBuilder spannableStringBuilder =  GlobalConfig.interpretStyles(this,new StringBuilder(pageText));
 //        pageTextDataTextView.setText(spannableStringBuilder);
 
-        GlobalConfig.setHtmlText(this,pageTextDataTextView, pageText);
-        containerLinearLayout.addView(view,position);
+      //  GlobalConfig.setHtmlText(this,pageTextDataTextView, pageText);
+       // containerLinearLayout.addView(view,position);
 //        Toast.makeText(getApplicationContext(), position, Toast.LENGTH_SHORT).show();
 
     }
@@ -282,12 +290,12 @@ try {
      * i used it for only test purposes
      * */
     private void renderHtmlFromDatabase(String html){
-
-        View view = getLayoutInflater().inflate(R.layout.page_text_layout,containerLinearLayout,false);
-        TextView pageTextDataTextView = view.findViewById(R.id.pageTextDataTextViewId);
-        pageTextDataTextView.setTextIsSelectable(true);
-        GlobalConfig.setHtmlText(this,pageTextDataTextView, html);
-        containerLinearLayout.addView(view);
+        pageContentViewer.setHtml(html);
+        //View view = getLayoutInflater().inflate(R.layout.page_text_layout,containerLinearLayout,false);
+        //TextView pageTextDataTextView = view.findViewById(R.id.pageTextDataTextViewId);
+       // pageTextDataTextView.setTextIsSelectable(true);
+        //GlobalConfig.setHtmlText(this,pageTextDataTextView, html);
+       // containerLinearLayout.addView(view);
     }
 
 }

@@ -7,46 +7,171 @@
     android:layout_height="match_parent"
     tools:context=".PageActivity">
 
-    <TextView
-        android:id="@+id/pageTitleTextViewId"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:text="Title"
-        android:background="@color/teal_700"
+        android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
-    <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/coverImage"
-        app:riv_corner_radius="4pt"
-        app:riv_border_width="1pt"
-        app:riv_border_color="@color/white"
-        android:src="@drawable/book_cover2"
-        android:layout_marginHorizontal="5pt"
-        android:scaleType="centerCrop"
-        app:layout_constraintTop_toBottomOf="@+id/pageTitleTextViewId"
-        android:layout_marginVertical="2pt"
-        android:layout_width="match_parent"
-        android:layout_height="45pt"/>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/coverImage"
         >
-    <LinearLayout
-        android:id="@+id/containerLinearLayoutId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        />
 
-    </ScrollView>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.makeramen.roundedimageview.RoundedImageView
+                    app:riv_corner_radius="0dp"
+                    android:layout_marginTop="0pt"
+                    android:id="@+id/pageCover"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/book_cover"
+                    android:layout_width="match_parent"
+                    android:layout_height="80pt"/>
+
+                <ImageButton
+                    android:id="@+id/backButton"
+                    android:layout_marginLeft="5pt"
+                    android:layout_marginTop="5pt"
+                    android:src="@drawable/baseline_arrow_back_24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </RelativeLayout>
+
+
+
+            <LinearLayout
+                android:layout_marginTop="5pt"
+                android:layout_marginHorizontal="5pt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:layout_marginEnd="2pt"
+                        android:layout_gravity="center"
+                        app:riv_corner_radius="15pt"
+                        app:riv_oval="true"
+                        android:id="@+id/authorPicture"
+                        android:src="@drawable/default_profile"
+                        android:layout_width="15pt"
+                        android:layout_height="15pt"/>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/authorName"
+                            android:textSize="7pt"
+                            android:textStyle="bold"
+                            android:text="Ramesh Pun"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/dateCreated"
+                            android:textSize="6pt"
+                            android:textColor="@color/grayDark"
+                            android:text="1 hrs ago"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_baseline_remove_red_eye_24"
+                        android:layout_width="7pt"
+                        android:layout_height="7pt"/>
+
+                    <TextView
+                        android:id="@+id/viewCount"
+                        android:text="450"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_marginLeft="5pt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_baseline_stars_24"
+                        android:layout_width="7pt"
+                        android:layout_height="7pt"/>
+
+                    <TextView
+                        android:id="@+id/ratingCount"
+                        android:text="12"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginTop="5pt"
+                    android:id="@+id/pageTitle"
+                    android:layout_marginBottom="5pt"
+                    android:ellipsize="end"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="5pt"
+                    android:textSize="12pt"
+                    android:text="Loading Your title..."
+                    />
+
+                <ImageButton
+                    android:id="@+id/editTutorialActionButtonId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_baseline_edit_24"
+                    />
+
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                app:dividerColor="@color/gray"
+                android:layout_marginVertical="10pt"
+                android:layout_height="wrap_content"/>
+
+            <com.palria.learnera.lib.rcheditor.WYSIWYG
+                android:id="@+id/pageContentViewer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
