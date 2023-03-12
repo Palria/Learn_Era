@@ -51,7 +51,7 @@
                 <TextView
                     android:textSize="6pt"
                     android:textStyle="normal"
-                    android:text="Login to acces the App"
+                    android:text="Login to access the App"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>

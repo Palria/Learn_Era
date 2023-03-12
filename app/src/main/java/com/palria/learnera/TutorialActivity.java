@@ -53,6 +53,7 @@ TextView foldersCount;
 TextView tutorialName;
 TextView tutorialDescription;
     int[] ratings = {0,0,0,0,0};
+    ImageButton moreActionButton;
 
 //get frame layouts
     FrameLayout foldersFrameLayout;
@@ -73,6 +74,7 @@ Button addActionButton;
     ImageButton editTutorialActionButton;
     Button rateActionButton;
     ImageButton backButton;
+    AlertDialog alertDialog;
 
     RatingBottomSheetWidget ratingBottomSheetWidget;
     FrameLayout mainLayout;
@@ -87,7 +89,9 @@ Button addActionButton;
         setContentView(R.layout.activity_tutorial);
         fetchIntentData();
         iniUI();
-        fetchAuthorProfile();
+        if(!(GlobalConfig.getBlockedItemsList().contains(authorId+"")) &&!(GlobalConfig.getBlockedItemsList().contains(libraryId+"")) && !(GlobalConfig.getBlockedItemsList().contains(tutorialId+"")))  {
+
+            fetchAuthorProfile();
         tutorialFetchListener = new TutorialFetchListener() {
             @Override
             public void onSuccess(TutorialDataModel tutorialDataModel) {
@@ -141,6 +145,124 @@ createTabLayout();
             @Override
             public void onClick(View view) {
                 TutorialActivity.this.onBackPressed();
+            }
+        });
+        moreActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LEBottomSheetDialog leBottomSheetDialogMoreActon= new LEBottomSheetDialog(TutorialActivity.this);
+                leBottomSheetDialogMoreActon.addOptionItem("Block Tutorial", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+
+                                new AlertDialog.Builder(TutorialActivity.this)
+                                        .setCancelable(true)
+                                        .setTitle("Block this Tutorial!")
+                                        .setPositiveButton("Block", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                                        Toast.makeText(getApplicationContext(), "Blocking", Toast.LENGTH_SHORT).show();
+
+                                                        leBottomSheetDialogMoreActon.hide();
+                                                        GlobalConfig.block(GlobalConfig.ACTIVITY_LOG_USER_BLOCK_LIBRARY_TYPE_KEY, authorId, libraryId, null, new GlobalConfig.ActionCallback() {
+                                                            @Override
+                                                            public void onSuccess() {
+                                                            }
+
+                                                            @Override
+                                                            public void onFailed(String errorMessage) {
+
+                                                            }
+                                                        });
+                                                        TutorialActivity.super.onBackPressed();
+
+                                                    }
+                                                }).setNegativeButton("No",null).create().show();
+
+                            }
+                        },0)
+                        .addOptionItem("Report Tutorial", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                new AlertDialog.Builder(TutorialActivity.this)
+                                        .setCancelable(true)
+                                        .setTitle("Report this Tutorial!")
+                                        .setPositiveButton("Report", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                                Toast.makeText(getApplicationContext(), "Reporting", Toast.LENGTH_SHORT).show();
+
+                                                leBottomSheetDialogMoreActon.hide();
+                                                GlobalConfig.report(GlobalConfig.ACTIVITY_LOG_USER_REPORT_TUTORIAL_TYPE_KEY, authorId, libraryId, tutorialId, new GlobalConfig.ActionCallback() {
+                                                    @Override
+                                                    public void onSuccess() {
+                                                    }
+
+                                                    @Override
+                                                    public void onFailed(String errorMessage) {
+
+                                                    }
+                                                });
+                                                TutorialActivity.super.onBackPressed();
+
+                                            }
+                                        }).setNegativeButton("No",null).create().show();
+
+                            }
+                        },0);
+                if(GlobalConfig.getCurrentUserId().equals(authorId+"")){
+                    leBottomSheetDialogMoreActon.addOptionItem("Delete Tutorial", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+
+
+                            new AlertDialog.Builder(TutorialActivity.this)
+                                    .setCancelable(true)
+                                    .setTitle("Delete Your Tutorial!")
+                                    .setMessage("Action cannot be undone, are you sure you want to delete your Tutorial?")
+                                    .setPositiveButton("Yes,delete", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+toggleProgress(true);
+                                            Toast.makeText(getApplicationContext(), "Deleting", Toast.LENGTH_SHORT).show();
+
+                                            leBottomSheetDialogMoreActon.hide();
+                                            GlobalConfig.deleteTutorial(libraryId, libraryId, new GlobalConfig.ActionCallback() {
+                                                @Override
+                                                public void onSuccess() {
+                                                    toggleProgress(false);
+                                                    Toast.makeText(getApplicationContext(), "Delete Tutorial success", Toast.LENGTH_SHORT).show();
+
+                                                    TutorialActivity.super.onBackPressed();
+                                                }
+
+                                                @Override
+                                                public void onFailed(String errorMessage) {
+                                                    toggleProgress(false);
+                                                    GlobalHelpers.showAlertMessage("error",getApplicationContext(), "Unable to delete Tutorial",errorMessage);
+                                                    Toast.makeText(getApplicationContext(), "Unable to deleted Tutorial!  please try again", Toast.LENGTH_SHORT).show();
+
+                                                }
+                                            });
+                                            TutorialActivity.super.onBackPressed();
+
+                                        }
+                                    })
+                                    .setNegativeButton("No", null)
+                                    .create().show();
+
+
+                        }
+                    }, 0);
+
+                }
+
+                leBottomSheetDialogMoreActon.render().show();
+
             }
         });
 
@@ -465,7 +587,12 @@ createTabLayout();
 
             }
         });
+    }else{
 
+            Toast.makeText(this, "Tutorial Blocked! Unblock to explore the Tutorial", Toast.LENGTH_SHORT).show();
+
+            super.onBackPressed();
+    }
 //        openFoldersFragment();
     }
 
@@ -522,9 +649,16 @@ createTabLayout();
         editTutorialActionButton=findViewById(R.id.editTutorialActionButtonId);
         rateActionButton=findViewById(R.id.rateActionButton);
         backButton=findViewById(R.id.backButton);
+        moreActionButton=findViewById(R.id.moreActionButtonId);
+
 
         tabLayout=findViewById(R.id.tab_layout);
 //       GlobalConfig.createSnackBar(getApplicationContext(),mainLayout,authorId, Snackbar.LENGTH_INDEFINITE);
+
+        alertDialog = new AlertDialog.Builder(TutorialActivity.this)
+                .setCancelable(false)
+                .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
+                .create();
 
 if(authorId.equals(GlobalConfig.getCurrentUserId())) {
     leBottomSheetDialog = new LEBottomSheetDialog(this)
@@ -605,6 +739,13 @@ if(!isFirstView) {
 
     //
 
+    private void toggleProgress(boolean show) {
+        if(show){
+            alertDialog.show();
+        }else{
+            alertDialog.cancel();
+        }
+    }
     public void createTabLayout() {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

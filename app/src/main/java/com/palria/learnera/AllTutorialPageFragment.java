@@ -144,11 +144,14 @@ if(getArguments()!= null){
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             String pageId = documentSnapshot.getId();
                             String pageTitle  = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
+                            String authorId  = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
+                            String coverPhotoDownloadUrl  = ""+ documentSnapshot.get(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
+                            long totalViews  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGE_VISITOR_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGE_VISITOR_KEY): 0L;
                             String dateCreated  =  documentSnapshot.get(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY)!=null ? documentSnapshot.getTimestamp(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY).toDate()+"" : "Undefined";
                             if(dateCreated.length()>10){
                                 dateCreated = dateCreated.substring(0,10);
                             }
-                            fetchPageListener.onSuccess(new PageDataModel(pageTitle,"","","",pageId,tutorialId,folderId,dateCreated,isTutorialPage));
+                            fetchPageListener.onSuccess(new PageDataModel(pageTitle,"",coverPhotoDownloadUrl,authorId,pageId,tutorialId,folderId,dateCreated,totalViews,isTutorialPage));
                         }
 
                     }

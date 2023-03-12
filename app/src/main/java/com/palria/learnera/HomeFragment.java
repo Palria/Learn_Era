@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -56,10 +57,14 @@ public class HomeFragment extends Fragment {
 
             }
             TextView helloUserTextView;
-String categorySelected = "";
+        String categorySelected = "";
         LinearLayout popularAuthorLinearLayout;
         LinearLayout libraryLinearLayout;
         LinearLayout tutorialLinearLayout;
+
+        TextView seeAllLibraryTextView;
+        TextView seeAllAuthorTextView;
+        TextView seeAllTutorialTextView;
 
         LinearLayout categoryTabsContainer;
 
@@ -97,7 +102,7 @@ String categorySelected = "";
 
         //geret the curent user Good morning, evening etc.
 
-        System.out.println(java.time.LocalTime.now());
+//        System.out.println(java.time.LocalTime.now());
         LocalTime currentTime = LocalTime.now();
         String greeting="";
         int current_hour = Integer.parseInt(currentTime.toString().substring(0,2));
@@ -216,7 +221,27 @@ String categorySelected = "";
 
             }
         });
+        seeAllLibraryTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.LIBRARY_FRAGMENT_TYPE_KEY,null));
 
+            }
+        });
+        seeAllAuthorTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.AUTHORS_FRAGMENT_TYPE_KEY,null));
+
+            }
+        });
+        seeAllTutorialTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.TUTORIAL_FRAGMENT_TYPE_KEY,null));
+
+            }
+        });
        return parentView;
     }
 
@@ -274,6 +299,9 @@ String categorySelected = "";
         helloUserTextView = parentView.findViewById(R.id.helloUserTextViewId);
         booksItemRecyclerListView = parentView.findViewById(R.id.booksItemContainer);
         popularAuthorRecyclerView = parentView.findViewById(R.id.popular_authors_listview);
+        seeAllAuthorTextView = parentView.findViewById(R.id.seeAllAuthorTextViewId);
+        seeAllLibraryTextView = parentView.findViewById(R.id.seeAllLibraryTextViewId);
+        seeAllTutorialTextView = parentView.findViewById(R.id.seeAllTutorialTextViewId);
         popularTutorialsContainerRcv = parentView.findViewById(R.id.popularTutorialsContainer);
         tabLayout = parentView.findViewById(R.id.categoryTabLayoutId);
         popularAuthorAdapter = new HomeAuthorListViewAdapter(modelArrayList,getContext());
@@ -545,7 +573,8 @@ private void changeCategory(String categorySelected){
 
     private void fetchPopularAuthor(String categoryTag, PopularAuthorFetchListener popularAuthorFetchListener){
 //        Query authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereEqualTo(GlobalConfig.IS_USER_AUTHOR_KEY,true).whereArrayContains(GlobalConfig.AUTHOR_CATEGORY_TAG_ARRAY_KEY,categoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY);
-        Query authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereArrayContains(GlobalConfig.AUTHOR_CATEGORY_TAG_ARRAY_KEY,categoryTag);
+//        Query authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereArrayContains(GlobalConfig.AUTHOR_CATEGORY_TAG_ARRAY_KEY,categoryTag).whereNotIn(GlobalConfig.USER_ID_KEY,GlobalConfig.getBlockedItemsList()).whereNotIn(GlobalConfig.USER_ID_KEY,GlobalConfig.getReportedItemsList()).limit(10L);
+        Query authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereArrayContains(GlobalConfig.AUTHOR_CATEGORY_TAG_ARRAY_KEY,categoryTag).limit(10L);
         authorQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -560,14 +589,18 @@ private void changeCategory(String categorySelected){
                         modelArrayList.clear();
                         popularAuthorAdapter.notifyDataSetChanged();
 
-                        for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                        for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
 
-                                            String authorId  = documentSnapshot.getId();
-                                            final String authorName = ""+ documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
-                                           final String authorProfilePhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
-                                           final long totalNumberOfLibrary = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)!= null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)  :0L ;
-                                        popularAuthorFetchListener.onSuccess(authorName,authorId,authorProfilePhotoDownloadUrl,totalNumberOfLibrary );
-
+                            String authorId = documentSnapshot.getId();
+                            final String authorName = "" + documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                            final String authorProfilePhotoDownloadUrl = "" + documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
+                            final long totalNumberOfLibrary = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY) != null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY) : 0L;
+                            if(!(GlobalConfig.getBlockedItemsList().contains(authorId+""))) {
+                                popularAuthorFetchListener.onSuccess(authorName, authorId, authorProfilePhotoDownloadUrl, totalNumberOfLibrary);
+                        }
+//                            for(int i=0; i<GlobalConfig.getBlockedItemsList().size();i++) {
+//                                Toast.makeText(getContext(), "" +GlobalConfig.getBlockedItemsList().get(i), Toast.LENGTH_SHORT).show();
+//                            }
                         }
                     }
                 });
@@ -575,7 +608,8 @@ private void changeCategory(String categorySelected){
 
     private void fetchLibrary(String categoryTag,LibraryFetchListener libraryFetchListener){
 //        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,categoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY);
-        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,categoryTag);
+//        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,categoryTag).whereNotIn(GlobalConfig.LIBRARY_ID_KEY,GlobalConfig.getBlockedItemsList()).whereNotIn(GlobalConfig.LIBRARY_ID_KEY,GlobalConfig.getReportedItemsList()).limit(10L);
+        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,categoryTag).limit(10L);
         libraryQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -615,25 +649,27 @@ private void changeCategory(String categorySelected){
                                                         totalNumberOfTutorials =   documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY);
                                                     }
 
+                            if(!(GlobalConfig.getBlockedItemsList().contains(authorUserId+"")) &&!(GlobalConfig.getBlockedItemsList().contains(libraryId+""))) {
 
-                                                    libraryFetchListener.onSuccess(new LibraryDataModel(
-                                                            libraryName,
-                                                            libraryId,
-                                                            libraryCategoryArray,
-                                                            libraryCoverPhotoDownloadUrl,
-                                                            libraryDescription,
-                                                            dateCreated,
-                                                            totalNumberOfTutorials,
-                                                            totalNumberOfLibraryVisitor,
-                                                            totalNumberOfLibraryReach,
-                                                            authorUserId,
-                                                            totalNumberOfOneStarRate,
-                                                            totalNumberOfTwoStarRate,
-                                                            totalNumberOfThreeStarRate,
-                                                            totalNumberOfFourStarRate,
-                                                            totalNumberOfFiveStarRate
+                                libraryFetchListener.onSuccess(new LibraryDataModel(
+                                        libraryName,
+                                        libraryId,
+                                        libraryCategoryArray,
+                                        libraryCoverPhotoDownloadUrl,
+                                        libraryDescription,
+                                        dateCreated,
+                                        totalNumberOfTutorials,
+                                        totalNumberOfLibraryVisitor,
+                                        totalNumberOfLibraryReach,
+                                        authorUserId,
+                                        totalNumberOfOneStarRate,
+                                        totalNumberOfTwoStarRate,
+                                        totalNumberOfThreeStarRate,
+                                        totalNumberOfFourStarRate,
+                                        totalNumberOfFiveStarRate
 //                                                            documentSnapshot
-                                                    ));
+                                ));
+                            }
 
 
                         }
@@ -643,7 +679,8 @@ private void changeCategory(String categorySelected){
 
     private void fetchTutorial(String tutorialCategoryTag,TutorialFetchListener tutorialFetchListener){
 //        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY);
-        Query tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategoryTag);
+//        Query tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategoryTag).whereNotIn(GlobalConfig.TUTORIAL_ID_KEY,GlobalConfig.getBlockedItemsList()).whereNotIn(GlobalConfig.TUTORIAL_ID_KEY,GlobalConfig.getReportedItemsList()).limit(10L);
+        Query tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategoryTag).limit(10L);
         tutorialQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -681,28 +718,29 @@ private void changeCategory(String categorySelected){
                                     long totalNumberOfThreeStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_THREE_STAR_RATE_KEY) : 0L;
                                     long totalNumberOfFourStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOUR_STAR_RATE_KEY) : 0L;
                                     long totalNumberOfFiveStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FIVE_STAR_RATE_KEY) : 0L;
+                                    if(!(GlobalConfig.getBlockedItemsList().contains(authorId+"")) &&!(GlobalConfig.getBlockedItemsList().contains(libraryId+"")) && !(GlobalConfig.getBlockedItemsList().contains(tutorialId+"")))  {
 
-
-                                                    tutorialFetchListener.onSuccess(new TutorialDataModel(
-                                                                                     tutorialName,
-                                                                                     tutorialCategory,
-                                                                                     tutorialDescription,
-                                                                                     tutorialId,
-                                                                                     dateCreated,
-                                                                                     totalNumberOfPages,
-                                                                                     totalNumberOfFolders,
-                                                                                     totalNumberOfTutorialVisitor,
-                                                                                     totalNumberOfTutorialReach,
-                                                                                     authorId,
-                                                                                     libraryId,
-                                                                                     tutorialCoverPhotoDownloadUrl,
-                                                                                     totalNumberOfOneStarRate,
-                                                                                     totalNumberOfTwoStarRate,
-                                                                                     totalNumberOfThreeStarRate,
-                                                                                     totalNumberOfFourStarRate,
-                                                                                     totalNumberOfFiveStarRate
+                                        tutorialFetchListener.onSuccess(new TutorialDataModel(
+                                                tutorialName,
+                                                tutorialCategory,
+                                                tutorialDescription,
+                                                tutorialId,
+                                                dateCreated,
+                                                totalNumberOfPages,
+                                                totalNumberOfFolders,
+                                                totalNumberOfTutorialVisitor,
+                                                totalNumberOfTutorialReach,
+                                                authorId,
+                                                libraryId,
+                                                tutorialCoverPhotoDownloadUrl,
+                                                totalNumberOfOneStarRate,
+                                                totalNumberOfTwoStarRate,
+                                                totalNumberOfThreeStarRate,
+                                                totalNumberOfFourStarRate,
+                                                totalNumberOfFiveStarRate
 //                                                            documentSnapshot
-                                                                                     ));
+                                        ));
+                                    }
 
 
 

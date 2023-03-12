@@ -45,6 +45,7 @@ TextView libraryName;
 TextView folderViewCount;
 TextView pagesCount;
 Button editFolderActionButton;
+AlertDialog alertDialog;
 LEBottomSheetDialog leBottomSheetDialog;
 ExtendedFloatingActionButton floatingActionButton;
 MaterialToolbar toolbar;
@@ -56,7 +57,8 @@ FolderDataModel intentFolderDataModel;
         setContentView(R.layout.activity_tutorial_folder);
         fetchIntentData();
         initUI();
-        folderNameView.setText(folderName);
+        if(!(GlobalConfig.getBlockedItemsList().contains(authorId+"")) &&!(GlobalConfig.getBlockedItemsList().contains(libraryId+"")) && !(GlobalConfig.getBlockedItemsList().contains(tutorialId+"")))  {
+            folderNameView.setText(folderName);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,7 +88,12 @@ FolderDataModel intentFolderDataModel;
         }
         openAllPageFragment();
 
+    }else{
 
+        Toast.makeText(this, "Folder Blocked! Unblock to explore the Folder", Toast.LENGTH_SHORT).show();
+
+        super.onBackPressed();
+    }
     }
 
     private void initUI(){
@@ -104,12 +111,15 @@ FolderDataModel intentFolderDataModel;
          pagesCount=findViewById(R.id.pagesCount);
 
          floatingActionButton=findViewById(R.id.fab);
+        alertDialog = new AlertDialog.Builder(TutorialFolderActivity.this)
+                .setCancelable(false)
+                .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
+                .create();
 
          leBottomSheetDialog=new LEBottomSheetDialog(this);
          //if author id equal current logged in user
 //        Snackbar saveSnackBar = GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,authorId +" id ", Snackbar.LENGTH_INDEFINITE);
-
-        if(authorId.equals(GlobalConfig.getCurrentUserId())) {
+        if(GlobalConfig.getCurrentUserId().equals(authorId+"")){
 //            leBottomSheetDialog.addOptionItem("Edit Folder", R.drawable.ic_baseline_edit_24,
 //                    new View.OnClickListener() {
 //                        @Override
@@ -168,7 +178,51 @@ FolderDataModel intentFolderDataModel;
                                     .show();
                         }
                     }, 0);
+            leBottomSheetDialog.addOptionItem("Delete Folder", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    new AlertDialog.Builder(TutorialFolderActivity.this)
+                            .setCancelable(true)
+                            .setTitle("Delete Your Folder!")
+                            .setMessage("Action cannot be undone, are you sure you want to delete your Folder?")
+                            .setPositiveButton("Yes,delete", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    toggleProgress(true);
+                                    Toast.makeText(getApplicationContext(), "Deleting", Toast.LENGTH_SHORT).show();
+
+                                    leBottomSheetDialog.hide();
+                                    GlobalConfig.deleteTutorial(libraryId, tutorialId, new GlobalConfig.ActionCallback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            toggleProgress(false);
+                                            Toast.makeText(getApplicationContext(), "Delete Folder success", Toast.LENGTH_SHORT).show();
+
+                                            TutorialFolderActivity.super.onBackPressed();
+                                        }
+
+                                        @Override
+                                        public void onFailed(String errorMessage) {
+                                            toggleProgress(false);
+                                            GlobalHelpers.showAlertMessage("error",getApplicationContext(), "Unable to delete Folder",errorMessage);
+                                            Toast.makeText(getApplicationContext(), "Unable to deleted Folder!  please try again", Toast.LENGTH_SHORT).show();
+
+                                        }
+                                    });
+                                    TutorialFolderActivity.super.onBackPressed();
+
+                                }
+                            })
+                            .setNegativeButton("No", null)
+                            .create().show();
+
+
+                }
+            }, 0);
+
         }
+
         leBottomSheetDialog.addOptionItem("Bookmark", R.drawable.ic_baseline_bookmarks_24,
                 new View.OnClickListener() {
                     @Override
@@ -275,7 +329,6 @@ FolderDataModel intentFolderDataModel;
 
                     }
                 }, 0);
-
         leBottomSheetDialog.render();
 
 
@@ -301,6 +354,13 @@ FolderDataModel intentFolderDataModel;
         intentFolderDataModel = (FolderDataModel) intent.getSerializableExtra(GlobalConfig.FOLDER_DATA_MODEL_KEY);
     }
 
+    private void toggleProgress(boolean show) {
+        if(show){
+            alertDialog.show();
+        }else{
+            alertDialog.cancel();
+        }
+    }
     private void fetchFolderData(){
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_TUTORIAL_KEY)

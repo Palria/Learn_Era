@@ -40,8 +40,22 @@
                         android:layout_marginLeft="5pt"
                         android:layout_marginTop="5pt"
                         android:src="@drawable/baseline_arrow_back_24"
+                        android:background="@android:drawable/screen_background_light_transparent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
+    
+    
+                    <ImageButton
+                        android:id="@+id/moreActionButtonId"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginLeft="5pt"
+                        android:layout_marginTop="5pt"
+                        android:src="@drawable/ic_baseline_more_vert_24"
+                        android:background="@android:drawable/screen_background_light_transparent"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentTop="true"
+                        />
                 </RelativeLayout>
 
 
@@ -157,6 +171,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
+                    android:background="@android:color/transparent"
                     android:src="@drawable/ic_baseline_edit_24"
                     />
 

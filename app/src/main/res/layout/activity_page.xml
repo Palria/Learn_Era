@@ -39,6 +39,7 @@
                     android:layout_marginLeft="5pt"
                     android:layout_marginTop="5pt"
                     android:src="@drawable/baseline_arrow_back_24"
+                    android:background="@android:drawable/screen_background_light_transparent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </RelativeLayout>
@@ -78,10 +79,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
                         <TextView
-                            android:id="@+id/dateCreated"
+                            android:id="@+id/dateCreatedTextViewId"
                             android:textSize="6pt"
                             android:textColor="@color/grayDark"
-                            android:text="1 hrs ago"
+                            android:text="Undefined"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
                     </LinearLayout>
@@ -100,12 +101,13 @@
 
                     <TextView
                         android:id="@+id/viewCount"
-                        android:text="450"
+                        android:text="0"
                         android:textStyle="bold"
                         android:layout_marginLeft="2pt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
+               
 
                 <LinearLayout
                     android:layout_marginLeft="5pt"
@@ -113,14 +115,15 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
+                        android:id="@+id/bookmarksCountImageViewId"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_baseline_stars_24"
+                        android:background="@drawable/ic_baseline_bookmarks_24"
                         android:layout_width="7pt"
                         android:layout_height="7pt"/>
 
                     <TextView
-                        android:id="@+id/ratingCount"
-                        android:text="12"
+                        android:id="@+id/bookmarkCountTextViewId"
+                        android:text="0"
                         android:textStyle="bold"
                         android:layout_marginLeft="2pt"
                         android:layout_width="wrap_content"
@@ -151,11 +154,12 @@
                     />
 
                 <ImageButton
-                    android:id="@+id/editTutorialActionButtonId"
+                    android:id="@+id/morePageActionButtonId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
-                    android:src="@drawable/ic_baseline_edit_24"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_baseline_more_vert_24"
                     />
 
             </LinearLayout>

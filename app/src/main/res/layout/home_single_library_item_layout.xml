@@ -8,11 +8,12 @@
     android:id="@+id/parentItem"
     android:layout_marginStart="2pt"
     android:focusable="true"
-    android:orientation="vertical"
     android:background="@drawable/rounded_border_gray_bg"
-    android:layout_height="110pt">
-
-
+    android:layout_height="110pt"
+    android:orientation="vertical"
+    >
+    
+    
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/bookCover"
         android:src="@drawable/book_cover"
@@ -21,7 +22,13 @@
         app:riv_corner_radius="5pt"
         android:scaleType="centerCrop"
         android:layout_height="wrap_content"/>
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
     <TextView
         android:id="@+id/bookName"
         android:textStyle="bold"
@@ -30,10 +37,19 @@
         android:layout_marginTop="2pt"
         android:maxLines="1"
         android:ellipsize="end"
-        android:layout_width="match_parent"
-        android:text="Lunar Strom "
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:text="..."
         android:layout_height="wrap_content"/>
-
+        
+        <ImageButton
+            android:id="@+id/moreActionButtonId"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/ic_baseline_error_outline_24"
+            android:backgroundTint="@color/error_red"
+            />
+    </LinearLayout>
 <LinearLayout
     android:paddingHorizontal="3pt"
     android:layout_marginTop="3pt"

@@ -9,14 +9,18 @@ import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,10 +30,14 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.ServerTimestamp;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
@@ -59,11 +67,13 @@ import java.util.Random;
 public class GlobalConfig {
 
     private static String CURRENT_USER_ID;
-    private static String CURRENT_USER_TOKEN_ID;
+    private static String CURRENT_USER_TOKEN_ID = "EMPTY";
     static OnCurrentUserProfileFetchListener onCurrentUserProfileFetchListener;
     private static ArrayList<String> lastViewedAuthorsIdArray = new ArrayList<>();
     private static ArrayList<String> lastViewedLibraryIdArray = new ArrayList<>();
     private static ArrayList<String> lastViewedTutorialsIdArray = new ArrayList<>();
+    private static ArrayList<String> BLOCKED_ITEM_LIST = new ArrayList<>();
+    private static ArrayList<String> REPORTED_ITEM_LIST = new ArrayList<>();
     /*FIRESTORE VARIABLE KEYS
     These String keys which will be  unique in  the database
     they are used to query a particular field within a document
@@ -101,6 +111,7 @@ public class GlobalConfig {
     public static final String FRAGMENT_TYPE_KEY = "FRAGMENT_TYPE";
     public static final String USER_PROFILE_FRAGMENT_TYPE_KEY = "USER_PROFILE_FRAGMENT_TYPE";
     public static final String LIBRARY_FRAGMENT_TYPE_KEY = "LIBRARY_FRAGMENT_TYPE";
+    public static final String AUTHORS_FRAGMENT_TYPE_KEY = "AUTHORS_FRAGMENT_TYPE";
     public static final String TUTORIAL_FRAGMENT_TYPE_KEY = "TUTORIAL_FRAGMENT_TYPE";
 
     public static final String IS_AUTHOR_OPEN_TYPE_KEY = "IS_AUTHOR_OPEN_TYPE";
@@ -276,6 +287,7 @@ public class GlobalConfig {
     public static final String FOLDER_DATA_MODEL_KEY = "FOLDER_DATA_MODEL";
     public static final String TOTAL_NUMBER_OF_FOLDER_VISITOR_KEY = "TOTAL_NUMBER_OF_FOLDER_VISITOR";
     public static final String TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR";
+    public static final String TOTAL_NUMBER_OF_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_PAGE_VISITOR";
     public static final String TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR";
     public static final String PAGE_CONTENT_KEY = "PAGE_CONTENT";
     public static final String PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY = "PAGE_COVER_PHOTO_DOWNLOAD_URL";
@@ -283,9 +295,13 @@ public class GlobalConfig {
 //    public static final String PAGE_NAME_KEY = "PAGE_NAME";
     public static final String DATE_TIME_STAMP_PAGE_CREATED_KEY = "DATE_TIME_STAMP_PAGE_CREATED";
     public static final String TOTAL_NUMBER_OF_PAGE_DATA_KEY = "TOTAL_NUMBER_OF_PAGE_DATA";
+    public static final String IS_CREATE_NEW_PAGE_KEY = "IS_CREATE_NEW_PAGE";
+    public static final String IS_PAGE_COVER_PHOTO_CHANGED_KEY = "IS_PAGE_COVER_PHOTO_CHANGED";
     public static final String DATA_ARRAY_KEY = "DATA_ARRAY_";
     public static final String PAGE_TITLE_KEY = "PAGE_TITLE";
+    public static final String ACTIVE_PAGE_MEDIA_URL_LIST_KEY = "ACTIVE_PAGE_MEDIA_URL_LIST";
     public static final String PAGE_DATE_CREATED_TIME_STAMP_KEY = "PAGE_DATE_CREATED_TIME_STAMP";
+    public static final String PAGE_DATE_EDITED_TIME_STAMP_KEY = "PAGE_DATE_EDITED_TIME_STAMP";
     public static final String FOLDER_ID_KEY = "FOLDER_ID";
     public static final String IS_FOLDER_PAGE_KEY = "IS_FOLDER_PAGE";
     public static final String ALL_TUTORIAL_PAGES_KEY = "ALL_TUTORIAL_PAGES";
@@ -392,6 +408,40 @@ public class GlobalConfig {
     public static final String ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_FOLDER_PAGE_TYPE";
 //log keys ends
 
+    public static final String DATE_REPORTED_TIME_STAMP_KEY = "DATE_REPORTED_TIME_STAMP";
+    public static final String TOTAL_NUMBER_OF_USERS_REPORTED_KEY = "TOTAL_NUMBER_OF_USERS_REPORTED";
+    public static final String TOTAL_NUMBER_OF_LIBRARY_REPORTED_KEY = "TOTAL_NUMBER_OF_LIBRARY_REPORTED";
+    public static final String TOTAL_NUMBER_OF_TUTORIALS_REPORTED_KEY = "TOTAL_NUMBER_OF_TUTORIALS_REPORTED";
+    public static final String TOTAL_NUMBER_OF_REPORTS_KEY = "TOTAL_NUMBER_OF_REPORTS";
+    public static final String REPORTERS_KEY = "REPORTERS";
+    public static final String REPORTER_USER_ID_KEY = "REPORTER_USER_ID";
+    public static final String REPORTED_ITEMS_KEY = "REPORTED_ITEMS";
+
+    public static final String DATE_BLOCKED_TIME_STAMP_KEY = "DATE_BLOCKED_TIME_STAMP";
+    public static final String TOTAL_NUMBER_OF_USERS_BLOCKED_KEY = "TOTAL_NUMBER_OF_USERS_BLOCKED";
+    public static final String TOTAL_NUMBER_OF_LIBRARY_BLOCKED_KEY = "TOTAL_NUMBER_OF_LIBRARY_BLOCKED";
+    public static final String TOTAL_NUMBER_OF_TUTORIALS_BLOCKED_KEY = "TOTAL_NUMBER_OF_TUTORIALS_BLOCKED";
+    public static final String TOTAL_NUMBER_OF_BLOCKS_KEY = "TOTAL_NUMBER_OF_BLOCKS";
+    public static final String BLOCKERS_KEY = "BLOCKERS";
+    public static final String BLOCKER_USER_ID_KEY = "BLOCKER_USER_ID";
+    public static final String BLOCKED_ITEMS_KEY = "BLOCKED_ITEMS";
+
+    public static final String ACTIVITY_LOG_USER_BLOCK_USER_TYPE_KEY = "ACTIVITY_LOG_USER_BLOCK_USER_TYPE";
+    public static final String ACTIVITY_LOG_USER_BLOCK_LIBRARY_TYPE_KEY = "ACTIVITY_LOG_USER_BLOCK_LIBRARY_TYPE";
+    public static final String ACTIVITY_LOG_USER_BLOCK_TUTORIAL_TYPE_KEY = "ACTIVITY_LOG_USER_BLOCK_TUTORIAL_TYPE";
+
+    public static final String ACTIVITY_LOG_USER_UNBLOCK_USER_TYPE_KEY = "ACTIVITY_LOG_USER_UNBLOCK_USER_TYPE";
+    public static final String ACTIVITY_LOG_USER_UNBLOCK_LIBRARY_TYPE_KEY = "ACTIVITY_LOG_USER_UNBLOCK_LIBRARY_TYPE";
+    public static final String ACTIVITY_LOG_USER_UNBLOCK_TUTORIAL_TYPE_KEY = "ACTIVITY_LOG_USER_UNBLOCK_TUTORIAL_TYPE";
+
+    public static final String ACTIVITY_LOG_USER_REPORT_USER_TYPE_KEY = "ACTIVITY_LOG_USER_REPORT_USER_TYPE";
+    public static final String ACTIVITY_LOG_USER_REPORT_LIBRARY_TYPE_KEY = "ACTIVITY_LOG_USER_REPORT_LIBRARY_TYPE";
+    public static final String ACTIVITY_LOG_USER_REPORT_TUTORIAL_TYPE_KEY = "ACTIVITY_LOG_USER_REPORT_TUTORIAL_TYPE";
+
+
+    public static final String ACTIVITY_LOG_USER_UNREPORT_USER_TYPE_KEY = "ACTIVITY_LOG_USER_UNREPORT_USER_TYPE";
+    public static final String ACTIVITY_LOG_USER_UNREPORT_LIBRARY_TYPE_KEY = "ACTIVITY_LOG_USER_UNREPORT_LIBRARY_TYPE";
+    public static final String ACTIVITY_LOG_USER_UNREPORT_TUTORIAL_TYPE_KEY = "ACTIVITY_LOG_USER_UNREPORT_TUTORIAL_TYPE";
 
 
 
@@ -432,7 +482,10 @@ public class GlobalConfig {
        * @return {@link String} The unique ID of the current user
        * */
    public static String getCurrentUserId(){
-       return GlobalConfig.CURRENT_USER_ID;
+       if(GlobalConfig.CURRENT_USER_ID == null && FirebaseAuth.getInstance().getCurrentUser() != null){
+           return FirebaseAuth.getInstance().getCurrentUser().getUid();
+       }
+       return GlobalConfig.CURRENT_USER_ID+"";
     }
 
     /**
@@ -449,6 +502,7 @@ public class GlobalConfig {
      * @return {@link String} which will be used for some operations
      * */
     static String getCurrentUserTokenId(){
+
        return GlobalConfig.CURRENT_USER_TOKEN_ID;
     }
 
@@ -465,6 +519,9 @@ public class GlobalConfig {
  * @return {@link FirebaseFirestore}
  * */
    public static FirebaseFirestore getFirebaseFirestoreInstance(){
+       if(GlobalConfig.firebaseFirestoreInstance == null){
+           return FirebaseFirestore.getInstance();
+       }
        return GlobalConfig.firebaseFirestoreInstance;
     }
 
@@ -482,7 +539,9 @@ public class GlobalConfig {
      * @return {@link FirebaseStorage}
      * */
     static FirebaseStorage getFirebaseStorageInstance(){
-
+    if(GlobalConfig.firebaseStorageInstance == null){
+        return FirebaseStorage.getInstance();
+    }
        return GlobalConfig.firebaseStorageInstance;
     }
 
@@ -1633,53 +1692,287 @@ public class GlobalConfig {
     }
 
 
-    public static void deletePage(String authorId,String tutorialId,String folderId,String pageId,boolean isTutorialPage, ActionCallback actionCallback){
+    public static void deletePage(String libraryId,String tutorialId,String folderId,String pageId,boolean isTutorialPage, ActionCallback actionCallback){
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
 
         if(isTutorialPage){
-            DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
-            HashMap<String,Object> details = new HashMap<>();
-            details.put(TOTAL_NUMBER_OF_PAGES_CREATED_KEY,FieldValue.increment(-1L));
-            writeBatch.update(tutorialDocumentReference,details);
 
-            DocumentReference pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_TUTORIAL_PAGES_KEY).document(pageId);
-            writeBatch.delete(pageDocumentReference);
-
-            writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+            GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_TUTORIAL_PAGES_KEY).document(pageId).get().addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    actionCallback.onFailed(e.getMessage());
+
                 }
-            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
-                public void onSuccess(Void unused) {
-                    actionCallback.onSuccess();
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    ArrayList<String> urlList  = documentSnapshot.get(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY)!=null? (ArrayList<String>) documentSnapshot.get(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY) :new ArrayList<>();
+                    String coverPhotoUrl =""+ documentSnapshot.get(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
+
+                    DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
+                    HashMap<String,Object> details = new HashMap<>();
+                    details.put(TOTAL_NUMBER_OF_PAGES_CREATED_KEY,FieldValue.increment(-1L));
+                    writeBatch.update(tutorialDocumentReference,details);
+
+                    DocumentReference pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_TUTORIAL_PAGES_KEY).document(pageId);
+                    writeBatch.delete(pageDocumentReference);
+
+                    writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            actionCallback.onFailed(e.getMessage());
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+//                            actionCallback.onSuccess();
+                            getFirebaseStorageInstance().getReferenceFromUrl(coverPhotoUrl).delete();
+                            for(int i=0; i<urlList.size(); i++){
+                                getFirebaseStorageInstance().getReferenceFromUrl(urlList.get(i)).delete();
+
+                            }
+                            GlobalConfig.updateActivityLog(ACTIVITY_LOG_USER_DELETE_TUTORIAL_PAGE_TYPE_KEY, getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    actionCallback.onSuccess();
+                                }
+
+                                @Override
+                                public void onFailed(String errorMessage) {
+                                    actionCallback.onSuccess();
+
+                                }
+                            });
+
+                        }
+                    });
+
                 }
             });
-
 
         }else{
-            DocumentReference folderDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_FOLDERS_KEY).document(folderId);
-            HashMap<String,Object> details = new HashMap<>();
-            details.put(TOTAL_NUMBER_OF_PAGES_CREATED_KEY,FieldValue.increment(-1L));
-            writeBatch.update(folderDocumentReference,details);
 
-            DocumentReference pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_FOLDERS_KEY).document(folderId).collection(ALL_FOLDER_PAGES_KEY).document(pageId);
-            writeBatch.delete(pageDocumentReference);
-
-            writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+            GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_FOLDERS_KEY).document(folderId).collection(ALL_FOLDER_PAGES_KEY).document(pageId).get().addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     actionCallback.onFailed(e.getMessage());
-
                 }
-            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
-                public void onSuccess(Void unused) {
-                    actionCallback.onSuccess();
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    ArrayList<String> urlList  = documentSnapshot.get(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY)!=null? (ArrayList<String>) documentSnapshot.get(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY) :new ArrayList<>();
+                    String coverPhotoUrl =""+ documentSnapshot.get(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
+
+                    DocumentReference folderDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_FOLDERS_KEY).document(folderId);
+                    HashMap<String,Object> details = new HashMap<>();
+                    details.put(TOTAL_NUMBER_OF_PAGES_CREATED_KEY,FieldValue.increment(-1L));
+                    writeBatch.update(folderDocumentReference,details);
+
+                    DocumentReference pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_FOLDERS_KEY).document(folderId).collection(ALL_FOLDER_PAGES_KEY).document(pageId);
+                    writeBatch.delete(pageDocumentReference);
+
+                    writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            actionCallback.onFailed(e.getMessage());
+
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+//                            actionCallback.onSuccess();
+                            getFirebaseStorageInstance().getReferenceFromUrl(coverPhotoUrl).delete();
+                            for(int i=0; i<urlList.size(); i++){
+                                getFirebaseStorageInstance().getReferenceFromUrl(urlList.get(i)).delete();
+
+                            }
+
+                            GlobalConfig.updateActivityLog(ACTIVITY_LOG_USER_DELETE_FOLDER_PAGE_TYPE_KEY, getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    actionCallback.onSuccess();
+                                }
+
+                                @Override
+                                public void onFailed(String errorMessage) {
+                                    actionCallback.onSuccess();
+
+                                }
+                            });
+
+                        }
+                    });
                 }
             });
+
         }
+    }
+
+    public static void deleteFolder(String libraryId,String tutorialId,String folderId, ActionCallback actionCallback){
+          WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+          GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_FOLDERS_KEY).document(folderId).get().addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception e) {
+
+              }
+          }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+              @Override
+              public void onSuccess(DocumentSnapshot documentSnapshot) {
+                  long numberOfPages = documentSnapshot.get(TOTAL_NUMBER_OF_PAGES_CREATED_KEY) != null ? documentSnapshot.getLong(TOTAL_NUMBER_OF_PAGES_CREATED_KEY) : 0L;
+                  if (numberOfPages != 0) {
+
+                      DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
+                      HashMap<String, Object> details = new HashMap<>();
+                      details.put(TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY, FieldValue.increment(-1L));
+                      writeBatch.update(tutorialDocumentReference, details);
+
+                      DocumentReference pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_FOLDERS_KEY).document(folderId);
+                      writeBatch.delete(pageDocumentReference);
+
+                      writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+                          @Override
+                          public void onFailure(@NonNull Exception e) {
+                              actionCallback.onFailed(e.getMessage());
+                          }
+                      }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                          @Override
+                          public void onSuccess(Void unused) {
+                              actionCallback.onSuccess();
+                              GlobalConfig.updateActivityLog(ACTIVITY_LOG_USER_DELETE_TUTORIAL_FOLDER_TYPE_KEY, getCurrentUserId(), libraryId, tutorialId, folderId, null, null,  new GlobalConfig.ActionCallback() {
+                                  @Override
+                                  public void onSuccess() {
+                                      actionCallback.onSuccess();
+                                  }
+
+                                  @Override
+                                  public void onFailed(String errorMessage) {
+                                      actionCallback.onSuccess();
+
+                                  }
+                              });
+
+                          }
+                      });
+
+                  } else {
+                      actionCallback.onFailed("OOPS, Action Denied! Folders cannot be deleted if there are pages therein, Please delete all pages to enable folder deletion");
+                  }
+              }
+          });
+      }
+
+    public static void deleteTutorial(String libraryId,String tutorialId, ActionCallback actionCallback){
+          WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+          GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).get().addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception e) {
+
+              }
+          }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+              @Override
+              public void onSuccess(DocumentSnapshot documentSnapshot) {
+                  long numberOfPages = documentSnapshot.get(TOTAL_NUMBER_OF_PAGES_CREATED_KEY) != null ? documentSnapshot.getLong(TOTAL_NUMBER_OF_PAGES_CREATED_KEY) : 0L;
+                  long numberOfFolders = documentSnapshot.get(TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY) != null ? documentSnapshot.getLong(TOTAL_NUMBER_OF_FOLDERS_CREATED_KEY) : 0L;
+                  if (numberOfPages != 0 && numberOfFolders!=0) {
+
+                      DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
+                      HashMap<String, Object> details = new HashMap<>();
+                      details.put(TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY, FieldValue.increment(-1L));
+                      writeBatch.update(tutorialDocumentReference, details);
+
+                      DocumentReference tutorialDocumentReference2 = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId());
+                      HashMap<String, Object> details2 = new HashMap<>();
+                      details.put(TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY, FieldValue.increment(-1L));
+                      writeBatch.update(tutorialDocumentReference2, details2);
+
+                      DocumentReference pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
+                      writeBatch.delete(pageDocumentReference);
+
+                      writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+                          @Override
+                          public void onFailure(@NonNull Exception e) {
+                              actionCallback.onFailed(e.getMessage());
+                          }
+                      }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                          @Override
+                          public void onSuccess(Void unused) {
+                              actionCallback.onSuccess();
+                              GlobalConfig.updateActivityLog(ACTIVITY_LOG_USER_DELETE_TUTORIAL_TYPE_KEY, getCurrentUserId(), libraryId, tutorialId, null, null, null,  new GlobalConfig.ActionCallback() {
+                                  @Override
+                                  public void onSuccess() {
+                                      actionCallback.onSuccess();
+                                  }
+
+                                  @Override
+                                  public void onFailed(String errorMessage) {
+                                      actionCallback.onSuccess();
+
+                                  }
+                              });
+
+                          }
+                      });
+
+                  } else {
+                      actionCallback.onFailed("OOPS, Action Denied! Tutorials cannot be deleted if there are pages or folders therein, Please delete all pages and folders to enable tutorial deletion");
+                  }
+              }
+          });
+      }
+
+    public static void deleteLibrary(String libraryId, ActionCallback actionCallback){
+          WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+          GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId).get().addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception e) {
+
+              }
+          }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+              @Override
+              public void onSuccess(DocumentSnapshot documentSnapshot) {
+                  long numberOfTutorials = documentSnapshot.get(TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY) != null ? documentSnapshot.getLong(TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY) : 0L;
+                  if (numberOfTutorials>0) {
+
+                      DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId());
+                      HashMap<String, Object> details = new HashMap<>();
+                      details.put(TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY, FieldValue.increment(-1L));
+                      writeBatch.update(tutorialDocumentReference, details);
+
+                      DocumentReference pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
+                      writeBatch.delete(pageDocumentReference);
+
+                      writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+                          @Override
+                          public void onFailure(@NonNull Exception e) {
+                              actionCallback.onFailed(e.getMessage());
+                          }
+                      }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                          @Override
+                          public void onSuccess(Void unused) {
+                              actionCallback.onSuccess();
+                              GlobalConfig.updateActivityLog(ACTIVITY_LOG_USER_DELETE_LIBRARY_TYPE_KEY, getCurrentUserId(), libraryId, null, null, null, null,  new GlobalConfig.ActionCallback() {
+                                  @Override
+                                  public void onSuccess() {
+                                      actionCallback.onSuccess();
+                                  }
+
+                                  @Override
+                                  public void onFailed(String errorMessage) {
+                                      actionCallback.onSuccess();
+
+                                  }
+                              });
+
+                          }
+                      });
+
+                  } else {
+                      actionCallback.onFailed("OOPS, Action Denied! Library cannot be deleted if there are tutorials therein, Please delete all tutorials to enable library deletion");
+                  }
+              }
+          });
+
+
+
     }
 
     /**
@@ -1862,26 +2155,29 @@ public class GlobalConfig {
 //            activityLogDetails.put(IS_TUTORIAL_PAGE_AFFECTED_KEY,isTutorialPageAffected);
 //            activityLogDetails.put(IS_FOLDER_PAGE_AFFECTED_KEY,isFolderPageAffected);
 
+if(isUserLoggedIn()) {
+    getFirebaseFirestoreInstance()
+            .collection(ALL_USERS_KEY)
+            .document(getCurrentUserId())
+            .collection(USER_ACTIVITY_LOG_KEY)
+            .document(activityLogId)
+            .set(activityLogDetails)
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    actionCallback.onFailed(e.getMessage());
+                }
+            })
+            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    actionCallback.onSuccess();
+                }
+            });
+}else{
+    actionCallback.onSuccess();
 
-        getFirebaseFirestoreInstance()
-                .collection(ALL_USERS_KEY)
-                .document(getCurrentUserId())
-                .collection(USER_ACTIVITY_LOG_KEY)
-                .document(activityLogId)
-                .set(activityLogDetails)
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        actionCallback.onFailed(e.getMessage());
-                    }
-                })
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        actionCallback.onSuccess();
-                    }
-                });
-
+}
         switch(activityLogType){
             case GlobalConfig.ACTIVITY_LOG_USER_REVIEW_AUTHOR_TYPE_KEY:
                 ;
@@ -2111,6 +2407,21 @@ public class GlobalConfig {
         return  intent;
     }
 
+    public static ShimmerFrameLayout showShimmerLayout(Context context, ViewGroup viewGroup ){
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        ShimmerFrameLayout shimmerFrameLayout = (ShimmerFrameLayout) layoutInflater.inflate(R.layout.progress_indicator_shimmer_layout,viewGroup,false);
+//        ShimmerFrameLayout shimmerFrameLayout  = view.findViewById(R.id.progressIndicatorShimmerId);
+        shimmerFrameLayout.startShimmer();
+        viewGroup.addView(shimmerFrameLayout);
+        return shimmerFrameLayout;
+    }
+    public static void removeShimmerLayout(ViewGroup viewGroup, ShimmerFrameLayout shimmerFrameLayout){
+        if(shimmerFrameLayout !=null){
+            shimmerFrameLayout.stopShimmer();
+            viewGroup.removeView(shimmerFrameLayout);
+        }
+        shimmerFrameLayout = null;
+    }
 
     public static void removeBookmark(String authorId, String libraryId, String tutorialId,String folderId,String pageId,String type, ActionCallback actionCallback) {
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
@@ -2697,7 +3008,7 @@ public class GlobalConfig {
         });
         DocumentReference documentReference = getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_TUTORIAL_PAGES_KEY).document(pageId);
         HashMap<String,Object> details = new HashMap<>();
-        details.put(TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR_KEY,FieldValue.increment(1L));
+        details.put(TOTAL_NUMBER_OF_PAGE_VISITOR_KEY,FieldValue.increment(1L));
         writeBatch.update(documentReference,details);
 
         writeBatch.commit();
@@ -2716,7 +3027,7 @@ public class GlobalConfig {
         });
         DocumentReference documentReference = getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(ALL_FOLDERS_KEY).document(folderId).collection(ALL_FOLDER_PAGES_KEY).document(pageId);
         HashMap<String,Object> details = new HashMap<>();
-        details.put(TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR_KEY,FieldValue.increment(1L));
+        details.put(TOTAL_NUMBER_OF_PAGE_VISITOR_KEY,FieldValue.increment(1L));
         writeBatch.update(documentReference,details);
 
         writeBatch.commit();
@@ -2856,6 +3167,461 @@ public class GlobalConfig {
         getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).update(lastViewDetails);
     }
 
+    public static ArrayList<String> getBlockedItemsList(){
+        if (!BLOCKED_ITEM_LIST.contains("BLOCKS")) {
+            BLOCKED_ITEM_LIST.add("BLOCKS");
+        }
+     return BLOCKED_ITEM_LIST;
+    }
+    public static void setBlockedItemsList(){
+        ArrayList<String> blockedList = new ArrayList<>();
+        getFirebaseFirestoreInstance()
+                .collection(ALL_USERS_KEY)
+                .document(getCurrentUserId())
+                .collection(BLOCKED_ITEMS_KEY)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (value != null){
+                            for (DocumentChange documentChange : value.getDocumentChanges()) {
+                                DocumentSnapshot documentSnapshot = documentChange.getDocument();
+                                String blockedItemId = documentSnapshot.getId();
+                                if (!blockedList.contains(blockedItemId)) {
+                                    blockedList.add(blockedItemId);
+                                }
+                            }
+                    }
+                        BLOCKED_ITEM_LIST = blockedList;
+
+                    }
+                });
+
+    }
+    public static ArrayList<String> getReportedItemsList(){
+        if (!REPORTED_ITEM_LIST.contains("REPORTS")) {
+            REPORTED_ITEM_LIST.add("REPORTS");
+        }
+     return REPORTED_ITEM_LIST;
+    }
+    public static void setReportedItemsList(){
+        ArrayList<String> reportedList = new ArrayList<>();
+        getFirebaseFirestoreInstance()
+                .collection(ALL_USERS_KEY)
+                .document(getCurrentUserId())
+                .collection(REPORTED_ITEMS_KEY)
+                .get()
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                setReportedItemsList();
+            }
+        })
+        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for(DocumentSnapshot documentSnapshot: queryDocumentSnapshots){
+                    String reportedItemId = documentSnapshot.getId();
+                    reportedList.add(reportedItemId);
+                }
+                REPORTED_ITEM_LIST = reportedList;
+            }
+        });
+
+    }
+    
+    public static void block(String type,String userId,String libraryId,String tutorialId,ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+      DocumentReference blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(userId);
+      HashMap<String,Object> blockedDetails = new HashMap<>();
+        blockedDetails.put(USER_ID_KEY,userId);
+        blockedDetails.put(LIBRARY_ID_KEY,libraryId);
+        blockedDetails.put(TUTORIAL_ID_KEY,tutorialId);
+        blockedDetails.put(DATE_BLOCKED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+        blockedDetails.put(TYPE_KEY,type);
+
+
+ DocumentReference blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(BLOCKERS_KEY).document(getCurrentUserId());
+      HashMap<String,Object> blockerIncrementDetails = new HashMap<>();
+        blockerIncrementDetails.put(BLOCKER_USER_ID_KEY,getCurrentUserId());
+        blockerIncrementDetails.put(DATE_BLOCKED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+
+
+
+        DocumentReference reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+      HashMap<String,Object> details1 = new HashMap<>();
+        details1.put(TOTAL_NUMBER_OF_BLOCKS_KEY,FieldValue.increment(1L));
+
+      switch(type){
+          case AUTHOR_TYPE_KEY:
+              blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(userId);
+              blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(BLOCKERS_KEY).document(getCurrentUserId());
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+
+              DocumentReference blockedIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+              HashMap<String,Object> blockedIncrementDetails = new HashMap<>();
+              blockedIncrementDetails.put(TOTAL_NUMBER_OF_USERS_BLOCKED_KEY,FieldValue.increment(1L));
+              writeBatch.set(blockedIncrementReference,blockedIncrementDetails,SetOptions.merge());
+
+              break;
+          case LIBRARY_TYPE_KEY:
+
+              blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(libraryId);
+              blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId).collection(BLOCKERS_KEY).document(getCurrentUserId());
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+
+              DocumentReference blockedIncrementReference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+              HashMap<String,Object> blockedIncrementDetails1 = new HashMap<>();
+              blockedIncrementDetails1.put(TOTAL_NUMBER_OF_LIBRARY_BLOCKED_KEY,FieldValue.increment(1L));
+              writeBatch.set(blockedIncrementReference1,blockedIncrementDetails1,SetOptions.merge());
+
+              break;
+          case TUTORIAL_TYPE_KEY:
+
+              blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(tutorialId);
+              blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(BLOCKERS_KEY).document(getCurrentUserId());
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+
+
+              DocumentReference blockedIncrementReference2 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+              HashMap<String,Object> blockedIncrementDetails2 = new HashMap<>();
+              blockedIncrementDetails2.put(TOTAL_NUMBER_OF_TUTORIALS_BLOCKED_KEY,FieldValue.increment(1L));
+              writeBatch.set(blockedIncrementReference2,blockedIncrementDetails2,SetOptions.merge());
+
+              break;
+      }
+        writeBatch.set(blockedUserReference,blockedDetails,SetOptions.merge());
+        writeBatch.set(blockerIncrementReference,blockerIncrementDetails,SetOptions.merge());
+        writeBatch.set(reference1,details1,SetOptions.merge());
+
+      writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception e) {
+
+          }
+      }).addOnSuccessListener(new OnSuccessListener<Void>() {
+          @Override
+          public void onSuccess(Void unused) {
+String activityLogType = "NONE";
+              switch(type){
+                  case AUTHOR_TYPE_KEY:
+                      activityLogType = ACTIVITY_LOG_USER_BLOCK_USER_TYPE_KEY;
+                      break;
+
+                  case LIBRARY_TYPE_KEY:
+                      activityLogType = ACTIVITY_LOG_USER_BLOCK_LIBRARY_TYPE_KEY;
+                      break;
+
+                  case TUTORIAL_TYPE_KEY:
+                      activityLogType = ACTIVITY_LOG_USER_BLOCK_TUTORIAL_TYPE_KEY;
+                      break;
+              }
+              GlobalConfig.updateActivityLog(activityLogType, userId, libraryId, tutorialId, null, null, null,  new GlobalConfig.ActionCallback() {
+                  @Override
+                  public void onSuccess() {
+                      actionCallback.onSuccess();
+                  }
+
+                  @Override
+                  public void onFailed(String errorMessage) {
+                      actionCallback.onSuccess();
+
+                  }
+              });
+
+
+          }
+      });
+    }
+    public static void unBlock(String type,String userId,String libraryId,String tutorialId,ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+      DocumentReference blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(userId);
+
+      DocumentReference blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(BLOCKERS_KEY).document(getCurrentUserId());
+
+
+
+        DocumentReference reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+        HashMap<String,Object> details1 = new HashMap<>();
+        details1.put(TOTAL_NUMBER_OF_BLOCKS_KEY,FieldValue.increment(-1L));
+
+      switch(type){
+          case AUTHOR_TYPE_KEY:
+              blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(userId);
+              blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(BLOCKERS_KEY).document(getCurrentUserId());
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+
+              DocumentReference blockedIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+              HashMap<String,Object> blockedIncrementDetails = new HashMap<>();
+              blockedIncrementDetails.put(TOTAL_NUMBER_OF_USERS_BLOCKED_KEY,FieldValue.increment(-1L));
+              writeBatch.set(blockedIncrementReference,blockedIncrementDetails,SetOptions.merge());
+
+              break;
+          case LIBRARY_TYPE_KEY:
+
+              blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(libraryId);
+              blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId).collection(BLOCKERS_KEY).document(getCurrentUserId());
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+
+              DocumentReference blockedIncrementReference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+              HashMap<String,Object> blockedIncrementDetails1 = new HashMap<>();
+              blockedIncrementDetails1.put(TOTAL_NUMBER_OF_LIBRARY_BLOCKED_KEY,FieldValue.increment(-1L));
+              writeBatch.set(blockedIncrementReference1,blockedIncrementDetails1,SetOptions.merge());
+
+              break;
+          case TUTORIAL_TYPE_KEY:
+
+              blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(tutorialId);
+              blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(BLOCKERS_KEY).document(getCurrentUserId());
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+
+
+              DocumentReference blockedIncrementReference2 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+              HashMap<String,Object> blockedIncrementDetails2 = new HashMap<>();
+              blockedIncrementDetails2.put(TOTAL_NUMBER_OF_TUTORIALS_BLOCKED_KEY,FieldValue.increment(-1L));
+              writeBatch.set(blockedIncrementReference2,blockedIncrementDetails2,SetOptions.merge());
+
+              break;
+      }
+        writeBatch.delete(blockedUserReference);
+        writeBatch.delete(blockerIncrementReference);
+        writeBatch.set(reference1,details1,SetOptions.merge());
+
+      writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception e) {
+
+          }
+      }).addOnSuccessListener(new OnSuccessListener<Void>() {
+          @Override
+          public void onSuccess(Void unused) {
+            String activityLogType = "NONE";
+              switch(type){
+                  case AUTHOR_TYPE_KEY:
+                      activityLogType = ACTIVITY_LOG_USER_UNBLOCK_USER_TYPE_KEY;
+                      break;
+
+                  case LIBRARY_TYPE_KEY:
+                      activityLogType = ACTIVITY_LOG_USER_UNBLOCK_LIBRARY_TYPE_KEY;
+                      break;
+
+                  case TUTORIAL_TYPE_KEY:
+                      activityLogType = ACTIVITY_LOG_USER_UNBLOCK_TUTORIAL_TYPE_KEY;
+                      break;
+              }
+              GlobalConfig.updateActivityLog(activityLogType, userId, libraryId, tutorialId, null, null, null,  new GlobalConfig.ActionCallback() {
+                  @Override
+                  public void onSuccess() {
+                      actionCallback.onSuccess();
+                  }
+
+                  @Override
+                  public void onFailed(String errorMessage) {
+                      actionCallback.onSuccess();
+
+                  }
+              });
+
+
+          }
+      });
+    }
+
+    public static void report(String type,String userId,String libraryId,String tutorialId,ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(userId);
+        HashMap<String,Object> reportedDetails = new HashMap<>();
+        reportedDetails.put(USER_ID_KEY,userId);
+        reportedDetails.put(LIBRARY_ID_KEY,libraryId);
+        reportedDetails.put(TUTORIAL_ID_KEY,tutorialId);
+        reportedDetails.put(DATE_BLOCKED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+        reportedDetails.put(TYPE_KEY,type);
+
+
+        DocumentReference reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(REPORTERS_KEY).document(getCurrentUserId());
+        HashMap<String,Object> reporterIncrementDetails = new HashMap<>();
+        reporterIncrementDetails.put(REPORTER_USER_ID_KEY,getCurrentUserId());
+        reporterIncrementDetails.put(DATE_REPORTED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+
+
+
+        DocumentReference reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+        HashMap<String,Object> details1 = new HashMap<>();
+        details1.put(TOTAL_NUMBER_OF_REPORTS_KEY,FieldValue.increment(1L));
+
+        switch(type){
+            case AUTHOR_TYPE_KEY:
+                reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(userId);
+                reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(REPORTERS_KEY).document(getCurrentUserId());
+                reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+
+                DocumentReference reportedIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+                HashMap<String,Object> reportedIncrementDetails = new HashMap<>();
+                reportedIncrementDetails.put(TOTAL_NUMBER_OF_USERS_REPORTED_KEY,FieldValue.increment(1L));
+                writeBatch.set(reportedIncrementReference,reportedIncrementDetails,SetOptions.merge());
+
+                break;
+            case LIBRARY_TYPE_KEY:
+
+                reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(libraryId);
+                reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId).collection(REPORTERS_KEY).document(getCurrentUserId());
+                reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+
+                DocumentReference reportedIncrementReference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+                HashMap<String,Object> reportedIncrementDetails1 = new HashMap<>();
+                reportedIncrementDetails1.put(TOTAL_NUMBER_OF_LIBRARY_REPORTED_KEY,FieldValue.increment(1L));
+                writeBatch.set(reportedIncrementReference1,reportedIncrementDetails1,SetOptions.merge());
+
+                break;
+            case TUTORIAL_TYPE_KEY:
+
+                reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(tutorialId);
+                reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(REPORTERS_KEY).document(getCurrentUserId());
+                reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+
+
+                DocumentReference reportedIncrementReference2 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+                HashMap<String,Object> reportedIncrementDetails2 = new HashMap<>();
+                reportedIncrementDetails2.put(TOTAL_NUMBER_OF_TUTORIALS_REPORTED_KEY,FieldValue.increment(1L));
+                writeBatch.set(reportedIncrementReference2,reportedIncrementDetails2,SetOptions.merge());
+
+                break;
+        }
+        writeBatch.set(reportedUserReference,reportedDetails,SetOptions.merge());
+        writeBatch.set(reporterIncrementReference,reporterIncrementDetails,SetOptions.merge());
+        writeBatch.set(reference1,details1,SetOptions.merge());
+
+        writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                String activityLogType = "NONE";
+                switch(type){
+                    case AUTHOR_TYPE_KEY:
+                        activityLogType = ACTIVITY_LOG_USER_REPORT_USER_TYPE_KEY;
+                        break;
+
+                    case LIBRARY_TYPE_KEY:
+                        activityLogType = ACTIVITY_LOG_USER_REPORT_LIBRARY_TYPE_KEY;
+                        break;
+
+                    case TUTORIAL_TYPE_KEY:
+                        activityLogType = ACTIVITY_LOG_USER_REPORT_TUTORIAL_TYPE_KEY;
+                        break;
+                }
+                GlobalConfig.updateActivityLog(activityLogType, userId, libraryId, tutorialId, null, null, null,  new GlobalConfig.ActionCallback() {
+                    @Override
+                    public void onSuccess() {
+                        actionCallback.onSuccess();
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+                        actionCallback.onSuccess();
+
+                    }
+                });
+
+
+            }
+        });
+    }
+    public static void unReport(String type,String userId,String libraryId,String tutorialId,ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+      DocumentReference reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(userId);
+
+      DocumentReference reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(REPORTERS_KEY).document(getCurrentUserId());
+
+
+
+        DocumentReference reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+        HashMap<String,Object> details1 = new HashMap<>();
+        details1.put(TOTAL_NUMBER_OF_REPORTS_KEY,FieldValue.increment(-1L));
+
+      switch(type){
+          case AUTHOR_TYPE_KEY:
+              reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(userId);
+              reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(REPORTERS_KEY).document(getCurrentUserId());
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+
+              DocumentReference reportedIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+              HashMap<String,Object> reportedIncrementDetails = new HashMap<>();
+              reportedIncrementDetails.put(TOTAL_NUMBER_OF_USERS_REPORTED_KEY,FieldValue.increment(-1L));
+              writeBatch.set(reportedIncrementReference,reportedIncrementDetails,SetOptions.merge());
+
+              break;
+          case LIBRARY_TYPE_KEY:
+
+              reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(libraryId);
+              reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId).collection(REPORTERS_KEY).document(getCurrentUserId());
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+
+              DocumentReference reportedIncrementReference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+              HashMap<String,Object> reportedIncrementDetails1 = new HashMap<>();
+              reportedIncrementDetails1.put(TOTAL_NUMBER_OF_LIBRARY_REPORTED_KEY,FieldValue.increment(-1L));
+              writeBatch.set(reportedIncrementReference1,reportedIncrementDetails1,SetOptions.merge());
+              break;
+
+          case TUTORIAL_TYPE_KEY:
+
+              reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(tutorialId);
+              reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(REPORTERS_KEY).document(getCurrentUserId());
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+
+
+              DocumentReference reportedIncrementReference2 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+              HashMap<String,Object> reportedIncrementDetails2 = new HashMap<>();
+              reportedIncrementDetails2.put(TOTAL_NUMBER_OF_TUTORIALS_REPORTED_KEY,FieldValue.increment(-1L));
+              writeBatch.set(reportedIncrementReference2,reportedIncrementDetails2,SetOptions.merge());
+
+              break;
+      }
+        writeBatch.delete(reportedUserReference);
+        writeBatch.delete(reporterIncrementReference);
+        writeBatch.set(reference1,details1,SetOptions.merge());
+
+      writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception e) {
+
+          }
+      }).addOnSuccessListener(new OnSuccessListener<Void>() {
+          @Override
+          public void onSuccess(Void unused) {
+            String activityLogType = "NONE";
+              switch(type){
+                  case AUTHOR_TYPE_KEY:
+                      activityLogType = ACTIVITY_LOG_USER_UNREPORT_USER_TYPE_KEY;
+                      break;
+
+                  case LIBRARY_TYPE_KEY:
+                      activityLogType = ACTIVITY_LOG_USER_UNREPORT_LIBRARY_TYPE_KEY;
+                      break;
+
+                  case TUTORIAL_TYPE_KEY:
+                      activityLogType = ACTIVITY_LOG_USER_UNREPORT_TUTORIAL_TYPE_KEY;
+                      break;
+              }
+              GlobalConfig.updateActivityLog(activityLogType, userId, libraryId, tutorialId, null, null, null,  new GlobalConfig.ActionCallback() {
+                  @Override
+                  public void onSuccess() {
+                      actionCallback.onSuccess();
+                  }
+
+                  @Override
+                  public void onFailed(String errorMessage) {
+                      actionCallback.onSuccess();
+
+                  }
+              });
+
+
+          }
+      });
+    }
 
     /*
         static HashMap<String,Double> getStarMap(int fiveStar,int fourStar, int threeStar, int twoStar, int oneStar){

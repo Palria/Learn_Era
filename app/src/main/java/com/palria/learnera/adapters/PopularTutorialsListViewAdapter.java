@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ import com.palria.learnera.TutorialActivity;
 import com.palria.learnera.models.AuthorDataModel;
 import com.palria.learnera.models.LibraryDataModel;
 import com.palria.learnera.models.TutorialDataModel;
+import com.palria.learnera.widgets.LEBottomSheetDialog;
 
 import org.w3c.dom.Text;
 
@@ -101,6 +103,55 @@ try {
                 context.startActivity(intent);
                   }
         });
+        holder.moreActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LEBottomSheetDialog leBottomSheetDialog = new LEBottomSheetDialog(context);
+                leBottomSheetDialog.addOptionItem("Block Tutorial", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        leBottomSheetDialog.hide();
+                        Toast.makeText(context,"Blocking",Toast.LENGTH_SHORT).show();
+                        int position = tutorialDataModels.indexOf(tutorialDataModel);
+                        tutorialDataModels.remove(tutorialDataModel);
+                        PopularTutorialsListViewAdapter.this.notifyItemRemoved(position);
+                        GlobalConfig.block(GlobalConfig.ACTIVITY_LOG_USER_BLOCK_TUTORIAL_TYPE_KEY, tutorialDataModel.getAuthorId(), tutorialDataModel.getLibraryId(), tutorialDataModel.getTutorialId(), new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+
+                            }
+                        });
+                    }
+                }, 0);
+                leBottomSheetDialog.addOptionItem("Report Tutorial", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        leBottomSheetDialog.hide();
+                        Toast.makeText(context,"reporting",Toast.LENGTH_SHORT).show();
+                        int position = tutorialDataModels.indexOf(tutorialDataModel);
+                        tutorialDataModels.remove(tutorialDataModel);
+                        PopularTutorialsListViewAdapter.this.notifyItemRemoved(position);
+                        GlobalConfig.report(GlobalConfig.ACTIVITY_LOG_USER_REPORT_TUTORIAL_TYPE_KEY, tutorialDataModel.getAuthorId(), tutorialDataModel.getLibraryId(), tutorialDataModel.getTutorialId(), new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+
+                            }
+                        });
+                    }
+                }, 0);
+                leBottomSheetDialog.render().show();
+            }
+        });
 
     }
 
@@ -116,6 +167,8 @@ try {
         public TextView authorName;
         public TextView tutorialCreatedDate;
         public LinearLayout linearLayout;
+        public ImageButton moreActionButton;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -124,7 +177,7 @@ try {
             this.tutorialName = itemView.findViewById(R.id.title);
             this.authorName = itemView.findViewById(R.id.authorName);
             tutorialCreatedDate = itemView.findViewById(R.id.dateCreated);
-
+            this.moreActionButton = itemView.findViewById(R.id.moreActionButtonId);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.parentItem);
         }
     }

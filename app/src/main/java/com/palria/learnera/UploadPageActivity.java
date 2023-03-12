@@ -72,6 +72,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
@@ -87,6 +88,7 @@ import com.skydoves.colorpickerview.ActionMode;
 import com.skydoves.colorpickerview.ColorEnvelope;
 import com.skydoves.colorpickerview.ColorPickerView;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
+import com.squareup.picasso.Picasso;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.checkerframework.checker.units.qual.A;
@@ -114,10 +116,16 @@ public class UploadPageActivity extends AppCompatActivity {
     EditText pageTitleEditText;
     String pageTitle;
     String pageContent;
+    AlertDialog confirmationDialog;
+    AlertDialog initDialog;
 
     boolean isTutorialPage = true;
+    boolean isCreateNewPage = true;
     boolean isCoverImageIncluded = false;
+    boolean isCoverImageChanged = false;
     String coverImageUrl = "";
+    String retrievedCoverPhotoDownloadUrl = "";
+    ArrayList<String>retrievedActivePageMediaUrlArrayList = new ArrayList<>();
 
 
     Snackbar pageUploadSnackBar;
@@ -210,24 +218,51 @@ public class UploadPageActivity extends AppCompatActivity {
 
         initUI();
         fetchIntentData();
-        pageId = GlobalConfig.getRandomString(60);
+        if(isCreateNewPage) {
+            //user is creating new page, then generate new page id
+            pageId = GlobalConfig.getRandomString(60);
+        }else{
+            //is editing page
+            //main the old page id
+            startInitializationForEdition();
+        }
         openCoverImageLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
                 if (result.getData() != null) {
+                    toggleProgress(true);
                     Intent data=result.getData();
                     Bitmap bitmap = null;
                     try {
                         bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),data.getData());
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+//                        throw new RuntimeException(e);
+                        toggleProgress(false);
+
                     }
-                    bitmap.compress(Bitmap.CompressFormat.PNG,10,new ByteArrayOutputStream());
-                    coverImageUrl=GlobalHelpers.getImageUri(UploadPageActivity.this, bitmap).toString();
-                        Glide.with(UploadPageActivity.this)
-                                .load(coverImageUrl)
-                                .into(coverImageView);
-                        isCoverImageIncluded = true;
+                    final Bitmap bitmap1 = bitmap;
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            bitmap1.compress(Bitmap.CompressFormat.PNG,10,new ByteArrayOutputStream());
+                            coverImageUrl=GlobalHelpers.getImageUri(UploadPageActivity.this, bitmap1).toString();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Glide.with(UploadPageActivity.this)
+                                                                .load(coverImageUrl)
+                                                                .into(coverImageView);
+                                }
+                              });
+                            isCoverImageIncluded = true;
+                            isCoverImageChanged = true;
+                            toggleProgress(false);
+
+                        }
+                    }).start();
+
+
                 }
             }
         });
@@ -237,25 +272,44 @@ public class UploadPageActivity extends AppCompatActivity {
             @Override
             public void onActivityResult(ActivityResult result) {
                 if (result.getData() != null) {
+                    toggleProgress(true);
+
                     Intent data=result.getData();
 
                     //upload this image when uploading the page as index
                     //insert image to
-                    try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),data.getData());
-                        bitmap.compress(Bitmap.CompressFormat.PNG,10,new ByteArrayOutputStream());
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
 
-                            String imageUriString = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmap).toString();
-                            //insert image also upload image in uploading page with indexing.
-                            uploadedImagesList.add(imageUriString);
-                            wysiwygEditor.insertImage(imageUriString,"-");
+                                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 10, new ByteArrayOutputStream());
 
+                                String imageUriString = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmap).toString();
+                                //insert image also upload image in uploading page with indexing.
+                                    runOnUiThread(new Runnable() {
+                                                      @Override
+                                                      public void run() {
+
+                                                          uploadedImagesList.add(imageUriString);
+                                                          wysiwygEditor.insertImage(imageUriString, "-");
+                                                          toggleProgress(false);
+
+                                                      }
+                                                  });
+                            } catch (IOException ioException) {
+                                    toggleProgress(false);
+
+                                    ioException.printStackTrace();
+
+                            }
+                            }
+                        }).start();
 //                        uploadedImagesList.add(data.getData().toString());
 //                        wysiwygEditor.insertImage(data.getData().toString(),"-");
 
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
-                    }
+
 
                     return;
 
@@ -295,17 +349,32 @@ public class UploadPageActivity extends AppCompatActivity {
                 if(result.getResultCode()==RESULT_OK) {
 
                     if (result.getData() != null) {
-                        Intent data = result.getData();
-                        Bitmap  bitmapFromCamera =(Bitmap) data.getExtras().get("data");
-                        bitmapFromCamera.compress(Bitmap.CompressFormat.PNG,10,new ByteArrayOutputStream());
+                        toggleProgress(true);
 
-                        if(bitmapFromCamera != null) {
-                            String imageUriString = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmapFromCamera).toString();
-                            //insert image also upload image in uploading page with indexing.
-                            uploadedImagesList.add(imageUriString);
-                            wysiwygEditor.insertImage(imageUriString,"-");
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent data = result.getData();
+                                Bitmap bitmapFromCamera = (Bitmap) data.getExtras().get("data");
+                                bitmapFromCamera.compress(Bitmap.CompressFormat.PNG, 10, new ByteArrayOutputStream());
+
+                                if (bitmapFromCamera != null) {
+                                    String imageUriString = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmapFromCamera).toString();
+                                    //insert image also upload image in uploading page with indexing.
+                                    runOnUiThread(new Runnable() {
+                                                      @Override
+                                                      public void run() {
+
+                                                          uploadedImagesList.add(imageUriString);
+                                                          wysiwygEditor.insertImage(imageUriString, "-");
+                                                          toggleProgress(false);
+
+                                                      }
+                                                  });
+
+
 //                            cameraImageBitmap = bitmapFromCamera;
-                            //coverPhotoImageView.setImageBitmap(cameraImageBitmap);
+                                    //coverPhotoImageView.setImageBitmap(cameraImageBitmap);
 
 //                            ImageView partitionImage = new ImageView(getApplicationContext());
 //                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(70,70);
@@ -329,7 +398,9 @@ public class UploadPageActivity extends AppCompatActivity {
 //                            }
 //                            isLibraryCoverPhotoIncluded = true;
 //                            isLibraryCoverPhotoChanged = true;
-                        }
+                                }
+                            }
+                        }).start();
 
                     }
                 }else{
@@ -463,8 +534,9 @@ public class UploadPageActivity extends AppCompatActivity {
                                     }
                                 }
 
-                               startPageUploadService(imagesFinalListToUpload);
-
+//                               startPageUploadService(imagesFinalListToUpload);
+                                //Let the author confirm his action before uploading the page
+                            showPageUploadConfirmationDialog(imagesFinalListToUpload);
                             }
                         });
 
@@ -651,7 +723,11 @@ public class UploadPageActivity extends AppCompatActivity {
         intent.putExtra(GlobalConfig.PAGE_TITLE_KEY,pageTitle);
         intent.putExtra(GlobalConfig.PAGE_CONTENT_KEY,pageContent);
         intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,isTutorialPage);
+        intent.putExtra(GlobalConfig.IS_CREATE_NEW_PAGE_KEY,isCreateNewPage);
+        intent.putExtra(GlobalConfig.IS_PAGE_COVER_PHOTO_CHANGED_KEY,isCoverImageChanged);
+        intent.putExtra(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY,retrievedCoverPhotoDownloadUrl);
         intent.putExtra(GlobalConfig.PAGE_MEDIA_URL_LIST_KEY,imagesFinalListToUpload);
+        intent.putExtra(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY,retrievedActivePageMediaUrlArrayList);
         startService(intent);
 
     }
@@ -663,10 +739,11 @@ public class UploadPageActivity extends AppCompatActivity {
             return true;
         }
 
-        if(coverImageUrl == null || coverImageUrl.equals("")){
-            Toast.makeText(UploadPageActivity.this, "Please choose a cover image for page.",Toast.LENGTH_SHORT).show();
-            return true;
-        }
+//Allow the user to either add page cover or not
+//        if(coverImageUrl == null || coverImageUrl.equals("")){
+//            Toast.makeText(UploadPageActivity.this, "Please choose a cover image for page.",Toast.LENGTH_SHORT).show();
+//            return true;
+//        }
 
         if(pageContent == null || pageContent.equals("")){
            Toast.makeText(UploadPageActivity.this, "Please enter a description.",Toast.LENGTH_SHORT).show();
@@ -701,7 +778,7 @@ public class UploadPageActivity extends AppCompatActivity {
 }
 
     private void loadContentEditor() {
-        //load the ocntent editor here and render there thats make it easy to handle without any external codes.
+        //load the content editor here and render there that make it easy to handle without any external codes.
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
         Point size = new Point();
@@ -712,8 +789,8 @@ public class UploadPageActivity extends AppCompatActivity {
         wysiwygEditor.setEditorHeight(screenHeight-820);
         wysiwygEditor.setEditorFontSize(16);
         wysiwygEditor.setPadding(10, 10, 10, 10);
-       // wysiwygEditor.setPlaceholder("Insert your content here...");
-        wysiwygEditor.setHtml("<p> your content...</p><br> <br> <br> &nbsp;");
+        wysiwygEditor.setPlaceholder("Insert your content here...");
+//        wysiwygEditor.setHtml("<p> your content...</p><br> <br> <br> &nbsp;");
 
          action_undo=findViewById(R.id.action_undo);
          action_redo=findViewById(R.id.action_redo);
@@ -754,6 +831,8 @@ public class UploadPageActivity extends AppCompatActivity {
         coverImageView =findViewById(R.id.coverImage);
         Glide.with(this)
                 .load("https://via.placeholder.com/640x360?text=Cover%20Image")
+                .placeholder(R.drawable.book_cover2)
+                .error(R.drawable.book_cover2)
                 .into(coverImageView);
 
 
@@ -1159,6 +1238,79 @@ public class UploadPageActivity extends AppCompatActivity {
 
 
     }
+    private void showPageUploadConfirmationDialog(ArrayList<String> imagesListToUpload){
+
+       AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Confirm your action");
+        builder.setMessage("You are about to upload your page, please confirm if you are done editing your page");
+        builder.setCancelable(false);
+        builder.setIcon(R.drawable.ic_baseline_error_outline_24);
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (!String.valueOf(pageTitleEditText.getText()).trim().equals("") ) {
+                startPageUploadService(imagesListToUpload);
+                }else{
+                    pageTitleEditText.requestFocus();
+                    pageTitleEditText.setError("You must enter page title");
+
+                }
+
+            }
+        })
+                .setNegativeButton("Edit more", null);
+        confirmationDialog = builder.create();
+        confirmationDialog.show();
+
+        // successDialog.show();
+
+    }
+
+
+    private void startInitializationForEdition(){
+        toggleProgress(true);
+            DocumentReference documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId);
+            if(!isTutorialPage){
+                documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageId);
+
+            }
+            documentReference.get()
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            toggleProgress(false);
+
+                        }
+                    })
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            //THIS IS THE TITLE OF THE PAGE
+                            String pageTitle = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
+
+                            //USE THIS URL TO DOWNLOAD PAGE'S COVER IMAGE
+                            retrievedActivePageMediaUrlArrayList =  documentSnapshot.get(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY)!=null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY) :new ArrayList<>();
+                            retrievedCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
+                            Glide.with(UploadPageActivity.this)
+                                    .load(retrievedCoverPhotoDownloadUrl)
+                                    .into(coverImageView);
+
+                            //THIS IS THE PAGE CONTENT IN HTML FORMAT , USE IT AND RENDER TO READABLE TEXT
+                            String html = ""+ documentSnapshot.get(GlobalConfig.PAGE_CONTENT_KEY);
+                            pageTitleEditText.setText(pageTitle);
+                            wysiwygEditor.setHtml(html);
+
+                            toggleProgress(false);
+
+                        }
+                    });
+
+        }
+
+
+
+
 
     /**This posts the page content to database*/
     private void writePageToDatabase(String pageTitle, String pageContent) {
@@ -1283,6 +1435,10 @@ public class UploadPageActivity extends AppCompatActivity {
         tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
         libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
         folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
+        isCreateNewPage = intent.getBooleanExtra(GlobalConfig.IS_CREATE_NEW_PAGE_KEY,true);
+        if(!isCreateNewPage){
+            pageId = intent.getStringExtra(GlobalConfig.PAGE_ID_KEY);
+        }
 
 }
 

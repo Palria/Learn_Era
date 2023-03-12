@@ -21,7 +21,6 @@
         app:riv_corner_radius="5pt"
         android:src="@drawable/book_cover"
         android:layout_height="40pt"
-        android:visibility="gone"
 
         />
 

@@ -29,15 +29,33 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:textStyle="bold"
-            android:textSize="8pt"
-            android:maxLines="3"
-            android:ellipsize="end"
-            android:id="@+id/title"
-            android:text="Hello This is the title of the Tutorial you want to learn."
+      
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content">
+            
+            <TextView
+                android:textStyle="bold"
+                android:textSize="8pt"
+                android:maxLines="3"
+                android:ellipsize="end"
+                android:id="@+id/title"
+                android:text="..."
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+    
+            <ImageButton
+                android:id="@+id/moreActionButtonId"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/ic_baseline_error_outline_24"
+                android:backgroundTint="@color/error_red"
+                android:layout_gravity="top"
+                />
+    
+        </LinearLayout>
 
         <LinearLayout
             android:layout_marginTop="3pt"

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/progressIndicatorShimmerId"
+    app:shimmer_auto_start="true"
+    android:layout_marginVertical="4pt"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/rounded_grey_bg"
+            android:layout_margin="10dp"
+            />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="10dp"
+                android:background="@drawable/rounded_grey_bg"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                />
+             <TextView
+                android:layout_width="200dp"
+                android:layout_height="10dp"
+                 android:background="@drawable/rounded_grey_bg"
+                 android:layout_marginBottom="10dp"
+                />
+             <TextView
+                android:layout_width="300dp"
+                android:layout_height="10dp"
+                 android:background="@drawable/rounded_grey_bg"
+                 
+                />
+            
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/rounded_grey_bg"
+            android:layout_margin="10dp"
+            />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="10dp"
+                android:background="@drawable/rounded_grey_bg"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                />
+             <TextView
+                android:layout_width="200dp"
+                android:layout_height="10dp"
+                 android:background="@drawable/rounded_grey_bg"
+                 android:layout_marginBottom="10dp"
+                />
+             <TextView
+                android:layout_width="300dp"
+                android:layout_height="10dp"
+                 android:background="@drawable/rounded_grey_bg"
+                 
+                />
+            
+        </LinearLayout>
+    </LinearLayout>
+    
+    
+    </LinearLayout>
+    
+</com.facebook.shimmer.ShimmerFrameLayout>

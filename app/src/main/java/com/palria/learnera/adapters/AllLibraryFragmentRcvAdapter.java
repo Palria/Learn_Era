@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -24,6 +25,7 @@ import com.palria.learnera.LibraryActivity;
 import com.palria.learnera.R;
 import com.palria.learnera.models.AuthorDataModel;
 import com.palria.learnera.models.LibraryDataModel;
+import com.palria.learnera.widgets.LEBottomSheetDialog;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -59,6 +61,55 @@ public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibrar
                 .placeholder(R.drawable.book_cover)
                 .into(holder.cover);
         holder.libraryViewCount.setText(libraryDataModel.getTotalNumberOfLibraryViews()+"");
+        holder.moreActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LEBottomSheetDialog leBottomSheetDialog = new LEBottomSheetDialog(context);
+                leBottomSheetDialog.addOptionItem("Block Library", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        leBottomSheetDialog.hide();
+                        Toast.makeText(context,"Blocking",Toast.LENGTH_SHORT).show();
+                        int position = libraryDataModels.indexOf(libraryDataModel);
+                        libraryDataModels.remove(libraryDataModel);
+                        AllLibraryFragmentRcvAdapter.this.notifyItemRemoved(position);
+                        GlobalConfig.block(GlobalConfig.ACTIVITY_LOG_USER_BLOCK_LIBRARY_TYPE_KEY, libraryDataModel.getAuthorUserId(), libraryDataModel.getLibraryId(), null, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+
+                            }
+                        });
+                    }
+                }, 0);
+                leBottomSheetDialog.addOptionItem("Report Library", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        leBottomSheetDialog.hide();
+                        Toast.makeText(context,"reporting",Toast.LENGTH_SHORT).show();
+                        int position = libraryDataModels.indexOf(libraryDataModel);
+                        libraryDataModels.remove(libraryDataModel);
+                        AllLibraryFragmentRcvAdapter.this.notifyItemRemoved(position);
+                        GlobalConfig.report(GlobalConfig.ACTIVITY_LOG_USER_REPORT_LIBRARY_TYPE_KEY, libraryDataModel.getAuthorUserId(), libraryDataModel.getLibraryId(), null, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+
+                            }
+                        });
+                    }
+                }, 0);
+                leBottomSheetDialog.render().show();
+            }
+        });
 
         int[] ratings =new int[5];
         ratings[0]= (int) libraryDataModel.getTotalNumberOfOneStarRate();
@@ -135,6 +186,7 @@ try {
         public TextView  tutorialsCount;
         public TextView ratingCount;
         public TextView libraryDescription;
+        public ImageButton moreActionButton;
 
 
         public ViewHolder(View itemView) {
@@ -145,6 +197,7 @@ try {
             libraryViewCount=itemView.findViewById(R.id.libraryViewCount);
             tutorialsCount=itemView.findViewById(R.id.tutorialsCount);
             ratingCount=itemView.findViewById(R.id.ratingCount);
+            this.moreActionButton = itemView.findViewById(R.id.moreActionButtonId);
             libraryDescription=itemView.findViewById(R.id.libraryDescription);
 
 

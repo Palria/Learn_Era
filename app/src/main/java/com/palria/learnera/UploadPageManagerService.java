@@ -91,9 +91,13 @@ public class UploadPageManagerService extends Service implements OnPageUploadLis
         String folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
         String pageTitle = intent.getStringExtra(GlobalConfig.PAGE_TITLE_KEY);
         String pageContent = intent.getStringExtra(GlobalConfig.PAGE_CONTENT_KEY);
+        String coverPhotoDownloadUrl = intent.getStringExtra(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
         ArrayList<String> imageListToUpload = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.PAGE_MEDIA_URL_LIST_KEY);
+        ArrayList<String>retrievedActivePageMediaUrlArrayList = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY);
         boolean isTutorialPage = intent.getBooleanExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
-        UploadPageManagerService.this.onNewPage( pageId,  folderId,  tutorialId,  libraryId,  isTutorialPage,  pageTitle,  pageContent,imageListToUpload);
+        boolean isCreateNewPage = intent.getBooleanExtra(GlobalConfig.IS_CREATE_NEW_PAGE_KEY,true);
+        boolean isPageCoverPhotoChanged = intent.getBooleanExtra(GlobalConfig.IS_PAGE_COVER_PHOTO_CHANGED_KEY,true);
+        UploadPageManagerService.this.onNewPage( pageId,  folderId,  tutorialId,  libraryId,  isTutorialPage, isCreateNewPage, coverPhotoDownloadUrl,isPageCoverPhotoChanged,  pageTitle,retrievedActivePageMediaUrlArrayList,  pageContent,imageListToUpload);
 
 
         return Service.START_STICKY;
@@ -562,6 +566,7 @@ public class UploadPageManagerService extends Service implements OnPageUploadLis
     /**new implementations begin*/
 HashMap<String,Integer> numberOfMedia = new HashMap<>();
 HashMap<String,Integer> numberOfMediaUploaded = new HashMap<>();
+HashMap<String,Integer> numberOfMediaFailed = new HashMap<>();
 HashMap<String,Integer> numberOfProgressingMedia = new HashMap<>();
 HashMap<String,Long> totalBytesTransferred = new HashMap<>();
 HashMap<String,Long> totalBytes = new HashMap<>();
@@ -570,6 +575,12 @@ HashMap<String,RemoteViews> notificationLayout = new HashMap<>();
 HashMap<String,NotificationCompat.Builder> builder = new HashMap<>();
 HashMap<String,NotificationManagerCompat> notificationManager = new HashMap<>();
 HashMap<String,Integer> notificationId = new HashMap<>();
+HashMap<String,Boolean> isCreateNewPageMap = new HashMap<>();
+HashMap<String,Boolean> isPageCoverPhotoChangedMap = new HashMap<>();
+HashMap<String,String> coverPhotoDownloadUrlMap = new HashMap<>();
+HashMap<String,ArrayList<String>> activePageMediaUrlArrayListMap = new HashMap<>();
+HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new HashMap<>();
+
 //ends
 
     private void startUploadService(String libraryId, String tutorialId, String folderId, String pageId,String pageTitle, String pageContent, ArrayList<String> imagesListToUpload,boolean isTutorialPage) {
@@ -584,13 +595,13 @@ HashMap<String,Integer> notificationId = new HashMap<>();
         //first upload all the images
         String[] coverImageDownloadUrl = new String[1];
 
-
         if(imagesListToUpload.size()==0){
             //upload page directly here no need to upload images
 
             //postTitle,postContentHtml[0]
             Log.e("pageContentInUploadService",postContentHtml[0]);
             writePageToDatabase( libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  postContentHtml[0],"", isTutorialPage);
+//            updatePageProgressNotification(pageId,notificationLayout.get(pageId),0,builder.get(pageId));
 
             return;
         }else {
@@ -610,7 +621,13 @@ HashMap<String,Integer> notificationId = new HashMap<>();
                         if(imagesListToUpload.indexOf(localUrl) == 0){
                             coverImageDownloadUrl[0] = downloadUrl;
                         }
-                        if (numberOfMediaUploaded.get(pageId) == imagesListToUpload.size()) {
+                        /*if number of media uploaded is equal to number of all the media supplied by author then all media has been uploaded;
+                         OR
+                          if number of media uploaded + number of media that failed are equal to number of all the media supplied by author then all media has been uploaded;
+                          But if number of failures equals the number of all media, it means none of the media was uploaded;
+                          In all situations, the texts must be uploaded
+                        */
+                        if (numberOfMediaUploaded.get(pageId) == imagesListToUpload.size() || (numberOfMediaUploaded.get(pageId) + numberOfMediaFailed.get(pageId)==imagesListToUpload.size()) ) {
                             //if all images uploaded successfully save page to database now.
                             //postTitle,postContentHtml[0]
                             Log.e("pageContentInUploadService_withImages_", postContentHtml[0]);
@@ -704,12 +721,22 @@ HashMap<String,Integer> notificationId = new HashMap<>();
                                     public void onComplete(@NonNull Task<Uri> task) {
                                         if (task.isSuccessful()) {
                                             String imageDownloadUrl = String.valueOf(task.getResult());
+                                            if(imageUrlUploadList.indexOf(url) != 0) {
+                                                //Do this when the url is not the cover photo url
 
+                                                /**we need to keep record of all active download url to enable know when an author deletes an image from his page*/
+                                                ArrayList<String> activePageMedialist = activePageMediaUrlArrayListMap.get(pageId);
+                                                activePageMedialist.add(imageDownloadUrl);
+                                                activePageMediaUrlArrayListMap.put(pageId, activePageMedialist);
+                                            }
                                             listener.onComplete(url,imageDownloadUrl,imageUrlUploadList);
 
                                         }
                                         else{
-                                            listener.onFailed(new Throwable(task.getException().getMessage()));
+                                            try {
+                                                numberOfMediaFailed.put(pageId,numberOfMediaFailed.get(pageId)+1);
+                                                listener.onFailed(new Throwable(task.getException().getMessage()));
+                                            }catch(Exception e){  listener.onFailed(new Throwable("Error unknown!")); }
 
                                         }
                                     }
@@ -717,10 +744,13 @@ HashMap<String,Integer> notificationId = new HashMap<>();
                             }
                             else {
                                 //failed to upload the image
-                                listener.onFailed(new Throwable(task.getException().getMessage()));
+                              try{
+                                  numberOfMediaFailed.put(pageId,numberOfMediaFailed.get(pageId)+1);
+                                  listener.onFailed(new Throwable(task.getException().getMessage()));
+                            }catch(Exception e){  listener.onFailed(new Throwable("Error unknown!")); }
 
 
-                            }
+                        }
                         }
                     });
 
@@ -741,23 +771,62 @@ HashMap<String,Integer> notificationId = new HashMap<>();
 
         }
 
+
+        ArrayList<String> retrievedActivePageMediaUrlArrayList = retrievedActivePageMediaUrlArrayListMap.get(pageId);
+        //delete media from  the retrieved active url list because the author has already deleted it from the page during edition
+        for(int i=0; i<retrievedActivePageMediaUrlArrayList.size(); i++){
+            if(!pageContent.contains(retrievedActivePageMediaUrlArrayList.get(i))){
+                try {
+                    FirebaseStorage.getInstance().getReferenceFromUrl(retrievedActivePageMediaUrlArrayList.get(i)).delete();
+                    retrievedActivePageMediaUrlArrayList.remove(i);
+                }catch(Exception ignored){}
+            }
+        }
+
+        //merge new media urls with retrieved old ones from previous edition
+        ArrayList<String> activePageMediaUrlList = activePageMediaUrlArrayListMap.get(pageId);
+        activePageMediaUrlList.addAll(retrievedActivePageMediaUrlArrayList);
+        activePageMediaUrlArrayListMap.put(pageId, activePageMediaUrlList);
+
+
         HashMap<String, Object> pageTextPartitionsDataDetailsHashMap = new HashMap<>();
         pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_TITLE_KEY, pageTitle);
-        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.LIBRARY_ID_KEY, libraryId);
         pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
-        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY, coverImageDownloadUrl);
-        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.FOLDER_ID_KEY, folderId);
-        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_ID_KEY, pageId);
-        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.AUTHOR_ID_KEY, GlobalConfig.getCurrentUserId());
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY, activePageMediaUrlArrayListMap.get(pageId));
+        if(isPageCoverPhotoChangedMap.get(pageId)){
+            //new cover photo was added
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY, coverImageDownloadUrl);
+
+        }else{
+            //maintain the old cover photo url because it was not changed
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY, coverPhotoDownloadUrlMap.get(pageId));
+
+        }
         pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_CONTENT_KEY, pageContent);
-        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.DATE_TIME_STAMP_PAGE_CREATED_KEY, FieldValue.serverTimestamp());
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+
+        if(isCreateNewPageMap.get(pageId)){
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.LIBRARY_ID_KEY, libraryId);
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.FOLDER_ID_KEY, folderId);
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_ID_KEY, pageId);
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.AUTHOR_ID_KEY, GlobalConfig.getCurrentUserId());
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY, activePageMediaUrlArrayListMap.get(pageId));
+
+
+        }
 
         writeBatch.set(pageDocumentReference,pageTextPartitionsDataDetailsHashMap, SetOptions.merge());
 
         DocumentReference documentReference = null;
         if(isTutorialPage){
             documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
-            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+           String logType = GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE_KEY;
+            if(!isCreateNewPageMap.get(pageId)) {
+                 logType = GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_PAGE_TYPE_KEY;
+
+            }
+                GlobalConfig.updateActivityLog(logType, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
                 @Override
                 public void onSuccess() {
 
@@ -771,7 +840,11 @@ HashMap<String,Integer> notificationId = new HashMap<>();
 
         }else{
             documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId);
-            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+            String logType = GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY;
+            if(!isCreateNewPageMap.get(pageId)) {
+                logType = GlobalConfig.ACTIVITY_LOG_USER_EDIT_FOLDER_PAGE_TYPE_KEY;
+            }
+            GlobalConfig.updateActivityLog(logType, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
                 @Override
                 public void onSuccess() {
 
@@ -782,11 +855,12 @@ HashMap<String,Integer> notificationId = new HashMap<>();
 
                 }
             });
-
         }
-        HashMap<String, Object> incrementPageNumberHashMap = new HashMap<>();
-        incrementPageNumberHashMap.put(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY, FieldValue.increment(1L));
-        writeBatch.update(documentReference,incrementPageNumberHashMap);
+      if(isCreateNewPageMap.get(pageId)) {
+          HashMap<String, Object> incrementPageNumberHashMap = new HashMap<>();
+          incrementPageNumberHashMap.put(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY, FieldValue.increment(1L));
+          writeBatch.update(documentReference, incrementPageNumberHashMap);
+      }
         writeBatch.commit()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -797,7 +871,11 @@ HashMap<String,Integer> notificationId = new HashMap<>();
             @Override
             public void onSuccess(Void unused) {
                 if(isTutorialPage){
-                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                    String logType =GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_TUTORIAL_PAGE_TYPE_KEY;
+                    if(!isCreateNewPageMap.get(pageId)) {
+                        logType = GlobalConfig.ACTIVITY_LOG_USER_EDIT_TUTORIAL_PAGE_TYPE_KEY;
+                    }
+                    GlobalConfig.updateActivityLog(logType, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
                         @Override
                         public void onSuccess() {
 
@@ -810,7 +888,11 @@ HashMap<String,Integer> notificationId = new HashMap<>();
                     });
 
                 }else{
-                    GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
+                    String logType = GlobalConfig.ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY;
+                    if(!isCreateNewPageMap.get(pageId)) {
+                        logType = GlobalConfig.ACTIVITY_LOG_USER_EDIT_FOLDER_PAGE_TYPE_KEY;
+                    }
+                    GlobalConfig.updateActivityLog(logType, GlobalConfig.getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
                         @Override
                         public void onSuccess() {
 
@@ -826,7 +908,7 @@ HashMap<String,Integer> notificationId = new HashMap<>();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        //delay the success for some seconds to allow some asynchronous processes to finish
+                        //delay the success for some seconds to allow some asynchronous and untracked processes to finish
                         UploadPageManagerService.this.onSuccess( pageId, folderId, tutorialId, isTutorialPage, pageTitle);
 
                     }
@@ -837,7 +919,7 @@ HashMap<String,Integer> notificationId = new HashMap<>();
 
 
     }
-    private void showPageProgressNotification(String pageId){
+    private void showPageProgressNotification(String pageId,String pageTitle){
         // Create a notification channel (required for Android Oreo and above)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("my_channel_id", "My Channel", NotificationManager.IMPORTANCE_HIGH);
@@ -847,9 +929,21 @@ HashMap<String,Integer> notificationId = new HashMap<>();
 
 // Create a custom layout for the notification
 //        @SuppressLint("RemoteViewLayout")
+        if(pageTitle.length()>20){
+            pageTitle = pageTitle.substring(0,20);
+        }
         notificationLayout.put(pageId,new RemoteViews(getPackageName(), R.layout.notification_layout));
         //set image cover icon here
         notificationLayout.get(pageId).setImageViewResource(R.id.icon, R.drawable.book_cover2);
+        notificationLayout.get(pageId).setTextViewText(R.id.title, "\""+pageTitle+"\"" +( isCreateNewPageMap.get(pageId) ? " Page Uploading...":" Page Editing..."));
+
+        if(numberOfMedia.get(pageId)>0) {
+            notificationLayout.get(pageId).setProgressBar(R.id.progress_bar, 100, 2, false);
+            notificationLayout.get(pageId).setTextViewText(R.id.percent, 0 + "% completed");
+        }else{
+            notificationLayout.get(pageId).setProgressBar(R.id.progress_bar, 0, 0, true);
+        }
+
         // Create an explicit intent for launching the MainActivity
         Intent intent = new Intent(this, MainActivity.class);
         // Create a PendingIntent from the intent
@@ -863,7 +957,7 @@ HashMap<String,Integer> notificationId = new HashMap<>();
                 .setCustomHeadsUpContentView(notificationLayout.get(pageId))
                 .setContentIntent(pendingIntent) //intent to start when click notification
                 .setOnlyAlertOnce(true) //only show once not when updating progress
-                .setStyle(new NotificationCompat.BigTextStyle().bigText("Page uploading..."))
+                .setStyle(new NotificationCompat.BigTextStyle().bigText("\""+pageTitle+"\"" +( isCreateNewPageMap.get(pageId) ? " Page Uploading...":" Page Editing...")))
                 .setOngoing(true) //set ongoing which is not cancelable by user
                 .setAutoCancel(false) //auto cancel false
         );
@@ -903,10 +997,14 @@ HashMap<String,Integer> notificationId = new HashMap<>();
     }
 
     private void updatePageProgressNotification(String pageId,RemoteViews notificationLayout,int percentageCompleted, NotificationCompat.Builder builder){
-
-        notificationLayout.setProgressBar(R.id.progress_bar,100,percentageCompleted,false);
-        notificationLayout.setTextViewText(R.id.percent,percentageCompleted+"% completed");
+        if(numberOfMedia.get(pageId)>0) {
+            notificationLayout.setProgressBar(R.id.progress_bar, 100, percentageCompleted, false);
+            notificationLayout.setTextViewText(R.id.percent, percentageCompleted + "% completed");
+        }else{
+            notificationLayout.setProgressBar(R.id.progress_bar, 0, 0, true);
+        }
         NotificationManagerCompat.from(getApplicationContext()).notify(notificationId.get(pageId), builder.build());
+
 
     }
 
@@ -915,7 +1013,7 @@ HashMap<String,Integer> notificationId = new HashMap<>();
         //customize notification
         String pageTitle1 = pageTitle.length()>20 ? pageTitle.substring(0,20) :pageTitle;
         RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_layout);
-        notificationLayout.setTextViewText(R.id.title, "\""+pageTitle1+"\"" + " Page Uploaded");
+        notificationLayout.setTextViewText(R.id.title, "\""+pageTitle1+"\"" +( isCreateNewPageMap.get(pageId) ? " Page Uploaded":" Page Edited"));
         notificationLayout.setProgressBar(R.id.progress_bar,100,100,false);
         notificationLayout.setTextViewText(R.id.percent, "100% completed");
         notificationLayout.setImageViewResource(R.id.icon,R.drawable.book_cover2);
@@ -938,7 +1036,7 @@ HashMap<String,Integer> notificationId = new HashMap<>();
                 .setCustomBigContentView(notificationLayout)
                 .setCustomHeadsUpContentView(notificationLayout)
                 .setContentIntent(pendingIntent)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText("Page uploaded"))
+                .setStyle(new NotificationCompat.BigTextStyle().bigText("\""+pageTitle1+"\"" +( isCreateNewPageMap.get(pageId) ? " Page Uploaded":" Page Edited")))
                 .setAutoCancel(false);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(UploadPageManagerService.this);
         notificationManager.notify(notificationId, builder.build());
@@ -947,10 +1045,11 @@ HashMap<String,Integer> notificationId = new HashMap<>();
 
 
     @Override
-    public void onNewPage(String pageId,String  folderId,String  tutorialId,String  libraryId, boolean isTutorialPage,String  pageTitle,String  pageContent,ArrayList<String>imageListToUpload) {
+    public void onNewPage(String pageId,String  folderId,String  tutorialId,String  libraryId, boolean isTutorialPage,boolean isCreateNewPage,String coverPhotoDownloadUrl,boolean isPageCoverPhotoChanged,String  pageTitle,ArrayList<String>retrievedActivePageMediaUrlArrayList,String  pageContent,ArrayList<String>imageListToUpload) {
 //initialize the hashmaps to avoid null pointer exception
         numberOfMedia.put(pageId,imageListToUpload.size());
         numberOfMediaUploaded.put(pageId,0);
+        numberOfMediaFailed.put(pageId,0);
         numberOfProgressingMedia.put(pageId,0);
         totalBytesTransferred.put(pageId,0L);
         totalBytes.put(pageId,0L);
@@ -959,10 +1058,15 @@ HashMap<String,Integer> notificationId = new HashMap<>();
         builder.put(pageId,new NotificationCompat.Builder(UploadPageManagerService.this, "my_channel_id"));
         notificationManager.put(pageId,NotificationManagerCompat.from(this));
         notificationId.put(pageId,(int)System.currentTimeMillis());
+        isCreateNewPageMap.put(pageId,isCreateNewPage);
+        isPageCoverPhotoChangedMap.put(pageId,isPageCoverPhotoChanged);
+        coverPhotoDownloadUrlMap.put(pageId,coverPhotoDownloadUrl);
+        activePageMediaUrlArrayListMap.put(pageId,new ArrayList<>());
+        retrievedActivePageMediaUrlArrayListMap.put(pageId,retrievedActivePageMediaUrlArrayList);
 
         startUploadService(libraryId,tutorialId,folderId,pageId,pageTitle,pageContent,imageListToUpload,isTutorialPage);
 
-        showPageProgressNotification(pageId);
+        showPageProgressNotification(pageId,pageTitle);
     }
 
     @Override

@@ -66,26 +66,41 @@ MaterialToolbar materialToolbar;
                 materialToolbar.setTitle("Profile");
                 initFragment(bundle,new UserProfileFragment(null));
                 break;
+                case GlobalConfig.AUTHORS_FRAGMENT_TYPE_KEY:
+                 bundle = new Bundle();
+                    bundle.putBoolean(GlobalConfig.IS_AUTHOR_OPEN_TYPE_KEY,true);
+                materialToolbar.setTitle("Authors");
+                initFragment(bundle,new AllUsersFragment());
+                break;
             case GlobalConfig.LIBRARY_FRAGMENT_TYPE_KEY:
-                if(userId.equals(GlobalConfig.getCurrentUserId())) {
+                if(userId!=null && userId.equals(GlobalConfig.getCurrentUserId())) {
                     materialToolbar.setTitle("My Libraries");
                 }else{
                     materialToolbar.setTitle("Libraries");
                 }
                  bundle = new Bundle();
                 bundle.putString(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,userId);
-                bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY,AllLibraryFragment.OPEN_TYPE_USER_LIBRARY);
+                if(userId == null){
+                    bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY, AllLibraryFragment.OPEN_TYPE_ALL_LIBRARY);
+                }else {
+                    bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY, AllLibraryFragment.OPEN_TYPE_USER_LIBRARY);
+                }
                 initFragment(bundle,new AllLibraryFragment());
                 break;
             case GlobalConfig.TUTORIAL_FRAGMENT_TYPE_KEY:
-                if(userId.equals(GlobalConfig.getCurrentUserId())) {
+                if(userId!=null && userId.equals(GlobalConfig.getCurrentUserId())) {
                     materialToolbar.setTitle("My Tutorials");
                 }else{
                     materialToolbar.setTitle("Tutorials");
                 }
                 bundle = new Bundle();
                 bundle.putString(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY,userId);
-                bundle.putString(AllTutorialFragment.OPEN_TYPE_KEY,AllTutorialFragment.OPEN_TYPE_USER_TUTORIAL);
+                if(userId==null){
+                    bundle.putString(AllTutorialFragment.OPEN_TYPE_KEY, AllTutorialFragment.OPEN_TYPE_ALL_TUTORIAL);
+
+                }else {
+                    bundle.putString(AllTutorialFragment.OPEN_TYPE_KEY, AllTutorialFragment.OPEN_TYPE_USER_TUTORIAL);
+                }
                 initFragment(bundle,new AllTutorialFragment());
                 break;
         }

@@ -56,7 +56,7 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
 
 //        holder.tutorialsContainer.setVisibility(View.GONE);
         holder.dateContainer.setVisibility(View.VISIBLE);
-        holder.dateCreated.setText("m ago");//view counts here
+        holder.dateCreated.setText(pageDataModel.getDateCreated());//view counts here
 
         holder.pageTitle.setText(pageDataModel.getTitle());
         try {
@@ -69,7 +69,7 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
 
 
         holder.pageCaptionTextView.setText(pageDataModel.getDescription());
-        holder.pageViewCount.setText(0+"");
+        holder.pageViewCount.setText(pageDataModel.getPageViews()+"");
 
 //        GlobalConfig.getFirebaseFirestoreInstance()
 //                .collection(GlobalConfig.ALL_USERS_KEY)

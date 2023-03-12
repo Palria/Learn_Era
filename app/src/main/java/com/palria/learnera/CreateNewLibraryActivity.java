@@ -873,7 +873,7 @@ toggleProgress(false);
         HashMap<String,Object>userDetails  = new HashMap<>();
         userDetails.put(GlobalConfig.LAST_LIBRARY_CREATED_ID_KEY,libraryId);
         userDetails.put(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY,FieldValue.increment(1L));
-        userDetails.put(GlobalConfig.LAST_LIBRARY_DATE_CREATED_KEY,GlobalConfig.getDate());
+//        userDetails.put(GlobalConfig.LAST_LIBRARY_DATE_CREATED_KEY,GlobalConfig.getDate());
         userDetails.put(GlobalConfig.LAST_LIBRARY_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         writeBatch.set(userDocumentReference,userDetails, SetOptions.merge());
 

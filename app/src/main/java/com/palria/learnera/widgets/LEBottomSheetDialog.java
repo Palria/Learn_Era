@@ -30,7 +30,6 @@ public class LEBottomSheetDialog extends BottomSheetDialog  {
     }
 
 
-
     public LEBottomSheetDialog addOptionItem(String title, int icon, View.OnClickListener clickListener, int endIcon){
 
         OptionItem optionItem = new OptionItem(title, icon,null);

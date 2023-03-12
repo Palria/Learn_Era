@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.palria.learnera">
-
+    
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
-
+    
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,9 +17,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting">
         <activity
-            android:theme="@style/Theme.LearnEra"
+            android:name=".SettingsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
+        <activity
+            android:name=".NotificationActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
+        <activity
             android:name=".TestActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".PageActivity"
             android:exported="true"
@@ -53,12 +61,12 @@
             android:exported="true"
             android:theme="@style/Theme.LearnEra"
             android:windowSoftInputMode="adjustResize" />
-
+        
         <service
             android:name=".UploadPageManagerService"
             android:enabled="true"
             android:exported="true" />
-
+        
         <activity
             android:name=".UserActivityLogActivity"
             android:exported="false"
@@ -142,11 +150,11 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+    
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

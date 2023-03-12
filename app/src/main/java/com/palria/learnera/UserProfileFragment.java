@@ -46,6 +46,7 @@ import com.google.firebase.firestore.SetOptions;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.adapters.HomeBooksRecyclerListViewAdapter;
 import com.palria.learnera.adapters.PopularTutorialsListViewAdapter;
+import com.palria.learnera.adapters.UsersRCVAdapter;
 import com.palria.learnera.models.LibraryDataModel;
 import com.palria.learnera.models.TutorialDataModel;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
@@ -129,6 +130,10 @@ public class UserProfileFragment extends Fragment {
         if(getArguments() != null){
             authorId = getArguments().getString(GlobalConfig.USER_ID_KEY);
         }
+        if((GlobalConfig.getBlockedItemsList().contains(authorId+""))) {
+        getActivity().onBackPressed();
+        }
+
 //        getProfile(new OnUserProfileFetchListener() {
 //            @Override
 //            public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, boolean isUserBlocked, boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor) {
@@ -147,89 +152,91 @@ public class UserProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
        View parentView = inflater.inflate(R.layout.fragment_user_profile, container, false);
-       initUI(parentView);
-        loadCurrentUserProfile();
-        
-       fetchAllLibrary(new LibraryFetchListener() {
-           @Override
-           public void onFailed(String errorMessage) {
+        if(!(GlobalConfig.getBlockedItemsList().contains(authorId+""))) {
+            initUI(parentView);
+            loadCurrentUserProfile();
+
+            fetchAllLibrary(new LibraryFetchListener() {
+                @Override
+                public void onFailed(String errorMessage) {
 //               toggleProgress(false);
-               swipeRefreshLayout.setRefreshing(false);
-               Toast.makeText(getContext(), "failed to fetch library.", Toast.LENGTH_SHORT).show();
+                    swipeRefreshLayout.setRefreshing(false);
+                    Toast.makeText(getContext(), "failed to fetch library.", Toast.LENGTH_SHORT).show();
 
-           }
+                }
 
-           @Override
-           public void onSuccess(LibraryDataModel libraryDataModel) {
+                @Override
+                public void onSuccess(LibraryDataModel libraryDataModel) {
 //               toggleProgress(false);
-               swipeRefreshLayout.setRefreshing(false);
-              // displayLibrary(libraryDataModel);
-               shimmerLayout.stopShimmer();
-               shimmerLayout.setVisibility(View.GONE);
+                    swipeRefreshLayout.setRefreshing(false);
+                    // displayLibrary(libraryDataModel);
+                    shimmerLayout.stopShimmer();
+                    shimmerLayout.setVisibility(View.GONE);
 
-               parentScrollView.setVisibility(View.VISIBLE);
+                    parentScrollView.setVisibility(View.VISIBLE);
 
 //               libraryArrayList.add(new LibraryDataModel(libraryDataModel.getLibraryName(),libraryDataModel.getLibraryId(),libraryDataModel.getLibraryCategoryArrayList(),libraryDataModel.getLibraryCoverPhotoDownloadUrl(),libraryDataModel.getLibraryDescription(),libraryDataModel.getDateCreated(),libraryDataModel.getTotalNumberOfTutorials(),libraryDataModel.getTotalNumberOfLibraryViews(),libraryDataModel.getTotalNumberOfLibraryReach(),libraryDataModel.getAuthorUserId(),libraryDataModel.getTotalNumberOfOneStarRate(),libraryDataModel.getTotalNumberOfTwoStarRate(),libraryDataModel.getTotalNumberOfThreeStarRate(),libraryDataModel.getTotalNumberOfFourStarRate(),libraryDataModel.getTotalNumberOfFiveStarRate()));
-               libraryArrayList.add(libraryDataModel);
-               libraryRcvAdapter.notifyItemChanged(libraryArrayList.size());
+                    libraryArrayList.add(libraryDataModel);
+                    libraryRcvAdapter.notifyItemChanged(libraryArrayList.size());
 //
 
-           }
-       });
+                }
+            });
 
-       fetchTutorial(new TutorialFetchListener() {
-           @Override
-           public void onSuccess(TutorialDataModel tutorialDataModel) {
+            fetchTutorial(new TutorialFetchListener() {
+                @Override
+                public void onSuccess(TutorialDataModel tutorialDataModel) {
 
-               swipeRefreshLayout.setRefreshing(false);
-               shimmerLayout.stopShimmer();
-               shimmerLayout.setVisibility(View.GONE);
+                    swipeRefreshLayout.setRefreshing(false);
+                    shimmerLayout.stopShimmer();
+                    shimmerLayout.setVisibility(View.GONE);
 
-               parentScrollView.setVisibility(View.VISIBLE);
+                    parentScrollView.setVisibility(View.VISIBLE);
 
-               tutorialsArrayList.add(tutorialDataModel);
-               tutorialsRcvAdapter.notifyItemChanged(tutorialsArrayList.size());
-           }
+                    tutorialsArrayList.add(tutorialDataModel);
+                    tutorialsRcvAdapter.notifyItemChanged(tutorialsArrayList.size());
+                }
 
-           @Override
-           public void onFailed(String errorMessage) {
-           }
-       });
+                @Override
+                public void onFailed(String errorMessage) {
+                }
+            });
 
-       editProfileButton.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
+            editProfileButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-               Intent i = new Intent(getContext(), EditCurrentUserProfileActivity.class);
-               startActivity(i);
+                    Intent i = new Intent(getContext(), EditCurrentUserProfileActivity.class);
+                    startActivity(i);
 
-           }
-       });
+                }
+            });
 
-       swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-           @Override
-           public void onRefresh() {
-               loadCurrentUserProfile();
-               swipeRefreshLayout.setRefreshing(true);
-           }
-       });
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    loadCurrentUserProfile();
+                    swipeRefreshLayout.setRefreshing(true);
+                }
+            });
 
-       parentScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-           float y = 0;
-           @Override
-           public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+            parentScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                float y = 0;
 
-               if(bottomAppBar!=null) {
-                   if (oldScrollY > scrollY) {
-                       bottomAppBar.performShow();
+                @Override
+                public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
 
-                   } else {
-                       bottomAppBar.performHide();
+                    if (bottomAppBar != null) {
+                        if (oldScrollY > scrollY) {
+                            bottomAppBar.performShow();
 
-                   }
-               }
+                        } else {
+                            bottomAppBar.performHide();
 
-               //
+                        }
+                    }
+
+                    //
 //             if(scrollY > 30){
 //                 if(bottomAppBar!=null) {
 //                     bottomAppBar.performHide();
@@ -240,113 +247,119 @@ public class UserProfileFragment extends Fragment {
 //                 }
 //             }
 
-           }
-       });
+                }
+            });
 
-        profileMoreIconButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-
-                leBottomSheetDialog.show();
-
-            }
-        });
+            profileMoreIconButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
 
-        statsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                    leBottomSheetDialog.show();
 
-                Intent intent = new Intent(getContext(), UserStatsActivity.class);
-                intent.putExtra(GlobalConfig.USER_ID_KEY,authorId);
-                startActivity(intent);
-
-            }
-        });
-
-        logButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Intent intent = new Intent(getContext(), UserActivityLogActivity.class);
-                startActivity(intent);
-
-            }
-        });
+                }
+            });
 
 
-        DocumentReference bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
-                .collection(GlobalConfig.ALL_USERS_KEY)
-                .document(GlobalConfig.getCurrentUserId())
-                .collection(GlobalConfig.BOOK_MARKS_KEY).document(authorId);
-        GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
-            @Override
-            public void onExist() {
-                bookmarkedIcon.setVisibility(View.VISIBLE);
-            }
+            statsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-            @Override
-            public void onNotExist() {
+                    Intent intent = new Intent(getContext(), UserStatsActivity.class);
+                    intent.putExtra(GlobalConfig.USER_ID_KEY, authorId);
+                    startActivity(intent);
 
-            }
+                }
+            });
 
-            @Override
-            public void onFailed(@NonNull String errorMessage) {
+            logButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-            }
-        });
+                    Intent intent = new Intent(getContext(), UserActivityLogActivity.class);
+                    startActivity(intent);
 
-        DocumentReference authorReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
-                .collection(GlobalConfig.ALL_USERS_KEY)
-                .document(authorId).collection(GlobalConfig.REVIEWS_KEY)
-                .document(GlobalConfig.getCurrentUserId());
-        GlobalConfig.checkIfDocumentExists(authorReviewDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
-            @Override
-            public void onExist() {
-                ratedIcon.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onNotExist() {
-
-            }
-
-            @Override
-            public void onFailed(@NonNull String errorMessage) {
-
-            }
-        });
+                }
+            });
 
 
-        ratingBottomSheetWidget= new RatingBottomSheetWidget(getContext(), authorId, null,  null,true, false,false){
+            DocumentReference bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_USERS_KEY)
+                    .document(GlobalConfig.getCurrentUserId())
+                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(authorId);
+            GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+                @Override
+                public void onExist() {
+                    bookmarkedIcon.setVisibility(View.VISIBLE);
+                }
 
-        };
-        ratingBottomSheetWidget.setRatingPostListener(new RatingBottomSheetWidget.OnRatingPosted(){
+                @Override
+                public void onNotExist() {
 
-            @Override
-            public void onPost(int star, String message) {
-                super.onPost(star,message);
+                }
+
+                @Override
+                public void onFailed(@NonNull String errorMessage) {
+
+                }
+            });
+
+            DocumentReference authorReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                    .collection(GlobalConfig.ALL_USERS_KEY)
+                    .document(authorId).collection(GlobalConfig.REVIEWS_KEY)
+                    .document(GlobalConfig.getCurrentUserId());
+            GlobalConfig.checkIfDocumentExists(authorReviewDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+                @Override
+                public void onExist() {
+                    ratedIcon.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onNotExist() {
+
+                }
+
+                @Override
+                public void onFailed(@NonNull String errorMessage) {
+
+                }
+            });
+
+
+            ratingBottomSheetWidget = new RatingBottomSheetWidget(getContext(), authorId, null, null, true, false, false) {
+
+            };
+            ratingBottomSheetWidget.setRatingPostListener(new RatingBottomSheetWidget.OnRatingPosted() {
+
+                @Override
+                public void onPost(int star, String message) {
+                    super.onPost(star, message);
 //                Toast.makeText(LibraryActivity.this,star + "-"+ message, Toast.LENGTH_SHORT).show();
 
-            }
+                }
 
-            @Override
-            public  void onFailed(String errorMessage){
-                super.onFailed(errorMessage);
+                @Override
+                public void onFailed(String errorMessage) {
+                    super.onFailed(errorMessage);
 
 //                Toast.makeText(LibraryActivity.this,"failed", Toast.LENGTH_SHORT).show();
 
-            }
+                }
 
-            @Override
-            public void onSuccess(boolean isReviewAuthor,boolean isReviewLibrary,boolean isReviewTutorial){
-                super.onSuccess(isReviewAuthor,isReviewLibrary,isReviewTutorial);
+                @Override
+                public void onSuccess(boolean isReviewAuthor, boolean isReviewLibrary, boolean isReviewTutorial) {
+                    super.onSuccess(isReviewAuthor, isReviewLibrary, isReviewTutorial);
 //                Toast.makeText(LibraryActivity.this,"You rated this library", Toast.LENGTH_SHORT).show();
-                   ratedIcon.setVisibility(View.VISIBLE);
+                    ratedIcon.setVisibility(View.VISIBLE);
 
+                }
+            });
+        } else{
+
+            Toast.makeText(getContext(), "Author Blocked! Unblock to explore the Author", Toast.LENGTH_SHORT).show();
+
+            getActivity().onBackPressed();
             }
-        });
        return parentView;
     }
 
@@ -422,295 +435,337 @@ public class UserProfileFragment extends Fragment {
     }
 
     private void initUI(View parentView){
-        //use the parentView to find the by Id as in : parentView.findViewById(...);
-        parentScrollView = parentView.findViewById(R.id.scrollView);
-        failureIndicatorTextView = parentView.findViewById(R.id.failureIndicatorTextViewId);
-        //init views
-        editProfileButton = parentView.findViewById(R.id.editProfileIcon);
-        profileImageView = parentView.findViewById(R.id.imageView1);
-        currentDisplayNameView = parentView.findViewById(R.id.current_name);
-        currentEmailView = parentView.findViewById(R.id.current_email);
-        currentCountryOfResidence = parentView.findViewById(R.id.current_country);
-        joined_dateTextView = parentView.findViewById(R.id.joined_date);
-        logButton=parentView.findViewById(R.id.logButton);
-        statsButton=parentView.findViewById(R.id.statsButton);
-        ratedIcon=parentView.findViewById(R.id.ratedIcon);
-        bookmarkedIcon=parentView.findViewById(R.id.bookmarkedIcon);
+            //use the parentView to find the by Id as in : parentView.findViewById(...);
+            parentScrollView = parentView.findViewById(R.id.scrollView);
+            failureIndicatorTextView = parentView.findViewById(R.id.failureIndicatorTextViewId);
+            //init views
+            editProfileButton = parentView.findViewById(R.id.editProfileIcon);
+            profileImageView = parentView.findViewById(R.id.imageView1);
+            currentDisplayNameView = parentView.findViewById(R.id.current_name);
+            currentEmailView = parentView.findViewById(R.id.current_email);
+            currentCountryOfResidence = parentView.findViewById(R.id.current_country);
+            joined_dateTextView = parentView.findViewById(R.id.joined_date);
+            logButton = parentView.findViewById(R.id.logButton);
+            statsButton = parentView.findViewById(R.id.statsButton);
+            ratedIcon = parentView.findViewById(R.id.ratedIcon);
+            bookmarkedIcon = parentView.findViewById(R.id.bookmarkedIcon);
 
 
-        numOfLibraryTutorialRatingsLinearLayout=parentView.findViewById(R.id.numOfLibraryTutorialRatingsLinearLayoutId);
+            numOfLibraryTutorialRatingsLinearLayout = parentView.findViewById(R.id.numOfLibraryTutorialRatingsLinearLayoutId);
 
 
-        numOfLibraryTextView=parentView.findViewById(R.id.numOfLibraryCreatedTextView);
-        numOfTutorialsTextView=parentView.findViewById(R.id.numOfTutorialCreatedTextView);
-        numOfRatingsTextView=parentView.findViewById(R.id.numOfRatingsCreatedTextView);
+            numOfLibraryTextView = parentView.findViewById(R.id.numOfLibraryCreatedTextView);
+            numOfTutorialsTextView = parentView.findViewById(R.id.numOfTutorialCreatedTextView);
+            numOfRatingsTextView = parentView.findViewById(R.id.numOfRatingsCreatedTextView);
 
-        swipeRefreshLayout = parentView.findViewById(R.id.swiperRefreshLayout);
-        profileMoreIconButton = parentView.findViewById(R.id.profileMoreIcon);
-        shimmerLayout = parentView.findViewById(R.id.shimmerLayout);
+            swipeRefreshLayout = parentView.findViewById(R.id.swiperRefreshLayout);
+            profileMoreIconButton = parentView.findViewById(R.id.profileMoreIcon);
+            shimmerLayout = parentView.findViewById(R.id.shimmerLayout);
 
-        recentLibraryRcv=parentView.findViewById(R.id.recentLibraryRcv);
-        tutorialsRcv=parentView.findViewById(R.id.tutorialsRcv);
-
-
+            recentLibraryRcv = parentView.findViewById(R.id.recentLibraryRcv);
+            tutorialsRcv = parentView.findViewById(R.id.tutorialsRcv);
 
 
+            alertDialog = new AlertDialog.Builder(getContext())
+                    .setCancelable(false)
+                    .setView(getLayoutInflater().inflate(R.layout.default_loading_layout, null))
+                    .create();
 
-        alertDialog = new AlertDialog.Builder(getContext())
-                .setCancelable(false)
-                .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
-                .create();
+            createLibraryDialog = new AlertDialog.Builder(getContext())
+                    .setCancelable(false)
+                    .setTitle("Congrats! You are now an author, You are  privileged to create and own a library")
+                    .setMessage("Create your first library")
+                    .setPositiveButton("Create", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent intent = new Intent(getContext(), CreateNewLibraryActivity.class);
+                            //creating new
 
-        createLibraryDialog = new AlertDialog.Builder(getContext())
-                .setCancelable(false)
-                .setTitle("Congrats! You are now an author, You are  privileged to create and own a library")
-                .setMessage("Create your first library")
-                .setPositiveButton("Create", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(getContext(), CreateNewLibraryActivity.class);
-                        //creating new
+                            intent.putExtra(GlobalConfig.IS_CREATE_NEW_LIBRARY_KEY, true);
+                            startActivity(intent);
 
-                        intent.putExtra(GlobalConfig.IS_CREATE_NEW_LIBRARY_KEY,true);
-                        startActivity(intent);
+                        }
+                    })
+                    .setNegativeButton("Not yet", null)
+                    .create();
 
-                    }
-                })
-                .setNegativeButton("Not yet",null)
-                .create();
+            leBottomSheetDialog = new LEBottomSheetDialog(getContext());
 
-        String libraryLeOptionName = "";
-        String tutorialLeOptionName = "";
+            String libraryLeOptionName = "";
+            String tutorialLeOptionName = "";
 
-        if(authorId.equals(GlobalConfig.getCurrentUserId())){
-            libraryLeOptionName = "My Libraries";
-            tutorialLeOptionName = "My Tutorials";
-        }else{
-            libraryLeOptionName = "Libraries";
-            tutorialLeOptionName = "Tutorials";
+            if (authorId.equals(GlobalConfig.getCurrentUserId() + "")) {
+                libraryLeOptionName = "My Libraries";
+                tutorialLeOptionName = "My Tutorials";
+            } else {
+                libraryLeOptionName = "Libraries";
+                tutorialLeOptionName = "Tutorials";
 
-        }
+            }
 
-        leBottomSheetDialog = new LEBottomSheetDialog(getContext());
-        leBottomSheetDialog
-                .addOptionItem(tutorialLeOptionName, R.drawable.ic_baseline_dynamic_feed_24, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        leBottomSheetDialog.hide();
-                        startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.TUTORIAL_FRAGMENT_TYPE_KEY,authorId));
+            leBottomSheetDialog
+                    .addOptionItem(tutorialLeOptionName, R.drawable.ic_baseline_dynamic_feed_24, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            leBottomSheetDialog.hide();
+                            startActivity(GlobalConfig.getHostActivityIntent(getContext(), null, GlobalConfig.TUTORIAL_FRAGMENT_TYPE_KEY, authorId));
 
-                    }
-                }, 0)
-                .addOptionItem(libraryLeOptionName , R.drawable.ic_baseline_library_books_24, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        leBottomSheetDialog.hide();
-                        startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.LIBRARY_FRAGMENT_TYPE_KEY,authorId));
+                        }
+                    }, 0)
+                    .addOptionItem(libraryLeOptionName, R.drawable.ic_baseline_library_books_24, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            leBottomSheetDialog.hide();
+                            startActivity(GlobalConfig.getHostActivityIntent(getContext(), null, GlobalConfig.LIBRARY_FRAGMENT_TYPE_KEY, authorId));
 
-                    }
-                }, 0)
-                .addOptionItem("Bookmark" , R.drawable.ic_baseline_bookmarks_24, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        leBottomSheetDialog.hide();
-                        Snackbar saveSnackBar = GlobalConfig.createSnackBar(getContext(),editProfileButton,"Initializing bookmark please wait...", Snackbar.LENGTH_INDEFINITE);
-                        //CHECK IF THE CURRENT USER HAS ALREADY SAVED THIS USER, IF SO DO STH
-                        DocumentReference bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
-                                .collection(GlobalConfig.ALL_USERS_KEY)
-                                .document(GlobalConfig.getCurrentUserId())
-                                .collection(GlobalConfig.BOOK_MARKS_KEY).document(authorId);
-                        GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
-                            @Override
-                            public void onExist() {
-                                saveSnackBar.dismiss();
+                        }
+                    }, 0)
+                    .addOptionItem("Bookmark", R.drawable.ic_baseline_bookmarks_24, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            leBottomSheetDialog.hide();
+                            Snackbar saveSnackBar = GlobalConfig.createSnackBar(getContext(), editProfileButton, "Initializing bookmark please wait...", Snackbar.LENGTH_INDEFINITE);
+                            //CHECK IF THE CURRENT USER HAS ALREADY SAVED THIS USER, IF SO DO STH
+                            DocumentReference bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                                    .collection(GlobalConfig.ALL_USERS_KEY)
+                                    .document(GlobalConfig.getCurrentUserId())
+                                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(authorId);
+                            GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+                                @Override
+                                public void onExist() {
+                                    saveSnackBar.dismiss();
 
-                                new AlertDialog.Builder(getContext())
-                                        .setTitle("Remove this user from bookmark?")
-                                        .setMessage("You have already added this user to your bookmarks")
-                                        .setCancelable(false)
-                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                Snackbar snackBar = GlobalConfig.createSnackBar(getContext(),editProfileButton,"Removing from bookmark...", Snackbar.LENGTH_INDEFINITE);
+                                    new AlertDialog.Builder(getContext())
+                                            .setTitle("Remove this user from bookmark?")
+                                            .setMessage("You have already added this user to your bookmarks")
+                                            .setCancelable(false)
+                                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    Snackbar snackBar = GlobalConfig.createSnackBar(getContext(), editProfileButton, "Removing from bookmark...", Snackbar.LENGTH_INDEFINITE);
 
-                                                GlobalConfig.removeBookmark(authorId, null, null, null,null,GlobalConfig.AUTHOR_TYPE_KEY, new GlobalConfig.ActionCallback() {
-                                                    @Override
-                                                    public void onSuccess() {
+                                                    GlobalConfig.removeBookmark(authorId, null, null, null, null, GlobalConfig.AUTHOR_TYPE_KEY, new GlobalConfig.ActionCallback() {
+                                                        @Override
+                                                        public void onSuccess() {
 //                                                        Toast.makeText(getContext(), "bookmark removed", Toast.LENGTH_SHORT).show();
-                                                        snackBar.dismiss();
-                                                        GlobalConfig.createSnackBar(getContext(),editProfileButton,"Bookmark removed!", Snackbar.LENGTH_SHORT);
-                                                        bookmarkedIcon.setVisibility(View.GONE);
+                                                            snackBar.dismiss();
+                                                            GlobalConfig.createSnackBar(getContext(), editProfileButton, "Bookmark removed!", Snackbar.LENGTH_SHORT);
+                                                            bookmarkedIcon.setVisibility(View.GONE);
 
-                                                    }
+                                                        }
 
-                                                    @Override
-                                                    public void onFailed(String errorMessage) {
+                                                        @Override
+                                                        public void onFailed(String errorMessage) {
 //                                                        Toast.makeText(LibraryActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                                                        snackBar.dismiss();
-                                                        GlobalConfig.createSnackBar(getContext(),editProfileButton,"Failed to remove from bookmark please try again!", Snackbar.LENGTH_SHORT);
-                                                    }
-                                                });
-                                            }
-                                        })
-                                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                Toast.makeText(getContext(), "undo remove bookmark.", Toast.LENGTH_SHORT).show();
-                                            }
-                                        })
-                                        .show();
-                            }
+                                                            snackBar.dismiss();
+                                                            GlobalConfig.createSnackBar(getContext(), editProfileButton, "Failed to remove from bookmark please try again!", Snackbar.LENGTH_SHORT);
+                                                        }
+                                                    });
+                                                }
+                                            })
+                                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    Toast.makeText(getContext(), "undo remove bookmark.", Toast.LENGTH_SHORT).show();
+                                                }
+                                            })
+                                            .show();
+                                }
 
-                            @Override
-                            public void onNotExist() {
-                                saveSnackBar.dismiss();
+                                @Override
+                                public void onNotExist() {
+                                    saveSnackBar.dismiss();
 
-                                new AlertDialog.Builder(getContext())
-                                        .setTitle("Add this to bookmark?")
-                                        .setMessage("when you save to bookmark you are able to view it in your bookmarked")
-                                        .setCancelable(false)
-                                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                Snackbar snackBar = GlobalConfig.createSnackBar(getContext(),editProfileButton,"Adding to bookmark...", Snackbar.LENGTH_INDEFINITE);
+                                    new AlertDialog.Builder(getContext())
+                                            .setTitle("Add this to bookmark?")
+                                            .setMessage("when you save to bookmark you are able to view it in your bookmarked")
+                                            .setCancelable(false)
+                                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    Snackbar snackBar = GlobalConfig.createSnackBar(getContext(), editProfileButton, "Adding to bookmark...", Snackbar.LENGTH_INDEFINITE);
 
-                                                GlobalConfig.addToBookmark(authorId, null, null, null,null,GlobalConfig.AUTHOR_TYPE_KEY, new GlobalConfig.ActionCallback() {
-                                                    @Override
-                                                    public void onSuccess() {
+                                                    GlobalConfig.addToBookmark(authorId, null, null, null, null, GlobalConfig.AUTHOR_TYPE_KEY, new GlobalConfig.ActionCallback() {
+                                                        @Override
+                                                        public void onSuccess() {
 //                                                Toast.makeText(LibraryActivity.this, "bookmark added", Toast.LENGTH_SHORT).show();
-                                                        snackBar.dismiss();
-                                                        GlobalConfig.createSnackBar(getContext(),editProfileButton,"Bookmark added!", Snackbar.LENGTH_SHORT);
-                                                        bookmarkedIcon.setVisibility(View.VISIBLE);
-                                                    }
+                                                            snackBar.dismiss();
+                                                            GlobalConfig.createSnackBar(getContext(), editProfileButton, "Bookmark added!", Snackbar.LENGTH_SHORT);
+                                                            bookmarkedIcon.setVisibility(View.VISIBLE);
+                                                        }
 
-                                                    @Override
-                                                    public void onFailed(String errorMessage) {
-                                                        Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
-                                                        snackBar.dismiss();
-                                                        GlobalConfig.createSnackBar(getContext(),editProfileButton,"Failed to add to bookmark please try again!", Snackbar.LENGTH_SHORT);
-                                                    }
-                                                });
-                                            }
-                                        })
-                                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                Toast.makeText(getContext(), "cancelled bookmark.", Toast.LENGTH_SHORT).show();
-                                            }
-                                        })
-                                        .show();
-                            }
+                                                        @Override
+                                                        public void onFailed(String errorMessage) {
+                                                            Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+                                                            snackBar.dismiss();
+                                                            GlobalConfig.createSnackBar(getContext(), editProfileButton, "Failed to add to bookmark please try again!", Snackbar.LENGTH_SHORT);
+                                                        }
+                                                    });
+                                                }
+                                            })
+                                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    Toast.makeText(getContext(), "cancelled bookmark.", Toast.LENGTH_SHORT).show();
+                                                }
+                                            })
+                                            .show();
+                                }
 
-                            @Override
-                            public void onFailed(@NonNull String errorMessage) {
-                                saveSnackBar.dismiss();
-                                GlobalConfig.createSnackBar(getContext(),editProfileButton,"Failed to initialize bookmark please try again", Snackbar.LENGTH_SHORT);
+                                @Override
+                                public void onFailed(@NonNull String errorMessage) {
+                                    saveSnackBar.dismiss();
+                                    GlobalConfig.createSnackBar(getContext(), editProfileButton, "Failed to initialize bookmark please try again", Snackbar.LENGTH_SHORT);
 
-                            }
-                        });
+                                }
+                            });
 
 
-                    }
-                }, 0)
-                .addOptionItem("Rate" , R.drawable.ic_baseline_stars_24, new View.OnClickListener() {
+                        }
+                    }, 0)
+                    .addOptionItem("Rate", R.drawable.ic_baseline_stars_24, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            leBottomSheetDialog.hide();
+
+                            DocumentReference authorReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                                    .collection(GlobalConfig.ALL_USERS_KEY)
+                                    .document(authorId).collection(GlobalConfig.REVIEWS_KEY)
+                                    .document(GlobalConfig.getCurrentUserId());
+                            Snackbar snackbar = GlobalConfig.createSnackBar(getContext(), editProfileButton, "Initializing rating details...", Snackbar.LENGTH_INDEFINITE);
+                            //Check if he has already rated this user, else if not rated then rate but if rated edit the rating
+                            GlobalConfig.checkIfDocumentExists(authorReviewDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+                                @Override
+                                public void onExist() {
+
+                                    snackbar.dismiss();
+
+
+                                    new AlertDialog.Builder(getContext())
+                                            .setTitle("User already reviewed!")
+                                            .setMessage("Chose what to do with the already reviewed user:")
+                                            .setCancelable(true)
+                                            .setPositiveButton("Edit review", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                                    ratingBottomSheetWidget.render(editProfileButton, true).show();
+
+                                                }
+                                            })
+                                            .setNegativeButton("Delete review", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    Snackbar deleteReviewSnackBar = GlobalConfig.createSnackBar(getContext(), editProfileButton, "Deleting review...", Snackbar.LENGTH_INDEFINITE);
+
+                                                    GlobalConfig.removeAuthorReview(authorId, new GlobalConfig.ActionCallback() {
+                                                        @Override
+                                                        public void onSuccess() {
+                                                            GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_DELETE_AUTHOR_REVIEW_TYPE_KEY, authorId, null, null, null, null, GlobalConfig.getCurrentUserId(), new GlobalConfig.ActionCallback() {
+                                                                @Override
+                                                                public void onSuccess() {
+                                                                    deleteReviewSnackBar.dismiss();
+                                                                    GlobalConfig.createSnackBar(getContext(), editProfileButton, "Review Deleted!", Snackbar.LENGTH_SHORT);
+                                                                    ratedIcon.setVisibility(View.GONE);
+
+                                                                }
+
+                                                                @Override
+                                                                public void onFailed(String errorMessage) {
+                                                                    deleteReviewSnackBar.dismiss();
+                                                                    GlobalConfig.createSnackBar(getContext(), editProfileButton, "Review Deleted!", Snackbar.LENGTH_SHORT);
+                                                                    ratedIcon.setVisibility(View.GONE);
+
+
+                                                                }
+                                                            });
+
+                                                        }
+
+                                                        @Override
+                                                        public void onFailed(String errorMessage) {
+                                                            deleteReviewSnackBar.dismiss();
+                                                            GlobalConfig.createSnackBar(getContext(), editProfileButton, "Review failed to delete!", Snackbar.LENGTH_SHORT);
+
+                                                        }
+                                                    });
+                                                }
+                                            })
+                                            .show();
+                                }
+
+                                @Override
+                                public void onNotExist() {
+
+                                    snackbar.dismiss();
+
+                                    ratingBottomSheetWidget.render(editProfileButton, false).show();
+
+                                }
+
+                                @Override
+                                public void onFailed(@NonNull String errorMessage) {
+
+                                    snackbar.dismiss();
+                                    GlobalConfig.createSnackBar(getContext(), editProfileButton, "Failed to initialize rating", Snackbar.LENGTH_SHORT);
+
+
+                                }
+                            });
+
+
+                        }
+                    }, 0);
+
+            if (!authorId.equals(GlobalConfig.getCurrentUserId() + "")) {
+
+                leBottomSheetDialog.addOptionItem("Block User", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         leBottomSheetDialog.hide();
 
-                        DocumentReference authorReviewDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
-                                .collection(GlobalConfig.ALL_USERS_KEY)
-                                .document(authorId).collection(GlobalConfig.REVIEWS_KEY)
-                                .document(GlobalConfig.getCurrentUserId());
-                        Snackbar snackbar = GlobalConfig.createSnackBar(getContext(),editProfileButton,"Initializing rating details...", Snackbar.LENGTH_INDEFINITE);
-                        //Check if he has already rated this user, else if not rated then rate but if rated edit the rating
-                        GlobalConfig.checkIfDocumentExists(authorReviewDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+                        Toast.makeText(getContext(), "Blocking", Toast.LENGTH_SHORT).show();
+                        GlobalConfig.block(GlobalConfig.ACTIVITY_LOG_USER_BLOCK_USER_TYPE_KEY, authorId, null, null, new GlobalConfig.ActionCallback() {
                             @Override
-                            public void onExist() {
-
-                                snackbar.dismiss();
-
-
-                                new AlertDialog.Builder(getContext())
-                                        .setTitle("User already reviewed!")
-                                        .setMessage("Chose what to do with the already reviewed user:")
-                                        .setCancelable(true)
-                                        .setPositiveButton("Edit review", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                                                ratingBottomSheetWidget.render(editProfileButton,true).show();
-
-                                            }
-                                        })
-                                        .setNegativeButton("Delete review", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                Snackbar deleteReviewSnackBar = GlobalConfig.createSnackBar(getContext(),editProfileButton,"Deleting review...", Snackbar.LENGTH_INDEFINITE);
-
-                                                GlobalConfig.removeAuthorReview(authorId, new GlobalConfig.ActionCallback() {
-                                                    @Override
-                                                    public void onSuccess() {
-                                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_DELETE_AUTHOR_REVIEW_TYPE_KEY, authorId, null, null, null, null, GlobalConfig.getCurrentUserId(), new GlobalConfig.ActionCallback() {
-                                                            @Override
-                                                            public void onSuccess() {
-                                                                deleteReviewSnackBar.dismiss();
-                                                               GlobalConfig.createSnackBar(getContext(),editProfileButton,"Review Deleted!", Snackbar.LENGTH_SHORT);
-                                                                ratedIcon.setVisibility(View.GONE);
-
-                                                            }
-
-                                                            @Override
-                                                            public void onFailed(String errorMessage) {
-                                                                deleteReviewSnackBar.dismiss();
-                                                                GlobalConfig.createSnackBar(getContext(),editProfileButton,"Review Deleted!", Snackbar.LENGTH_SHORT);
-                                                                ratedIcon.setVisibility(View.GONE);
-
-
-                                                            }
-                                                        });
-
-                                                    }
-
-                                                    @Override
-                                                    public void onFailed(String errorMessage) {
-                                                        deleteReviewSnackBar.dismiss();
-                                                        GlobalConfig.createSnackBar(getContext(),editProfileButton,"Review failed to delete!", Snackbar.LENGTH_SHORT);
-
-                                                    }
-                                                });
-                                            }
-                                        })
-                                        .show();
-                            }
-
-                            @Override
-                            public void onNotExist() {
-
-                                snackbar.dismiss();
-
-                                ratingBottomSheetWidget.render(editProfileButton,false).show();
+                            public void onSuccess() {
 
                             }
 
                             @Override
-                            public void onFailed(@NonNull String errorMessage) {
-
-                                snackbar.dismiss();
-                                GlobalConfig.createSnackBar(getContext(),editProfileButton,"Failed to initialize rating", Snackbar.LENGTH_SHORT);
-
+                            public void onFailed(String errorMessage) {
 
                             }
                         });
-
+                        UserProfileFragment.this.getActivity().onBackPressed();
 
                     }
                 }, 0);
+                leBottomSheetDialog.addOptionItem("Report User", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        leBottomSheetDialog.hide();
+                        Toast.makeText(getContext(), "reporting", Toast.LENGTH_SHORT).show();
+                        GlobalConfig.report(GlobalConfig.ACTIVITY_LOG_USER_REPORT_USER_TYPE_KEY, authorId, null, null, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+
+                            }
+                        });
+                        UserProfileFragment.this.getActivity().onBackPressed();
+
+                    }
+
+                }, 0);
+
+            }
 
 
-
-
-
-        //init recycler list view here
+            //init recycler list view here
         /*
         libraryArrayList.add(new LibraryDataModel(
                 "Deploying the constructor for free.",
@@ -765,10 +820,10 @@ public class UserProfileFragment extends Fragment {
 
 */
 
-        libraryRcvAdapter = new HomeBooksRecyclerListViewAdapter(libraryArrayList,getContext());
-        recentLibraryRcv.setHasFixedSize(false);
-        recentLibraryRcv.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
-        recentLibraryRcv.setAdapter(libraryRcvAdapter);
+            libraryRcvAdapter = new HomeBooksRecyclerListViewAdapter(libraryArrayList, getContext());
+            recentLibraryRcv.setHasFixedSize(false);
+            recentLibraryRcv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+            recentLibraryRcv.setAdapter(libraryRcvAdapter);
 /*
               tutorialsArrayList.add(
                 new TutorialDataModel("How to connect to mysql database for free. in 2012 for Users to get it.",
@@ -885,11 +940,10 @@ public class UserProfileFragment extends Fragment {
                         0l));
 */
 
-        tutorialsRcvAdapter = new PopularTutorialsListViewAdapter(tutorialsArrayList,getContext());
-        tutorialsRcv.setHasFixedSize(false);
-        tutorialsRcv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        tutorialsRcv.setAdapter(tutorialsRcvAdapter);
-
+            tutorialsRcvAdapter = new PopularTutorialsListViewAdapter(tutorialsArrayList, getContext());
+            tutorialsRcv.setHasFixedSize(false);
+            tutorialsRcv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+            tutorialsRcv.setAdapter(tutorialsRcvAdapter);
 
 
     }
@@ -1050,6 +1104,7 @@ public class UserProfileFragment extends Fragment {
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_LIBRARY_KEY)
                 .whereEqualTo(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,authorId)
+                .limit(10L)
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -1146,7 +1201,7 @@ public class UserProfileFragment extends Fragment {
     private void fetchTutorial(TutorialFetchListener tutorialFetchListener){
         Query tutorialQuery = null;
 
-            tutorialQuery =   GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY, authorId);
+            tutorialQuery =   GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY, authorId).limit(10L);
         tutorialQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override

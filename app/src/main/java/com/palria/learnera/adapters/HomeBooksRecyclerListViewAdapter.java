@@ -9,12 +9,14 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -26,6 +28,7 @@ import com.palria.learnera.LibraryActivity;
 import com.palria.learnera.R;
 import com.palria.learnera.models.AuthorDataModel;
 import com.palria.learnera.models.LibraryDataModel;
+import com.palria.learnera.widgets.LEBottomSheetDialog;
 
 import org.w3c.dom.Text;
 
@@ -91,6 +94,55 @@ public class HomeBooksRecyclerListViewAdapter extends RecyclerView.Adapter<HomeB
                 context.startActivity(intent);
             }
         });
+       holder.moreActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LEBottomSheetDialog leBottomSheetDialog = new LEBottomSheetDialog(context);
+                leBottomSheetDialog.addOptionItem("Block Library", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        leBottomSheetDialog.hide();
+                        Toast.makeText(context,"Blocking",Toast.LENGTH_SHORT).show();
+                        int position = libraryDataModels.indexOf(libraryDataModel);
+                        libraryDataModels.remove(libraryDataModel);
+                        HomeBooksRecyclerListViewAdapter.this.notifyItemRemoved(position);
+                        GlobalConfig.block(GlobalConfig.ACTIVITY_LOG_USER_BLOCK_LIBRARY_TYPE_KEY, libraryDataModel.getAuthorUserId(), libraryDataModel.getLibraryId(), null, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+
+                            }
+                        });
+                    }
+                }, 0);
+                leBottomSheetDialog.addOptionItem("Report Library", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        leBottomSheetDialog.hide();
+                        Toast.makeText(context,"reporting",Toast.LENGTH_SHORT).show();
+                        int position = libraryDataModels.indexOf(libraryDataModel);
+                        libraryDataModels.remove(libraryDataModel);
+                        HomeBooksRecyclerListViewAdapter.this.notifyItemRemoved(position);
+                        GlobalConfig.report(GlobalConfig.ACTIVITY_LOG_USER_REPORT_LIBRARY_TYPE_KEY, libraryDataModel.getAuthorUserId(), libraryDataModel.getLibraryId(), null, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+
+                            }
+                        });
+                    }
+                }, 0);
+                leBottomSheetDialog.render().show();
+            }
+        });
 
     }
 
@@ -105,6 +157,7 @@ public class HomeBooksRecyclerListViewAdapter extends RecyclerView.Adapter<HomeB
         public TextView bookAuthor;
         public TextView numOfViews;
         public LinearLayout linearLayout;
+        public ImageButton moreActionButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -112,7 +165,8 @@ public class HomeBooksRecyclerListViewAdapter extends RecyclerView.Adapter<HomeB
             this.bookName = (TextView) itemView.findViewById(R.id.bookName);
             this.bookAuthor = itemView.findViewById(R.id.bookAuthor);
             this.numOfViews = itemView.findViewById(R.id.viewCount);
-            linearLayout = (LinearLayout) itemView.findViewById(R.id.parentItem);
+            this.moreActionButton = itemView.findViewById(R.id.moreActionButtonId);
+            linearLayout = itemView.findViewById(R.id.parentItem);
         }
     }
 

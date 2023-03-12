@@ -21,17 +21,33 @@
         app:riv_mutate_background="true"
         app:riv_oval="false" />
 
-    <TextView
-        android:id="@+id/author_name"
-        android:text="Aj halrama asdfasdasdfd"
-        android:singleLine="true"
-        android:ellipsize="end"
-        android:textStyle="bold"
-        android:layout_marginTop="4pt"
-        android:textSize="7pt"
-        android:textAlignment="center"
+    
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-
+        android:layout_height="wrap_content">
+    
+        <TextView
+            android:id="@+id/author_name"
+            android:text="Aj halrama asdfasdasdfd"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textStyle="bold"
+            android:layout_marginTop="4pt"
+            android:textSize="7pt"
+            android:textAlignment="center"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+    
+        <ImageButton
+            android:id="@+id/moreActionButtonId"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/ic_baseline_error_outline_24"
+            android:backgroundTint="@color/error_red"
+            android:layout_gravity="top"
+            />
+    
+    </LinearLayout>
 </LinearLayout>

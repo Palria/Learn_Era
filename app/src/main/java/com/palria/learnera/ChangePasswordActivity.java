@@ -38,7 +38,7 @@ private TextView errorMessageTextView;
                 if(email==null || email.trim().equals("")){
 
 
-                    errorMessageTextView.setText("Enter a valid email!");
+                    errorMessageTextView.setText("Enter a valid email to receive reset link!");
                     errorMessageTextView.setVisibility(View.VISIBLE);
                     return;
                 }
@@ -57,7 +57,7 @@ private TextView errorMessageTextView;
                         GlobalHelpers.showAlertMessage("success",
                                 ChangePasswordActivity.this,
                                 "Password Reset Link Sent",
-                                "we have successfully sent your password reset link. check your email now.");
+                                "we have successfully sent your password reset link. check your email now and click the link");
 
 
 

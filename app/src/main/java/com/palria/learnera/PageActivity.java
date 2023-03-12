@@ -1,9 +1,11 @@
 package com.palria.learnera;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
@@ -12,6 +14,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,12 +23,15 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.lib.rcheditor.WYSIWYG;
+import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
+import com.palria.learnera.widgets.LEBottomSheetDialog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,33 +40,250 @@ public class PageActivity extends AppCompatActivity {
 boolean isTutorialPage = true;
 
 String authorId = "";
+String libraryId = "";
 String tutorialId = "";
 String folderId = "";
 String pageId = "";
 
 LinearLayout containerLinearLayout;
 TextView pageTitleTextView;
+TextView viewCount;
+TextView dateCreatedTextView;
+TextView bookmarkCountTextView;
+ImageButton morePageActionButton;
     RoundedImageView coverImageView;
     WYSIWYG pageContentViewer;
-
+    LEBottomSheetDialog leBottomSheetDialog;
+    AlertDialog alertDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_page);
         initUI();
         fetchIntentData();
-        fetchPageData();
+        if(!(GlobalConfig.getBlockedItemsList().contains(authorId+"")) &&!(GlobalConfig.getBlockedItemsList().contains(libraryId+"")) && !(GlobalConfig.getBlockedItemsList().contains(tutorialId+"")))  {
+
+            fetchPageData();
+//        if(!authorId.equals(GlobalConfig.getCurrentUserId())){
+//            morePageActionButton.setVisibility(View.GONE);
+//        }
+            if(GlobalConfig.getCurrentUserId().equals(authorId+"")){
+
+                leBottomSheetDialog.addOptionItem("Edit Page", R.drawable.ic_baseline_edit_24,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                leBottomSheetDialog.hide();
+                                Intent intent = new Intent(PageActivity.this,UploadPageActivity.class);
+                                intent.putExtra(GlobalConfig.PAGE_ID_KEY,pageId);
+                                intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderId);
+                                intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+                                intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryId);
+//                intent.putExtra(GlobalConfig.PAGE_CONTENT_KEY,pageContentViewer.getHtml());
+//                intent.putExtra(GlobalConfig.PAGE_TITLE_KEY,pageTitleTextView.getText());
+                                intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,isTutorialPage);
+                                intent.putExtra(GlobalConfig.IS_CREATE_NEW_PAGE_KEY,false);
+                                startActivity(intent);
+                            }
+                        }, 0);
+                leBottomSheetDialog.addOptionItem("Delete Page", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        new AlertDialog.Builder(PageActivity.this)
+                                .setCancelable(true)
+                                .setTitle("Delete Your Page!")
+                                .setMessage("Action cannot be undone, are you sure you want to delete your Page?")
+                                .setPositiveButton("Yes,delete", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        toggleProgress(true);
+                                        Toast.makeText(getApplicationContext(), "Deleting", Toast.LENGTH_SHORT).show();
+
+                                        leBottomSheetDialog.hide();
+                                        GlobalConfig.deletePage(libraryId, tutorialId,folderId,pageId,isTutorialPage, new GlobalConfig.ActionCallback() {
+                                            @Override
+                                            public void onSuccess() {
+                                                toggleProgress(false);
+                                                Toast.makeText(getApplicationContext(), "Delete Page success", Toast.LENGTH_SHORT).show();
+
+                                                PageActivity.super.onBackPressed();
+                                            }
+
+                                            @Override
+                                            public void onFailed(String errorMessage) {
+                                                toggleProgress(false);
+                                                GlobalHelpers.showAlertMessage("error",getApplicationContext(), "Unable to delete Page",errorMessage);
+                                                Toast.makeText(getApplicationContext(), "Unable to deleted Page!  please try again", Toast.LENGTH_SHORT).show();
+
+                                            }
+                                        });
+                                        PageActivity.super.onBackPressed();
+
+                                    }
+                                })
+                                .setNegativeButton("No", null)
+                                .create().show();
+
+
+                    }
+                }, 0);
+
+            }
+            leBottomSheetDialog.addOptionItem("Bookmark", R.drawable.ic_baseline_bookmarks_24,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Snackbar saveSnackBar = GlobalConfig.createSnackBar(getApplicationContext(),coverImageView,"Initializing bookmark ...", Snackbar.LENGTH_INDEFINITE);
+
+
+
+                            //CHECK IF THE CURRENT USER HAS ALREADY SAVED THIS FOLDER, IF SO DO STH
+                            DocumentReference bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
+                                    .collection(GlobalConfig.ALL_USERS_KEY)
+                                    .document(GlobalConfig.getCurrentUserId())
+                                    .collection(GlobalConfig.BOOK_MARKS_KEY).document(pageId);
+                            GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+                                @Override
+                                public void onExist() {
+                                    saveSnackBar.dismiss();
+
+                                    new AlertDialog.Builder(PageActivity.this)
+                                            .setTitle("Remove this Page from bookmark?")
+                                            .setMessage("You have already added this folder to your bookmarks, do you want to remove it?")
+                                            .setCancelable(false)
+                                            .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    Snackbar snackBar = GlobalConfig.createSnackBar(getApplicationContext(),coverImageView,"Removing from bookmark...", Snackbar.LENGTH_INDEFINITE);
+                                                    String actionType = "NONE";
+                                                    if(isTutorialPage){
+                                                        actionType = GlobalConfig.TUTORIAL_PAGE_TYPE_KEY;
+                                                    }else{
+                                                        actionType = GlobalConfig.FOLDER_PAGE_TYPE_KEY;
+
+                                                    }
+                                                    GlobalConfig.removeBookmark(authorId, libraryId, tutorialId, folderId,pageId,actionType, new GlobalConfig.ActionCallback() {
+                                                        @Override
+                                                        public void onSuccess() {
+//                                                Toast.makeText(TutorialActivity.this, "bookmark removed", Toast.LENGTH_SHORT).show();
+                                                            snackBar.dismiss();
+                                                            GlobalConfig.createSnackBar(getApplicationContext(),coverImageView,"Bookmark removed!", Snackbar.LENGTH_SHORT);
+                                                        }
+
+                                                        @Override
+                                                        public void onFailed(String errorMessage) {
+//                                                Toast.makeText(TutorialActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                                            snackBar.dismiss();
+                                                            GlobalConfig.createSnackBar(getApplicationContext(),coverImageView,"Failed to remove from bookmark please try again!", Snackbar.LENGTH_SHORT);
+                                                        }
+                                                    });
+                                                }
+                                            })
+                                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    Toast.makeText(PageActivity.this, "undo remove bookmark.", Toast.LENGTH_SHORT).show();
+                                                }
+                                            })
+                                            .show();
+                                }
+
+                                @Override
+                                public void onNotExist() {
+                                    saveSnackBar.dismiss();
+
+                                    new AlertDialog.Builder(PageActivity.this)
+                                            .setTitle("Add this Page to bookmark?")
+                                            .setMessage("when you save to bookmark you are able to view it in your bookmarked tab")
+                                            .setCancelable(false)
+                                            .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    Snackbar snackBar = GlobalConfig.createSnackBar(getApplicationContext(),coverImageView,"Adding to bookmark...", Snackbar.LENGTH_INDEFINITE);
+
+                                                    String actionType = "NONE";
+                                                    if(isTutorialPage){
+                                                        actionType = GlobalConfig.TUTORIAL_PAGE_TYPE_KEY;
+                                                    }else{
+                                                        actionType = GlobalConfig.FOLDER_PAGE_TYPE_KEY;
+
+                                                    }
+                                                    GlobalConfig.addToBookmark(authorId, libraryId, tutorialId, folderId,pageId,actionType, new GlobalConfig.ActionCallback() {
+                                                        @Override
+                                                        public void onSuccess() {
+//                                                Toast.makeText(LibraryActivity.this, "bookmark added", Toast.LENGTH_SHORT).show();
+                                                            snackBar.dismiss();
+                                                            GlobalConfig.createSnackBar(getApplicationContext(),coverImageView,"Bookmark added!", Snackbar.LENGTH_SHORT);
+
+                                                        }
+
+                                                        @Override
+                                                        public void onFailed(String errorMessage) {
+//                                                Toast.makeText(TutorialActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                                                            snackBar.dismiss();
+                                                            GlobalConfig.createSnackBar(getApplicationContext(),coverImageView,"Failed to add to bookmark please try again!", Snackbar.LENGTH_SHORT);
+                                                        }
+                                                    });
+
+                                                }
+                                            })
+                                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    Toast.makeText(PageActivity.this, "cancelled bookmark.", Toast.LENGTH_SHORT).show();
+                                                }
+                                            })
+                                            .show();
+                                }
+
+                                @Override
+                                public void onFailed(@NonNull String errorMessage) {
+                                    saveSnackBar.dismiss();
+                                    GlobalConfig.createSnackBar(getApplicationContext(),coverImageView,"Failed to Fetch bookmark details please try again", Snackbar.LENGTH_SHORT);
+
+                                }
+                            });
+
+
+                            leBottomSheetDialog.hide();
+
+                        }
+                    }, 0);
+            leBottomSheetDialog.render();
+
+            morePageActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               leBottomSheetDialog.show();
+            }
+        });
+        }else{
+
+            Toast.makeText(this, "Page Blocked! Unblock to explore the Page", Toast.LENGTH_SHORT).show();
+
+            super.onBackPressed();
+        }
     }
 
     void initUI(){
 //        containerLinearLayout = findViewById(R.id.containerLinearLayoutId);
         pageTitleTextView = findViewById(R.id.pageTitle);
         coverImageView =findViewById(R.id.pageCover);
+        viewCount =findViewById(R.id.viewCount);
+        dateCreatedTextView =findViewById(R.id.dateCreatedTextViewId);
+        bookmarkCountTextView =findViewById(R.id.bookmarkCountTextViewId);
         pageContentViewer=findViewById(R.id.pageContentViewer);
+        morePageActionButton=findViewById(R.id.morePageActionButtonId);
 
         pageContentViewer.setPadding(10,10,10,10);
         pageContentViewer.setEnabled(false);//disable editing.
         pageContentViewer.setEditorFontSize(16);
+        alertDialog = new AlertDialog.Builder(PageActivity.this)
+                .setCancelable(false)
+                .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
+                .create();
+        leBottomSheetDialog=new LEBottomSheetDialog(this);
 
     }
 
@@ -75,6 +298,13 @@ TextView pageTitleTextView;
 
     }
 
+    private void toggleProgress(boolean show) {
+        if(show){
+            alertDialog.show();
+        }else{
+            alertDialog.cancel();
+        }
+    }
     void fetchPageData(){
         DocumentReference documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId);
         if(!isTutorialPage){
@@ -99,14 +329,23 @@ TextView pageTitleTextView;
 //                        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.DATE_TIME_STAMP_PAGE_CREATED_KEY, FieldValue.serverTimestamp());
                         //THIS IS THE TITLE OF THE PAGE
                         String pageTitle = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
+                        libraryId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
 
                         //USE THIS URL TO DOWNLOAD PAGE'S COVER IMAGE
                         String pageCoverImageDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
+                        String dateCreated =  documentSnapshot.get(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY)!=null?  documentSnapshot.getTimestamp(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY).toDate() +"" :"Undefined";
+                        if(dateCreated.length()>10){
+                            dateCreated = dateCreated.substring(0,10);
+                        }
+                        String viewCount1 = ""+ documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGE_VISITOR_KEY);
+                        String bookmarkCount1 =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_BOOK_MARKS_KEY)!=null ?documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_BOOK_MARKS_KEY)+"":"0";
                         Toast.makeText(getApplicationContext(), pageCoverImageDownloadUrl, Toast.LENGTH_LONG).show();
                         Glide.with(PageActivity.this)
                                 .load(pageCoverImageDownloadUrl)
                                 .into(coverImageView);
-
+                        viewCount.setText(viewCount1);
+                        bookmarkCountTextView.setText(bookmarkCount1);
+                        dateCreatedTextView.setText(dateCreated);
                         //THIS IS THE PAGE CONTENT IN HTML FORMAT , USE IT AND RENDER TO READABLE TEXT
                         String html = ""+ documentSnapshot.get(GlobalConfig.PAGE_CONTENT_KEY);
                         pageTitleTextView.setText(pageTitle);
