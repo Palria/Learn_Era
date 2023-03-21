@@ -52,7 +52,8 @@
                     android:textAlignment="textEnd"
                     android:text="Last Logged in : 2 days ago."
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"/>
                 <androidx.cardview.widget.CardView
                     app:cardCornerRadius="6pt"
                     android:background="@drawable/rounded_white_bg"

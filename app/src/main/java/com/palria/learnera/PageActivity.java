@@ -13,6 +13,7 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -24,10 +25,12 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.lib.rcheditor.WYSIWYG;
 import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
@@ -38,13 +41,15 @@ import java.util.HashMap;
 
 public class PageActivity extends AppCompatActivity {
 boolean isTutorialPage = true;
+boolean isInitialFetch = true;
 
 String authorId = "";
 String libraryId = "";
 String tutorialId = "";
 String folderId = "";
 String pageId = "";
-
+long pageNumber = 0;
+long totalNumberOfPagesCreated = 0;
 LinearLayout containerLinearLayout;
 TextView pageTitleTextView;
 TextView viewCount;
@@ -55,6 +60,13 @@ ImageButton morePageActionButton;
     WYSIWYG pageContentViewer;
     LEBottomSheetDialog leBottomSheetDialog;
     AlertDialog alertDialog;
+    Button previousButton;
+    Button nextButton;
+    RoundedImageView authorPicture;
+    TextView authorName;
+    HashMap<String,Integer> fetchedPagesNumber = new HashMap<>();
+    HashMap<Integer,DocumentSnapshot> fetchedPagesSnapshot = new HashMap<>();
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +75,8 @@ ImageButton morePageActionButton;
         fetchIntentData();
         if(!(GlobalConfig.getBlockedItemsList().contains(authorId+"")) &&!(GlobalConfig.getBlockedItemsList().contains(libraryId+"")) && !(GlobalConfig.getBlockedItemsList().contains(tutorialId+"")))  {
 
-            fetchPageData();
+            fetchPageData(true);
+            fetchAuthorProfile();
 //        if(!authorId.equals(GlobalConfig.getCurrentUserId())){
 //            morePageActionButton.setVisibility(View.GONE);
 //        }
@@ -258,6 +271,42 @@ ImageButton morePageActionButton;
                leBottomSheetDialog.show();
             }
         });
+
+            previousButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(fetchedPagesSnapshot.containsKey(pageNumber-1)) {
+                        renderPage(fetchedPagesSnapshot.get(pageNumber-1));
+                    }else{
+                        fetchPageData(false);
+                    }
+                }
+            });
+            nextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(fetchedPagesSnapshot.containsKey(pageNumber+1)) {
+                        renderPage(fetchedPagesSnapshot.get(pageNumber+1));
+                    }else{
+                        fetchPageData(true);
+                    }
+                }
+            });
+            authorPicture.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(GlobalConfig.getHostActivityIntent(getApplicationContext(), null, GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY, authorId));
+
+                }
+            });
+            authorName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(GlobalConfig.getHostActivityIntent(getApplicationContext(), null, GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY, authorId));
+
+                }
+            });
+
         }else{
 
             Toast.makeText(this, "Page Blocked! Unblock to explore the Page", Toast.LENGTH_SHORT).show();
@@ -274,7 +323,11 @@ ImageButton morePageActionButton;
         dateCreatedTextView =findViewById(R.id.dateCreatedTextViewId);
         bookmarkCountTextView =findViewById(R.id.bookmarkCountTextViewId);
         pageContentViewer=findViewById(R.id.pageContentViewer);
+        authorPicture = findViewById(R.id.authorPicture);
+        authorName = findViewById(R.id.authorName);
         morePageActionButton=findViewById(R.id.morePageActionButtonId);
+        previousButton=findViewById(R.id.previousButtonId);
+        nextButton=findViewById(R.id.nextButtonId);
 
         pageContentViewer.setPadding(10,10,10,10);
         pageContentViewer.setEnabled(false);//disable editing.
@@ -295,23 +348,14 @@ ImageButton morePageActionButton;
         authorId = intent.getStringExtra(GlobalConfig.AUTHOR_ID_KEY);
         folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
         pageId = intent.getStringExtra(GlobalConfig.PAGE_ID_KEY);
+        totalNumberOfPagesCreated = intent.getLongExtra(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY,0L);
 
     }
-
-    private void toggleProgress(boolean show) {
-        if(show){
-            alertDialog.show();
-        }else{
-            alertDialog.cancel();
-        }
-    }
-    void fetchPageData(){
-        DocumentReference documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId);
-        if(!isTutorialPage){
-            documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageId);
-
-        }
-        documentReference.get()
+    void fetchAuthorProfile(){
+        GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_USERS_KEY)
+                .document(authorId)
+                .get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -321,38 +365,142 @@ ImageButton morePageActionButton;
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        String authorName1 = ""+documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                        String authorProfilePhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
+                        Glide.with(getApplicationContext())
+                                .load(authorProfilePhotoDownloadUrl)
+                                .into(authorPicture);
+                        authorName.setText(authorName1);
+                    }
+                });
+    }
+
+    private void toggleProgress(boolean show) {
+        if(show){
+            alertDialog.show();
+        }else{
+            alertDialog.cancel();
+        }
+    }
+    void fetchPageData(boolean isNext){
+     
+                toggleProgress(true);
+             DocumentReference documentReference = null;
+             Query query = null;
+             if (isTutorialPage) {
+                 documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId);
+                if(isNext) {
+                    query = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).whereEqualTo(GlobalConfig.PAGE_NUMBER_KEY, pageNumber + 1).limit(1L);
+                }else{
+                    query = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).whereEqualTo(GlobalConfig.PAGE_NUMBER_KEY, pageNumber  -1).limit(1L);
+
+                }
+             } else {
+                 documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageId);
+                if(isNext) {
+                    query = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).whereEqualTo(GlobalConfig.PAGE_NUMBER_KEY, pageNumber + 1).limit(1L);
+                }else{
+                    query = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).whereEqualTo(GlobalConfig.PAGE_NUMBER_KEY, pageNumber -1).limit(1L);
+
+                }
+             }
+
+             if (isInitialFetch) {
+                 documentReference.get()
+                         .addOnFailureListener(new OnFailureListener() {
+                             @Override
+                             public void onFailure(@NonNull Exception e) {
+                                 toggleProgress(false);
+                                 GlobalConfig.createSnackBar(PageActivity.this, previousButton, "Failed: "+ e.getMessage(), Snackbar.LENGTH_INDEFINITE);
+
+                             }
+                         })
+                         .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                             @Override
+                             public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                 renderPage(documentSnapshot);
+                                 isInitialFetch = false;
+
+                             }
+                         });
+             } else {
+                 query.get().addOnFailureListener(new OnFailureListener() {
+                     @Override
+                     public void onFailure(@NonNull Exception e) {
+                         toggleProgress(false);
+                         GlobalConfig.createSnackBar(PageActivity.this, previousButton, "Failed: "+ e.getMessage(), Snackbar.LENGTH_INDEFINITE);
+
+                     }
+                 }).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                     @Override
+                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                         if (!queryDocumentSnapshots.isEmpty()) {
+                             renderPage(queryDocumentSnapshots.getDocuments().get(0));
+                         }else{
+                             GlobalConfig.createSnackBar(PageActivity.this, previousButton, "No data found!", Snackbar.LENGTH_INDEFINITE);
+
+                         }
+                         toggleProgress(false);
+
+                     }
+                 });
+             }
+         
+     }
+    
+
+    void renderPage(DocumentSnapshot documentSnapshot) {
 //
 //                        HashMap<String, Object> pageTextPartitionsDataDetailsHashMap = new HashMap<>();
 //                        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_TITLE_KEY, pageTitle);
 //                        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.LIBRARY_ID_KEY, libraryId);
 //                        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY, totalNumberOfChildren);
 //                        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.DATE_TIME_STAMP_PAGE_CREATED_KEY, FieldValue.serverTimestamp());
-                        //THIS IS THE TITLE OF THE PAGE
-                        String pageTitle = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
-                        libraryId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
+        //THIS IS THE TITLE OF THE PAGE
+        pageId = documentSnapshot.getId();
+        String pageTitle = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
+        libraryId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
 
-                        //USE THIS URL TO DOWNLOAD PAGE'S COVER IMAGE
-                        String pageCoverImageDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
-                        String dateCreated =  documentSnapshot.get(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY)!=null?  documentSnapshot.getTimestamp(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY).toDate() +"" :"Undefined";
-                        if(dateCreated.length()>10){
-                            dateCreated = dateCreated.substring(0,10);
-                        }
-                        String viewCount1 = ""+ documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGE_VISITOR_KEY);
-                        String bookmarkCount1 =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_BOOK_MARKS_KEY)!=null ?documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_BOOK_MARKS_KEY)+"":"0";
-                        Toast.makeText(getApplicationContext(), pageCoverImageDownloadUrl, Toast.LENGTH_LONG).show();
-                        Glide.with(PageActivity.this)
-                                .load(pageCoverImageDownloadUrl)
-                                .into(coverImageView);
-                        viewCount.setText(viewCount1);
-                        bookmarkCountTextView.setText(bookmarkCount1);
-                        dateCreatedTextView.setText(dateCreated);
-                        //THIS IS THE PAGE CONTENT IN HTML FORMAT , USE IT AND RENDER TO READABLE TEXT
-                        String html = ""+ documentSnapshot.get(GlobalConfig.PAGE_CONTENT_KEY);
-                        pageTitleTextView.setText(pageTitle);
+        //USE THIS URL TO DOWNLOAD PAGE'S COVER IMAGE
+        String pageCoverImageDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
+        String dateCreated =  documentSnapshot.get(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY)!=null?  documentSnapshot.getTimestamp(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY).toDate() +"" :"Undefined";
+        if(dateCreated.length()>10){
+            dateCreated = dateCreated.substring(0,10);
+        }
+        String viewCount1 = ""+ documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGE_VISITOR_KEY);
+        String bookmarkCount1 =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_BOOK_MARKS_KEY)!=null ?documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_BOOK_MARKS_KEY)+"":"0";
+        pageNumber =  documentSnapshot.get(GlobalConfig.PAGE_NUMBER_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.PAGE_NUMBER_KEY):0L;
+//                        Toast.makeText(getApplicationContext(), pageCoverImageDownloadUrl, Toast.LENGTH_LONG).show();
+
+        Glide.with(PageActivity.this)
+                .load(pageCoverImageDownloadUrl)
+                .placeholder(R.drawable.baseline_pages_24)
+                .into(coverImageView);
+        viewCount.setText(viewCount1);
+        bookmarkCountTextView.setText(bookmarkCount1);
+        dateCreatedTextView.setText(dateCreated);
+        //THIS IS THE PAGE CONTENT IN HTML FORMAT , USE IT AND RENDER TO READABLE TEXT
+        String html = ""+ documentSnapshot.get(GlobalConfig.PAGE_CONTENT_KEY);
+        pageTitleTextView.setText(pageTitle);
 //                        long totalNumberOfPageData =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY) : 0L;
 
-                        renderHtmlFromDatabase(html);
-                        GlobalConfig.incrementNumberOfVisitors(authorId,null,tutorialId,folderId,pageId,false,false,false,false,isTutorialPage,!isTutorialPage);
+        renderHtmlFromDatabase(html);
+        GlobalConfig.incrementNumberOfVisitors(authorId,null,tutorialId,folderId,pageId,false,false,false,false,isTutorialPage,!isTutorialPage);
+
+        fetchedPagesNumber.put(pageId, (int) pageNumber);
+        fetchedPagesSnapshot.put((int) pageNumber,documentSnapshot);
+
+        if(pageNumber <= 1){
+            previousButton.setEnabled(false);
+        }else{
+            previousButton.setEnabled(true);
+        }
+        if(pageNumber >=totalNumberOfPagesCreated){
+            nextButton.setEnabled(false);
+        }else{
+            nextButton.setEnabled(true);
+        }
+        toggleProgress(false);
 
 //                        for(int i=0; i<totalNumberOfPageData; i++){
 //                            View view = new View(getApplicationContext());
@@ -392,9 +540,6 @@ ImageButton morePageActionButton;
 //                                }
 //                            }
 //                        }
-
-                    }
-                });
 
     }
 

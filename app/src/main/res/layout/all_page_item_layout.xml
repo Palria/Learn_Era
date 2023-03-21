@@ -29,7 +29,8 @@
         android:layout_gravity="start"
         android:layout_marginLeft="4pt"
         android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content">
 
         <TextView
@@ -109,5 +110,17 @@
         </LinearLayout>
 
     </LinearLayout>
+    
+    <EditText
+        android:id="@+id/pageNumberEditTextId"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:hint="Page number"
+        android:inputType="number"
+        android:longClickable="false"
+        android:gravity="center"
+        android:visibility="visible"
+    
+        />
 
 </LinearLayout>

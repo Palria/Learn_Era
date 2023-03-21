@@ -43,6 +43,7 @@ String tutorialId = "";
 String authorId = "";
 String libraryId = "";
 boolean isFirstView = true;
+int numberOfPages = 0;
 RoundedImageView tutorialCoverImage;
 RoundedImageView authorPicture;
 TextView authorName;
@@ -124,6 +125,7 @@ Button addActionButton;
                 ratings[2] = (int) tutorialDataModel.getTotalNumberOfThreeStarRate();
                 ratings[3] = (int) tutorialDataModel.getTotalNumberOfFourStarRate();
                 ratings[4] = (int) tutorialDataModel.getTotalNumberOfFiveStarRate();
+                numberOfPages = (int) tutorialDataModel.getTotalNumberOfPages();
 
                 GlobalConfig.incrementNumberOfVisitors(authorId,libraryId,tutorialId,null,null,false,false,true,false,false,false);
 
@@ -712,6 +714,7 @@ if(authorId.equals(GlobalConfig.getCurrentUserId())) {
                     intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
                     intent.putExtra(GlobalConfig.LIBRARY_ID_KEY, libraryId);
                     intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY, true);
+                    intent.putExtra(GlobalConfig.PAGE_NUMBER_KEY, numberOfPages+1);
                     startActivity(intent);
                 }
             }, 0)
@@ -778,8 +781,11 @@ if(!isFirstView) {
                         AllTutorialPageFragment allTutorialPageFragment = new AllTutorialPageFragment();
                         Bundle bundle = new Bundle();
                         bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+                        bundle.putString(GlobalConfig.AUTHOR_ID_KEY,authorId);
 //                        bundle.putString(GlobalConfig.FOLDER_ID_KEY,"folderId");
                         bundle.putBoolean(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
+                        bundle.putBoolean(GlobalConfig.IS_PAGINATION_KEY,false);
+                        bundle.putLong(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY,numberOfPages);
                         allTutorialPageFragment.setArguments(bundle);
                         initFragment(allTutorialPageFragment, pagesFrameLayout);
                     }

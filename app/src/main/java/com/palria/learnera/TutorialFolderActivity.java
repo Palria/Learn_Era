@@ -51,6 +51,7 @@ ExtendedFloatingActionButton floatingActionButton;
 MaterialToolbar toolbar;
 FolderDataModel intentFolderDataModel;
     OnFolderFetchListener onFolderFetchListener;
+    int numberOfPages;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +73,7 @@ FolderDataModel intentFolderDataModel;
                 dateCreated.setText(folderDataModel.getDateCreated());
                 pagesCount.setText(folderDataModel.getNumOfPages()+"");
                 folderViewCount.setText(folderDataModel.getNumOfViews()+"");
+                numberOfPages = (int) folderDataModel.getNumOfPages();
                 GlobalConfig.incrementNumberOfVisitors(authorId,null,tutorialId,folderId,null,false,false,false,true,false,false);
 
             }
@@ -138,6 +140,7 @@ FolderDataModel intentFolderDataModel;
                             intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
                             intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryId);
                             intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,false);
+                            intent.putExtra(GlobalConfig.PAGE_NUMBER_KEY,numberOfPages+1);
                             startActivity(intent);
                         }
                     }, 0);
@@ -396,8 +399,12 @@ FolderDataModel intentFolderDataModel;
         AllTutorialPageFragment pagesFragment = new AllTutorialPageFragment();
         Bundle bundle = new Bundle();
         bundle.putBoolean(GlobalConfig.IS_TUTORIAL_PAGE_KEY,false);
+        bundle.putBoolean(GlobalConfig.IS_PAGINATION_KEY,false);
+        bundle.putString(GlobalConfig.AUTHOR_ID_KEY,authorId);
         bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
-        bundle.putString(GlobalConfig.FOLDER_ID_KEY,folderId);
+        bundle.putString(GlobalConfig.FOLDER_ID_KEY,folderId);                        bundle.putLong(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY,numberOfPages);
+        bundle.putLong(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY,numberOfPages);
+
         pagesFragment.setArguments(bundle);
 
         getSupportFragmentManager()

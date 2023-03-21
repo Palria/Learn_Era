@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PaginationActivity">
+    
+    <LinearLayout
+        android:id="@+id/topLinearLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/teal_200"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:tint="@color/white"
+        android:backgroundTint="@color/teal_200"
+        android:src="@drawable/baseline_arrow_back_24"
+        />
+    <TextView
+        android:id="@+id/headerTextViewId"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Number your pages"
+        app:layout_constraintStart_toEndOf="@id/backButton"
+        app:layout_constraintTop_toTopOf="parent"
+        android:paddingHorizontal="10dp"
+        android:paddingTop="15dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:background="@color/teal_200"
+        />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/introTextViewId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Order your pages according to their page number, it will help your students read your articles in order of their page number. It starts from 1~ and must be a positive number."
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topLinearLayoutId"
+        android:layout_margin="10dp"
+        />
+    <FrameLayout
+    android:visibility="visible"
+    android:id="@+id/pagesFrameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/introTextViewId"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

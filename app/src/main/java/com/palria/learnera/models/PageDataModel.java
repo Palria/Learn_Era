@@ -19,8 +19,9 @@ public class PageDataModel implements Serializable {
     private String dateCreated;
     //add other fields below
     private DocumentSnapshot pageDocumentSnapshot;
+    private int pageNumber;
 
-    public PageDataModel(String title, String description, String coverDownloadUrl, String authorId, String pageId,String tutorialId,String folderId, String dateCreated,long totalViews,boolean isTutorialPage) {
+    public PageDataModel(String title, String description, String coverDownloadUrl, String authorId, String pageId,String tutorialId,String folderId, String dateCreated,long totalViews,boolean isTutorialPage,int pageNumber) {
         this.title = title;
         this.description = description;
         this.coverDownloadUrl = coverDownloadUrl;
@@ -32,6 +33,7 @@ public class PageDataModel implements Serializable {
         this.pageDocumentSnapshot = pageDocumentSnapshot;
         this.totalViews = totalViews;
         this.isTutorialPage = isTutorialPage;
+        this.pageNumber = pageNumber;
     }
 
     public String getTitle() {
@@ -116,5 +118,8 @@ public class PageDataModel implements Serializable {
 
     public void setPageDocumentSnapshot(DocumentSnapshot pageDocumentSnapshot) {
         this.pageDocumentSnapshot = pageDocumentSnapshot;
+    }
+    public int getPageNumber() {
+        return pageNumber;
     }
 }

@@ -14,10 +14,13 @@ import com.google.android.material.appbar.MaterialToolbar;
 public class HostActivity extends AppCompatActivity {
     Intent intent;
     String FRAGMENT_TYPE = "";
-FrameLayout hostFrameLayout;
-String userId = "";
+    FrameLayout hostFrameLayout;
+    String userId = "";
+    String libraryOpenType = "";
+    String libraryCategory = "";
+    String authorId = "";
 
-MaterialToolbar materialToolbar;
+    MaterialToolbar materialToolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +44,9 @@ MaterialToolbar materialToolbar;
          intent = getIntent();
         FRAGMENT_TYPE = intent.getStringExtra(GlobalConfig.FRAGMENT_TYPE_KEY);
         userId = intent.getStringExtra(GlobalConfig.USER_ID_KEY);
+        libraryOpenType = intent.getStringExtra(AllLibraryFragment.OPEN_TYPE_KEY);
+        libraryCategory = intent.getStringExtra(GlobalConfig.SINGLE_CATEGORY_KEY);
+        authorId = intent.getStringExtra(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
 
 
     }
@@ -59,32 +65,38 @@ MaterialToolbar materialToolbar;
     private void openIncomingFragment(){
         Bundle bundle = new Bundle();
 
-        switch(FRAGMENT_TYPE){
+        switch(FRAGMENT_TYPE) {
             case GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY:
-                 bundle = new Bundle();
-                bundle.putString(GlobalConfig.USER_ID_KEY,userId);
+                bundle = new Bundle();
+                bundle.putString(GlobalConfig.USER_ID_KEY, userId);
                 materialToolbar.setTitle("Profile");
-                initFragment(bundle,new UserProfileFragment(null));
+                initFragment(bundle, new UserProfileFragment(null));
                 break;
-                case GlobalConfig.AUTHORS_FRAGMENT_TYPE_KEY:
-                 bundle = new Bundle();
-                    bundle.putBoolean(GlobalConfig.IS_AUTHOR_OPEN_TYPE_KEY,true);
+            case GlobalConfig.AUTHORS_FRAGMENT_TYPE_KEY:
+                bundle = new Bundle();
+                bundle.putBoolean(GlobalConfig.IS_AUTHOR_OPEN_TYPE_KEY, true);
                 materialToolbar.setTitle("Authors");
-                initFragment(bundle,new AllUsersFragment());
+                initFragment(bundle, new AllUsersFragment());
                 break;
             case GlobalConfig.LIBRARY_FRAGMENT_TYPE_KEY:
-                if(userId!=null && userId.equals(GlobalConfig.getCurrentUserId())) {
+                if (userId != null && userId.equals(GlobalConfig.getCurrentUserId())) {
                     materialToolbar.setTitle("My Libraries");
-                }else{
+                } else {
                     materialToolbar.setTitle("Libraries");
                 }
-                 bundle = new Bundle();
-                bundle.putString(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,userId);
-                if(userId == null){
-                    bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY, AllLibraryFragment.OPEN_TYPE_ALL_LIBRARY);
-                }else {
-                    bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY, AllLibraryFragment.OPEN_TYPE_USER_LIBRARY);
-                }
+                bundle = new Bundle();
+                bundle.putString(GlobalConfig.LIBRARY_AUTHOR_ID_KEY, userId);
+                if (AllLibraryFragment.OPEN_TYPE_SINGLE_CATEGORY.equals(libraryOpenType+"")){
+                    bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY, AllLibraryFragment.OPEN_TYPE_SINGLE_CATEGORY);
+                    bundle.putString(GlobalConfig.SINGLE_CATEGORY_KEY, libraryCategory);
+                } else{ if (userId == null) {
+                        bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY, AllLibraryFragment.OPEN_TYPE_ALL_LIBRARY);
+                        bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY, AllLibraryFragment.OPEN_TYPE_ALL_LIBRARY);
+                    } else {
+                        bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY, AllLibraryFragment.OPEN_TYPE_USER_LIBRARY);
+                    }
+        }
+                bundle.putString(GlobalConfig.LIBRARY_AUTHOR_ID_KEY, authorId);
                 initFragment(bundle,new AllLibraryFragment());
                 break;
             case GlobalConfig.TUTORIAL_FRAGMENT_TYPE_KEY:

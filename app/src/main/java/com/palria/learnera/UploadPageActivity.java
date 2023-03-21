@@ -123,6 +123,7 @@ public class UploadPageActivity extends AppCompatActivity {
     boolean isCreateNewPage = true;
     boolean isCoverImageIncluded = false;
     boolean isCoverImageChanged = false;
+    int pageNumber = 0;
     String coverImageUrl = "";
     String retrievedCoverPhotoDownloadUrl = "";
     ArrayList<String>retrievedActivePageMediaUrlArrayList = new ArrayList<>();
@@ -728,6 +729,7 @@ public class UploadPageActivity extends AppCompatActivity {
         intent.putExtra(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY,retrievedCoverPhotoDownloadUrl);
         intent.putExtra(GlobalConfig.PAGE_MEDIA_URL_LIST_KEY,imagesFinalListToUpload);
         intent.putExtra(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY,retrievedActivePageMediaUrlArrayList);
+        intent.putExtra(GlobalConfig.PAGE_NUMBER_KEY,pageNumber);
         startService(intent);
 
     }
@@ -1435,6 +1437,7 @@ public class UploadPageActivity extends AppCompatActivity {
         tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
         libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
         folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
+        pageNumber = intent.getIntExtra(GlobalConfig.PAGE_NUMBER_KEY,0);
         isCreateNewPage = intent.getBooleanExtra(GlobalConfig.IS_CREATE_NEW_PAGE_KEY,true);
         if(!isCreateNewPage){
             pageId = intent.getStringExtra(GlobalConfig.PAGE_ID_KEY);

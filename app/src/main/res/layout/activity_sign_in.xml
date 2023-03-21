@@ -111,7 +111,6 @@
                 android:hint="Password"
                 android:inputType="textPassword"
                 android:textSize="16sp"
-
                 android:id="@+id/passwordInput"
                 android:background="@drawable/default_input_bg"
                 android:layout_height="wrap_content"/>

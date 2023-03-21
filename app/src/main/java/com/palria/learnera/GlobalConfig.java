@@ -220,6 +220,7 @@ public class GlobalConfig {
     public static final String IS_CREATE_NEW_LIBRARY_KEY = "IS_CREATE_NEW_LIBRARY";
     public static final String ALL_LIBRARY_KEY = "ALL_LIBRARY";
     public static final String LIBRARY_PROFILE_KEY = "LIBRARY_PROFILE";
+    public static final String SINGLE_CATEGORY_KEY = "SINGLE_CATEGORY";
 
     public static final String LIBRARY_DISPLAY_NAME_KEY = "LIBRARY_DISPLAY_NAME";
     public static final String LIBRARY_DESCRIPTION_KEY = "LIBRARY_DESCRIPTION";
@@ -288,6 +289,7 @@ public class GlobalConfig {
     public static final String TOTAL_NUMBER_OF_FOLDER_VISITOR_KEY = "TOTAL_NUMBER_OF_FOLDER_VISITOR";
     public static final String TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_TUTORIAL_PAGE_VISITOR";
     public static final String TOTAL_NUMBER_OF_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_PAGE_VISITOR";
+    public static final String PAGE_NUMBER_KEY = "PAGE_NUMBER_KEY";
     public static final String TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR_KEY = "TOTAL_NUMBER_OF_FOLDER_PAGE_VISITOR";
     public static final String PAGE_CONTENT_KEY = "PAGE_CONTENT";
     public static final String PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY = "PAGE_COVER_PHOTO_DOWNLOAD_URL";
@@ -312,6 +314,7 @@ public class GlobalConfig {
 
     public static final String PAGE_ID_KEY = "PAGE_ID";
     public static final String IS_TUTORIAL_PAGE_KEY = "IS_TUTORIAL_PAGE";
+    public static final String IS_PAGINATION_KEY = "IS_PAGINATION_KEY";
     public static final String FOLDER_CREATED_DATE_TIME_STAMP_KEY = "FOLDER_CREATED_DATE_TIME_STAMP";
     public static final String TOTAL_NUMBER_OF_FOLDER_PAGES_KEY = "TOTAL_NUMBER_OF_FOLDER_PAGES";
 

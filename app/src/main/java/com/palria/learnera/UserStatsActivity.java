@@ -169,7 +169,7 @@ public class UserStatsActivity extends AppCompatActivity {
         }
     }
 
-      private void  initTabLayout(){
+    private void  initTabLayout(){
           tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
               @Override
               public void onTabSelected(TabLayout.Tab tab) {

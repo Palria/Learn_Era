@@ -58,6 +58,7 @@ public class AllLibraryFragment extends Fragment {
     public static String OPEN_TYPE_KEY = "OPEN_TYPE";
    public static String OPEN_TYPE_USER_LIBRARY = "OPEN_TYPE_USER_LIBRARY";
    public static String OPEN_TYPE_ALL_LIBRARY = "OPEN_TYPE_ALL_LIBRARY";
+   public static String OPEN_TYPE_SINGLE_CATEGORY = "OPEN_TYPE_SINGLE_CATEGORY";
 
     String open_type = "ALL";
     String authorId = "";
@@ -66,6 +67,7 @@ public class AllLibraryFragment extends Fragment {
     boolean isLoadingMoreLibrary = false;
     boolean isFirstLoad = true;
     String searchKeyword = "";
+    String singleCategory = "";
     BottomAppBar bottomAppBar;
 
     NestedScrollView parentScrollView;
@@ -91,6 +93,7 @@ if(getArguments() != null){
     authorId = getArguments().getString(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,"");
     isFromSearchContext = getArguments().getBoolean(GlobalConfig.IS_FROM_SEARCH_CONTEXT_KEY,false);
     searchKeyword = getArguments().getString(GlobalConfig.SEARCH_KEYWORD_KEY,"");
+    singleCategory = getArguments().getString(GlobalConfig.SINGLE_CATEGORY_KEY,"");
 }
 
     }
@@ -112,6 +115,7 @@ initUI(parentView);
                  //add to library data models.
                  libraryDataModels.add(libraryDataModel);
                  libraryDataModelsBackup.add(libraryDataModel);
+                 adapter.notifyItemChanged(libraryDataModels.size());
              }
          };
 fetchAllLibrary();
@@ -245,6 +249,13 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
                     libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).limit(5L);
                 }else{
                     libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).startAfter(lastRetrievedLibrarySnapshot).limit(5L);
+                }
+
+            }  else if (open_type.equals(OPEN_TYPE_SINGLE_CATEGORY)) {
+                if(lastRetrievedLibrarySnapshot == null) {
+                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,singleCategory).limit(5L);
+                }else{
+                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,singleCategory).startAfter(lastRetrievedLibrarySnapshot).limit(5L);
                 }
 
             } else if (isFromSearchContext) {

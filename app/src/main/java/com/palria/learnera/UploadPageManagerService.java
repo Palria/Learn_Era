@@ -86,6 +86,7 @@ public class UploadPageManagerService extends Service implements OnPageUploadLis
 
 
         String pageId = intent.getStringExtra(GlobalConfig.PAGE_ID_KEY);
+        int pageNumber = intent.getIntExtra(GlobalConfig.PAGE_NUMBER_KEY,0);
         String libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
         String tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
         String folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
@@ -97,7 +98,7 @@ public class UploadPageManagerService extends Service implements OnPageUploadLis
         boolean isTutorialPage = intent.getBooleanExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
         boolean isCreateNewPage = intent.getBooleanExtra(GlobalConfig.IS_CREATE_NEW_PAGE_KEY,true);
         boolean isPageCoverPhotoChanged = intent.getBooleanExtra(GlobalConfig.IS_PAGE_COVER_PHOTO_CHANGED_KEY,true);
-        UploadPageManagerService.this.onNewPage( pageId,  folderId,  tutorialId,  libraryId,  isTutorialPage, isCreateNewPage, coverPhotoDownloadUrl,isPageCoverPhotoChanged,  pageTitle,retrievedActivePageMediaUrlArrayList,  pageContent,imageListToUpload);
+        UploadPageManagerService.this.onNewPage( pageId,  folderId,  tutorialId,  libraryId,  pageNumber,  isTutorialPage, isCreateNewPage, coverPhotoDownloadUrl,isPageCoverPhotoChanged,  pageTitle,retrievedActivePageMediaUrlArrayList,  pageContent,imageListToUpload);
 
 
         return Service.START_STICKY;
@@ -565,6 +566,7 @@ public class UploadPageManagerService extends Service implements OnPageUploadLis
 
     /**new implementations begin*/
 HashMap<String,Integer> numberOfMedia = new HashMap<>();
+HashMap<String,Integer> pageNumberMap = new HashMap<>();
 HashMap<String,Integer> numberOfMediaUploaded = new HashMap<>();
 HashMap<String,Integer> numberOfMediaFailed = new HashMap<>();
 HashMap<String,Integer> numberOfProgressingMedia = new HashMap<>();
@@ -812,6 +814,7 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
             pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_ID_KEY, pageId);
             pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.AUTHOR_ID_KEY, GlobalConfig.getCurrentUserId());
             pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY, activePageMediaUrlArrayListMap.get(pageId));
+            pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_NUMBER_KEY, pageNumberMap.get(pageId));
 
 
         }
@@ -1045,9 +1048,10 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
 
 
     @Override
-    public void onNewPage(String pageId,String  folderId,String  tutorialId,String  libraryId, boolean isTutorialPage,boolean isCreateNewPage,String coverPhotoDownloadUrl,boolean isPageCoverPhotoChanged,String  pageTitle,ArrayList<String>retrievedActivePageMediaUrlArrayList,String  pageContent,ArrayList<String>imageListToUpload) {
+    public void onNewPage(String pageId,String  folderId,String  tutorialId,String  libraryId,int  pageNumber, boolean isTutorialPage,boolean isCreateNewPage,String coverPhotoDownloadUrl,boolean isPageCoverPhotoChanged,String  pageTitle,ArrayList<String>retrievedActivePageMediaUrlArrayList,String  pageContent,ArrayList<String>imageListToUpload) {
 //initialize the hashmaps to avoid null pointer exception
         numberOfMedia.put(pageId,imageListToUpload.size());
+        pageNumberMap.put(pageId,pageNumber);
         numberOfMediaUploaded.put(pageId,0);
         numberOfMediaFailed.put(pageId,0);
         numberOfProgressingMedia.put(pageId,0);

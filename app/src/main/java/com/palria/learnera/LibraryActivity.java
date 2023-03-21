@@ -819,10 +819,21 @@ LibraryDataModel intentLibraryDataModel;
     private void initCategoriesChip(String categories){
 
         categoriesChipGroup.removeAllViews();
-        String[] cats = categories.split(",");
+        String[] cats = categories.split(", ");
         for(String cat : cats){
             Chip chip = new Chip(this);
             chip.setText(cat);
+            chip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getApplicationContext(),HostActivity.class);
+                    intent.putExtra(GlobalConfig.SINGLE_CATEGORY_KEY,cat);
+                    intent.putExtra(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,authorId);
+                    intent.putExtra(AllLibraryFragment.OPEN_TYPE_KEY,AllLibraryFragment.OPEN_TYPE_SINGLE_CATEGORY);
+                    startActivity(GlobalConfig.getHostActivityIntent(getApplicationContext(),intent,GlobalConfig.LIBRARY_FRAGMENT_TYPE_KEY,null));
+
+                }
+            });
             categoriesChipGroup.addView(chip);
         }
 

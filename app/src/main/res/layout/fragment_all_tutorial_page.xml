@@ -5,11 +5,25 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".AllTutorialPageFragment">
-
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical"
+       >
+    <TextView
+        android:id="@+id/startPaginationTextViewId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You can order your pages in sequence according to the page number you assign to them, "
+        android:layout_gravity="top|center_horizontal"
+        />
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        android:layout_marginBottom="100dp"
+        >
 
         <LinearLayout
             android:orientation="vertical"
@@ -61,6 +75,17 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-
+   </LinearLayout>
+<Button
+    android:id="@+id/paginateButtonId"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="20dp"
+    android:background="@drawable/rounded_grey_bg"
+    android:backgroundTint="@color/teal_200"
+    android:layout_marginBottom="30dp"
+    android:text="Start pagination"
+    android:layout_gravity="bottom"
+    android:visibility="gone"
+    />
 </FrameLayout>
