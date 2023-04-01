@@ -42,6 +42,7 @@ import java.util.HashMap;
 public class PageActivity extends AppCompatActivity {
 boolean isTutorialPage = true;
 boolean isInitialFetch = true;
+boolean isPublic = true;
 
 String authorId = "";
 String libraryId = "";
@@ -54,6 +55,7 @@ LinearLayout containerLinearLayout;
 TextView pageTitleTextView;
 TextView viewCount;
 TextView dateCreatedTextView;
+TextView privacyIndicatorTextView;
 TextView bookmarkCountTextView;
 ImageButton morePageActionButton;
     RoundedImageView coverImageView;
@@ -321,6 +323,7 @@ ImageButton morePageActionButton;
         coverImageView =findViewById(R.id.pageCover);
         viewCount =findViewById(R.id.viewCount);
         dateCreatedTextView =findViewById(R.id.dateCreatedTextViewId);
+        privacyIndicatorTextView =findViewById(R.id.privacyIndicatorTextViewId);
         bookmarkCountTextView =findViewById(R.id.bookmarkCountTextViewId);
         pageContentViewer=findViewById(R.id.pageContentViewer);
         authorPicture = findViewById(R.id.authorPicture);
@@ -457,6 +460,19 @@ ImageButton morePageActionButton;
 //                        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TOTAL_NUMBER_OF_PAGE_DATA_KEY, totalNumberOfChildren);
 //                        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.DATE_TIME_STAMP_PAGE_CREATED_KEY, FieldValue.serverTimestamp());
         //THIS IS THE TITLE OF THE PAGE
+
+         isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null?  documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY)  :true;
+        if( !isPublic && !(authorId!=null && authorId.equals(GlobalConfig.getCurrentUserId()))){
+            GlobalConfig.createSnackBar(this, morePageActionButton,"OOPS! The page you are trying to load is private!", Snackbar.LENGTH_INDEFINITE).show();
+            //PageActivity.super.onBackPressed();
+            toggleProgress(false);
+            return;
+        }
+        if(isPublic){
+            privacyIndicatorTextView.setText("public");
+        }else{
+            privacyIndicatorTextView.setText("private");
+        }
         pageId = documentSnapshot.getId();
         String pageTitle = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
         libraryId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);

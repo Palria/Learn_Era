@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class TutorialDataModel implements Serializable {
 
 /**The name of the tutorial*/
+    boolean isPublic;
     String tutorialName;
     String tutorialCategory;
     String tutorialDescription;
@@ -73,6 +74,7 @@ public class TutorialDataModel implements Serializable {
     /**This parameterized Constructor helps us in initializing all the global variables
      * */
    public  TutorialDataModel(
+            boolean isPublic,
             String tutorialName,
             String tutorialCategory,
             String tutorialDescription,
@@ -92,6 +94,7 @@ public class TutorialDataModel implements Serializable {
             long totalNumberOfFiveStarRate
 //            DocumentSnapshot tutorialDocumentSnapshot
     ){
+        this.isPublic = isPublic;
         this.tutorialName = tutorialName;
         this.tutorialCategory = tutorialCategory;
         this.tutorialDescription = tutorialDescription;
@@ -114,6 +117,14 @@ public class TutorialDataModel implements Serializable {
     }
 
     //The getters are for querying  the queried data and setters for setting the data
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
 
     public String getTutorialName() {
         return tutorialName;

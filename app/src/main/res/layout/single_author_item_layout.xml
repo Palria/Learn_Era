@@ -29,7 +29,7 @@
     
         <TextView
             android:id="@+id/author_name"
-            android:text="Aj halrama asdfasdasdfd"
+            android:text="..."
             android:singleLine="true"
             android:ellipsize="end"
             android:textStyle="bold"

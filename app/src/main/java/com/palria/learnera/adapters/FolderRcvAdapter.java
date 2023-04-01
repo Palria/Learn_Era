@@ -46,28 +46,33 @@ public class FolderRcvAdapter extends RecyclerView.Adapter<FolderRcvAdapter.View
     public void onBindViewHolder(@NonNull FolderRcvAdapter.ViewHolder holder, int position) {
 
         FolderDataModel folderDataModel = folderDataModels.get(position);
+        if (folderDataModel.isPublic() || (GlobalConfig.getCurrentUserId().equals(folderDataModel.getAuthorId() + ""))) {
 
-        holder.folderName.setText(folderDataModel.getFolderName());
-        holder.dateCreated.setText(folderDataModel.getDateCreated());
-        holder.pagesCountView.setText(folderDataModel.getNumOfPages()+"");
+            holder.folderName.setText(folderDataModel.getFolderName());
+            holder.dateCreated.setText(folderDataModel.getDateCreated());
+            holder.pagesCountView.setText(folderDataModel.getNumOfPages() + "");
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 //                Toast.makeText(view.getContext(),"click on item: "+folderDataModel.getFolderName(),Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(context, TutorialFolderActivity.class);
-                intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderDataModel.getId());
-                intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,folderDataModel.getTutorialId());
-                intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,folderDataModel.getLibraryId());
-                intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,folderDataModel.getAuthorId());
-                intent.putExtra(GlobalConfig.FOLDER_NAME_KEY,folderDataModel.getFolderName());
-                intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY,false);
-                intent.putExtra(GlobalConfig.FOLDER_DATA_MODEL_KEY,folderDataModel);
+                    Intent intent = new Intent(context, TutorialFolderActivity.class);
+                    intent.putExtra(GlobalConfig.FOLDER_ID_KEY, folderDataModel.getId());
+                    intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY, folderDataModel.getTutorialId());
+                    intent.putExtra(GlobalConfig.LIBRARY_ID_KEY, folderDataModel.getLibraryId());
+                    intent.putExtra(GlobalConfig.AUTHOR_ID_KEY, folderDataModel.getAuthorId());
+                    intent.putExtra(GlobalConfig.FOLDER_NAME_KEY, folderDataModel.getFolderName());
+                    intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY, false);
+                    intent.putExtra(GlobalConfig.FOLDER_DATA_MODEL_KEY, folderDataModel);
 
-                context.startActivity(intent);
-            }
-        });
+                    context.startActivity(intent);
+                }
+            });
+        } else {
 
+            holder.folderName.setText("Folder is private");
+            holder.itemView.setEnabled(false);
+        }
     }
 
     @Override

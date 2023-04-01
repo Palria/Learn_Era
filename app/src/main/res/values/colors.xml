@@ -5,6 +5,7 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF6E31</color>
     <color name="teal_700">#FF6E31</color>
+    <color name="secondary_app_color">#FF6E31</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#EEEEEE</color>
@@ -17,4 +18,5 @@
     <color name="success_green">#4BB543</color>
     <color name="error_red">#ff3333</color>
     <color name="color_warning">#ffcc00</color>
+    <color name="light_dark">#353535</color>
 </resources>

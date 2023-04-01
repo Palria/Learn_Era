@@ -14,7 +14,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.palria.learnera.models.FolderDataModel;
-
+@Deprecated
 public class AllTutorialFoldersFragment extends Fragment {
 
     public AllTutorialFoldersFragment() {
@@ -78,13 +78,15 @@ String tutorialId = "";
                             String folderId = documentSnapshot.getId();
                             String folderName  = ""+ documentSnapshot.get(GlobalConfig.FOLDER_NAME_KEY); String authorId  = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
                             String libraryId  = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
+                            boolean isPublic  =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY): true;
+
                             String dateCreated  = documentSnapshot.get(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY)!=null ?documentSnapshot.getTimestamp(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY).toDate() +""  :"Undefined";
                             if(dateCreated.length()>10){
                                 dateCreated = dateCreated.substring(0,10);
                             }
                             long numOfPages  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY) : 0L;
                             long numOfViews  = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_VISITOR_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_VISITOR_KEY) : 0L ;
-                            fetchTutorialFolderListener.onSuccess(new FolderDataModel(folderId,authorId,libraryId,tutorialId,folderName,dateCreated,numOfPages,numOfViews));
+                            fetchTutorialFolderListener.onSuccess(new FolderDataModel(folderId,authorId,libraryId,tutorialId,folderName,dateCreated,numOfPages,numOfViews,isPublic));
                         }
 
                     }

@@ -53,6 +53,7 @@ public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibrar
     public void onBindViewHolder(@NonNull AllLibraryFragmentRcvAdapter.ViewHolder holder, int position) {
 
         LibraryDataModel libraryDataModel = libraryDataModels.get(position);
+        if (libraryDataModel.isPublic() || (GlobalConfig.getCurrentUserId().equals(libraryDataModel.getAuthorUserId()+""))) {
 
         holder.libraryName.setText(libraryDataModel.getLibraryName());
         Glide.with(context)
@@ -169,7 +170,10 @@ try {
                 context.startActivity(intent);
             }
         });
-
+    }else{
+        holder.libraryName.setText("Library is private");
+        holder.itemView.setEnabled(false);
+    }
     }
 
     @Override

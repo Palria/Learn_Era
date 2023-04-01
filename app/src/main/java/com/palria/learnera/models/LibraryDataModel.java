@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class LibraryDataModel implements Serializable {
 
 /**The library name*/
+    private  boolean isPublic;
     private  String libraryName;
 /**The library Id*/
     private   String libraryId;
@@ -71,6 +72,7 @@ public class LibraryDataModel implements Serializable {
     /**This parameterized Constructor helps us in initializing all the global variables
      * */
    public LibraryDataModel(
+            boolean isPublic,
             String libraryName,
             String libraryId,
             ArrayList<String> libraryCategoryArrayList,
@@ -89,6 +91,7 @@ public class LibraryDataModel implements Serializable {
             long totalNumberOfFiveStarRate
 //            DocumentSnapshot libraryDocumentSnapshot
     ){
+        this.isPublic = isPublic;
         this.libraryName = libraryName;
         this.libraryId = libraryId;
         this.libraryCategoryArrayList = libraryCategoryArrayList;
@@ -110,6 +113,14 @@ public class LibraryDataModel implements Serializable {
     }
 
     //The getters are for querying  the queried data and setters for setting the data
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
 
     public String getLibraryName() {
         return libraryName;

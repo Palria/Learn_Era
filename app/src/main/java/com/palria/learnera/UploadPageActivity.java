@@ -40,12 +40,14 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.ValueCallback;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RemoteViews;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -108,6 +110,7 @@ public class UploadPageActivity extends AppCompatActivity {
     String libraryId;
     String tutorialId;
     String folderId;
+    Switch visibilitySwitch;
     LinearLayout containerLinearLayout;
     ImageButton addImageActionButton ;
     ImageButton addTodoListActionButton ;
@@ -119,6 +122,7 @@ public class UploadPageActivity extends AppCompatActivity {
     AlertDialog confirmationDialog;
     AlertDialog initDialog;
 
+    boolean isPublic = true;
     boolean isTutorialPage = true;
     boolean isCreateNewPage = true;
     boolean isCoverImageIncluded = false;
@@ -552,7 +556,12 @@ public class UploadPageActivity extends AppCompatActivity {
                 requestForPermissionAndPickImage(COVER_IMAGE_GALLERY_REQUEST_CODE);
             }
         });
-
+        visibilitySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                isPublic = b;
+            }
+        });
     }
     //uploaded images count tracker all complete or not
     int  uploaded = 0;
@@ -722,6 +731,7 @@ public class UploadPageActivity extends AppCompatActivity {
         intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
         intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderId);
         intent.putExtra(GlobalConfig.PAGE_TITLE_KEY,pageTitle);
+        intent.putExtra(GlobalConfig.IS_PUBLIC_KEY,isPublic);
         intent.putExtra(GlobalConfig.PAGE_CONTENT_KEY,pageContent);
         intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,isTutorialPage);
         intent.putExtra(GlobalConfig.IS_CREATE_NEW_PAGE_KEY,isCreateNewPage);
@@ -757,6 +767,7 @@ public class UploadPageActivity extends AppCompatActivity {
     private void initUI(){
 
     pageTitleEditText = findViewById(R.id.pageTitleEditTextId);
+        visibilitySwitch = findViewById(R.id.visibilitySwitchId);
     //containerLinearLayout = findViewById(R.id.containerLinearLayoutId);
     addImageActionButton = findViewById(R.id.addImageActionButtonId);
     addTodoListActionButton = findViewById(R.id.addTodoListActionButtonId);
@@ -1290,7 +1301,8 @@ public class UploadPageActivity extends AppCompatActivity {
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             //THIS IS THE TITLE OF THE PAGE
                             String pageTitle = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
-
+                            isPublic = documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY) :true;
+                            visibilitySwitch.setChecked(isPublic);
                             //USE THIS URL TO DOWNLOAD PAGE'S COVER IMAGE
                             retrievedActivePageMediaUrlArrayList =  documentSnapshot.get(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY)!=null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY) :new ArrayList<>();
                             retrievedCoverPhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);

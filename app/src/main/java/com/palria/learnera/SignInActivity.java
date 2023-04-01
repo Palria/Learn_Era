@@ -17,7 +17,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.w3c.dom.Text;
-
 public class SignInActivity extends AppCompatActivity {
 private String email;
 private String password;
@@ -56,7 +55,7 @@ boolean isInProgress = false;
                     toggleProgress(true);
                     email = emailEditText.getText().toString();
                     password = passwordEditText.getText().toString();
-                    Toast.makeText(getApplicationContext(), "Sign in progress...!", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(), "Sign in progress...!", Toast.LENGTH_SHORT).show();
                     errorMessageTextView.setVisibility(View.VISIBLE);
                     errorMessageTextView.setText("Progress...");
                     GlobalConfig.signInUserWithEmailAndPassword(SignInActivity.this, email, password, new GlobalConfig.SignInListener() {

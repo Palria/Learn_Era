@@ -18,11 +18,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -142,6 +144,14 @@ public class BottomSheetFormBuilderWidget extends BottomSheetDialog {
     }
 
 
+    public BottomSheetFormBuilderWidget addFolderVisibilitySwitch(SwitchCompat switchView){
+
+        //add the item to linear layout
+        formLayout.addView(switchView);
+//        inputLists.add(input);
+
+        return this;
+    }
     public BottomSheetFormBuilderWidget addInputField(View input){
 
         //add the item to linear layout

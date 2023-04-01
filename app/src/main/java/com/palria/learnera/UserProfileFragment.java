@@ -125,7 +125,6 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        checkedCategories = new boolean[categories.length];
 
         if(getArguments() != null){
             authorId = getArguments().getString(GlobalConfig.USER_ID_KEY);
@@ -160,8 +159,8 @@ public class UserProfileFragment extends Fragment {
                 @Override
                 public void onFailed(String errorMessage) {
 //               toggleProgress(false);
-                    swipeRefreshLayout.setRefreshing(false);
-                    Toast.makeText(getContext(), "failed to fetch library.", Toast.LENGTH_SHORT).show();
+//                    swipeRefreshLayout.setRefreshing(false);
+//                    Toast.makeText(getContext(), "failed to fetch library.", Toast.LENGTH_SHORT).show();
 
                 }
 
@@ -172,12 +171,12 @@ public class UserProfileFragment extends Fragment {
                     // displayLibrary(libraryDataModel);
                     shimmerLayout.stopShimmer();
                     shimmerLayout.setVisibility(View.GONE);
-
                     parentScrollView.setVisibility(View.VISIBLE);
-
 //               libraryArrayList.add(new LibraryDataModel(libraryDataModel.getLibraryName(),libraryDataModel.getLibraryId(),libraryDataModel.getLibraryCategoryArrayList(),libraryDataModel.getLibraryCoverPhotoDownloadUrl(),libraryDataModel.getLibraryDescription(),libraryDataModel.getDateCreated(),libraryDataModel.getTotalNumberOfTutorials(),libraryDataModel.getTotalNumberOfLibraryViews(),libraryDataModel.getTotalNumberOfLibraryReach(),libraryDataModel.getAuthorUserId(),libraryDataModel.getTotalNumberOfOneStarRate(),libraryDataModel.getTotalNumberOfTwoStarRate(),libraryDataModel.getTotalNumberOfThreeStarRate(),libraryDataModel.getTotalNumberOfFourStarRate(),libraryDataModel.getTotalNumberOfFiveStarRate()));
-                    libraryArrayList.add(libraryDataModel);
-                    libraryRcvAdapter.notifyItemChanged(libraryArrayList.size());
+                    if(libraryDataModel.isPublic() || (GlobalConfig.getCurrentUserId().equals(libraryDataModel.getAuthorUserId()+""))) {
+                        libraryArrayList.add(libraryDataModel);
+                        libraryRcvAdapter.notifyItemChanged(libraryArrayList.size());
+                    }
 //
 
                 }
@@ -192,9 +191,11 @@ public class UserProfileFragment extends Fragment {
                     shimmerLayout.setVisibility(View.GONE);
 
                     parentScrollView.setVisibility(View.VISIBLE);
+                    if(tutorialDataModel.isPublic() || (GlobalConfig.getCurrentUserId().equals(tutorialDataModel.getAuthorId()+""))) {
 
-                    tutorialsArrayList.add(tutorialDataModel);
-                    tutorialsRcvAdapter.notifyItemChanged(tutorialsArrayList.size());
+                        tutorialsArrayList.add(tutorialDataModel);
+                        tutorialsRcvAdapter.notifyItemChanged(tutorialsArrayList.size());
+                    }
                 }
 
                 @Override
@@ -392,8 +393,8 @@ public class UserProfileFragment extends Fragment {
                 parentScrollView.setVisibility(View.VISIBLE);
 //                Toast.makeText(getContext(), "Libraries loaded.", Toast.LENGTH_SHORT).show();
 
-//                if(!isUserAuthor && authorId.equals(GlobalConfig.getCurrentUserId())){
-                if(authorId.equals(GlobalConfig.getCurrentUserId())) {
+                if(!isUserAuthor && authorId.equals(GlobalConfig.getCurrentUserId())){
+//                if(authorId.equals(GlobalConfig.getCurrentUserId())) {
                  if(isFirstLoad) {
                      leBottomSheetDialog.addOptionItem("Become An Author", R.drawable.ic_baseline_edit_24, new View.OnClickListener() {
                          @Override
@@ -465,6 +466,8 @@ public class UserProfileFragment extends Fragment {
             recentLibraryRcv = parentView.findViewById(R.id.recentLibraryRcv);
             tutorialsRcv = parentView.findViewById(R.id.tutorialsRcv);
 
+            categories = getResources().getStringArray(R.array.category);
+            checkedCategories = new boolean[categories.length];
 
             alertDialog = new AlertDialog.Builder(getContext())
                     .setCancelable(false)
@@ -1122,6 +1125,8 @@ public class UserProfileFragment extends Fragment {
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
 
                             String libraryId = documentSnapshot.getId();
+                            boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null?  documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY)  :true;
+
 //                            Toast.makeText(getContext(), libraryId,Toast.LENGTH_SHORT).show();
                             long totalNumberOfLibraryView = 0L;
                             if(documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VIEWS_KEY) != null){
@@ -1175,6 +1180,7 @@ public class UserProfileFragment extends Fragment {
 
 
                             libraryFetchListener.onSuccess(new LibraryDataModel(
+                                    isPublic,
                                     libraryName,
                                     libraryId,
                                     libraryCategoryArray,
@@ -1216,6 +1222,8 @@ public class UserProfileFragment extends Fragment {
 
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             String authorId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY);
+                            boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null?  documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY)  :true;
+
                             String libraryId =""+ documentSnapshot.get(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
                             String tutorialId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
                             String tutorialName = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
@@ -1242,6 +1250,7 @@ public class UserProfileFragment extends Fragment {
 
 
                             tutorialFetchListener.onSuccess(new TutorialDataModel(
+                                    isPublic,
                                     tutorialName,
                                     tutorialCategory,
                                     tutorialDescription,

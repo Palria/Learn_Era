@@ -3,6 +3,7 @@ package com.palria.learnera;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
 import android.content.DialogInterface;
@@ -10,9 +11,12 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +67,7 @@ TextView tutorialDescription;
 
     //tab layout
     TabLayout tabLayout;
+    TextView privacyIndicatorTextView;
 
     //boolean fragment open stats
     boolean isFoldersFragmentOpened=false;
@@ -70,7 +75,7 @@ TextView tutorialDescription;
     boolean isRatingsFragmentOpened=false;
 
 //buttons
-Button addActionButton;
+    Button addActionButton;
     Button saveActionButton;
     ImageButton editTutorialActionButton;
     Button rateActionButton;
@@ -108,11 +113,24 @@ Button addActionButton;
 //                    }
 //                });
 
-
+                if( !tutorialDataModel.isPublic() && !(authorId!=null && authorId.equals(GlobalConfig.getCurrentUserId()))){
+//                    GlobalConfig.createSnackBar(this, morePageActionButton,"OOPS! The page you are trying to load is private!", Snackbar.LENGTH_INDEFINITE).show();
+                    toggleProgress(false);
+                    Toast.makeText(TutorialActivity.this, "OOPS! The tutorial you are trying to load is private!", Toast.LENGTH_SHORT).show();
+                    TutorialActivity.super.onBackPressed();
+                    return;
+                }
+                if(tutorialDataModel.isPublic()){
+                    privacyIndicatorTextView.setText("public");
+                }else{
+                    privacyIndicatorTextView.setText("private");
+                }
                 Glide.with(getApplicationContext())
                         .load(tutorialDataModel.getTutorialCoverPhotoDownloadUrl())
                         .into(tutorialCoverImage);
-                dateCreated.setText(tutorialDataModel.getDateCreated());
+//                dateCreated.setText(tutorialDataModel.getDateCreated());
+                dateCreated.setText(tutorialDataModel.getDateCreated().length()>10?tutorialDataModel.getDateCreated().substring(0,10):"Undefined");
+
                 tutorialViewCount.setText(tutorialDataModel.getTotalNumberOfTutorialViews()+"");
                 pagesCount.setText(tutorialDataModel.getTotalNumberOfPages()+"");
                 foldersCount.setText(tutorialDataModel.getTotalNumberOfFolders()+"");
@@ -652,6 +670,7 @@ toggleProgress(true);
         rateActionButton=findViewById(R.id.rateActionButton);
         backButton=findViewById(R.id.backButton);
         moreActionButton=findViewById(R.id.moreActionButtonId);
+        privacyIndicatorTextView=findViewById(R.id.privacyIndicatorTextViewId);
 
 
         tabLayout=findViewById(R.id.tab_layout);
@@ -667,12 +686,23 @@ if(authorId.equals(GlobalConfig.getCurrentUserId())) {
             .addOptionItem("New Folder", R.drawable.ic_baseline_add_circle_24, new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
                     leBottomSheetDialog.hide();
-
+                    SwitchCompat switchView = new SwitchCompat(TutorialActivity.this);
+                    switchView.setChecked(true);
+                    switchView.setText("Make public");
+                    switchView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+                    boolean[] isPublic = new boolean[1];
+                    isPublic[0] = true;
+                    switchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                            isPublic[0] = b;
+                        }
+                    });
                     new BottomSheetFormBuilderWidget(TutorialActivity.this)
                             .setTitle("Folder is used to organize your pages within a tutorial")
                             .setPositiveTitle("Create")
+                            .addFolderVisibilitySwitch(switchView)
                             .addInputField(new BottomSheetFormBuilderWidget.EditTextInput(TutorialActivity.this)
                                     .setHint("Enter folder name")
                                     .autoFocus())
@@ -691,7 +721,7 @@ if(authorId.equals(GlobalConfig.getCurrentUserId())) {
 //                                           Toast.makeText(TutorialActivity.this, "Please enter name",Toast.LENGTH_SHORT).show();
                                     } else {
 
-                                        createNewFolder(values[0]);
+                                        createNewFolder(values[0],isPublic[0]);
 //                                           leBottomSheetDialog.setTitle("Creating "+values[0]+" folder in progress...");
 //                                           leBottomSheetDialog.hide();
                                     }
@@ -754,24 +784,7 @@ if(!isFirstView) {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 String tabTitle=tab.getText().toString().trim().toUpperCase();
-                if(tabTitle.equals("FOLDERS")){
-                    if(isFoldersFragmentOpened){
-                        //Just set the frame layout visibility
-                        setFrameLayoutVisibility(foldersFrameLayout);
-                    }else {
-                        isFoldersFragmentOpened =true;
-                        setFrameLayoutVisibility(foldersFrameLayout);
-
-                        FoldersFragment foldersFragment = new FoldersFragment();
-                        Bundle bundle = new Bundle();
-                        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
-                        foldersFragment.setArguments(bundle);
-                        initFragment(foldersFragment, foldersFrameLayout);
-                    }
-
-
-                }else if(tabTitle.equals("PAGES"))
-                {
+                if(tabTitle.equalsIgnoreCase("PAGES")) {
                     if(isPagesFragmentOpened){
                         //Just set the frame layout visibility
                         setFrameLayoutVisibility(pagesFrameLayout);
@@ -789,7 +802,26 @@ if(!isFirstView) {
                         allTutorialPageFragment.setArguments(bundle);
                         initFragment(allTutorialPageFragment, pagesFrameLayout);
                     }
-                }else if(tabTitle.equals("RATINGS")){
+                }
+                else if(tabTitle.equalsIgnoreCase("FOLDERS")){
+                    if(isFoldersFragmentOpened){
+                        //Just set the frame layout visibility
+                        setFrameLayoutVisibility(foldersFrameLayout);
+                    }else {
+                        isFoldersFragmentOpened =true;
+                        setFrameLayoutVisibility(foldersFrameLayout);
+
+                        FoldersFragment foldersFragment = new FoldersFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+                        bundle.putString(GlobalConfig.AUTHOR_ID_KEY,authorId);
+                        foldersFragment.setArguments(bundle);
+                        initFragment(foldersFragment, foldersFrameLayout);
+                    }
+
+
+                }
+                else if(tabTitle.equalsIgnoreCase("RATINGS")){
                     if(isRatingsFragmentOpened){
                         //Just set the frame layout visibility
                         setFrameLayoutVisibility(ratingsFrameLayout);
@@ -821,13 +853,13 @@ if(!isFirstView) {
 
 
 
-        TabLayout.Tab foldersTabItem = tabLayout.newTab();
-        foldersTabItem.setText("Folders");
-        tabLayout.addTab(foldersTabItem, 0, true);
-
         TabLayout.Tab pagesTabItem = tabLayout.newTab();
         pagesTabItem.setText("Pages");
-        tabLayout.addTab(pagesTabItem, 1);
+        tabLayout.addTab(pagesTabItem, 0,true);
+
+        TabLayout.Tab foldersTabItem = tabLayout.newTab();
+        foldersTabItem.setText("Folders");
+        tabLayout.addTab(foldersTabItem, 1);
 
         TabLayout.Tab ratingsTabItem = tabLayout.newTab();
         ratingsTabItem.setText("Ratings");
@@ -848,7 +880,10 @@ if(!isFirstView) {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot){
 
-//                        if(1>0)return;
+
+                        boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null?  documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY)  :true;
+
+
                             String libraryId =""+ documentSnapshot.get(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
                             String tutorialId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
 
@@ -877,9 +912,10 @@ if(!isFirstView) {
 
 
                             tutorialFetchListener.onSuccess(new TutorialDataModel(
+                                                            isPublic,
                                                             tutorialName,
                                                             tutorialCategory,
-                                    tutorialDescription,
+                                                            tutorialDescription,
                                                             tutorialId,
                                                             dateCreated,
                                                             totalNumberOfPages,
@@ -926,7 +962,7 @@ if(!isFirstView) {
                 });
     }
 
-    private void createNewFolder(final String folderName){
+    private void createNewFolder(final String folderName,final boolean isPublic){
         String folderId = GlobalConfig.getRandomString(50);
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
         DocumentReference documentReference = GlobalConfig.getFirebaseFirestoreInstance()
@@ -938,6 +974,7 @@ if(!isFirstView) {
         HashMap<String,Object> folderDetails = new HashMap<>();
         folderDetails.put(GlobalConfig.FOLDER_NAME_KEY,folderName );
         folderDetails.put(GlobalConfig.FOLDER_ID_KEY,folderId );
+        folderDetails.put(GlobalConfig.IS_PUBLIC_KEY,isPublic );
         folderDetails.put(GlobalConfig.AUTHOR_ID_KEY,authorId );
         folderDetails.put(GlobalConfig.LIBRARY_ID_KEY,libraryId );
         folderDetails.put(GlobalConfig.TUTORIAL_ID_KEY,tutorialId );

@@ -79,7 +79,7 @@ if(getArguments()!= null){
 //            startPaginationTextView.setVisibility(View.GONE);
 //        paginateButton.setVisibility(View.VISIBLE);
 //        }
-if(!GlobalConfig.getCurrentUserId().equals(authorId)){
+if(!GlobalConfig.getCurrentUserId().equals(""+authorId)){
     startPaginationTextView.setVisibility(View.GONE);
 }
 
@@ -160,6 +160,10 @@ if(!GlobalConfig.getCurrentUserId().equals(authorId)){
                     .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                     .document(tutorialId)
                     .collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY);
+            if(!GlobalConfig.getCurrentUserId().equals(authorId+"")){
+                pageQuery.whereEqualTo(GlobalConfig.IS_PUBLIC_KEY,true);
+
+            }
 //            .orderBy(GlobalConfig.PAGE_NUMBER_KEY, Query.Direction.DESCENDING)
         }else{
 
@@ -169,6 +173,10 @@ if(!GlobalConfig.getCurrentUserId().equals(authorId)){
                     .collection(GlobalConfig.ALL_FOLDERS_KEY)
                     .document(folderId)
                     .collection(GlobalConfig.ALL_FOLDER_PAGES_KEY);
+if(!GlobalConfig.getCurrentUserId().equals(authorId+"")){
+    pageQuery.whereEqualTo(GlobalConfig.IS_PUBLIC_KEY,true);
+
+}
 
 //            .orderBy(GlobalConfig.PAGE_NUMBER_KEY, Query.Direction.DESCENDING)
 
@@ -191,13 +199,14 @@ if(!GlobalConfig.getCurrentUserId().equals(authorId)){
                             String pageTitle  = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
                             String authorId  = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
                             String coverPhotoDownloadUrl  = ""+ documentSnapshot.get(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
+                            boolean isPublic  =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY): true;
                             long totalViews  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGE_VISITOR_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGE_VISITOR_KEY): 0L;
                             long pageNumber  =  documentSnapshot.get(GlobalConfig.PAGE_NUMBER_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.PAGE_NUMBER_KEY): 0L;
                             String dateCreated  =  documentSnapshot.get(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY)!=null ? documentSnapshot.getTimestamp(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY).toDate()+"" : "Undefined";
                             if(dateCreated.length()>10){
                                 dateCreated = dateCreated.substring(0,10);
                             }
-                            fetchPageListener.onSuccess(new PageDataModel(pageTitle,"",coverPhotoDownloadUrl,authorId,pageId,tutorialId,folderId,dateCreated,totalViews,isTutorialPage,(int)pageNumber));
+                            fetchPageListener.onSuccess(new PageDataModel(pageTitle,"",coverPhotoDownloadUrl,authorId,pageId,tutorialId,folderId,dateCreated,totalViews,isTutorialPage,isPublic,(int)pageNumber));
                         }
                         if(queryDocumentSnapshots.isEmpty()){
                                 startPaginationTextView.setVisibility(View.GONE);
@@ -207,7 +216,12 @@ if(!GlobalConfig.getCurrentUserId().equals(authorId)){
                                 startPaginationTextView.setVisibility(View.GONE);
                                 paginateButton.setVisibility(View.VISIBLE);
                             }else{
-                                startPaginationTextView.setVisibility(View.VISIBLE);
+
+                                if(GlobalConfig.getCurrentUserId().equals(""+authorId)){
+                                    startPaginationTextView.setVisibility(View.VISIBLE);
+                                }else{
+                                    startPaginationTextView.setVisibility(View.GONE);
+                                }
                             }
 
                         }
@@ -221,3 +235,4 @@ if(!GlobalConfig.getCurrentUserId().equals(authorId)){
         void onFailed(String errorMessage);
     }
 }
+

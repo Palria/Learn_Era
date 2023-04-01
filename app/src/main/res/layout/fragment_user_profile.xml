@@ -264,13 +264,15 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/joanne_lady"
                 android:layout_width="match_parent"
-                android:layout_height="40pt"/>
+                android:layout_height="40pt"
+                android:visibility="gone"
+                />
 
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="vertical"
-                android:layout_marginTop="-35pt"
+                android:layout_marginTop="1pt"
                 android:layout_height="match_parent">
 
                 <RelativeLayout
@@ -640,9 +642,10 @@
     android:paddingVertical="20pt"
     android:layout_width="match_parent"
     android:background="@color/gray"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    >
     <LinearLayout
-
         android:paddingHorizontal="5pt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

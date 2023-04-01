@@ -51,6 +51,7 @@ public class LibraryActivity extends AppCompatActivity implements Serializable {
 
 
 boolean isFirstView = true;
+TextView privacyIndicatorTextView;
 String libraryId;
 String authorId;
 String authorName;
@@ -114,6 +115,18 @@ LibraryDataModel intentLibraryDataModel;
                 public void onSuccess(LibraryDataModel libraryDataModel) {
                     //use this libraryDataModel object to access the public methods.
 
+                    if( !libraryDataModel.isPublic() && !(authorId!=null && authorId.equals(GlobalConfig.getCurrentUserId()))){
+//                    GlobalConfig.createSnackBar(this, morePageActionButton,"OOPS! The page you are trying to load is private!", Snackbar.LENGTH_INDEFINITE).show();
+                        toggleProgress(false);
+                        Toast.makeText(LibraryActivity.this, "OOPS! The tutorial you are trying to load is private!", Toast.LENGTH_SHORT).show();
+                        LibraryActivity.super.onBackPressed();
+                        return;
+                    }
+                    if(libraryDataModel.isPublic()){
+                        privacyIndicatorTextView.setText("public");
+                    }else{
+                        privacyIndicatorTextView.setText("private");
+                    }
                     libraryCategoryList = libraryDataModel.getLibraryCategoryArrayList();
                     libraryDescription.setText(libraryDataModel.getLibraryDescription());
                     libraryViewCount.setText(libraryDataModel.getTotalNumberOfLibraryViews() + "");
@@ -152,7 +165,7 @@ LibraryDataModel intentLibraryDataModel;
                     ratings[4] = Integer.parseInt(Long.toString(libraryDataModel.getTotalNumberOfFiveStarRate()));
 
 
-                    dateCreated.setText(libraryDataModel.getDateCreated());
+                    dateCreated.setText(libraryDataModel.getDateCreated().length()>10?libraryDataModel.getDateCreated().substring(0,10):"Undefined");
 
 //                GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_VISIT_LIBRARY_TYPE_KEY, authorId, libraryId, null,  null, null, null, null,  new GlobalConfig.ActionCallback() {
 //                    @Override
@@ -735,6 +748,7 @@ LibraryDataModel intentLibraryDataModel;
 
         mainLayout=findViewById(R.id.mainLayout);
         tutorialsFrameLayout=findViewById(R.id.tutorialsFrameLayout);
+        privacyIndicatorTextView=findViewById(R.id.privacyIndicatorTextViewId);
         booksFrameLayout=findViewById(R.id.booksFrameLayout);
         ratingsFrameLayout=findViewById(R.id.booksFrameLayout);
         moreActionButton=findViewById(R.id.moreActionButtonId);
@@ -868,6 +882,8 @@ if(!isFirstView) {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot){
                 String libraryId = documentSnapshot.getId();
+                boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null?  documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY)  :true;
+
                 long totalNumberOfLibraryVisitor = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY) : 0L;
                 long totalNumberOfLibraryReach = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REACH_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REACH_KEY) : 0L;
                 long totalNumberOfOneStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY) : 0L;
@@ -892,6 +908,7 @@ if(!isFirstView) {
 
 
                 libraryProfileFetchListener.onSuccess(new LibraryDataModel(
+                        isPublic,
                         libraryName,
                         libraryId,
                         libraryCategoryArray,

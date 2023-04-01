@@ -1,14 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NotificationActivity">
-    <include
-        layout="@layout/layout_no_data_found"
-        android:id="@+id/noDataFound"
+    android:orientation="vertical"
+    tools:context="NotificationActivity">
+    
+    <LinearLayout
+        android:id="@+id/titleId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="20dp"
+        android:background="@color/secondary_app_color"
+        android:backgroundTint="@color/secondary_app_color"
+        >
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_marginLeft="5pt"
+            android:layout_marginTop="5pt"
+            android:backgroundTint="@color/white"
+            android:background="@drawable/baseline_arrow_back_24"
+            android:layout_width="wrap_content"
+            android:layout_gravity="start"
+            android:layout_height="wrap_content"
+            />
+        
+        
+        <TextView
+            android:id="@+id/textHeaderCardViewId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginLeft="5pt"
+            android:layout_margin="5pt"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="4"
+            android:text="Notifications"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+    
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/notificationRecyclerViewId"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

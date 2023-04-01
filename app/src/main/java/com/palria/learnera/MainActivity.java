@@ -251,6 +251,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         }
                     }
                 }, 0)
+                .addOptionItem("Notify", R.drawable.baseline_notifications_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(GlobalConfig.isUserLoggedIn()) {
+                            leBottomSheetDialog.hide();
+                            Intent intent = new Intent(MainActivity.this,CreateNewNotificationActivity.class);
+                            startActivity(intent);
+                        }
+                    }
+                }, 0)
 //                .addOptionItem("New Post", R.drawable.ic_baseline_add_circle_24, new View.OnClickListener() {
 //                    @Override
 //                    public void onClick(View view) {
@@ -343,63 +353,71 @@ if(GlobalConfig.isUserLoggedIn()) {
 
         switch (item.getItemId()) {
             case R.id.tutorials_item:
-                if(isAllTutorialFragmentOpen){
+                if (isAllTutorialFragmentOpen) {
                     //Just set the frame layout visibility
                     setFrameLayoutVisibility(allTutorialFrameLayout);
 
-                }else {
-                    isAllTutorialFragmentOpen =true;
+                } else {
+                    isAllTutorialFragmentOpen = true;
                     setFrameLayoutVisibility(allTutorialFrameLayout);
                     AllTutorialFragment allTutorialFragment = new AllTutorialFragment(bottomAppBar);
                     Bundle bundle = new Bundle();
-                    bundle.putString(AllTutorialFragment.OPEN_TYPE_KEY,AllTutorialFragment.OPEN_TYPE_ALL_TUTORIAL);
+                    bundle.putString(AllTutorialFragment.OPEN_TYPE_KEY, AllTutorialFragment.OPEN_TYPE_ALL_TUTORIAL);
                     allTutorialFragment.setArguments(bundle);
                     initFragment(allTutorialFragment, allTutorialFrameLayout);
                 }
                 return true;
             case R.id.home_item:
-                if(isHomeFragmentOpen){
+                if (isHomeFragmentOpen) {
                     //Just set the frame layout visibility
                     setFrameLayoutVisibility(homeFrameLayout);
 
-                }else {
-                    isHomeFragmentOpen =true;
+                } else {
+                    isHomeFragmentOpen = true;
 
                     setFrameLayoutVisibility(homeFrameLayout);
                     initFragment(new HomeFragment(bottomAppBar), homeFrameLayout);
                 }
                 return true;
             case R.id.library_item:
-                if(isLibraryFragmentOpen){
+                if (isLibraryFragmentOpen) {
                     //Just set the frame layout visibility
                     setFrameLayoutVisibility(libraryFrameLayout);
 
-                }else {
-                    isLibraryFragmentOpen =true;
+                } else {
+                    isLibraryFragmentOpen = true;
 
                     setFrameLayoutVisibility(libraryFrameLayout);
-                   AllLibraryFragment allLibraryFragment = new AllLibraryFragment(bottomAppBar);
-                   Bundle bundle = new Bundle();
-                   bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY,AllLibraryFragment.OPEN_TYPE_ALL_LIBRARY);
-                   allLibraryFragment.setArguments(bundle);
+                    AllLibraryFragment allLibraryFragment = new AllLibraryFragment(bottomAppBar);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY, AllLibraryFragment.OPEN_TYPE_ALL_LIBRARY);
+                    allLibraryFragment.setArguments(bundle);
                     initFragment(allLibraryFragment, libraryFrameLayout);
                 }
                 return true;
             case R.id.profile_item:
-                if(isUserProfileFragmentOpen){
+                if(GlobalConfig.isUserLoggedIn()){
+                if (isUserProfileFragmentOpen) {
                     //Just set the frame layout visibility
                     setFrameLayoutVisibility(userProfileFrameLayout);
-                }else {
-                    isUserProfileFragmentOpen =true;
+                } else {
+                    isUserProfileFragmentOpen = true;
 
                     setFrameLayoutVisibility(userProfileFrameLayout);
                     UserProfileFragment userProfileFragment = new UserProfileFragment(bottomAppBar);
                     Bundle bundle = new Bundle();
-                    bundle.putString(GlobalConfig.USER_ID_KEY,GlobalConfig.getCurrentUserId());
+                    bundle.putString(GlobalConfig.USER_ID_KEY, GlobalConfig.getCurrentUserId());
                     userProfileFragment.setArguments(bundle);
                     initFragment(userProfileFragment, userProfileFrameLayout);
                 }
-                return true;
+                    return true;
+
+                }else{
+
+                    Intent intent = new Intent(MainActivity.this,SignInActivity.class);
+                    startActivity(intent);
+                    return false;
+                }
         }
         return false;
     }

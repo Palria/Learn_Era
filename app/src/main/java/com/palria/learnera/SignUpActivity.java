@@ -249,7 +249,7 @@ public class SignUpActivity extends AppCompatActivity {
         call.enqueue(new Callback<CountryResponseDataModel>() {
             @Override
             public void onResponse(@NonNull Call<CountryResponseDataModel> call, Response<CountryResponseDataModel> response) {
-                Toast.makeText(SignUpActivity.this, "hey there", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(SignUpActivity.this, "hey there", Toast.LENGTH_SHORT).show();
                 Log.e("countryResponse", response.toString());
 
 
@@ -271,7 +271,7 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<CountryResponseDataModel> call, Throwable t) {
                 Log.e("err","err:"+t.getMessage(),t);
-                Toast.makeText(SignUpActivity.this, "Failed.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(SignUpActivity.this, "Failed.", Toast.LENGTH_SHORT).show();
               }
         });
 

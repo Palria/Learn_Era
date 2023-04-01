@@ -85,8 +85,16 @@
                                     style="@style/MaterialAlertDialog.Material3.Body.Text"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="How to crack Java InterView"
+                                    android:text="..."
                                     android:textSize="9pt"
+                                    android:textStyle="bold" />
+                                <TextView
+                                    android:id="@+id/privacyIndicatorTextViewId"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="public"
+                                    android:textSize="9sp"
+                                    android:textColor="@color/secondary_app_color"
                                     android:textStyle="bold" />
 
                                 <TextView
@@ -98,7 +106,7 @@
                                     android:drawablePadding="5pt"
                                     android:drawableTint="@color/grayDark"
                                     android:gravity="center"
-                                    android:text="0 days ago" />
+                                    android:text="moments ago" />
 
                                 <TextView
                                     android:id="@+id/authorName"
@@ -109,7 +117,7 @@
                                     android:drawablePadding="5pt"
                                     android:drawableTint="@color/teal_700"
                                     android:gravity="center"
-                                    android:text="Amrit Acharya"
+                                    android:text="..."
                                     android:visibility="gone"
                                     />
 
@@ -122,7 +130,7 @@
                                     android:drawablePadding="5pt"
                                     android:drawableTint="@color/grayDark"
                                     android:gravity="center"
-                                    android:text="Data Structure and Algorithms"
+                                    android:text="..."
                                     android:visibility="gone"
                                     />
 

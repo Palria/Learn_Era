@@ -95,10 +95,11 @@ public class UploadPageManagerService extends Service implements OnPageUploadLis
         String coverPhotoDownloadUrl = intent.getStringExtra(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
         ArrayList<String> imageListToUpload = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.PAGE_MEDIA_URL_LIST_KEY);
         ArrayList<String>retrievedActivePageMediaUrlArrayList = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY);
+        boolean isPublic = intent.getBooleanExtra(GlobalConfig.IS_PUBLIC_KEY,true);
         boolean isTutorialPage = intent.getBooleanExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
         boolean isCreateNewPage = intent.getBooleanExtra(GlobalConfig.IS_CREATE_NEW_PAGE_KEY,true);
         boolean isPageCoverPhotoChanged = intent.getBooleanExtra(GlobalConfig.IS_PAGE_COVER_PHOTO_CHANGED_KEY,true);
-        UploadPageManagerService.this.onNewPage( pageId,  folderId,  tutorialId,  libraryId,  pageNumber,  isTutorialPage, isCreateNewPage, coverPhotoDownloadUrl,isPageCoverPhotoChanged,  pageTitle,retrievedActivePageMediaUrlArrayList,  pageContent,imageListToUpload);
+        UploadPageManagerService.this.onNewPage(isPublic, pageId,  folderId,  tutorialId,  libraryId,  pageNumber,  isTutorialPage, isCreateNewPage, coverPhotoDownloadUrl,isPageCoverPhotoChanged,  pageTitle,retrievedActivePageMediaUrlArrayList,  pageContent,imageListToUpload);
 
 
         return Service.START_STICKY;
@@ -585,7 +586,7 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
 
 //ends
 
-    private void startUploadService(String libraryId, String tutorialId, String folderId, String pageId,String pageTitle, String pageContent, ArrayList<String> imagesListToUpload,boolean isTutorialPage) {
+    private void startUploadService(boolean isPublic, String libraryId, String tutorialId, String folderId, String pageId,String pageTitle, String pageContent, ArrayList<String> imagesListToUpload,boolean isTutorialPage) {
 //        pageId = GlobalConfig.getRandomString(60);
 
         /**
@@ -602,7 +603,7 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
 
             //postTitle,postContentHtml[0]
             Log.e("pageContentInUploadService",postContentHtml[0]);
-            writePageToDatabase( libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  postContentHtml[0],"", isTutorialPage);
+            writePageToDatabase(isPublic, libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  postContentHtml[0],"", isTutorialPage);
 //            updatePageProgressNotification(pageId,notificationLayout.get(pageId),0,builder.get(pageId));
 
             return;
@@ -634,7 +635,7 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
                             //postTitle,postContentHtml[0]
                             Log.e("pageContentInUploadService_withImages_", postContentHtml[0]);
 
-                            writePageToDatabase( libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  postContentHtml[0],coverImageDownloadUrl[0], isTutorialPage);
+                            writePageToDatabase(isPublic, libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  postContentHtml[0],coverImageDownloadUrl[0], isTutorialPage);
 
 
 
@@ -763,7 +764,7 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
     }
 
     /**This posts the page content to database*/
-    private void writePageToDatabase(String libraryId, String tutorialId, String folderId, String pageId, String pageTitle, String pageContent,String coverImageDownloadUrl,boolean isTutorialPage) {
+    private void writePageToDatabase(boolean isPublic, String libraryId, String tutorialId, String folderId, String pageId, String pageTitle, String pageContent,String coverImageDownloadUrl,boolean isTutorialPage) {
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
         DocumentReference pageDocumentReference = null;
         if(isTutorialPage){
@@ -792,6 +793,7 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
 
 
         HashMap<String, Object> pageTextPartitionsDataDetailsHashMap = new HashMap<>();
+        pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.IS_PUBLIC_KEY, isPublic);
         pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.PAGE_TITLE_KEY, pageTitle);
         pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
         pageTextPartitionsDataDetailsHashMap.put(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY, activePageMediaUrlArrayListMap.get(pageId));
@@ -868,7 +870,7 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        writePageToDatabase( libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  pageContent,coverImageDownloadUrl, isTutorialPage);
+                        writePageToDatabase(isPublic, libraryId,  tutorialId,  folderId,  pageId,  pageTitle,  pageContent,coverImageDownloadUrl, isTutorialPage);
                     }
                 }).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -1048,7 +1050,7 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
 
 
     @Override
-    public void onNewPage(String pageId,String  folderId,String  tutorialId,String  libraryId,int  pageNumber, boolean isTutorialPage,boolean isCreateNewPage,String coverPhotoDownloadUrl,boolean isPageCoverPhotoChanged,String  pageTitle,ArrayList<String>retrievedActivePageMediaUrlArrayList,String  pageContent,ArrayList<String>imageListToUpload) {
+    public void onNewPage(boolean isPublic, String pageId,String  folderId,String  tutorialId,String  libraryId,int  pageNumber, boolean isTutorialPage,boolean isCreateNewPage,String coverPhotoDownloadUrl,boolean isPageCoverPhotoChanged,String  pageTitle,ArrayList<String>retrievedActivePageMediaUrlArrayList,String  pageContent,ArrayList<String>imageListToUpload) {
 //initialize the hashmaps to avoid null pointer exception
         numberOfMedia.put(pageId,imageListToUpload.size());
         pageNumberMap.put(pageId,pageNumber);
@@ -1068,7 +1070,7 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
         activePageMediaUrlArrayListMap.put(pageId,new ArrayList<>());
         retrievedActivePageMediaUrlArrayListMap.put(pageId,retrievedActivePageMediaUrlArrayList);
 
-        startUploadService(libraryId,tutorialId,folderId,pageId,pageTitle,pageContent,imageListToUpload,isTutorialPage);
+        startUploadService(isPublic,libraryId,tutorialId,folderId,pageId,pageTitle,pageContent,imageListToUpload,isTutorialPage);
 
         showPageProgressNotification(pageId,pageTitle);
     }

@@ -25,8 +25,10 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +61,9 @@ String libraryId;
 String libraryCategory;
 ArrayList<String> libraryCategoryArrayList;
 String libraryDescription;
+
+    Switch visibilitySwitch;
+    boolean isPublic = true;
 
 EditText libraryNameEditText;
 TextView libraryCategoryEditText;
@@ -325,7 +330,7 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                             uploadLibraryCoverPhoto(new CoverPhotoUploadListener() {
                                 @Override
                                 public void onSuccess(String coverPhotoDownloadUrl,String coverPhotoStorageReference) {
-                                    editLibrary(libraryCategoryArrayList,coverPhotoDownloadUrl, coverPhotoStorageReference,new OnLibraryEditionListener() {
+                                    editLibrary(categoryList,coverPhotoDownloadUrl, coverPhotoStorageReference,new OnLibraryEditionListener() {
                                         @Override
                                         public void onSuccess() {
                                             GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null,  null, null, null, new GlobalConfig.ActionCallback() {
@@ -383,7 +388,7 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                             });
                         }
                         else{
-                            editLibrary(libraryCategoryArrayList,retrievedCoverPhotoDownloadUrl,retrievedCoverPhotoStorageReference, new OnLibraryEditionListener() {
+                            editLibrary(categoryList,retrievedCoverPhotoDownloadUrl,retrievedCoverPhotoStorageReference, new OnLibraryEditionListener() {
                                 @Override
                                 public void onSuccess() {
                                     GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null,  null, null, null,   new GlobalConfig.ActionCallback() {
@@ -463,7 +468,7 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                         });
                     }
                     else{
-                        editLibrary(libraryCategoryArrayList,"","", new OnLibraryEditionListener() {
+                        editLibrary(categoryList,"","", new OnLibraryEditionListener() {
                             @Override
                             public void onSuccess() {
                                 GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_EDIT_LIBRARY_TYPE_KEY, GlobalConfig.getCurrentUserId(), libraryId, null, null, null, null, new GlobalConfig.ActionCallback() {
@@ -590,19 +595,27 @@ toggleProgress(false);
 
             }
         });
+        visibilitySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                isPublic = b;
+            }
+        });
+
     }
 
     private void getDynamicCategories() {
+String[] categories = getResources().getStringArray(R.array.category);
 
         libraryCategoryArrayList=new ArrayList<>();
-        libraryCategoryArrayList.add("Software Development");
-        libraryCategoryArrayList.add("Web Development");
-        libraryCategoryArrayList.add("Graphic Design");
-        libraryCategoryArrayList.add("Ui Design");
-        libraryCategoryArrayList.add("Ethical Hacking");
-        libraryCategoryArrayList.add("Game Development");
-        libraryCategoryArrayList.add("Prototyping");
-        libraryCategoryArrayList.add("SEO");
+        libraryCategoryArrayList.addAll(Arrays.asList(categories));
+//        libraryCategoryArrayList.add("Web Development");
+//        libraryCategoryArrayList.add("Graphic Design");
+//        libraryCategoryArrayList.add("Ui Design");
+//        libraryCategoryArrayList.add("Ethical Hacking");
+//        libraryCategoryArrayList.add("Game Development");
+//        libraryCategoryArrayList.add("Prototyping");
+//        libraryCategoryArrayList.add("SEO");
 
         selectedCategories=new boolean[libraryCategoryArrayList.size()];
     }
@@ -668,6 +681,8 @@ toggleProgress(false);
         createLibraryActionButton=findViewById(R.id.createActionButton);
         pickImageActionButton=findViewById(R.id.pickImageActionButton);
         chooseCategoryTextView =findViewById(R.id.chooseCategory);
+
+        visibilitySwitch = findViewById(R.id.visibilitySwitchId);
 
         cancelButton = findViewById(R.id.cancelButton);
 
@@ -842,6 +857,7 @@ toggleProgress(false);
 
         }
 
+        libraryProfileDetails.put(GlobalConfig.IS_PUBLIC_KEY,isPublic);
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY,libraryName);
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DESCRIPTION_KEY,libraryDescription);
         libraryProfileDetails.put(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,libraryCategoryArray);
@@ -915,6 +931,7 @@ toggleProgress(false);
 
         }
 
+        libraryProfileDetails.put(GlobalConfig.IS_PUBLIC_KEY,isPublic);
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY,libraryName);
         libraryProfileDetails.put(GlobalConfig.LIBRARY_DESCRIPTION_KEY,libraryDescription);
         libraryProfileDetails.put(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,libraryCategoryArray);
@@ -956,6 +973,9 @@ toggleProgress(false);
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        isPublic = documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY) :true;
+                        visibilitySwitch.setChecked(isPublic);
+
                         String libraryName = documentSnapshot.getString(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
                         String libraryDescription = documentSnapshot.getString(GlobalConfig.LIBRARY_DESCRIPTION_KEY);
                         ArrayList<String> libraryCategoryArrayList = (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);

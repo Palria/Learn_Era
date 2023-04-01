@@ -3,6 +3,7 @@ package com.palria.learnera;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
 import android.content.DialogInterface;
@@ -10,7 +11,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +40,9 @@ String tutorialId = "";
 String folderId = "";
 String folderName = "";
 boolean isFirstView = true;
+boolean isPublic = true;
 FrameLayout pagesFrameLayout;
+TextView privacyIndicatorTextView;
 TextView folderNameView;
 TextView dateCreated;
 TextView authorName;
@@ -69,6 +74,21 @@ FolderDataModel intentFolderDataModel;
         onFolderFetchListener =  new OnFolderFetchListener() {
             @Override
             public void onSuccess(FolderDataModel folderDataModel) {
+
+                if( !folderDataModel.isPublic() && !(authorId!=null && authorId.equals(GlobalConfig.getCurrentUserId()))){
+//                    GlobalConfig.createSnackBar(TutorialFolderActivity.this, editFolderActionButton,"OOPS! The folder you are trying to load is private!", Snackbar.LENGTH_INDEFINITE).show();
+                    //PageActivity.super.onBackPressed();
+                    toggleProgress(false);
+                    Toast.makeText(TutorialFolderActivity.this, "OOPS! The folder you are trying to load is private!", Toast.LENGTH_SHORT).show();
+                    TutorialFolderActivity.super.onBackPressed();
+                    return;
+                }
+                isPublic = folderDataModel.isPublic();
+                if(isPublic){
+                    privacyIndicatorTextView.setText("public");
+                }else{
+                    privacyIndicatorTextView.setText("private");
+                }
                 folderNameView.setText(folderDataModel.getFolderName());
                 dateCreated.setText(folderDataModel.getDateCreated());
                 pagesCount.setText(folderDataModel.getNumOfPages()+"");
@@ -107,6 +127,7 @@ FolderDataModel intentFolderDataModel;
         pagesFrameLayout = findViewById(R.id.pagesFrameLayoutId);
          folderNameView = findViewById(R.id.folderName);
          dateCreated= findViewById(R.id.dateCreated);
+        privacyIndicatorTextView= findViewById(R.id.privacyIndicatorTextViewId);
          authorName=findViewById(R.id.authorName);
          libraryName=findViewById(R.id.libraryName);
          folderViewCount=findViewById(R.id.viewCount);
@@ -149,10 +170,21 @@ FolderDataModel intentFolderDataModel;
                         @Override
                         public void onClick(View view) {
                             leBottomSheetDialog.hide();
-
+                            SwitchCompat switchView = new SwitchCompat(TutorialFolderActivity.this);
+                            switchView.setChecked(isPublic);
+                            switchView.setText("Make public");
+                            switchView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+                            switchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                                @Override
+                                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                                    isPublic = b;
+//                                    Toast.makeText(TutorialFolderActivity.this, "pub-pri"+b, Toast.LENGTH_SHORT).show();
+                                }
+                            });
                             new BottomSheetFormBuilderWidget(TutorialFolderActivity.this)
                                     .setTitle("Edit your folder")
                                     .setPositiveTitle("Edit")
+                                    .addFolderVisibilitySwitch(switchView)
                                     .addInputField(new BottomSheetFormBuilderWidget.EditTextInput(TutorialFolderActivity.this)
                                             .setHint(folderNameView.getText()+"")
                                             .autoFocus())
@@ -383,6 +415,14 @@ FolderDataModel intentFolderDataModel;
                         String folderId = documentSnapshot.getId();
                         String folderName  = ""+ documentSnapshot.get(GlobalConfig.FOLDER_NAME_KEY); String authorId  = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
                         String libraryId  = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
+                        isPublic  = documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null ?documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY)  :true;
+                        if(isPublic){
+                            privacyIndicatorTextView.setText("public");
+                        }else{
+                            privacyIndicatorTextView.setText("private");
+                        }
+//                       Toast.makeText(TutorialFolderActivity.this, "pub-pri"+isPublic, Toast.LENGTH_SHORT).show();
+
                         String dateCreated  = documentSnapshot.get(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY)!=null ?documentSnapshot.getTimestamp(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY).toDate() +""  :"Undefined";
                         if(dateCreated.length()>10){
                             dateCreated = dateCreated.substring(0,10);
@@ -390,7 +430,7 @@ FolderDataModel intentFolderDataModel;
                         long numOfPages  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_PAGES_KEY) : 0L;
                         long numOfViews  = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_VISITOR_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_VISITOR_KEY) : 0L ;
 
-                        onFolderFetchListener.onSuccess(new FolderDataModel(folderId,authorId,libraryId,tutorialId,folderName,dateCreated,numOfPages,numOfViews));
+                        onFolderFetchListener.onSuccess(new FolderDataModel(folderId,authorId,libraryId,tutorialId,folderName,dateCreated,numOfPages,numOfViews,isPublic));
                     }
                 });
     }
@@ -415,7 +455,7 @@ FolderDataModel intentFolderDataModel;
     private void editFolder(final String folderName) {
         Snackbar editSnackBar = GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Editing folder, please wait...", Snackbar.LENGTH_INDEFINITE);
 
-        String folderId = GlobalConfig.getRandomString(50);
+//        String folderId = GlobalConfig.getRandomString(50);
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
         DocumentReference documentReference = GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_TUTORIAL_KEY)
@@ -425,14 +465,17 @@ FolderDataModel intentFolderDataModel;
 
         HashMap<String, Object> folderDetails = new HashMap<>();
         folderDetails.put(GlobalConfig.FOLDER_NAME_KEY, folderName);
-        writeBatch.update(documentReference,folderDetails);
+        folderDetails.put(GlobalConfig.IS_PUBLIC_KEY, isPublic);
+        writeBatch.set(documentReference,folderDetails,SetOptions.merge());
+//       Toast.makeText(TutorialFolderActivity.this, "pub-pri"+isPublic, Toast.LENGTH_SHORT).show();
+
 
         writeBatch.commit()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         editSnackBar.dismiss();
-                        GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Failed to edit your folder", Snackbar.LENGTH_SHORT);
+                        GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,"Failed to edit your folder with error: "+e.getMessage(), Snackbar.LENGTH_INDEFINITE);
 
                     }
                 })
@@ -454,7 +497,13 @@ FolderDataModel intentFolderDataModel;
 
                             }
                         });
-
+                        folderNameView.setText(folderName);
+                        intentFolderDataModel.setIsPublic(isPublic);
+                        if(isPublic){
+                            privacyIndicatorTextView.setText("public");
+                        }else{
+                            privacyIndicatorTextView.setText("private");
+                        }
                     }
                 });
     }

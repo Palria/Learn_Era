@@ -37,7 +37,7 @@
                 android:id="@+id/name"
                 android:textStyle="bold"
                 android:textSize="8pt"
-                android:text="Jhon Cena"
+                android:text="..."
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -58,7 +58,7 @@
 
             <TextView
                 android:id="@+id/message"
-                android:text="Thsi sis the amzain comment i like to have this app forever use and cool."
+                android:text="..."
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -68,7 +68,7 @@
     <TextView
         android:textSize="6pt"
         android:id="@+id/date"
-        android:text="Jan 05"
+        android:text="moments ago"
         android:layout_marginTop="3pt"
         android:textAlignment="textEnd"
         android:layout_width="match_parent"

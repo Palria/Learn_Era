@@ -39,7 +39,7 @@
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:textSize="8pt"
-                android:text="How to crack a java interview freshors for free"
+                android:text="..."
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -48,7 +48,7 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:id="@+id/description"
-                android:text="Thsi sis the amzain comment i like to have this app forever use and cool."
+                android:text="..."
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -58,7 +58,7 @@
     <TextView
         android:textSize="5pt"
         android:id="@+id/dateCreated"
-        android:text="Jan 05"
+        android:text="Undefined"
         android:layout_marginTop="3pt"
         android:textAlignment="textEnd"
         android:layout_width="match_parent"

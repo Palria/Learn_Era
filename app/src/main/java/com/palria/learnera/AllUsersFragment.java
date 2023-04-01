@@ -92,7 +92,7 @@ private void initUI(View parentView){
         }else{
              authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY);
             if(isFromSearchContext){
-                authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereArrayContains(GlobalConfig.USER_SEARCH_VERBATIM_KEYWORD_KEY,searchKeyword);
+                authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereArrayContains(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,searchKeyword);
             }
         }
 

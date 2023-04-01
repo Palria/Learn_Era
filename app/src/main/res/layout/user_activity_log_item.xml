@@ -55,7 +55,7 @@
                 android:id="@+id/title"
                 style="@style/TextAppearance.AppCompat.Display1"
                 android:textSize="8pt"
-                android:text="You created a new Library in the profile."
+                android:text="..."
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:layout_width="wrap_content"
@@ -65,7 +65,7 @@
                 android:layout_marginTop="2pt"
                 android:id="@+id/body"
                 android:textSize="7pt"
-                android:text="Hello i am fine how are you bro ? :)"
+                android:text="..."
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:layout_width="wrap_content"
@@ -87,7 +87,7 @@
                 <TextView
                     android:id="@+id/date"
                     android:layout_marginTop="1pt"
-                    android:text="On Jan 01 2023"
+                    android:text="moments ago"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>

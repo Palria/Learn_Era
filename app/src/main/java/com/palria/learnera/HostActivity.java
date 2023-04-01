@@ -89,6 +89,7 @@ public class HostActivity extends AppCompatActivity {
                 if (AllLibraryFragment.OPEN_TYPE_SINGLE_CATEGORY.equals(libraryOpenType+"")){
                     bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY, AllLibraryFragment.OPEN_TYPE_SINGLE_CATEGORY);
                     bundle.putString(GlobalConfig.SINGLE_CATEGORY_KEY, libraryCategory);
+                    materialToolbar.setTitle(materialToolbar.getTitle()+" ("+libraryCategory+")");
                 } else{ if (userId == null) {
                         bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY, AllLibraryFragment.OPEN_TYPE_ALL_LIBRARY);
                         bundle.putString(AllLibraryFragment.OPEN_TYPE_KEY, AllLibraryFragment.OPEN_TYPE_ALL_LIBRARY);

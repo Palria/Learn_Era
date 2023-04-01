@@ -63,7 +63,7 @@
             android:id="@+id/libraryDescription"
             android:maxLines="2"
             android:ellipsize="end"
-            android:text="ello this is description of library"
+            android:text="This is an educative Library"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -71,7 +71,7 @@
             android:layout_weight="1"
             android:layout_marginTop="2pt"
             android:id="@+id/authorName"
-            android:text="Anita Magar"
+            android:text="..."
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -95,7 +95,7 @@
                 <TextView
                     android:layout_marginLeft="3pt"
                     android:id="@+id/libraryViewCount"
-                    android:text="2500"
+                    android:text="0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -118,7 +118,7 @@
                 <TextView
                     android:layout_marginLeft="3pt"
                     android:id="@+id/tutorialsCount"
-                    android:text="10"
+                    android:text="0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -142,7 +142,7 @@
                 <TextView
                     android:layout_marginLeft="3pt"
                     android:id="@+id/dateCreated"
-                    android:text="10"
+                    android:text="0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -166,7 +166,7 @@
                 <TextView
                     android:layout_marginLeft="3pt"
                     android:id="@+id/ratingCount"
-                    android:text="4.5"
+                    android:text="0.0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 

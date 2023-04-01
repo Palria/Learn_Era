@@ -222,13 +222,17 @@ if(getArguments() != null){
                     }
                 } else if (isFromSearchContext) {
                     if(lastRetrievedTutorialSnapshot == null) {
-                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereArrayContains(GlobalConfig.TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY, searchKeyword);
+                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereArrayContains(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY, searchKeyword);
                     }else{
-                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereArrayContains(GlobalConfig.TUTORIAL_SEARCH_VERBATIM_KEYWORD_KEY, searchKeyword).startAfter(lastRetrievedTutorialSnapshot);
+                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereArrayContains(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY, searchKeyword).startAfter(lastRetrievedTutorialSnapshot);
 
                     }
 
                 }
+            }
+            if(!GlobalConfig.getCurrentUserId().equals(authorId+"")){
+                tutorialQuery.whereEqualTo(GlobalConfig.IS_PUBLIC_KEY,true);
+
             }
             isLoadingMoreTutorial = true;
 
@@ -250,6 +254,8 @@ if(getArguments() != null){
 
                             for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                                 String authorId = "" + documentSnapshot.get(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY);
+                                boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null?  documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY)  :true;
+
                                 String libraryId = "" + documentSnapshot.get(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
                                 String tutorialId = "" + documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
                                 String tutorialName = "" + documentSnapshot.get(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
@@ -276,6 +282,7 @@ if(getArguments() != null){
                             if(!(GlobalConfig.getBlockedItemsList().contains(authorId+"")) &&!(GlobalConfig.getBlockedItemsList().contains(libraryId+"")) && !(GlobalConfig.getBlockedItemsList().contains(tutorialId+"")))  {
 
                                 tutorialFetchListener.onSuccess(new TutorialDataModel(
+                                        isPublic,
                                         tutorialName,
                                         tutorialCategory,
                                         tutorialDescription,

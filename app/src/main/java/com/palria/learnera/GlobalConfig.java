@@ -299,6 +299,7 @@ public class GlobalConfig {
     public static final String TOTAL_NUMBER_OF_PAGE_DATA_KEY = "TOTAL_NUMBER_OF_PAGE_DATA";
     public static final String IS_CREATE_NEW_PAGE_KEY = "IS_CREATE_NEW_PAGE";
     public static final String IS_PAGE_COVER_PHOTO_CHANGED_KEY = "IS_PAGE_COVER_PHOTO_CHANGED";
+    public static final String IS_PUBLIC_KEY = "IS_PUBLIC";
     public static final String DATA_ARRAY_KEY = "DATA_ARRAY_";
     public static final String PAGE_TITLE_KEY = "PAGE_TITLE";
     public static final String ACTIVE_PAGE_MEDIA_URL_LIST_KEY = "ACTIVE_PAGE_MEDIA_URL_LIST";
@@ -450,6 +451,18 @@ public class GlobalConfig {
 
 
     public static final String _IS_PARTITION_ID_IS_FOR_IDENTIFYING_PARTITIONS_KEY = "_IS_PARTITION_ID_IS_FOR_IDENTIFYING_PARTITIONS_";
+
+
+
+    public static final String PLATFORM_NOTIFICATIONS_KEY = "PLATFORM_NOTIFICATIONS";
+    public static final String NOTIFICATION_ID_KEY = "NOTIFICATION_ID";
+    public static final String DATE_SEEN_LAST_TIME_STAMP_KEY = "DATE_SEEN_LAST_TIME_STAMP";
+    public static final String NOTIFICATION_VIEWERS_LIST_KEY = "NOTIFICATION_VIEWERS_LIST";
+    public static final String DATE_NOTIFIED_TIME_STAMP_KEY = "DATE_NOTIFIED_TIME_STAMP";
+//    public static final String NOTIFICATION_VIEWERS_LIST_KEY = "NOTIFICATION_VIEWERS_LIST";
+//    public static final String DATE_NOTIFIED_TIME_STAMP_KEY = "DATE_NOTIFIED_TIME_STAMP";
+    public static final String NOTIFICATION_MESSAGE_KEY = "NOTIFICATION_MESSAGE";
+    public static final String NOTIFICATION_TITLE_KEY = "NOTIFICATION_TITLE";
 
 
 
@@ -3104,7 +3117,7 @@ if(isUserLoggedIn()) {
         if(getLastViewedTutorialsArray().size()==0){
             index = 0;
         }else{
-            index = new Random().nextInt(getLastViewedLibraryArray().size());
+            index = new Random().nextInt(getLastViewedTutorialsArray().size()==0?1:getLastViewedTutorialsArray().size());
         }
         ArrayList<String> lastViewedTutorialsIdList = getLastViewedTutorialsArray();
         HashMap<String,Object> lastViewDetails = new HashMap<>();
@@ -3112,7 +3125,7 @@ if(isUserLoggedIn()) {
             index = lastViewedTutorialsIdList.size();
         }
         lastViewedTutorialsIdList.add(index,tutorialId);
-        lastViewDetails.put(LAST_VIEWED_LIBRARY_ARRAY_KEY,lastViewedTutorialsIdList);
+        lastViewDetails.put(LAST_VIEWED_TUTORIALS_ARRAY_KEY,lastViewedTutorialsIdList);
         getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).update(lastViewDetails);
     }
 
@@ -3131,7 +3144,7 @@ if(isUserLoggedIn()) {
         if(getLastViewedLibraryArray().size()==0){
             index = 0;
         }else{
-            index = new Random().nextInt(getLastViewedLibraryArray().size());
+            index = new Random().nextInt(getLastViewedLibraryArray().size()==0?1:getLastViewedLibraryArray().size());
         }
         ArrayList<String> lastViewedLibraryIdList = getLastViewedLibraryArray();
         HashMap<String,Object> lastViewDetails = new HashMap<>();
@@ -3158,7 +3171,7 @@ if(isUserLoggedIn()) {
         if(getLastViewedAuthorsArray().size()==0){
             index = 0;
         }else{
-            index = new Random().nextInt(getLastViewedLibraryArray().size());
+            index = new Random().nextInt(getLastViewedAuthorsArray().size()==0?1:getLastViewedAuthorsArray().size());
         }
         ArrayList<String> lastViewedAuthorsIdList = getLastViewedAuthorsArray();
         HashMap<String,Object> lastViewDetails = new HashMap<>();

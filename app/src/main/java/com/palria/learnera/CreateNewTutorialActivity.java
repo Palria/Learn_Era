@@ -25,8 +25,10 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +67,9 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
      * */
     String tutorialCategory;
     String tutorialDescription;
+
+    Switch visibilitySwitch;
+    boolean isPublic = true;
 
     EditText tutorialNameEditText;
     EditText tutorialDescriptionEditText;
@@ -524,6 +529,13 @@ toggleProgress(false);
 
             }
         });
+        visibilitySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                isPublic = b;
+            }
+        });
+
     }
 
     private void getDynamicCategories() {
@@ -611,6 +623,7 @@ toggleProgress(false);
         createTutorialActionButton=findViewById(R.id.createActionButton);
         pickImageActionButton=findViewById(R.id.pickImageActionButton);
         chooseCategoryTextView =findViewById(R.id.chooseCategory);
+        visibilitySwitch = findViewById(R.id.visibilitySwitchId);
 
         cancelButton = findViewById(R.id.cancelButton);
 
@@ -765,6 +778,7 @@ toggleProgress(false);
 
         }
 
+        tutorialProfileDetails.put(GlobalConfig.IS_PUBLIC_KEY,isPublic);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY,tutorialName);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DESCRIPTION_KEY,tutorialDescription);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategory);
@@ -843,6 +857,7 @@ toggleProgress(false);
 
         }
 
+        tutorialProfileDetails.put(GlobalConfig.IS_PUBLIC_KEY,isPublic);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY,tutorialName);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_DESCRIPTION_KEY,tutorialDescription);
         tutorialProfileDetails.put(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategory);
@@ -888,6 +903,9 @@ toggleProgress(false);
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        isPublic = documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY) :true;
+                        visibilitySwitch.setChecked(isPublic);
+
                         String tutorialName = documentSnapshot.getString(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
                         String tutorialDescription = documentSnapshot.getString(GlobalConfig.TUTORIAL_DESCRIPTION_KEY);
                         String tutorialCategory = documentSnapshot.getString(GlobalConfig.TUTORIAL_CATEGORY_KEY);

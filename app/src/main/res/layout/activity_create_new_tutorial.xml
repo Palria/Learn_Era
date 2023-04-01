@@ -56,7 +56,23 @@
                         android:layout_marginBottom="8pt"
                         app:dividerColor="@color/gray"
                         android:layout_height="wrap_content"/>
-
+    
+                    <Switch
+                        android:id="@+id/visibilitySwitchId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Make public"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        tools:ignore="UseSwitchCompatOrMaterialXml"
+                        android:checked="true"
+                        android:paddingEnd="200dp"
+                        android:background="@color/white"
+                        />
+                    
                     <TextView
 
                         android:layout_marginBottom="7pt"

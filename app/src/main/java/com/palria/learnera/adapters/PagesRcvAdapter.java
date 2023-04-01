@@ -81,32 +81,34 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull PagesRcvAdapter.ViewHolder holder, int position) {
-
         PageDataModel pageDataModel = pageDataModels.get(position);
-        if(!pageIdList.contains(pageDataModel.getPageId())){
-            pageIdList.add(pageDataModel.getPageId());
-            holder.pageNumberEditText.setText(pageDataModel.getPageNumber()+"");
-            pageNums.put(pageDataModel.getPageId(), Integer.valueOf(pageDataModel.getPageNumber()));
 
-        }
+        if (pageDataModel.isPublic() || (GlobalConfig.getCurrentUserId().equals(pageDataModel.getAuthorId()+""))) {
+            if (!pageIdList.contains(pageDataModel.getPageId())) {
+                pageIdList.add(pageDataModel.getPageId());
+                holder.pageNumberEditText.setText(pageDataModel.getPageNumber() + "");
+                pageNums.put(pageDataModel.getPageId(), Integer.valueOf(pageDataModel.getPageNumber()));
+
+            }
 //        holder.tutorialsContainer.setVisibility(View.GONE);
-        holder.dateContainer.setVisibility(View.VISIBLE);
-        holder.dateCreated.setText(pageDataModel.getDateCreated());//view counts here
+            holder.dateContainer.setVisibility(View.VISIBLE);
+            holder.dateCreated.setText(pageDataModel.getDateCreated());//view counts here
 
-        holder.pageTitle.setText(pageDataModel.getTitle());
-        try {
-            Glide.with(context)
-                    .load(pageDataModel.getCoverDownloadUrl())
-                    .centerCrop()
-                    .placeholder(R.drawable.book_cover)
-                    .into(holder.cover);
-        }catch(Exception ignored){}
+            holder.pageTitle.setText(pageDataModel.getTitle());
+            try {
+                Glide.with(context)
+                        .load(pageDataModel.getCoverDownloadUrl())
+                        .centerCrop()
+                        .placeholder(R.drawable.book_cover)
+                        .into(holder.cover);
+            } catch (Exception ignored) {
+            }
 
 
-        holder.pageCaptionTextView.setText(pageDataModel.getDescription());
-        holder.pageViewCount.setText(pageDataModel.getPageViews()+"");
-        ColorDrawable white = new ColorDrawable();
-        white.setColor(context.getResources().getColor(R.color.white,context.getTheme()));
+            holder.pageCaptionTextView.setText(pageDataModel.getDescription());
+            holder.pageViewCount.setText(pageDataModel.getPageViews() + "");
+            ColorDrawable white = new ColorDrawable();
+            white.setColor(context.getResources().getColor(R.color.white, context.getTheme()));
 //        GlobalConfig.getFirebaseFirestoreInstance()
 //                .collection(GlobalConfig.ALL_USERS_KEY)
 //                .document(pageDataModel.getAuthorUserId())
@@ -121,99 +123,103 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
 //                });
 
 
-        if(isPagination) {
+            if (isPagination) {
 //    holder.pageNumberEditText.setVisibility(View.VISIBLE);
-    holder.pageNumberEditText.addTextChangedListener(new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                holder.pageNumberEditText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-        }
+                    }
 
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            try {
-                pageNums.put(pageDataModel.getPageId(), Integer.valueOf(holder.pageNumberEditText.getText().toString().trim().equals("") ? "0" : holder.pageNumberEditText.getText() + ""));
-            }catch(Exception ignored){}
-        }
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        try {
+                            pageNums.put(pageDataModel.getPageId(), Integer.valueOf(holder.pageNumberEditText.getText().toString().trim().equals("") ? "0" : holder.pageNumberEditText.getText() + ""));
+                        } catch (Exception ignored) {
+                        }
+                    }
 
-        @Override
-        public void afterTextChanged(Editable editable) {
+                    @Override
+                    public void afterTextChanged(Editable editable) {
 
-        }
-    });
+                    }
+                });
 
-}else{
-    holder.pageNumberEditText.setEnabled(false);
-    holder.pageNumberEditText.setLongClickable(false);
-    holder.pageNumberEditText.setClickable(true);
-    holder.pageNumberEditText.setBackground(white);
+            } else {
+                holder.pageNumberEditText.setEnabled(false);
+                holder.pageNumberEditText.setLongClickable(false);
+                holder.pageNumberEditText.setClickable(true);
+                holder.pageNumberEditText.setBackground(white);
 
-
-
-}
-        paginateButton.setOnClickListener(new View.OnClickListener() {
-         @Override
-        public void onClick(View view) {
-        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
-        for(int i=0; i<pageIdList.size(); i++){
-            DocumentReference documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(pageDataModel.getTutorialId()).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageIdList.get(i));
-            if(!isTutorialPage){
-                documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(pageDataModel.getTutorialId()).collection(GlobalConfig.ALL_FOLDERS_KEY).document(pageDataModel.getFolderId()).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageIdList.get(i));
 
             }
-            long pageNumber = pageNums.get(pageIdList.get(i));
-            if(pageNumber<=0){
-                GlobalConfig.createSnackBar(context,paginateButton,"Page number must be greater than 0,correct the page numbers and try again", Snackbar.LENGTH_INDEFINITE);
-                paginateButton.setEnabled(true);
-                return;
-            }
+            paginateButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+                    for (int i = 0; i < pageIdList.size(); i++) {
+                        DocumentReference documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(pageDataModel.getTutorialId()).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageIdList.get(i));
+                        if (!isTutorialPage) {
+                            documentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(pageDataModel.getTutorialId()).collection(GlobalConfig.ALL_FOLDERS_KEY).document(pageDataModel.getFolderId()).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageIdList.get(i));
 
-            HashMap<String,Object>numberDetail = new HashMap<>();
-            numberDetail.put(GlobalConfig.PAGE_NUMBER_KEY,pageNumber);
-            writeBatch.update(documentReference,numberDetail);
+                        }
+                        long pageNumber = pageNums.get(pageIdList.get(i));
+                        if (pageNumber <= 0) {
+                            GlobalConfig.createSnackBar(context, paginateButton, "Page number must be greater than 0,correct the page numbers and try again", Snackbar.LENGTH_INDEFINITE);
+                            paginateButton.setEnabled(true);
+                            return;
+                        }
 
-        }
-             toggleProgress(true);
+                        HashMap<String, Object> numberDetail = new HashMap<>();
+                        numberDetail.put(GlobalConfig.PAGE_NUMBER_KEY, pageNumber);
+                        writeBatch.update(documentReference, numberDetail);
 
-             writeBatch.commit().addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                toggleProgress(false);
+                    }
+                    toggleProgress(true);
 
-                onPaginationCallback.onFailed(e.getMessage());
-            GlobalConfig.createSnackBar(context,paginateButton,"Your pagination failed: "+e.getMessage(), Snackbar.LENGTH_INDEFINITE);
-            }
-        }).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                toggleProgress(false);
-                GlobalConfig.createSnackBar(context,paginateButton,"Your pagination succeeded! ", Snackbar.LENGTH_INDEFINITE);
+                    writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            toggleProgress(false);
 
-                onPaginationCallback.onSuccess();
-            }
-        });
+                            onPaginationCallback.onFailed(e.getMessage());
+                            GlobalConfig.createSnackBar(context, paginateButton, "Your pagination failed: " + e.getMessage(), Snackbar.LENGTH_INDEFINITE);
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            toggleProgress(false);
+                            GlobalConfig.createSnackBar(context, paginateButton, "Your pagination succeeded! ", Snackbar.LENGTH_INDEFINITE);
 
-    }
-});
+                            onPaginationCallback.onSuccess();
+                        }
+                    });
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                }
+            });
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 //
-                Intent intent = new Intent(context, PageActivity.class);
-                intent.putExtra(GlobalConfig.PAGE_ID_KEY,pageDataModel.getPageId());
-                intent.putExtra(GlobalConfig.FOLDER_ID_KEY,pageDataModel.getFolderId());
-                intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,pageDataModel.getTutorialId());
-                intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,pageDataModel.getAuthorId());
-                intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,pageDataModel.isTutorialPage());
-                intent.putExtra(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY,numberOfPagesCreated);
-                context.startActivity(intent);
+                    Intent intent = new Intent(context, PageActivity.class);
+                    intent.putExtra(GlobalConfig.PAGE_ID_KEY, pageDataModel.getPageId());
+                    intent.putExtra(GlobalConfig.FOLDER_ID_KEY, pageDataModel.getFolderId());
+                    intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY, pageDataModel.getTutorialId());
+                    intent.putExtra(GlobalConfig.AUTHOR_ID_KEY, pageDataModel.getAuthorId());
+                    intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY, pageDataModel.isTutorialPage());
+                    intent.putExtra(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY, numberOfPagesCreated);
+                    context.startActivity(intent);
 
-            }
-        });
+                }
+            });
 
 
-
+        }
+        else{
+            holder.pageTitle.setText("Page is private");
+            holder.itemView.setEnabled(false);
+        }
     }
 
     @Override

@@ -103,7 +103,17 @@
                                android:layout_height="wrap_content"/>
                        </LinearLayout>
                     </LinearLayout>
-
+    
+                    <TextView
+                        android:id="@+id/privacyIndicatorTextViewId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="2dp"
+                        android:text="public"
+                        android:textSize="9sp"
+                        android:textColor="@color/secondary_app_color"
+                        android:textStyle="bold" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -117,7 +127,7 @@
 
                         <TextView
                             android:id="@+id/libraryViewCount"
-                            android:text="450"
+                            android:text="0"
                             android:textStyle="bold"
                             android:layout_marginLeft="2pt"
                             android:layout_width="wrap_content"
@@ -137,7 +147,7 @@
 
                         <TextView
                             android:id="@+id/tutorialsCount"
-                            android:text="12"
+                            android:text="0"
                             android:textStyle="bold"
                             android:layout_marginLeft="2pt"
                             android:layout_width="wrap_content"
@@ -160,7 +170,7 @@
                     android:textStyle="bold"
                     android:paddingHorizontal="5pt"
                     android:textSize="10pt"
-                    android:text="Python and Data Structure"
+                    android:text="..."
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -185,6 +195,7 @@
                     app:chipSpacing="0dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
+                    <!--
                     <com.google.android.material.chip.Chip
                         android:layout_width="wrap_content"
                         android:text="Software PRoduction"
@@ -197,13 +208,14 @@
                         android:layout_width="wrap_content"
                         android:text="Insolvency home data"
                         android:layout_height="wrap_content"/>
+                    -->
                 </com.google.android.material.chip.ChipGroup>
 
 
                 <TextView
                     android:id="@+id/libraryDescription"
                     android:layout_marginTop="2pt"
-                    android:text="Javascript and Database, Python and Learning, Model Design, Professional Video Editing, Motion Design"
+                    android:text="This is an educative library"
                     android:ellipsize="end"
                     android:layout_marginHorizontal="5pt"
                     android:layout_width="match_parent"

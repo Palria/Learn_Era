@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.palria.learnera.adapters.FolderRcvAdapter;
 import com.palria.learnera.models.FolderDataModel;
@@ -31,6 +32,7 @@ public class FoldersFragment extends Fragment {
         // Required empty public constructor
     }
     String tutorialId = "";
+    String authorId = "";
 
 
     @Override
@@ -39,6 +41,7 @@ public class FoldersFragment extends Fragment {
 
         if(getArguments() != null){
             tutorialId = getArguments().getString(GlobalConfig.TUTORIAL_ID_KEY);
+            authorId = getArguments().getString(GlobalConfig.AUTHOR_ID_KEY);
         }
 
     }
@@ -96,11 +99,16 @@ public class FoldersFragment extends Fragment {
 
 
     private void fetchTutorialFolders(FetchTutorialFolderListener fetchTutorialFolderListener){
-        GlobalConfig.getFirebaseFirestoreInstance()
+       Query folderQuery = GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                 .document(tutorialId)
-                .collection(GlobalConfig.ALL_FOLDERS_KEY)
-                .get()
+                .collection(GlobalConfig.ALL_FOLDERS_KEY);
+        if(!GlobalConfig.getCurrentUserId().equals(authorId+"")){
+            folderQuery.whereEqualTo(GlobalConfig.IS_PUBLIC_KEY,true);
+        }
+
+
+                folderQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -117,12 +125,13 @@ public class FoldersFragment extends Fragment {
                             String authorId  = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
                             String libraryId  = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
                             String dateCreated  = documentSnapshot.get(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY)!=null ?documentSnapshot.getTimestamp(GlobalConfig.FOLDER_CREATED_DATE_TIME_STAMP_KEY).toDate() +""  :"Undefined";
+                            boolean isPublic  =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY): true;
                             long numOfViews  = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_VISITOR_KEY)!=null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_FOLDER_VISITOR_KEY) : 0L ;
                             if(dateCreated.length()>10){
                                 dateCreated = dateCreated.substring(0,10);
                             }
                             long numOfPages  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY)!=null ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY) : 0L;
-                            fetchTutorialFolderListener.onSuccess(new FolderDataModel(folderId,authorId,libraryId,tutorialId,folderName,dateCreated,numOfPages,numOfViews));
+                            fetchTutorialFolderListener.onSuccess(new FolderDataModel(folderId,authorId,libraryId,tutorialId,folderName,dateCreated,numOfPages,numOfViews,isPublic));
                         }
 
                     }

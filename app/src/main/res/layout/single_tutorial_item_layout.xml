@@ -77,7 +77,7 @@
                 android:id="@+id/authorName"
                 android:paddingHorizontal="3pt"
                 android:layout_weight="1"
-                android:text="Author Name"
+                android:text="..."
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -85,7 +85,7 @@
             <TextView
                 android:id="@+id/dateCreated"
                 android:paddingHorizontal="3pt"
-                android:text="2 days ago"
+                android:text="m ago"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

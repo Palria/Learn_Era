@@ -140,10 +140,12 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onSuccess(LibraryDataModel libraryDataModel) {
 //                        displayLibrary(libraryDataModel);
-                        libraryArrayList.add(libraryDataModel);
+                        if(libraryDataModel.isPublic() || (GlobalConfig.getCurrentUserId().equals(libraryDataModel.getAuthorUserId()+""))) {
+                            libraryArrayList.add(libraryDataModel);
 //                        libraryArrayList.add(new LibraryDataModel(libraryDataModel.getLibraryName(),libraryDataModel.getLibraryId(),libraryDataModel.getLibraryCategoryArrayList(),libraryDataModel.getLibraryCoverPhotoDownloadUrl(),libraryDataModel.getLibraryDescription(),libraryDataModel.getDateCreated(),libraryDataModel.getTotalNumberOfTutorials(),libraryDataModel.getTotalNumberOfLibraryViews(),libraryDataModel.getTotalNumberOfLibraryReach(),libraryDataModel.getAuthorUserId(),libraryDataModel.getTotalNumberOfOneStarRate(),libraryDataModel.getTotalNumberOfTwoStarRate(),libraryDataModel.getTotalNumberOfThreeStarRate(),libraryDataModel.getTotalNumberOfFourStarRate(),libraryDataModel.getTotalNumberOfFiveStarRate()));
-                        homeBooksRecyclerListViewAdapter.notifyItemChanged(libraryArrayList.size());
+                            homeBooksRecyclerListViewAdapter.notifyItemChanged(libraryArrayList.size());
 //                        Toast.makeText(getContext(), libraryDataModel.getDateCreated()+"--"+libraryDataModel.getLibraryName()+"---"+libraryDataModel.getLibraryId(), Toast.LENGTH_SHORT).show();
+                        }
                         toggleContentsVisibility(true);
 
                     }
@@ -157,7 +159,8 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onSuccess(TutorialDataModel tutorialDataModel) {
 //                        displayTutorial(tutorialDataModel);
-                        tutorialDataModels.add(tutorialDataModel);
+                        if(tutorialDataModel.isPublic() || (GlobalConfig.getCurrentUserId().equals(tutorialDataModel.getAuthorId()+""))) {
+                            tutorialDataModels.add(tutorialDataModel);
 
 //                        tutorialDataModels.add(new TutorialDataModel(
 //                                tutorialDataModel.getTutorialName(),
@@ -177,9 +180,8 @@ public class HomeFragment extends Fragment {
 //                                tutorialDataModel.getTotalNumberOfThreeStarRate(),
 //                                tutorialDataModel.getTotalNumberOfFourStarRate(),
 //                                tutorialDataModel.getTotalNumberOfFiveStarRate()));
-
-                        popularTutorialsListViewAdapter.notifyItemChanged(tutorialDataModels.size());
-
+                            popularTutorialsListViewAdapter.notifyItemChanged(tutorialDataModels.size());
+                        }
                         toggleContentsVisibility(true);
                     }
 
@@ -449,15 +451,19 @@ public class HomeFragment extends Fragment {
         });
 
 
-
-        TabLayout.Tab softwareTabItem= tabLayout.newTab();
-        softwareTabItem.setText("Software Development");
-        tabLayout.addTab(softwareTabItem,0,true);
-
-        TabLayout.Tab webDevTabItem=tabLayout.newTab();
-        webDevTabItem.setText("Web Development");
-        tabLayout.addTab(webDevTabItem,1);
-
+String[] categories = getResources().getStringArray(R.array.category);
+for(int i=0; i<categories.length; i++) {
+    if(i==0) {
+        TabLayout.Tab firstTabItem = tabLayout.newTab();
+        firstTabItem.setText(categories[0]);
+        tabLayout.addTab(firstTabItem, 0, true);
+    }else {
+        TabLayout.Tab otherTabItem = tabLayout.newTab();
+        otherTabItem.setText(categories[i]);
+        tabLayout.addTab(otherTabItem, i);
+    }
+}
+        /*
         TabLayout.Tab graphicDesignTabItem= tabLayout.newTab();
         graphicDesignTabItem.setText("Graphic Design");
         tabLayout.addTab(graphicDesignTabItem,2);
@@ -511,6 +517,7 @@ public class HomeFragment extends Fragment {
         TabLayout.Tab artificialIntelligenceTabItem =tabLayout.newTab();
         artificialIntelligenceTabItem.setText("Artificial Intelligence");
         tabLayout.addTab(artificialIntelligenceTabItem,13);
+*/
 
     }
 
@@ -628,6 +635,7 @@ private void changeCategory(String categorySelected){
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
 //                            String authorId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_AUTHOR_ID_KEY);
                             String libraryId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
+                            boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null?  documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY)  :true;
 
                                     long totalNumberOfLibraryVisitor = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY) : 0L;
                                     long totalNumberOfLibraryReach = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REACH_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REACH_KEY) : 0L;
@@ -652,6 +660,7 @@ private void changeCategory(String categorySelected){
                             if(!(GlobalConfig.getBlockedItemsList().contains(authorUserId+"")) &&!(GlobalConfig.getBlockedItemsList().contains(libraryId+""))) {
 
                                 libraryFetchListener.onSuccess(new LibraryDataModel(
+                                        isPublic,
                                         libraryName,
                                         libraryId,
                                         libraryCategoryArray,
@@ -700,6 +709,8 @@ private void changeCategory(String categorySelected){
 
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             String authorId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY);
+                            boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null?  documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY)  :true;
+
                             String libraryId =""+ documentSnapshot.get(GlobalConfig.LIBRARY_CONTAINER_ID_KEY);
                             String tutorialId =""+ documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
                             String tutorialName = ""+ documentSnapshot.get(GlobalConfig.TUTORIAL_DISPLAY_NAME_KEY);
@@ -721,6 +732,7 @@ private void changeCategory(String categorySelected){
                                     if(!(GlobalConfig.getBlockedItemsList().contains(authorId+"")) &&!(GlobalConfig.getBlockedItemsList().contains(libraryId+"")) && !(GlobalConfig.getBlockedItemsList().contains(tutorialId+"")))  {
 
                                         tutorialFetchListener.onSuccess(new TutorialDataModel(
+                                                isPublic,
                                                 tutorialName,
                                                 tutorialCategory,
                                                 tutorialDescription,

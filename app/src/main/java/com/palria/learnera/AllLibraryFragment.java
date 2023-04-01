@@ -261,11 +261,15 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
             } else if (isFromSearchContext) {
                 searchKeyword = searchKeyword.toLowerCase();
                 if(lastRetrievedLibrarySnapshot == null) {
-                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY, searchKeyword).limit(15L);
+                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_SEARCH_ANY_MATCH_KEYWORD_KEY, searchKeyword).limit(15L);
                 }else{
-                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_SEARCH_VERBATIM_KEYWORD_KEY, searchKeyword).startAfter(lastRetrievedLibrarySnapshot).limit(15L);
+                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_SEARCH_ANY_MATCH_KEYWORD_KEY, searchKeyword).startAfter(lastRetrievedLibrarySnapshot).limit(15L);
 
                 }
+
+            }
+            if(!GlobalConfig.getCurrentUserId().equals(authorId+"")){
+                libraryQuery.whereEqualTo(GlobalConfig.IS_PUBLIC_KEY,true);
 
             }
             isLoadingMoreLibrary = true;
@@ -288,6 +292,8 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
 
                             for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                                 String libraryId = documentSnapshot.getId();
+                                boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null?  documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY)  :true;
+
                                 long totalNumberOfLibraryVisitor = (documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY) != null) ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VISITOR_KEY) : 0L;
                                 long totalNumberOfLibraryReach = (documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REACH_KEY) != null) ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_REACH_KEY) : 0L;
                                 long totalNumberOfOneStarRate = (documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY) != null) ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY) : 0L;
@@ -310,6 +316,7 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
 
                                 if(!(GlobalConfig.getBlockedItemsList().contains(authorUserId+"")) &&!(GlobalConfig.getBlockedItemsList().contains(libraryId+""))) {
                                 libraryFetchListener.onSuccess(new LibraryDataModel(
+                                        isPublic,
                                         libraryName,
                                         libraryId,
                                         libraryCategoryArray,
