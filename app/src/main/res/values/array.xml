@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string-array name="category"
+        
+        >
+        <item>Web Development</item>
+        <item>Android Dev</item>
+        <item>IOS Dev</item>
+        <item>Internet</item>
+        <item>React</item>
+        <item>Database Design</item>
+        <item>Windows Platform</item>
+        <item>Macos Platform</item>
+        <item>Linux Platform</item>
+        <item>Unix Platform</item>
+        <item>Chrome Platform</item>
+        <item>Data Learning</item>
+        <item>OOPs Concept</item>
+        <item>Artificial Intelligence</item>
+        <item>Cyber Security</item>
+        <item>Computer Science</item>
+        <item>Space Knowledge</item>
+        <item>Game Development</item>
+        <item>SEO</item>
+        <item>Programming</item>
+        <item>Java</item>
+        <item>Swift</item>
+        <item>Python</item>
+        <item>HTML</item>
+        <item>XML</item>
+        <item>CSS</item>
+        <item>JavaScript</item>
+        <item>PHP</item>
+        <item>Server</item>
+        <item>SQL</item>
+        <item>Kotlin</item>
+        <item>Go</item>
+        <item>Firebase</item>
+        <item>Cloud Host</item>
+        <item>C</item>
+        <item>C++</item>
+        <item>Go</item>
+        <item>Cyber Security</item>
+        <item>Graphic Design</item>
+        <item>Ui Design</item>
+        <item>Ethical Hacking</item>
+        <item>Story</item>
+        <item>Drama</item>
+        <item>Prototyping</item>
+        <item>Real Estate</item>
+        <item>Craft</item>
+        <item>ICT</item>
+        <item>Skills</item>
+        <item>Forex Trading</item>
+        <item>CryptoCurrency</item>
+        <item>NFT</item>
+        <item>Social Media</item>
+        <item>Sports</item>
+        <item>Blogging</item>
+        <item>Writing</item>
+        <item>Marketing</item>
+        <item>Business</item>
+        <item>Mathematics</item>
+        <item>English</item>
+        <item>Physics</item>
+        <item>Chemistry</item>
+        <item>Biology</item>
+        <item>Home Economics</item>
+        <item>Fashion and Designing</item>
+    </string-array>
+    
+</resources>

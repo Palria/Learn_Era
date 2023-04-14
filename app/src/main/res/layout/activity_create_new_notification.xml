@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".CreateNewNotificationActivity">
+    <!--    <androidx.cardview.widget.CardView-->
+    <!--        android:id="@+id/headerCardViewId"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginBottom="100dp"-->
+    <!--        app:cardBackgroundColor="@color/secondary_app_color"-->
+    <!--        -->
+    <!--        app:cardElevation="15dp"-->
+    <!--        app:layout_constraintTop_toTopOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        >-->
+    <LinearLayout
+        android:id="@+id/titleId"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:orientation="horizontal"
+        android:background="@drawable/auth_bg_top"
+        android:paddingTop="20dp"
+        android:backgroundTint="@color/secondary_app_color"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_marginLeft="5pt"
+            android:layout_marginTop="5pt"
+            android:backgroundTint="@color/white"
+            android:background="@drawable/baseline_arrow_back_24"
+            android:layout_width="wrap_content"
+            android:layout_gravity="start"
+            android:layout_height="wrap_content"
+            />
+        
+        
+        <TextView
+            android:id="@+id/textHeaderCardViewId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginLeft="5pt"
+            android:layout_margin="5pt"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="4"
+            android:text="Notify the users"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/backButton"
+            app:layout_constraintTop_toTopOf="parent" />
+    </LinearLayout>
+    
+    
+    <LinearLayout
+        android:id="@+id/detailsLinearLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:backgroundTint="@color/white"
+        android:background="@drawable/rounded_grey_bg"
+        android:layout_marginTop="-50dp"
+        android:layout_marginHorizontal="10dp"
+        
+        android:padding="10dp"
+        app:layout_constraintTop_toBottomOf="@id/titleId"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        >
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_marginBottom="5dp"
+            android:layout_height="wrap_content">
+            
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:hint="Enter Title"
+                android:inputType="textPersonName"
+                android:textSize="16sp"
+                android:id="@+id/titleEditTextId"
+                android:background="@drawable/default_input_bg"
+                android:layout_height="wrap_content"/>
+        
+        </com.google.android.material.textfield.TextInputLayout>
+        
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_height="wrap_content">
+            
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:minHeight="100dp"
+                android:gravity="start|top"
+                android:hint="Enter message"
+                android:inputType="textMultiLine"
+                android:textSize="16sp"
+                android:id="@+id/messageEditTextId"
+                android:background="@drawable/default_input_bg"
+                android:layout_height="wrap_content"/>
+        
+        </com.google.android.material.textfield.TextInputLayout>
+        
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/notifyActionButtonId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cornerRadius="10dp"
+            android:text="Notify"
+            android:textAllCaps="false"
+            />
+    </LinearLayout>
+    
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Notify your customers about an update"
+        android:textColor="@color/white"
+        android:gravity="center_horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="20dp"
+        android:background="@drawable/auth_bg_bottom"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
