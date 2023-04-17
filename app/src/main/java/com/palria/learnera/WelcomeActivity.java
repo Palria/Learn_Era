@@ -58,8 +58,10 @@ public class WelcomeActivity extends AppCompatActivity {
 
         viewPager.setAdapter(welcomeScreenvpAdapter);
 
-        prevBtn.setText(Html.fromHtml("&#8592;"));
-        nextBtn.setText(Html.fromHtml("&#8594;"));
+        prevBtn.setText("PREVIOUS");
+        nextBtn.setText("NEXT");
+// prevBtn.setText(Html.fromHtml("&#8592;"));
+//        nextBtn.setText(Html.fromHtml("&#8594;"));
 
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,7 +112,8 @@ public class WelcomeActivity extends AppCompatActivity {
                 if(position==screens_items.size()-1){
                     nextBtn.setText("Finish");
                 }else{
-                    nextBtn.setText(Html.fromHtml("&#8594;"));
+//                    nextBtn.setText(Html.fromHtml("&#8594;"));
+                    nextBtn.setText("NEXT");
                 }
             }
 

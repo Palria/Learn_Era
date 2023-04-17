@@ -395,10 +395,22 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                                         @Override
                                         public void onSuccess() {
 
+                                            toggleProgress(false);
+                                            GlobalHelpers.showAlertMessage("success",
+                                                    CreateNewLibraryActivity.this,
+                                                    "Library Edited Successfully.",
+                                                    "You have successfully edited your library,thanks and go ahead and contribute to Learn Era ");
+
                                         }
 
                                         @Override
                                         public void onFailed(String errorMessage) {
+
+                                            toggleProgress(false);
+                                            GlobalHelpers.showAlertMessage("success",
+                                                    CreateNewLibraryActivity.this,
+                                                    "Library Edited Successfully.",
+                                                    "You have successfully edited your library,thanks and go ahead and contribute to Learn Era ");
 
                                         }
                                     });

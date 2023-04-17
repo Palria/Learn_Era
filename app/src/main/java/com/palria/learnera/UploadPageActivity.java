@@ -742,6 +742,8 @@ public class UploadPageActivity extends AppCompatActivity {
         intent.putExtra(GlobalConfig.PAGE_NUMBER_KEY,pageNumber);
         startService(intent);
 
+        this.onBackPressed();
+
     }
     private boolean validateForm() {
 

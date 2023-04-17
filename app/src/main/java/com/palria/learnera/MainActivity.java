@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -79,6 +80,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
 
         super.onCreate(savedInstanceState);
+        if(isFirstOpen()){
+            setIsFirstOpen(false);
+            Intent intent = new Intent(MainActivity.this,WelcomeActivity.class);
+            startActivity(intent);
+            finish();
+            MainActivity.this.finish();
+            return;
+        }
         setContentView(R.layout.activity_main);
 
 //        startActivity(new Intent(MainActivity.this, TestActivity.class));
@@ -86,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         Toolbar tp = findViewById(R.id.topBar);
         setSupportActionBar(tp);
-
 
 
             initUI();
@@ -540,11 +548,24 @@ if(GlobalConfig.isUserLoggedIn()) {
 
 }
 
-private void signOut(){
+    private void signOut(){
     FirebaseAuth.getInstance().signOut();
     finish();
     GlobalConfig.setCurrentUserId(null);
     startActivity(new Intent(MainActivity.this,WelcomeActivity.class));
+
+}
+
+private boolean isFirstOpen(){
+    SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(),MODE_PRIVATE);
+    return sharedPreferences.getBoolean(GlobalConfig.IS_FIRST_OPEN_KEY,true);
+
+}
+private void setIsFirstOpen(boolean isFirstOpen){
+    SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(),MODE_PRIVATE);
+    SharedPreferences.Editor editor = sharedPreferences.edit();
+    editor.putBoolean(GlobalConfig.IS_FIRST_OPEN_KEY,isFirstOpen);
+    editor.apply();
 
 }
 

@@ -108,6 +108,9 @@ public class GlobalConfig {
 
 
 
+    public static final String IS_FIRST_OPEN_KEY = "IS_FIRST_OPEN";
+
+
     public static final String FRAGMENT_TYPE_KEY = "FRAGMENT_TYPE";
     public static final String USER_PROFILE_FRAGMENT_TYPE_KEY = "USER_PROFILE_FRAGMENT_TYPE";
     public static final String LIBRARY_FRAGMENT_TYPE_KEY = "LIBRARY_FRAGMENT_TYPE";
@@ -2134,9 +2137,9 @@ public class GlobalConfig {
 
     public static ArrayList<WelcomeScreenItemModal> getWelcomeScreenItemsList(){
         ArrayList<WelcomeScreenItemModal> list = new ArrayList<>();
-        list.add(new WelcomeScreenItemModal(R.drawable.undraw_save_to_bookmarks, "Unlimited Personal Library","You can create infinite numbers of libraries for personal use"));
-        list.add(new WelcomeScreenItemModal(R.drawable.undraw_personal_notebook,"Bookmark your interests","You can easily customize your favourite books and libraries."));
-        list.add(new WelcomeScreenItemModal(R.drawable.undraw_online_reading_np7n,"Experience of High level reading","Experience the reading high level of books from authors worldwide for free"));
+        list.add(new WelcomeScreenItemModal(R.drawable.undraw_save_to_bookmarks, "Unlimited Personal Library","You can create infinite numbers of libraries for your students or readers"));
+        list.add(new WelcomeScreenItemModal(R.drawable.undraw_personal_notebook,"Bookmark your interests","You can easily customize your favourite libraries, tutorials,authors ,folders and pages."));
+        list.add(new WelcomeScreenItemModal(R.drawable.undraw_online_reading_np7n,"Experience of High level reading","Experience reading high level of tutorials from authors worldwide for free"));
 
         return list;
     }
@@ -3283,7 +3286,7 @@ if(isUserLoggedIn()) {
 
               blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(libraryId);
               blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId).collection(BLOCKERS_KEY).document(getCurrentUserId());
-              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId);
 
               DocumentReference blockedIncrementReference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
               HashMap<String,Object> blockedIncrementDetails1 = new HashMap<>();
@@ -3295,7 +3298,7 @@ if(isUserLoggedIn()) {
 
               blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(tutorialId);
               blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(BLOCKERS_KEY).document(getCurrentUserId());
-              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId);
 
 
               DocumentReference blockedIncrementReference2 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
@@ -3376,7 +3379,7 @@ String activityLogType = "NONE";
 
               blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(libraryId);
               blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId).collection(BLOCKERS_KEY).document(getCurrentUserId());
-              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId);
 
               DocumentReference blockedIncrementReference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
               HashMap<String,Object> blockedIncrementDetails1 = new HashMap<>();
@@ -3388,7 +3391,7 @@ String activityLogType = "NONE";
 
               blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(tutorialId);
               blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(BLOCKERS_KEY).document(getCurrentUserId());
-              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId);
 
 
               DocumentReference blockedIncrementReference2 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
@@ -3480,7 +3483,7 @@ String activityLogType = "NONE";
 
                 reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(libraryId);
                 reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId).collection(REPORTERS_KEY).document(getCurrentUserId());
-                reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+                reference1 =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId);
 
                 DocumentReference reportedIncrementReference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
                 HashMap<String,Object> reportedIncrementDetails1 = new HashMap<>();
@@ -3492,7 +3495,7 @@ String activityLogType = "NONE";
 
                 reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(tutorialId);
                 reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(REPORTERS_KEY).document(getCurrentUserId());
-                reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+                reference1 =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId);
 
 
                 DocumentReference reportedIncrementReference2 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
@@ -3573,7 +3576,7 @@ String activityLogType = "NONE";
 
               reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(libraryId);
               reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId).collection(REPORTERS_KEY).document(getCurrentUserId());
-              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId);
 
               DocumentReference reportedIncrementReference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
               HashMap<String,Object> reportedIncrementDetails1 = new HashMap<>();
@@ -3585,7 +3588,7 @@ String activityLogType = "NONE";
 
               reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(tutorialId);
               reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(REPORTERS_KEY).document(getCurrentUserId());
-              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+              reference1 =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId);
 
 
               DocumentReference reportedIncrementReference2 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
