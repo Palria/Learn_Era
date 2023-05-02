@@ -33,7 +33,7 @@
 
             <com.makeramen.roundedimageview.RoundedImageView
                 android:id="@+id/icon"
-                android:src="@drawable/book_cover"
+                android:src="@drawable/placeholder"
                 android:layout_width="20pt"
                 android:tint="@color/teal_700"
                 app:riv_corner_radius="7pt"

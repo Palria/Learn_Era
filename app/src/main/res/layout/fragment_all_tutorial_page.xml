@@ -35,6 +35,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <LinearLayout
+                    android:id="@+id/loadingLayout"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="120pt">
+                    <ProgressBar
+                        android:layout_width="20pt"
+                        android:layout_height="20pt"
+                        android:indeterminateTint="@color/teal_700"
+                        />
+                </LinearLayout>
+
+                <include layout="@layout/layout_no_data_found"
+                    android:id="@+id/noDataFound"
+                    android:visibility="gone"/>
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/pagesRecyclerListView"
                     android:layout_width="match_parent"
@@ -43,32 +60,7 @@
                     tools:listitem="@layout/all_library_fragment_list_item_library"
                     android:layout_height="wrap_content"/>
 
-                <LinearLayout
-                    android:visibility="gone"
-                    android:id="@+id/notFoundView"
-                    android:paddingHorizontal="5pt"
-                    android:paddingVertical="25pt"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
 
-                    <ImageView
-                        android:src="@drawable/undraw_no_data_re_kwbl"
-                        android:layout_width="30pt"
-                        android:layout_height="30pt"/>
-
-                    <TextView
-                        android:textAlignment="center"
-                        android:textSize="7pt"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15pt"
-                        android:text="No Results found."
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-
-                </LinearLayout>
 
             </LinearLayout>
 

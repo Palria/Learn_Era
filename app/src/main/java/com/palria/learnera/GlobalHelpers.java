@@ -186,7 +186,11 @@ public class GlobalHelpers {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", "Learn Era");
-        return Uri.parse(path);
+       if(path==null){
+           return Uri.parse(" ");
+       }else{
+           return Uri.parse(path);
+       }
     }
 
 }

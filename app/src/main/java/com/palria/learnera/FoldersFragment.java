@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -19,6 +21,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.palria.learnera.adapters.FolderRcvAdapter;
 import com.palria.learnera.models.FolderDataModel;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 
@@ -27,6 +31,8 @@ public class FoldersFragment extends Fragment {
    RecyclerView foldersRcv;
    ArrayList<FolderDataModel> folderDataModels = new ArrayList<>();
     FolderRcvAdapter folderRcvAdapter;
+    LinearLayout loadingLayout;
+    LinearLayout noDataFoundLayout;
 
     public FoldersFragment() {
         // Required empty public constructor
@@ -75,8 +81,21 @@ public class FoldersFragment extends Fragment {
 
     }
 
+    private void toggleContentVisibility(boolean show){
+        if(!show){
+            loadingLayout.setVisibility(View.VISIBLE);
+            foldersRcv.setVisibility(View.GONE);
+        }else{
+            loadingLayout.setVisibility(View.GONE);
+            foldersRcv.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void initUi(View view) {
         foldersRcv=view.findViewById(R.id.foldersRcv);
+        noDataFoundLayout=view.findViewById(R.id.noDataFound);
+        loadingLayout=view.findViewById(R.id.loadingLayout);
+        toggleContentVisibility(false);
 
         //init oflder rcv here
 //        folderDataModels.add(new FolderDataModel("id","id","Design principles","1 min ago",4l));
@@ -118,7 +137,15 @@ public class FoldersFragment extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if(queryDocumentSnapshots.size()==0){
+                            noDataFoundLayout.setVisibility(View.VISIBLE);
+                            TextView title = noDataFoundLayout.findViewById(R.id.title);
+                            TextView body = noDataFoundLayout.findViewById(R.id.body);
 
+                            title.setText("Nothing found.");
+                            body.setText("No folders found.");
+                        }
+                        toggleContentVisibility(true);
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             String folderId = documentSnapshot.getId();
                             String folderName  = ""+ documentSnapshot.get(GlobalConfig.FOLDER_NAME_KEY);

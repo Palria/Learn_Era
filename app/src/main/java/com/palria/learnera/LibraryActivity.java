@@ -196,21 +196,28 @@ LibraryDataModel intentLibraryDataModel;
 
                 }
 
-                @Override
-                public void onSuccess(String authorName, String authorProfilePhotoDownloadUrl) {
-                    toggleProgress(false);
-                    authorNameView.setText(authorName);
-                    try {
-                        Glide.with(LibraryActivity.this)
-                                .load(authorProfilePhotoDownloadUrl)
-                                .placeholder(R.drawable.default_profile)
-                                .centerCrop()
-                                .into(authorPicture);
-                    } catch (Exception e) {
-                    }
+            @Override
+            public void onSuccess(String authorName, String authorProfilePhotoDownloadUrl) {
+                toggleProgress(false);
+                authorNameView.setText(authorName);
+                try {
+                    Glide.with(LibraryActivity.this)
+                            .load(authorProfilePhotoDownloadUrl)
+                            .placeholder(R.drawable.default_profile)
+                            .centerCrop()
+                            .into(authorPicture);
+                }catch(Exception e){}
+            }
 
-                }
-            });
+        });
+
+
+            }
+        else{
+            Toast.makeText(this, "Library Blocked! Unblock to explore the library", Toast.LENGTH_SHORT).show();
+            super.onBackPressed();
+        }
+
 
             //tab layout selected goes here .
             tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -302,6 +309,7 @@ LibraryDataModel intentLibraryDataModel;
                     GlobalConfig.checkIfDocumentExists(authorReviewDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                         @Override
                         public void onExist() {
+
                             rateActionButton.setEnabled(true);
 
                             snackbar.dismiss();
@@ -314,7 +322,10 @@ LibraryDataModel intentLibraryDataModel;
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
 
-                                            ratingBottomSheetWidget.render(mainLayout, true).show();
+                                            ratingBottomSheetWidget
+                                                    .setRating(4)
+                                                    .setMessage("Hello message")
+                                                    .render(mainLayout, true).show();
 
                                         }
                                     })
@@ -369,7 +380,8 @@ LibraryDataModel intentLibraryDataModel;
 
                             snackbar.dismiss();
 
-                            ratingBottomSheetWidget.render(mainLayout, false).show();
+                            ratingBottomSheetWidget
+                                    .render(mainLayout, false).show();
 
                         }
 
@@ -721,11 +733,8 @@ LibraryDataModel intentLibraryDataModel;
                 }
             });
 
-        }else{
-            Toast.makeText(this, "Library Blocked! Unblock to explore the library", Toast.LENGTH_SHORT).show();
-            super.onBackPressed();
         }
-    }
+
 
     private void initFragment(Fragment fragment, FrameLayout frameLayout){
         getSupportFragmentManager()
@@ -955,6 +964,7 @@ if(!isFirstView) {
                 });
 
     }
+
 
     private void openAllTutorialFragment(){
         isTutorialsFragmentOpen=true;

@@ -10,7 +10,7 @@
         app:riv_corner_radius="5pt"
         android:scaleType="centerCrop"
         android:layout_height="60dp"
-        android:src="@drawable/book_cover" />
+        android:src="@drawable/placeholder" />
 
     <TextView
         android:id="@+id/title"

@@ -193,6 +193,11 @@ public class BottomSheetFormBuilderWidget extends BottomSheetDialog {
             return this;
         }
 
+        public EditTextInput setText(String text){
+            super.setText(text);
+            return this;
+        }
+
 
         public EditTextInput autoFocus(){
             super.requestFocus();

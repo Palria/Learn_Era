@@ -145,7 +145,7 @@ public class RatingBarWidget {
         int total = getTotalRatingcount();
 
         //set the values here
-        averageRatingTextView.setText(rating_string_average);
+        averageRatingTextView.setText(rating_string_average.length() == 1 ? rating_string_average.concat(".0"):rating_string_average);
         totalRatingCountView.setText(total+"");
         ratingBar.setProgress((int) average_rate,true);
 
