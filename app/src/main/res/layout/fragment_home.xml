@@ -351,47 +351,6 @@
 
                     </LinearLayout>
                 </androidx.appcompat.widget.LinearLayoutCompat>
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_marginTop="10pt"
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:layout_marginHorizontal="5pt"
-                        android:background="@drawable/rounded_grey_bg"
-                        android:layout_width="match_parent"
-                        android:layout_height="60pt"/>
-
-
-                    <LinearLayout
-                        android:layout_marginHorizontal="5pt"
-                        android:layout_marginTop="3pt"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <com.makeramen.roundedimageview.RoundedImageView
-                            android:layout_width="20pt"
-                            app:riv_corner_radius="100sp"
-                            app:riv_oval="true"
-                            android:src="@drawable/rounded_grey_bg"
-                            android:layout_height="20pt"/>
-
-                        <TextView
-                            android:background="@drawable/rounded_grey_bg"
-                            android:layout_width="40pt"
-                            android:layout_marginHorizontal="10pt"
-                            android:layout_height="8pt"/>
-
-                        <TextView
-                            android:layout_weight="1"
-                            android:background="@drawable/rounded_grey_bg"
-                            android:layout_width="40pt"
-                            android:layout_height="8pt"/>
-
-                    </LinearLayout>
-                </androidx.appcompat.widget.LinearLayoutCompat>
 
             </LinearLayout>
 

@@ -16,7 +16,7 @@
     
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/bookCover"
-        android:src="@drawable/book_cover"
+        android:src="@drawable/placeholder"
         android:layout_width="match_parent"
         android:layout_weight="1"
         app:riv_corner_radius="5pt"

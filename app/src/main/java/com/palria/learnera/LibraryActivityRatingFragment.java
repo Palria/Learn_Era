@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -42,6 +43,9 @@ public class LibraryActivityRatingFragment extends Fragment {
     ArrayList<RatingDataModel> ratingDataModels;
     RatingItemRecyclerViewAdapter ratingItemRecyclerViewAdapter;
     int[] ratings ={0,0,0,0,0};
+    LinearLayout loadingLayout;
+    LinearLayout mainLayout;
+    LinearLayout noDataFound;
     public LibraryActivityRatingFragment() {
         // Required empty public constructor
     }
@@ -64,6 +68,7 @@ if(getArguments() != null){
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_library_activity_rating, container, false);
         initView(view);
+        toggleContentVisibility(false);
 
 onReviewFetchListener = new OnReviewFetchListener() {
     @Override
@@ -96,10 +101,25 @@ getReviews();
         return view;
     }
 
+
+
+    private void toggleContentVisibility(boolean show){
+        if(!show){
+            mainLayout.setVisibility(View.GONE);
+            loadingLayout.setVisibility(View.VISIBLE);
+        }else{
+            mainLayout.setVisibility(View.VISIBLE);
+            loadingLayout.setVisibility(View.GONE);
+        }
+    }
+
     private void initView(View parentView) {
 
         ratingBarContainer=parentView.findViewById(R.id.ratingBarContainer);
         ratingsRecyclerListView=parentView.findViewById(R.id.ratingsRecyclerListView);
+        loadingLayout=parentView.findViewById(R.id.loadingLayout);
+        mainLayout=parentView.findViewById(R.id.mainContents);
+        noDataFound=parentView.findViewById(R.id.noDataFound);
 
          ratingDataModels = new ArrayList<>();
 
@@ -165,6 +185,15 @@ onReviewFetchListener.onFailed(e.getMessage());
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
+                        if(queryDocumentSnapshots.size()==0){
+                            noDataFound.setVisibility(View.VISIBLE);
+                            TextView title = noDataFound.findViewById(R.id.title);
+                            TextView body = noDataFound.findViewById(R.id.body);
+                            title.setText("Nothing found.");
+                            body.setText("There is no any ratings posted.");
+                        }
+                        toggleContentVisibility(true);//show content true
+
                         for(DocumentSnapshot documentSnapshot: queryDocumentSnapshots){
                             String reviewerId = documentSnapshot.getId();
                             String dateReviewed = documentSnapshot.get(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY)!=null &&  documentSnapshot.get(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY) instanceof Timestamp ?  documentSnapshot.getTimestamp(GlobalConfig.DATE_REVIEWED_TIME_STAMP_KEY).toDate().toString() : "Undefined";
@@ -194,6 +223,7 @@ onReviewFetchListener.onFailed(e.getMessage());
                                            String userProfilePhotoDownloadUrl =""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
 
                                            onReviewFetchListener.onSuccess(new RatingDataModel(reviewerId,reviewerName,libraryId,"library",finalDateReview,reviewBody, (int) starLevel,userProfilePhotoDownloadUrl));
+
 
                                        }
                                    });

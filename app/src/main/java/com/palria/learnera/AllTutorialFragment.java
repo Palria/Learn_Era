@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -29,15 +31,17 @@ import java.util.ArrayList;
 
 public class AllTutorialFragment extends Fragment {
 
-
+//comment for the instances to use
     RecyclerView tutorialsRecyclerListView;
     LinearLayout topContents;
     LinearLayout mainContents;
+    TutorialFetchListener tutorialFetchListener;
     PopularTutorialsListViewAdapter popularTutorialsListViewAdapter;
     ArrayList<TutorialDataModel> tutorialDataModels = new ArrayList<>();
     BottomAppBar bottomAppBar;
 
     NestedScrollView parentScrollView;
+    ShimmerFrameLayout shimmerLayout;
 
     public AllTutorialFragment() {
         // Required empty public constructor
@@ -62,10 +66,12 @@ boolean isFromLibraryActivityContext = false;
     DocumentSnapshot lastRetrievedTutorialSnapshot = null;
     ShimmerFrameLayout  progressIndicatorShimmerLayout;
     LinearLayout containerLinearLayout;
-    TutorialFetchListener tutorialFetchListener;
+    TutorialActivity.TutorialFetchListener tuorialFetchListener;
 
     boolean isFromSearchContext = false;
     String searchKeyword = "";
+
+    LinearLayout noDataFound;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,7 +93,7 @@ if(getArguments() != null){
       View parentView = inflater.inflate(R.layout.fragment_all_tutorial, container, false);
 
       initView(parentView);
-        tutorialFetchListener =  new TutorialFetchListener() {
+        tutorialFetchListener = new TutorialFetchListener(){
             @Override
             public void onSuccess(TutorialDataModel tutorialDataModel) {
                 tutorialDataModels.add(tutorialDataModel);
@@ -99,12 +105,47 @@ if(getArguments() != null){
 
             }
         };
+
+//         new TutorialFetchListener() {
+//            @Override
+//            public void onSuccess(TutorialDataModel tutorialDataModel) {
+//                tutorialDataModels.add(tutorialDataModel);
+//                popularTutorialsListViewAdapter.notifyItemChanged(tutorialDataModels.size());
+//            }
+//
+//            @Override
+//            public void onFailed(String errorMessage) {
+//
+//            }
+//        }
         fetchTutorial(tutorialCategory);
         listenToScrollChange();
         return parentView;
+
     }
 
+    /**
+     *
+     * @param show show contents true|false
+     */
+    private void toggleContentsVisibility(boolean show){
+
+        if(!show){
+            mainContents.setVisibility(View.GONE);
+            shimmerLayout.startShimmer();
+            shimmerLayout.setVisibility(View.VISIBLE);
+
+        }else{
+            mainContents.setVisibility(View.VISIBLE);
+            shimmerLayout.stopShimmer();
+            shimmerLayout.setVisibility(View.GONE);
+        }
+    }
+
+
     private void initView(View parentView) {
+
+
 
         topContents=parentView.findViewById(R.id.topContents);
         tutorialsRecyclerListView=parentView.findViewById(R.id.tutorialsRecyclerListView);
@@ -112,7 +153,11 @@ if(getArguments() != null){
         mainContents=parentView.findViewById(R.id.mainContents);
         containerLinearLayout=parentView.findViewById(R.id.containerLinearLayoutId);
 
+        shimmerLayout =parentView.findViewById(R.id.shimmerLayout);
+        mainContents=parentView.findViewById(R.id.mainContents);
         popularTutorialsListViewAdapter = new PopularTutorialsListViewAdapter(tutorialDataModels,getContext());
+        noDataFound=parentView.findViewById(R.id.noDataFound);
+
 
 
 
@@ -183,9 +228,7 @@ if(getArguments() != null){
 //        popularTutorialsContainerRcv.setHasFixedSize(true);
         tutorialsRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         tutorialsRecyclerListView.setAdapter(popularTutorialsListViewAdapter);
-
-
-    }
+         }
 
     private void fetchTutorial(String tutorialCategoryTag) {
         Query tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY, GlobalConfig.getCurrentUserId());
@@ -237,18 +280,29 @@ if(getArguments() != null){
             isLoadingMoreTutorial = true;
 
 
+           // toggleContentsVisibility(true);
             tutorialQuery.get()
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             tutorialFetchListener.onFailed(e.getMessage());
                             isLoadingMoreTutorial = false;
+                            toggleContentsVisibility(true);
                         }
                     })
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
+                        tutorialDataModels.clear();
+                        popularTutorialsListViewAdapter.notifyDataSetChanged();
+                        if(queryDocumentSnapshots.size()==0 && isFromLibraryActivityContext){
+                            noDataFound.setVisibility(View.VISIBLE);
+                            TextView tv = noDataFound.findViewById(R.id.title);
+                            TextView body =noDataFound.findViewById(R.id.body);
+                            tv.setText("No Tutorials Found");
+                            body.setText("The author has not added any tutorials in this library.");
+                        }
 //                            tutorialDataModels.clear();
 //                            popularTutorialsListViewAdapter.notifyDataSetChanged();
 
@@ -314,10 +368,13 @@ if(getArguments() != null){
                                 isLoadingMoreTutorial = false;
                                 GlobalConfig.removeShimmerLayout(containerLinearLayout,progressIndicatorShimmerLayout);
                                 isFirstLoad =false;
+                                if(isFromLibraryActivityContext) {
+                                    toggleContentsVisibility(true);
+                                }
 
                             }else{
                                 lastRetrievedTutorialSnapshot = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size()-1);
-
+                                toggleContentsVisibility(true);
                             }
 
                         }
@@ -341,6 +398,8 @@ if(getArguments() != null){
 
                             }
                         }
+                        toggleContentsVisibility(true);
+
                         if(!v.canScrollVertically(View.LAYOUT_DIRECTION_RTL)){
                             if(!isLoadingMoreTutorial){
                                 fetchTutorial(tutorialCategory);
@@ -364,4 +423,6 @@ if(getArguments() != null){
         void onSuccess(TutorialDataModel tutorialDataModel);
         void onFailed(String errorMessage);
     }
+
+
 }

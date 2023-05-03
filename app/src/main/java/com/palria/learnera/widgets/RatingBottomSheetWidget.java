@@ -37,6 +37,9 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
     String libraryId;
     String tutorialId;
 
+    String message;
+    int rating;
+
     static Snackbar ratingSnackbar;
     //this is a descriptive word/tag illustrating the library's / tutorial's performance
     String performanceTag ="Teachable";
@@ -50,6 +53,9 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
         this.isAuthorReview=isAuthorReview;
         this.isLibraryReview=isLibraryReview;
         this.isTutorialReview=isTutorialReview;
+
+        this.rating=1;
+        this.message="";
 
     }
 
@@ -65,6 +71,9 @@ public class RatingBottomSheetWidget extends BottomSheetDialog {
         EditText editText = view.findViewById(R.id.ratingBodyEditText);
         Button button = view.findViewById(R.id.postRatingActionButton);
         RatingBar ratingBar = view.findViewById(R.id.ratingBar);
+
+        ratingBar.setRating(rating);
+        editText.setText(message);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -267,6 +276,16 @@ return this;
     }
      public RatingBottomSheetWidget setRatingPostListener(OnRatingPosted onRatingPosted){
         this.onPost=onRatingPosted;
+        return this;
+    }
+
+    public RatingBottomSheetWidget setMessage(String msg){
+        this.message = msg;
+        return this;
+    }
+
+    public RatingBottomSheetWidget setRating(int rating){
+        this.rating = rating;
         return this;
     }
 

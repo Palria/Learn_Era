@@ -45,6 +45,7 @@ import com.google.firebase.firestore.model.Document;
 import com.google.firebase.firestore.model.ServerTimestamps;
 import com.google.firebase.storage.FirebaseStorage;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
+import com.palria.learnera.models.RatingDataModel;
 import com.palria.learnera.models.UserActivityDataModel;
 import com.palria.learnera.models.UserProfileDataModel;
 import com.palria.learnera.models.WelcomeScreenItemModal;
@@ -995,6 +996,18 @@ public class GlobalConfig {
                     DocumentSnapshot documentSnapshot = task.getResult();
                     if (documentSnapshot.exists()) {
                         onDocumentExistStatusCallback.onExist();
+                        /**
+                         * new RatingDataModel(
+                         *                                 documentSnapshot.getString("userId"),
+                         *                                 documentSnapshot.getId(),
+                         *                                 documentSnapshot.getId(),
+                         *                                 "Library",
+                         *                                 "",
+                         *                                 "Hlo dami",
+                         *                                 4,
+                         *                                 "DownloadURl"
+                         *                         )
+                         */
                     }else if (!documentSnapshot.exists()){
                         onDocumentExistStatusCallback.onNotExist();
                     }

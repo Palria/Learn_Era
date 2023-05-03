@@ -130,7 +130,9 @@ public class UserProfileFragment extends Fragment {
             authorId = getArguments().getString(GlobalConfig.USER_ID_KEY);
         }
         if((GlobalConfig.getBlockedItemsList().contains(authorId+""))) {
-        getActivity().onBackPressed();
+        if(getActivity()!=null){
+            getActivity().onBackPressed();
+        }
         }
 
 //        getProfile(new OnUserProfileFetchListener() {
@@ -359,7 +361,9 @@ public class UserProfileFragment extends Fragment {
 
             Toast.makeText(getContext(), "Author Blocked! Unblock to explore the Author", Toast.LENGTH_SHORT).show();
 
-            getActivity().onBackPressed();
+            if(getActivity()!=null){
+                getActivity().onBackPressed();
+            }
             }
        return parentView;
     }

@@ -19,7 +19,7 @@
         android:layout_width="40pt"
         android:scaleType="centerCrop"
         app:riv_corner_radius="5pt"
-        android:src="@drawable/book_cover"
+        android:src="@drawable/placeholder"
         android:layout_height="40pt"/>
 
     <LinearLayout

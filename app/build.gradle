@@ -92,6 +92,8 @@ dependencies {
 
     implementation "com.github.skydoves:colorpickerpreference:2.0.6"
 
+//    implementation 'com.github.Inconnu08:android-ratingreviews:1.2.0'
+
 }
 //dependencies {
 //

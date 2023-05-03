@@ -30,7 +30,7 @@
                     android:layout_marginTop="0pt"
                     android:id="@+id/pageCover"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/book_cover"
+                    android:src="@drawable/placeholder"
                     android:layout_width="match_parent"
                     android:layout_height="80pt"/>
 

@@ -24,7 +24,7 @@
             app:riv_oval="false"
             android:layout_gravity="center"
             android:scaleType="centerCrop"
-            android:src="@drawable/book_cover2"
+            android:src="@drawable/placeholder"
             android:layout_height="20pt"/>
         
         <LinearLayout

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:paddingVertical="5pt"
+    android:layout_marginHorizontal="5pt"
+    android:paddingHorizontal="5pt"
+    android:layout_height="match_parent">
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:layout_width="25pt"
+        android:src="@color/grayDark"
+        app:riv_corner_radius="12pt"
+        app:riv_oval="true"
+        android:layout_height="25pt"/>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:paddingHorizontal="5pt"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="65pt"
+            android:background="@drawable/rounded_grey_bg"
+            android:layout_height="5pt"/>
+
+        <LinearLayout
+            android:layout_marginTop="5pt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:background="@drawable/rounded_grey_bg"
+                android:layout_width="10pt"
+                android:layout_height="10pt"/>
+            <TextView
+                android:layout_marginLeft="5pt"
+                android:background="@drawable/rounded_grey_bg"
+                android:layout_width="10pt"
+                android:layout_height="10pt"/>
+            <TextView
+                android:layout_marginLeft="5pt"
+                android:background="@drawable/rounded_grey_bg"
+                android:layout_width="10pt"
+                android:layout_height="10pt"/>
+            <TextView
+                android:layout_marginLeft="5pt"
+                android:background="@drawable/rounded_grey_bg"
+                android:layout_width="10pt"
+                android:layout_height="10pt"/>
+            <TextView
+                android:layout_marginLeft="5pt"
+                android:background="@drawable/rounded_grey_bg"
+                android:layout_width="10pt"
+                android:layout_height="10pt"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_marginTop="5pt"
+            android:layout_width="match_parent"
+            android:background="@drawable/rounded_grey_bg"
+            android:layout_height="5pt"/>
+        <TextView
+            android:layout_marginTop="5pt"
+            android:layout_width="match_parent"
+            android:background="@drawable/rounded_grey_bg"
+            android:layout_height="5pt"/>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</LinearLayout>

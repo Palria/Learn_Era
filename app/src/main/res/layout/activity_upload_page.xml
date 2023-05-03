@@ -50,7 +50,7 @@
         app:riv_corner_radius="4pt"
         app:riv_border_width="1pt"
         app:riv_border_color="@color/white"
-        android:src="@drawable/book_cover2"
+        android:src="@drawable/placeholder"
         android:layout_marginHorizontal="5pt"
         android:scaleType="centerCrop"
         app:layout_constraintTop_toBottomOf="@+id/topLinearLayoutId"

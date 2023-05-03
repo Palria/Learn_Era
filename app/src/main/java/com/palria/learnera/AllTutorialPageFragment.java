@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -28,6 +30,9 @@ import org.checkerframework.checker.units.qual.A;
 import java.util.ArrayList;
 
 public class AllTutorialPageFragment extends Fragment {
+
+    LinearLayout noDataFound;
+    LinearLayout loadingLayout;
 
     public AllTutorialPageFragment() {
         // Required empty public constructor
@@ -97,12 +102,25 @@ if(!GlobalConfig.getCurrentUserId().equals(""+authorId)){
        return parentView;
     }
 
+    private void toggleContentVisibility(boolean show){
+        if(!show){
+            loadingLayout.setVisibility(View.VISIBLE);
+            pagesRecyclerListView.setVisibility(View.GONE);
+        }else{
+            loadingLayout.setVisibility(View.GONE);
+            pagesRecyclerListView.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void initUi(View parentView) {
 
         pagesRecyclerListView=parentView.findViewById(R.id.pagesRecyclerListView);
         startPaginationTextView=parentView.findViewById(R.id.startPaginationTextViewId);
         paginateButton=parentView.findViewById(R.id.paginateButtonId);
 
+        loadingLayout=parentView.findViewById(R.id.loadingLayout);
+        noDataFound=parentView.findViewById(R.id.noDataFound);
+        toggleContentVisibility(false);
 //
 //        pageDataModels.add(new PageDataModel("How to hold","this is content",
 //                "",
@@ -193,7 +211,15 @@ if(!GlobalConfig.getCurrentUserId().equals(authorId+"")){
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                            if(queryDocumentSnapshots.size()==0){
+                                noDataFound.setVisibility(View.VISIBLE);
+                                TextView title = noDataFound.findViewById(R.id.title);
+                                TextView body = noDataFound.findViewById(R.id.body);
+                                title.setText("No Pages");
+                                body.setText("There is no pages created.");
 
+                            }
+                            toggleContentVisibility(true);
                         for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
                             String pageId = documentSnapshot.getId();
                             String pageTitle  = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
