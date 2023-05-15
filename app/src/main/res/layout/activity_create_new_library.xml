@@ -50,6 +50,7 @@
                         android:layout_height="wrap_content"/>
     
                     <Switch
+                        android:paddingVertical="7pt"
                         android:id="@+id/visibilitySwitchId"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -62,7 +63,7 @@
                         tools:ignore="UseSwitchCompatOrMaterialXml"
                         android:checked="true"
                         android:paddingEnd="200dp"
-                        android:background="@color/white"
+                        android:background="@android:color/transparent"
                         />
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"

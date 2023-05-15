@@ -63,6 +63,7 @@
                 android:layout_below="@+id/imageView1"
                 android:layout_marginLeft="34pt"
                 android:layout_marginTop="-45dp"
+                app:tint="@color/darkIcon"
                 android:background="@drawable/rounded_white_bg"
                 android:layout_marginBottom="10pt"
                 android:src="@drawable/ic_baseline_photo_camera_24"

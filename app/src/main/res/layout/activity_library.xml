@@ -120,6 +120,7 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
+                            app:tint="@color/darkIcon"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_baseline_remove_red_eye_24"
                             android:layout_width="7pt"
@@ -140,6 +141,7 @@
                         android:layout_height="wrap_content">
 
                         <ImageView
+                            app:tint="@color/darkIcon"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_baseline_dynamic_feed_24"
                             android:layout_width="7pt"
@@ -243,6 +245,7 @@
                          android:layout_weight="1"
                         android:id="@+id/rateActionButton"
                         android:text="@string/rate"
+                        android:drawableTint="@color/darkIcon"
                         android:drawableEnd="@drawable/ic_baseline_star_24"
                         android:layout_width="wrap_content"
                      android:textColor="@color/grayDark"
@@ -253,6 +256,7 @@
                         android:layout_weight="1"
                         android:id="@+id/saveActionButton"
                         android:text="@string/save"
+                        android:drawableTint="@color/darkIcon"
                         android:drawableEnd="@drawable/ic_baseline_bookmarks_24"
                         android:layout_width="wrap_content"
                         android:textColor="@color/grayDark"
@@ -270,7 +274,7 @@
                         android:layout_marginHorizontal="5pt"
                         android:layout_height="?actionBarSize"
                         android:id="@+id/tab_layout"
-                        android:background="@color/white"
+                        android:background="@android:color/transparent"
                         app:tabInlineLabel="false"
                         app:tabGravity="fill"
                         app:tabMode="fixed"

@@ -2,6 +2,7 @@ package com.palria.learnera.lib.rcheditor;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -79,6 +80,26 @@ public final class WYSIWYG extends WebView {
             var10000.onTextChange(this.mContents);
         }
 
+    }
+
+    private void toggleThemeMode(){
+        int nightModeFlags =
+                getContext().getResources().getConfiguration().uiMode &
+                        Configuration.UI_MODE_NIGHT_MASK;
+        switch (nightModeFlags) {
+            case Configuration.UI_MODE_NIGHT_YES:
+
+                this.exec("javascript:editor.setTheme('dark');");
+                break;
+
+            case Configuration.UI_MODE_NIGHT_NO:
+                this.exec("javascript:editor.setTheme('light');");
+                break;
+
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+
+                break;
+        }
     }
 
     private final void stateCheck(String text) {
@@ -469,17 +490,20 @@ public final class WYSIWYG extends WebView {
         this.setWebViewClient((WebViewClient)this.createWebviewClient());
         this.loadUrl("file:///android_asset/editor.html");
         this.applyAttributes(context, attrs);
+        this.toggleThemeMode();
     }
 
     public WYSIWYG(@NotNull Context context) {
         this(context, (AttributeSet)null);
         Intrinsics.checkNotNullParameter(context, "context");
+        this.toggleThemeMode();
         
     }
 
     public WYSIWYG(@NotNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 16842885);
         Intrinsics.checkNotNullParameter(context, "context");
+        this.toggleThemeMode();
        
     }
 

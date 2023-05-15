@@ -315,6 +315,7 @@
                         android:orientation="horizontal">
 
                     <ImageView
+
                         android:id="@+id/bookmarkedIcon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -329,6 +330,7 @@
 <!--                        android:layout_marginLeft="-17pt"-->
 <!--                        android:layout_marginTop="-32pt"-->
                         <ImageView
+
                         android:id="@+id/ratedIcon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -341,6 +343,7 @@
                             />
                         
                         <ImageView
+                            app:tint="@color/darkIcon"
                         android:id="@+id/editProfileIcon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

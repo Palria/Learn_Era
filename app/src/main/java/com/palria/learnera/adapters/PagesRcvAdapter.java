@@ -149,7 +149,7 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
                 holder.pageNumberEditText.setEnabled(false);
                 holder.pageNumberEditText.setLongClickable(false);
                 holder.pageNumberEditText.setClickable(true);
-                holder.pageNumberEditText.setBackground(white);
+//                holder.pageNumberEditText.setBackground(white);
 
 
             }

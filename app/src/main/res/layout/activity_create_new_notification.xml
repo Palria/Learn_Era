@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/whiteBgColor"
     tools:context=".CreateNewNotificationActivity">
     <!--    <androidx.cardview.widget.CardView-->
     <!--        android:id="@+id/headerCardViewId"-->
@@ -62,16 +62,15 @@
     
     
     <LinearLayout
+        android:paddingVertical="15pt"
         android:id="@+id/detailsLinearLayoutId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:backgroundTint="@color/white"
-        android:background="@drawable/rounded_grey_bg"
+        android:background="@color/whiteBgColor"
         android:layout_marginTop="-50dp"
         android:layout_marginHorizontal="10dp"
-        
-        android:padding="10dp"
+        android:paddingHorizontal="10dp"
         app:layout_constraintTop_toBottomOf="@id/titleId"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -113,6 +112,7 @@
         
         <com.google.android.material.button.MaterialButton
             android:id="@+id/notifyActionButtonId"
+            android:layout_marginTop="10pt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cornerRadius="10dp"

@@ -218,6 +218,7 @@
         android:layout_width="wrap_content"
         android:id="@+id/fab"
         android:text="@null"
+        android:backgroundTint="@color/teal_700"
         app:icon="@drawable/ic_baseline_more_vert_24"
         android:layout_margin="12pt"
         app:layout_constraintRight_toRightOf="parent"
