@@ -20,8 +20,19 @@ editor.callback = function() {
     window.location.href = "re-callback://" + encodeURIComponent(editor.getHtml());
 }
 
+editor.setTheme=function(theme){
+    if(theme=="dark"){
+        document.body.style.background="#111";
+        document.body.style.color="#aaa";
+    }else{
+     document.body.style.background="#fff";
+            document.body.style.color="#111";
+    }
+}
+
 editor.setHtml = function(contents) {
     editor.editor.innerHTML = decodeURIComponent(contents.replace(/\+/g, '%20'));
+    document.body.onpaste = function(){return false;}
 }
 
 editor.getHtml = function() {

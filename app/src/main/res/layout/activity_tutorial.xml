@@ -120,6 +120,7 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
+                        app:tint="@color/darkIcon"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_baseline_remove_red_eye_24"
                         android:layout_width="7pt"
@@ -140,6 +141,7 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
+                        app:tint="@color/darkIcon"
                         android:layout_gravity="center"
                         android:src="@drawable/baseline_pages_24"
                         android:layout_width="7pt"
@@ -160,6 +162,7 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
+                        app:tint="@color/darkIcon"
                         android:layout_gravity="center"
                         android:src="@drawable/baseline_folder_24"
                         android:layout_width="7pt"
@@ -237,6 +240,7 @@
 
 
                 <Button
+                    android:drawableTint="@color/darkIcon"
                     android:layout_weight="1"
                     android:id="@+id/rateActionButton"
                     android:text="@string/rate"
@@ -247,6 +251,7 @@
                     android:layout_height="25pt"/>
 
                 <Button
+                    android:drawableTint="@color/darkIcon"
                     android:layout_weight="1"
                     android:id="@+id/saveActionButton"
                     android:text="@string/save"
@@ -272,7 +277,7 @@
                 android:layout_marginHorizontal="5pt"
                 android:layout_height="?actionBarSize"
                 android:id="@+id/tab_layout"
-                android:background="@color/white"
+                android:background="@android:color/transparent"
                 app:tabInlineLabel="false"
                 app:tabGravity="fill"
                 app:tabMode="fixed"

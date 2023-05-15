@@ -13,22 +13,24 @@
             android:layout_height="match_parent">
 
             <LinearLayout android:orientation="vertical"
-                android:background="@color/white"
+                android:background="@color/whiteBgColor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <LinearLayout
+                    android:background="@android:color/transparent"
                     android:gravity="center"
                     android:paddingVertical="0pt"
                     android:layout_width="match_parent"
                     android:layout_height="8pt">
 
                     <ImageView
-
+                        app:tint="@color/darkIcon"
                         android:src="@drawable/ic_baseline_drag_handle_24"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <ImageView
+                        app:tint="@color/darkIcon"
                         android:layout_marginLeft="-8pt"
                         android:src="@drawable/ic_baseline_drag_handle_24"
                         android:layout_width="wrap_content"

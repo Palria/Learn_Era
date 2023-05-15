@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@android:color/transparent"
     tools:context=".SearchActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -56,20 +56,22 @@
         >
 
     </LinearLayout>
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayoutId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@android:color/transparent"
         app:tabMode="scrollable"
         app:tabIndicatorColor="@color/teal_700"
+        android:tooltipText="s"
         app:tabSelectedTextColor="@color/teal_700"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchLinearLayoutId"
-        >
+      />
 
 
-    </com.google.android.material.tabs.TabLayout>
+
 
 
 

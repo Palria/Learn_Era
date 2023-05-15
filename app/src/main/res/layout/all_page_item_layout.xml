@@ -113,10 +113,11 @@
     
     <EditText
         android:id="@+id/pageNumberEditTextId"
-        android:layout_width="100dp"
+        android:layout_width="50dp"
         android:layout_height="match_parent"
         android:hint="Page number"
         android:inputType="number"
+        android:background="@android:color/transparent"
         android:longClickable="false"
         android:gravity="center"
         android:visibility="visible"

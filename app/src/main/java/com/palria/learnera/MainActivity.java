@@ -90,11 +90,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
         setContentView(R.layout.activity_main);
 
-//        startActivity(new Intent(MainActivity.this, TestActivity.class));
+//        startActivity(new Intent(MainActivity.this, UploadPageActivity.class));
 
 
         Toolbar tp = findViewById(R.id.topBar);
         setSupportActionBar(tp);
+
 
 
             initUI();
