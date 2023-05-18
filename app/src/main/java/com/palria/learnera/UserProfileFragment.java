@@ -3,7 +3,6 @@ package com.palria.learnera;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -23,8 +22,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +30,6 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomappbar.BottomAppBar;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
@@ -42,11 +38,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.adapters.HomeBooksRecyclerListViewAdapter;
 import com.palria.learnera.adapters.PopularTutorialsListViewAdapter;
-import com.palria.learnera.adapters.UsersRCVAdapter;
 import com.palria.learnera.models.LibraryDataModel;
 import com.palria.learnera.models.TutorialDataModel;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
@@ -292,7 +286,7 @@ public class UserProfileFragment extends Fragment {
                     .collection(GlobalConfig.BOOK_MARKS_KEY).document(authorId);
             GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                 @Override
-                public void onExist() {
+                public void onExist(DocumentSnapshot documentSnapshot) {
                     bookmarkedIcon.setVisibility(View.VISIBLE);
                 }
 
@@ -313,7 +307,7 @@ public class UserProfileFragment extends Fragment {
                     .document(GlobalConfig.getCurrentUserId());
             GlobalConfig.checkIfDocumentExists(authorReviewDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                 @Override
-                public void onExist() {
+                public void onExist(DocumentSnapshot documentSnapshot) {
                     ratedIcon.setVisibility(View.VISIBLE);
                 }
 
@@ -539,7 +533,7 @@ public class UserProfileFragment extends Fragment {
                                     .collection(GlobalConfig.BOOK_MARKS_KEY).document(authorId);
                             GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                                 @Override
-                                public void onExist() {
+                                public void onExist(DocumentSnapshot documentSnapshot) {
                                     saveSnackBar.dismiss();
 
                                     new AlertDialog.Builder(getContext())
@@ -643,10 +637,13 @@ public class UserProfileFragment extends Fragment {
                             //Check if he has already rated this user, else if not rated then rate but if rated edit the rating
                             GlobalConfig.checkIfDocumentExists(authorReviewDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                                 @Override
-                                public void onExist() {
+                                public void onExist(DocumentSnapshot snapshot) {
 
                                     snackbar.dismiss();
-
+                                    Log.e("tag", snapshot.toString());
+                                    String message = snapshot.getString(GlobalConfig.REVIEW_COMMENT_KEY);
+                                    Double starLevel = snapshot.getDouble(GlobalConfig.STAR_LEVEL_KEY);
+                                    Integer star = Integer.parseInt(String.valueOf(starLevel).substring(0,1));
 
                                     new AlertDialog.Builder(getContext())
                                             .setTitle("User already reviewed!")
@@ -656,7 +653,10 @@ public class UserProfileFragment extends Fragment {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
 
-                                                    ratingBottomSheetWidget.render(editProfileButton, true).show();
+                                                    ratingBottomSheetWidget
+                                                            .setMessage(message)
+                                                            .setRating(star)
+                                                            .render(editProfileButton, true).show();
 
                                                 }
                                             })

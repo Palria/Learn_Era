@@ -199,7 +199,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="?actionBarSize"
                         android:id="@+id/tab_layout"
-                        android:background="@color/white"
+                        android:background="@android:color/transparent"
                         app:tabInlineLabel="false"
                         app:tabGravity="fill"
                         app:tabMode="fixed"

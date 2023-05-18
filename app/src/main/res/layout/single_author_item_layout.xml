@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="45pt"
+    android:layout_width="50pt"
     android:orientation="vertical"
     android:gravity="center"
     android:id="@+id/parentItem"
     android:padding="3pt"
     android:layout_marginVertical="4pt"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="45pt">
+    android:layout_height="50pt">
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/author_image_view"
-        android:layout_width="25pt"
+        android:layout_width="30pt"
         android:background="@color/teal_700"
-        android:layout_height="25pt"
+        android:layout_height="30pt"
         android:scaleType="fitCenter"
         android:src="@drawable/default_profile"
         app:riv_border_color="@color/teal_700"
         app:riv_border_width="0dip"
         app:riv_corner_radius="15dip"
         app:riv_mutate_background="true"
-        app:riv_oval="false" />
+        app:riv_oval="true" />
 
     
     <LinearLayout

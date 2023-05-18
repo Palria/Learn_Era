@@ -59,7 +59,7 @@ public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibrar
         Glide.with(context)
                 .load(libraryDataModel.getLibraryCoverPhotoDownloadUrl())
                 .centerCrop()
-                .placeholder(R.drawable.book_cover)
+                .placeholder(R.drawable.placeholder)
                 .into(holder.cover);
         holder.libraryViewCount.setText(libraryDataModel.getTotalNumberOfLibraryViews()+"");
         holder.moreActionButton.setOnClickListener(new View.OnClickListener() {

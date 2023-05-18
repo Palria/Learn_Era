@@ -15,6 +15,7 @@
 
     <com.facebook.shimmer.ShimmerFrameLayout
         app:shimmer_auto_start="true"
+        android:visibility="gone"
         android:id="@+id/shimmerLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -250,7 +251,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible"
+        android:visibility="visible"
         >
 
         <LinearLayout
@@ -617,6 +618,8 @@
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content">
                   <ImageView
+
+                      app:tint="@color/darkIcon"
                       android:layout_marginRight="3pt"
                       android:src="@drawable/icons8librarybuilding50"
                       android:layout_width="11pt"
@@ -653,6 +656,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
+            app:tint="@color/darkIcon"
             android:layout_marginRight="3pt"
             android:src="@drawable/icons8librarybuilding50"
             android:layout_width="11pt"
@@ -680,6 +684,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <ImageView
+                    app:tint="@color/darkIcon"
                     android:layout_marginRight="3pt"
                     android:src="@drawable/icons8tutorial64"
                     android:layout_width="11pt"

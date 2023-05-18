@@ -397,9 +397,12 @@
                 </FrameLayout>-->
                 </LinearLayout>
                 <TextView
+                    android:paddingVertical="5pt"
                     android:textSize="9pt"
+                    android:drawablePadding="2pt"
+                    android:drawableTint="@color/teal_700"
+                    android:drawableRight="@drawable/ic_baseline_arrow_forward_24"
                     android:textColor="@color/teal_700"
-                    android:textStyle="bold"
                     android:id="@+id/seeAllLibraryTextViewId"
                     android:paddingHorizontal="8pt"
                     android:text="See all Library"
@@ -455,9 +458,12 @@
 
                 </LinearLayout>
                 <TextView
+                    android:paddingVertical="5pt"
                     android:textSize="9pt"
                     android:textColor="@color/teal_700"
-                    android:textStyle="bold"
+                    android:drawablePadding="1pt"
+                    android:drawableTint="@color/teal_700"
+                    android:drawableRight="@drawable/ic_baseline_arrow_forward_24"
                     android:id="@+id/seeAllAuthorTextViewId"
                     android:paddingHorizontal="8pt"
                     android:text="See all Authors"
@@ -473,9 +479,13 @@
                     android:layout_marginTop="10pt"
                     android:layout_height="wrap_content"/>
                 <TextView
+                    android:paddingVertical="5pt"
                     android:textSize="9pt"
+
                     android:textColor="@color/teal_700"
-                    android:textStyle="bold"
+                    android:drawablePadding="1pt"
+                    android:drawableTint="@color/teal_700"
+                    android:drawableRight="@drawable/ic_baseline_arrow_forward_24"
                     android:id="@+id/seeAllTutorialTextViewId"
                     android:paddingHorizontal="8pt"
                     android:text="See all Tutorials"

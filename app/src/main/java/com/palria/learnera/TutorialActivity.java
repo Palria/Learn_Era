@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,18 +26,14 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.makeramen.roundedimageview.RoundedImageView;
-import com.palria.learnera.models.LibraryDataModel;
 import com.palria.learnera.models.TutorialDataModel;
 import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
 import com.palria.learnera.widgets.RatingBottomSheetWidget;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TutorialActivity extends AppCompatActivity {
@@ -310,11 +304,13 @@ toggleProgress(true);
                 //Check if he has already rated this tutorial, else if not rated then rate but if rated edit the rating
                 GlobalConfig.checkIfDocumentExists(authorReviewDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                     @Override
-                    public void onExist() {
+                    public void onExist(DocumentSnapshot documentSnapshot) {
                         rateActionButton.setEnabled(true);
                         snackbar.dismiss();
+                        String message = documentSnapshot.getString(GlobalConfig.REVIEW_COMMENT_KEY);
+                        Double starLevel = documentSnapshot.getDouble(GlobalConfig.STAR_LEVEL_KEY);
+                        Integer star = Integer.parseInt(String.valueOf(starLevel).substring(0,1));
 
-                        ratingBottomSheetWidget.render(mainLayout,true).show();
 
 
                         new AlertDialog.Builder(TutorialActivity.this)
@@ -325,7 +321,10 @@ toggleProgress(true);
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
 
-                                        ratingBottomSheetWidget.render(mainLayout,true).show();
+                                        ratingBottomSheetWidget
+                                                .setRating(star)
+                                                .setMessage(message)
+                                                .render(mainLayout,true).show();
 
                                     }
                                 })
@@ -418,7 +417,7 @@ toggleProgress(true);
                         .collection(GlobalConfig.BOOK_MARKS_KEY).document(tutorialId);
                 GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                     @Override
-                    public void onExist() {
+                    public void onExist(DocumentSnapshot documentSnapshot) {
                         saveSnackBar.dismiss();
                         saveActionButton.setEnabled(true);
 
@@ -539,7 +538,7 @@ toggleProgress(true);
                 .collection(GlobalConfig.BOOK_MARKS_KEY).document(tutorialId);
         GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
             @Override
-            public void onExist() {
+            public void onExist(DocumentSnapshot documentSnapshot) {
                 saveActionButton.setTextColor(getResources().getColor(R.color.teal_700,getTheme()));
                 saveActionButton.setText(R.string.un_save);
 
@@ -562,7 +561,7 @@ toggleProgress(true);
                 .document(GlobalConfig.getCurrentUserId());
          GlobalConfig.checkIfDocumentExists(authorReviewDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
             @Override
-            public void onExist() {
+            public void onExist(DocumentSnapshot documentSnapshot) {
                 rateActionButton.setTextColor(getResources().getColor(R.color.teal_700,getTheme()));
                 rateActionButton.setText("Rated");
 

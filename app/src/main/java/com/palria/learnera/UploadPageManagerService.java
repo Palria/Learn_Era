@@ -939,7 +939,7 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
         }
         notificationLayout.put(pageId,new RemoteViews(getPackageName(), R.layout.notification_layout));
         //set image cover icon here
-        notificationLayout.get(pageId).setImageViewResource(R.id.icon, R.drawable.book_cover2);
+        notificationLayout.get(pageId).setImageViewResource(R.id.icon, R.drawable.placeholder);
         notificationLayout.get(pageId).setTextViewText(R.id.title, "\""+pageTitle+"\"" +( isCreateNewPageMap.get(pageId) ? " Page Uploading...":" Page Editing..."));
 
         if(numberOfMedia.get(pageId)>0) {
@@ -1021,7 +1021,7 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
         notificationLayout.setTextViewText(R.id.title, "\""+pageTitle1+"\"" +( isCreateNewPageMap.get(pageId) ? " Page Uploaded":" Page Edited"));
         notificationLayout.setProgressBar(R.id.progress_bar,100,100,false);
         notificationLayout.setTextViewText(R.id.percent, "100% completed");
-        notificationLayout.setImageViewResource(R.id.icon,R.drawable.book_cover2);
+        notificationLayout.setImageViewResource(R.id.icon,R.drawable.placeholder);
 
 
         //intent where to redirect the user
