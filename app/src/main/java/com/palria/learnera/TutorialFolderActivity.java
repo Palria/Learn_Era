@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.fragment.app.Fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -273,7 +272,7 @@ FolderDataModel intentFolderDataModel;
                                 .collection(GlobalConfig.BOOK_MARKS_KEY).document(folderId);
                         GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                             @Override
-                            public void onExist() {
+                            public void onExist(DocumentSnapshot documentSnapshot) {
                                 saveSnackBar.dismiss();
 
                                 new AlertDialog.Builder(TutorialFolderActivity.this)

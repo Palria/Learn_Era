@@ -106,6 +106,7 @@
                     >
 
                     <ImageView
+                        app:tint="@color/darkIcon"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_baseline_remove_red_eye_24"
                         android:layout_width="7pt"
@@ -127,9 +128,10 @@
                     android:layout_height="wrap_content">
 
                     <ImageView
+                        app:tint="@color/darkIcon"
                         android:id="@+id/bookmarksCountImageViewId"
                         android:layout_gravity="center"
-                        android:background="@drawable/ic_baseline_bookmarks_24"
+                        android:src="@drawable/ic_baseline_bookmarks_24"
                         android:layout_width="7pt"
                         android:layout_height="7pt"/>
 
@@ -166,6 +168,7 @@
                     />
 
                 <ImageButton
+                    app:tint="@color/darkIcon"
                     android:id="@+id/morePageActionButtonId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -4,9 +4,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".LibraryReviewsFragment">
+
+    <LinearLayout
+        android:id="@+id/loadingLayout"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="120pt">
+        <ProgressBar
+            android:layout_width="20pt"
+            android:layout_height="20pt"
+            android:indeterminateTint="@color/teal_700"
+            />
+    </LinearLayout>
+
+    <include layout="@layout/layout_no_data_found"
+        android:id="@+id/noDataFound"
+        android:visibility="gone"/>
     
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginTop="10pt"
+
         android:id="@+id/ratingsRecyclerListView"
         tools:listitem="@layout/single_rating_layout_item"
         android:layout_width="match_parent"

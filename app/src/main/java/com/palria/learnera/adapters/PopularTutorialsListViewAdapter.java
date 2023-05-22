@@ -66,7 +66,7 @@ public class PopularTutorialsListViewAdapter extends RecyclerView.Adapter<Popula
             Glide.with(context)
                     .load(tutorialDataModel.getTutorialCoverPhotoDownloadUrl())
                     .centerCrop()
-                    .placeholder(R.drawable.book_cover)
+                    .placeholder(R.drawable.placeholder)
                     .into(holder.cover);
 
             GlobalConfig.getFirebaseFirestoreInstance()

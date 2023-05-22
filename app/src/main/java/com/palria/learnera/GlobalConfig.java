@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.telecom.Call;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -13,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -26,8 +24,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
@@ -38,20 +34,13 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.ServerTimestamp;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
-import com.google.firebase.firestore.model.Document;
-import com.google.firebase.firestore.model.ServerTimestamps;
 import com.google.firebase.storage.FirebaseStorage;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
-import com.palria.learnera.models.RatingDataModel;
-import com.palria.learnera.models.UserActivityDataModel;
-import com.palria.learnera.models.UserProfileDataModel;
 import com.palria.learnera.models.WelcomeScreenItemModal;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -999,7 +988,7 @@ public class GlobalConfig {
                 if (task.isSuccessful()) {
                     DocumentSnapshot documentSnapshot = task.getResult();
                     if (documentSnapshot.exists()) {
-                        onDocumentExistStatusCallback.onExist();
+                        onDocumentExistStatusCallback.onExist(documentSnapshot);
                         /**
                          * new RatingDataModel(
                          *                                 documentSnapshot.getString("userId"),
@@ -3733,7 +3722,7 @@ String activityLogType = "NONE";
 
     public interface OnDocumentExistStatusCallback{
 
-        void onExist();
+        void onExist(DocumentSnapshot documentSnapshot);
         void onNotExist();
         void onFailed(@NonNull String errorMessage);
 

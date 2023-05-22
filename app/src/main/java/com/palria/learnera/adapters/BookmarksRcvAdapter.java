@@ -55,7 +55,7 @@ public class BookmarksRcvAdapter extends RecyclerView.Adapter<BookmarksRcvAdapte
 
         Glide.with(context)
                         .load(bookmarkDataModel.getIconDownloadUrl())
-                        .placeholder(R.drawable.book_cover2)
+                        .placeholder(R.drawable.placeholder)
                         .centerCrop()
                         .into(holder.icon);
 

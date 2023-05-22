@@ -66,7 +66,7 @@ public class HomeBooksRecyclerListViewAdapter extends RecyclerView.Adapter<HomeB
         Glide.with(context)
                 .load(libraryDataModel.getLibraryCoverPhotoDownloadUrl())
                 .centerCrop()
-                .placeholder(R.drawable.book_cover)
+                .placeholder(R.drawable.placeholder)
                 .into(holder.bookCover);
 
         GlobalConfig.getFirebaseFirestoreInstance()

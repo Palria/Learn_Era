@@ -34,7 +34,7 @@ public class TestActivity extends AppCompatActivity {
         @SuppressLint("RemoteViewLayout")
         RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_layout);
         //set image cover icon here
-        notificationLayout.setImageViewResource(R.id.icon, R.drawable.book_cover2);
+        notificationLayout.setImageViewResource(R.id.icon, R.drawable.placeholder);
         // Create an explicit intent for launching the MainActivity
         Intent intent = new Intent(this, MainActivity.class);
         // Create a PendingIntent from the intent
@@ -93,7 +93,7 @@ public class TestActivity extends AppCompatActivity {
         notificationLayout.setTextViewText(R.id.title, "Upload Completed");
         notificationLayout.setProgressBar(R.id.progress_bar,100,100,false);
         notificationLayout.setTextViewText(R.id.percent, "100% completed");
-        notificationLayout.setImageViewResource(R.id.icon,R.drawable.book_cover2);
+        notificationLayout.setImageViewResource(R.id.icon,R.drawable.placeholder);
 
 
         //intent where to redirect the user

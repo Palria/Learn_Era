@@ -846,8 +846,8 @@ public class UploadPageActivity extends AppCompatActivity {
         coverImageView =findViewById(R.id.coverImage);
         Glide.with(this)
                 .load("https://via.placeholder.com/640x360?text=Cover%20Image")
-                .placeholder(R.drawable.book_cover2)
-                .error(R.drawable.book_cover2)
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
                 .into(coverImageView);
 
 
@@ -1544,7 +1544,7 @@ public class UploadPageActivity extends AppCompatActivity {
 //        @SuppressLint("RemoteViewLayout")
         notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_layout);
         //set image cover icon here
-        notificationLayout.setImageViewResource(R.id.icon, R.drawable.book_cover2);
+        notificationLayout.setImageViewResource(R.id.icon, R.drawable.placeholder);
         // Create an explicit intent for launching the MainActivity
         Intent intent = new Intent(this, MainActivity.class);
         // Create a PendingIntent from the intent
@@ -1613,7 +1613,7 @@ public class UploadPageActivity extends AppCompatActivity {
         notificationLayout.setTextViewText(R.id.title, pageTitle1 + " page Upload Completed");
         notificationLayout.setProgressBar(R.id.progress_bar,100,100,false);
         notificationLayout.setTextViewText(R.id.percent, "100% completed");
-        notificationLayout.setImageViewResource(R.id.icon,R.drawable.book_cover2);
+        notificationLayout.setImageViewResource(R.id.icon,R.drawable.placeholder);
 
 
         //intent where to redirect the user

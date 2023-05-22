@@ -240,6 +240,7 @@ editor.insertLatex = function(latex) {
 editor.insertHTML = function(html) {
     editor.restorerange();
     document.execCommand('insertHTML', false, html);
+//    document.body.style.userSelect="none";
 }
 
 editor.insertLink = function(url, title) {

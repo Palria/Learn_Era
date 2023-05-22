@@ -99,7 +99,7 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
                 Glide.with(context)
                         .load(pageDataModel.getCoverDownloadUrl())
                         .centerCrop()
-                        .placeholder(R.drawable.book_cover)
+                        .placeholder(R.drawable.placeholder)
                         .into(holder.cover);
             } catch (Exception ignored) {
             }

@@ -8,9 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -25,15 +22,12 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.lib.rcheditor.WYSIWYG;
-import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
 
 import java.util.ArrayList;
@@ -68,6 +62,10 @@ ImageButton morePageActionButton;
     TextView authorName;
     HashMap<String,Integer> fetchedPagesNumber = new HashMap<>();
     HashMap<Integer,DocumentSnapshot> fetchedPagesSnapshot = new HashMap<>();
+
+    ImageButton backButton;
+
+
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,7 +158,7 @@ ImageButton morePageActionButton;
                                     .collection(GlobalConfig.BOOK_MARKS_KEY).document(pageId);
                             GlobalConfig.checkIfDocumentExists(bookMarkOwnerReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                                 @Override
-                                public void onExist() {
+                                public void onExist(DocumentSnapshot documentSnapshot) {
                                     saveSnackBar.dismiss();
 
                                     new AlertDialog.Builder(PageActivity.this)
@@ -315,6 +313,11 @@ ImageButton morePageActionButton;
 
             super.onBackPressed();
         }
+
+        backButton.setOnClickListener(view -> {
+            super.onBackPressed();
+        });
+
     }
 
     void initUI(){
@@ -331,6 +334,7 @@ ImageButton morePageActionButton;
         morePageActionButton=findViewById(R.id.morePageActionButtonId);
         previousButton=findViewById(R.id.previousButtonId);
         nextButton=findViewById(R.id.nextButtonId);
+        backButton=findViewById(R.id.backButton);
 
         pageContentViewer.setPadding(10,10,10,10);
         pageContentViewer.setEnabled(false);//disable editing.
@@ -490,7 +494,7 @@ ImageButton morePageActionButton;
 
         Glide.with(PageActivity.this)
                 .load(pageCoverImageDownloadUrl)
-                .placeholder(R.drawable.baseline_pages_24)
+                .placeholder(R.drawable.placeholder)
                 .into(coverImageView);
         viewCount.setText(viewCount1);
         bookmarkCountTextView.setText(bookmarkCount1);

@@ -38,7 +38,7 @@
             android:layout_marginHorizontal="5pt"
             android:layout_height="wrap_content"
             android:id="@+id/tabLayoutId"
-            android:background="@color/white"
+            android:background="@android:color/transparent"
             app:tabInlineLabel="false"
             app:tabGravity="fill"
             app:tabMode="fixed"

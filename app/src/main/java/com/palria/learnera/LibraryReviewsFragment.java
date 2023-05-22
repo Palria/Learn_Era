@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +32,9 @@ public class LibraryReviewsFragment extends Fragment {
     RecyclerView recyclerView;
     RatingItemRecyclerViewAdapter ratingItemRecyclerViewAdapter;
     ArrayList<RatingDataModel> ratingDataModels = new ArrayList<>();
+
+    LinearLayout noDataFound;
+    LinearLayout loadingLayout;
     public LibraryReviewsFragment() {
         // Required empty public constructor
     }
@@ -70,6 +74,8 @@ public class LibraryReviewsFragment extends Fragment {
 
 
     private void initUI(View parentView){
+        loadingLayout = parentView.findViewById(R.id.loadingLayout);
+        noDataFound = parentView.findViewById(R.id.noDataFound);
         //use the parentView to find the  Id as in : parentView.findViewById(...);
         ratingItemRecyclerViewAdapter = new RatingItemRecyclerViewAdapter(ratingDataModels,getContext());
         recyclerView = parentView.findViewById(R.id.ratingsRecyclerListView);
@@ -91,6 +97,7 @@ public class LibraryReviewsFragment extends Fragment {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         reviewFetchListener.onFailed(e.getMessage());
+                        loadingLayout.setVisibility(View.GONE);
                     }
                 })
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -137,6 +144,10 @@ public class LibraryReviewsFragment extends Fragment {
                                         });
 
 //                            reviewFetchListener.onSuccess( authorId, libraryId, tutorialId, dateReviewed, reviewComment, starLevel, isAuthorReview,isLibraryReview, isTutorialReview);
+                        }
+                        loadingLayout.setVisibility(View.GONE);
+                        if(queryDocumentSnapshots.size()==0){
+                            noDataFound.setVisibility(View.VISIBLE);
                         }
                     }
                 });
