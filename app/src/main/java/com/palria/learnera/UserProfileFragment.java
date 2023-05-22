@@ -129,7 +129,7 @@ public class UserProfileFragment extends Fragment {
         if(getArguments() != null){
             authorId = getArguments().getString(GlobalConfig.USER_ID_KEY);
         }
-        if((GlobalConfig.getBlockedItemsList().contains(authorId+""))) {
+        if((GlobalConfig.getBlockedItemsList().contains(authorId+"")) && !GlobalConfig.getCurrentUserId().equals(authorId+"")) {
         if(getActivity()!=null){
             getActivity().onBackPressed();
         }

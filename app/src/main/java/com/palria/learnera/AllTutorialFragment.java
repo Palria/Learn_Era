@@ -398,7 +398,7 @@ if(getArguments() != null){
 
                             }
                         }
-                        toggleContentsVisibility(true);
+                        //toggleContentsVisibility(true);
 
                         if(!v.canScrollVertically(View.LAYOUT_DIRECTION_RTL)){
                             if(!isLoadingMoreTutorial){

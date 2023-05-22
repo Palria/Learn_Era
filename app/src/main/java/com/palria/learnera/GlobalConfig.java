@@ -327,6 +327,10 @@ public class GlobalConfig {
 
 
 
+    public static final String ALL_CATEGORY_KEY = "ALL_CATEGORY_KEY";
+    public static final String CATEGORY_LIST_KEY = "CATEGORY_LIST_KEY";
+
+
     public static final String IS_FIRST_VIEW_KEY = "IS_FIRST_VIEW";
     public static final String STAR_RATING_ARRAY_KEY = "STAR_RATING_ARRAY";
 

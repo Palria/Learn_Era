@@ -569,5 +569,18 @@ private void setIsFirstOpen(boolean isFirstOpen){
     editor.apply();
 
 }
+private void fetchCategoryList(){
+    GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CATEGORY_KEY).document(GlobalConfig.ALL_CATEGORY_KEY).get().addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception e) {
+
+        }
+    }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        @Override
+        public void onSuccess(DocumentSnapshot documentSnapshot) {
+            ArrayList<String> allCategoryList = documentSnapshot.get(GlobalConfig.CATEGORY_LIST_KEY)!=null? (ArrayList<String>) documentSnapshot.get(GlobalConfig.CATEGORY_LIST_KEY):new ArrayList();
+        }
+    });
+}
 
 }
