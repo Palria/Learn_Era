@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     FrameLayout libraryFrameLayout;
     FrameLayout allTutorialFrameLayout;
     FrameLayout userProfileFrameLayout;
-
+    OnConfigurationLoadCallback onConfigurationLoadCallback;
     FloatingActionButton fab;
     Button menu_search_button;
 
@@ -95,11 +95,51 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         Toolbar tp = findViewById(R.id.topBar);
         setSupportActionBar(tp);
+        Log.d("LEARN_ERA_USER_ID",GlobalConfig.getCurrentUserId());
+        onConfigurationLoadCallback = new OnConfigurationLoadCallback() {
+            @Override
+            public void onLoad(DocumentSnapshot documentSnapshot) {
 
+                ArrayList<String> allCategoryList = documentSnapshot.get(GlobalConfig.CATEGORY_LIST_KEY)!=null? (ArrayList<String>) documentSnapshot.get(GlobalConfig.CATEGORY_LIST_KEY):new ArrayList();
 
+                GlobalConfig.setCategoryList(allCategoryList,MainActivity.this);
+                bottomAppBar.setVisibility(View.VISIBLE);
+                fab.setVisibility(View.VISIBLE);
+                bottomNavigationView.setOnNavigationItemSelectedListener(MainActivity.this);
+                bottomNavigationView.setSelectedItemId(R.id.home_item);
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+
+                if(GlobalConfig.isConnectedOnline(MainActivity.this)) {
+                    loadConfiguration();
+                }else{
+                    onConfigurationLoadCallback.onSuccess();
+                    Toast.makeText(MainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onSuccess() {
+
+                    bottomAppBar.setVisibility(View.VISIBLE);
+                    fab.setVisibility(View.VISIBLE);
+                    bottomNavigationView.setOnNavigationItemSelectedListener(MainActivity.this);
+                    bottomNavigationView.setSelectedItemId(R.id.home_item);
+//                    Toast.makeText(MainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+
+            }
+        };
 
             initUI();
-            initializeApp();
+            if(GlobalConfig.isCategorySaved(this)){
+                onConfigurationLoadCallback.onSuccess();
+            }
+
+        loadConfiguration();
+
+
+        initializeApp();
 
 
             fab.setOnClickListener(new View.OnClickListener() {
@@ -123,8 +163,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 //
 
-    private void toggleProgress(boolean show)
-    {
+    private void toggleProgress(boolean show) {
         if(show){
             alertDialog.show();
         }else{
@@ -137,13 +176,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
      * to avoid null pointer exception.
      * */
     private void initUI(){
-
-
-
         bottomAppBar = findViewById(R.id.bottomAppBar);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-
-
         homeFrameLayout = findViewById(R.id.homeFragment);
         libraryFrameLayout = findViewById(R.id.libraryFragment);
         allTutorialFrameLayout = findViewById(R.id.allTutorialFragment);
@@ -156,8 +190,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         bottomNavigationView.setBackground(null);
 //        bottomNavigationView.getIt
-        bottomNavigationView.setOnNavigationItemSelectedListener(this);
-        bottomNavigationView.setSelectedItemId(R.id.home_item);
         alertDialog = new AlertDialog.Builder(MainActivity.this)
                 .setCancelable(false)
                 .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
@@ -270,6 +302,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         }
                     }
                 }, 0)
+                .addOptionItem("Add Category", R.drawable.baseline_notifications_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(GlobalConfig.isUserLoggedIn()) {
+                            leBottomSheetDialog.hide();
+                            Intent intent = GlobalConfig.getHostActivityIntent(MainActivity.this,null,GlobalConfig.CATEGORY_FRAGMENT_TYPE_KEY,"");
+                                    startActivity(intent);
+                        }
+                    }
+                }, 0)
 //                .addOptionItem("New Post", R.drawable.ic_baseline_add_circle_24, new View.OnClickListener() {
 //                    @Override
 //                    public void onClick(View view) {
@@ -340,6 +382,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 
     }
+
     /**<p>Initializes global variables which will be shared across every activities</p>
      * This method has to be called immediately after the invocation of {@link MainActivity#initUI()}
      * */
@@ -569,8 +612,8 @@ private void setIsFirstOpen(boolean isFirstOpen){
     editor.apply();
 
 }
-private void fetchCategoryList(){
-    GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CATEGORY_KEY).document(GlobalConfig.ALL_CATEGORY_KEY).get().addOnFailureListener(new OnFailureListener() {
+private void loadConfiguration(){
+    GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.PLATFORM_CONFIGURATION_FILE_KEY).document(GlobalConfig.PLATFORM_CONFIGURATION_FILE_KEY).get().addOnFailureListener(new OnFailureListener() {
         @Override
         public void onFailure(@NonNull Exception e) {
 
@@ -578,9 +621,16 @@ private void fetchCategoryList(){
     }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
         @Override
         public void onSuccess(DocumentSnapshot documentSnapshot) {
-            ArrayList<String> allCategoryList = documentSnapshot.get(GlobalConfig.CATEGORY_LIST_KEY)!=null? (ArrayList<String>) documentSnapshot.get(GlobalConfig.CATEGORY_LIST_KEY):new ArrayList();
+            onConfigurationLoadCallback.onLoad(documentSnapshot);
         }
     });
 }
 
+//TODO: ALL_NOTIFICATIONS, PLATFORM_CONFIGURATION_FILE rules addition
+
+private interface OnConfigurationLoadCallback{
+        void onLoad(DocumentSnapshot documentSnapshot);
+        void onSuccess();
+        void onFailed(String errorMessage);
+}
 }

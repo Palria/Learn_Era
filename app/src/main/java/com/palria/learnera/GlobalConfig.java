@@ -3,6 +3,7 @@ package com.palria.learnera;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,6 +66,7 @@ public class GlobalConfig {
     private static ArrayList<String> lastViewedTutorialsIdArray = new ArrayList<>();
     private static ArrayList<String> BLOCKED_ITEM_LIST = new ArrayList<>();
     private static ArrayList<String> REPORTED_ITEM_LIST = new ArrayList<>();
+    private static ArrayList<String> categoryList = new ArrayList<>();
     /*FIRESTORE VARIABLE KEYS
     These String keys which will be  unique in  the database
     they are used to query a particular field within a document
@@ -92,6 +95,7 @@ public class GlobalConfig {
     public static final String TABLE_TYPE = "TABLE_TYPE";
 
 
+    public static final String PLATFORM_CONFIGURATION_FILE_KEY = "PLATFORM_CONFIGURATION_FILE";
     public static final String SEARCH_KEYWORD_KEY = "SEARCH_KEYWORD";
     public static final String IS_FROM_SEARCH_CONTEXT_KEY = "IS_FROM_SEARCH_CONTEXT";
 
@@ -106,6 +110,7 @@ public class GlobalConfig {
     public static final String LIBRARY_FRAGMENT_TYPE_KEY = "LIBRARY_FRAGMENT_TYPE";
     public static final String AUTHORS_FRAGMENT_TYPE_KEY = "AUTHORS_FRAGMENT_TYPE";
     public static final String TUTORIAL_FRAGMENT_TYPE_KEY = "TUTORIAL_FRAGMENT_TYPE";
+    public static final String CATEGORY_FRAGMENT_TYPE_KEY = "CATEGORY_FRAGMENT_TYPE";
 
     public static final String IS_AUTHOR_OPEN_TYPE_KEY = "IS_AUTHOR_OPEN_TYPE";
 
@@ -308,7 +313,7 @@ public class GlobalConfig {
 
     public static final String PAGE_ID_KEY = "PAGE_ID";
     public static final String IS_TUTORIAL_PAGE_KEY = "IS_TUTORIAL_PAGE";
-    public static final String IS_PAGINATION_KEY = "IS_PAGINATION_KEY";
+    public static final String IS_PAGINATION_KEY = "IS_PAGINATION";
     public static final String FOLDER_CREATED_DATE_TIME_STAMP_KEY = "FOLDER_CREATED_DATE_TIME_STAMP";
     public static final String TOTAL_NUMBER_OF_FOLDER_PAGES_KEY = "TOTAL_NUMBER_OF_FOLDER_PAGES";
 
@@ -316,8 +321,9 @@ public class GlobalConfig {
 
 
 
-    public static final String ALL_CATEGORY_KEY = "ALL_CATEGORY_KEY";
-    public static final String CATEGORY_LIST_KEY = "CATEGORY_LIST_KEY";
+    public static final String ALL_CATEGORY_KEY = "ALL_CATEGORY";
+    public static final String CATEGORY_LIST_KEY = "CATEGORY_LIST";
+    public static final String IS_CATEGORY_LIST_SAVED_KEY = "IS_CATEGORY_LIST_SAVED";
 
 
     public static final String IS_FIRST_VIEW_KEY = "IS_FIRST_VIEW";
@@ -444,12 +450,7 @@ public class GlobalConfig {
     public static final String ACTIVITY_LOG_USER_UNREPORT_LIBRARY_TYPE_KEY = "ACTIVITY_LOG_USER_UNREPORT_LIBRARY_TYPE";
     public static final String ACTIVITY_LOG_USER_UNREPORT_TUTORIAL_TYPE_KEY = "ACTIVITY_LOG_USER_UNREPORT_TUTORIAL_TYPE";
 
-
-
-
     public static final String _IS_PARTITION_ID_IS_FOR_IDENTIFYING_PARTITIONS_KEY = "_IS_PARTITION_ID_IS_FOR_IDENTIFYING_PARTITIONS_";
-
-
 
     public static final String PLATFORM_NOTIFICATIONS_KEY = "PLATFORM_NOTIFICATIONS";
     public static final String NOTIFICATION_ID_KEY = "NOTIFICATION_ID";
@@ -461,15 +462,8 @@ public class GlobalConfig {
     public static final String NOTIFICATION_MESSAGE_KEY = "NOTIFICATION_MESSAGE";
     public static final String NOTIFICATION_TITLE_KEY = "NOTIFICATION_TITLE";
 
-
-
-
-
     private static FirebaseFirestore firebaseFirestoreInstance;
     private static FirebaseStorage firebaseStorageInstance;
-
-
-
 
 /**
  * <p>This method performs a check to see whether a user is logged in or not</p>
@@ -478,6 +472,14 @@ public class GlobalConfig {
     static boolean isUserLoggedIn(){
 
         return FirebaseAuth.getInstance().getCurrentUser() != null;
+    }
+
+    /**This checks if the user is Learn Era Platform or not*/
+    static boolean isLearnEra(){
+if(getCurrentUserId().equals("learn era")) {
+    return true;
+}
+        return false;
     }
 
 /**
@@ -536,6 +538,66 @@ public class GlobalConfig {
            return FirebaseFirestore.getInstance();
        }
        return GlobalConfig.firebaseFirestoreInstance;
+    }
+    /**
+     * Sets the list of the platform's category
+     * */
+   static void setCategoryList(ArrayList<String> categoryList,Context context){
+        GlobalConfig.categoryList = categoryList;
+        StringBuilder categoryConcattedString = new StringBuilder("");
+       for(int i=0; i<categoryList.size();i++){
+           if(i<(categoryList.size()-1)) {
+               categoryConcattedString.append(categoryList.get(i) + ",");
+           } else{
+                   categoryConcattedString.append(categoryList.get(i));
+               }
+       }
+       SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(),Context.MODE_PRIVATE);
+       SharedPreferences.Editor editor = sharedPreferences.edit();
+       editor.putString(GlobalConfig.CATEGORY_LIST_KEY,categoryConcattedString+"");
+       editor.putBoolean(GlobalConfig.IS_CATEGORY_LIST_SAVED_KEY,true);
+       editor.apply();
+    }
+    /**
+ * Returns the list of the platform's category
+ * */
+   public static ArrayList<String> getCategoryList(Context context){
+
+       SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(),Context.MODE_PRIVATE);
+       String categorySavedList = sharedPreferences.getString(GlobalConfig.CATEGORY_LIST_KEY,"ALL,Basic Education,How To,Technology,Business,Skills");
+       boolean isSaved = sharedPreferences.getBoolean(GlobalConfig.IS_CATEGORY_LIST_SAVED_KEY,false);
+
+//       if(GlobalConfig.categoryList == null){
+//           ArrayList<String> categoryList = new ArrayList<>();
+//           categoryList.add("ALL");
+//           categoryList.add("Basic Education");
+//           categoryList.add("How To");
+//           categoryList.add("Technology");
+//           categoryList.add("Business");
+//           categoryList.add("Skills");
+//           return categoryList;
+//       }
+       if(isSaved){
+//           categoryList.add(categorySavedList.split(",")[0]);
+           categoryList = new ArrayList<>();
+
+           for(String category : categorySavedList.split(",")){
+               if (!categoryList.contains(category)) {
+                   categoryList.add(category);
+//                   Toast.makeText(context, ""+category, Toast.LENGTH_SHORT).show();
+               }
+           }
+
+       }
+       return GlobalConfig.categoryList;
+    }
+
+    public static boolean isCategorySaved(Context context){
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(),Context.MODE_PRIVATE);
+        boolean isSaved = sharedPreferences.getBoolean(GlobalConfig.IS_CATEGORY_LIST_SAVED_KEY,false);
+
+        return isSaved;
     }
 
     /**

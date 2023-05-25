@@ -124,7 +124,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Notify your customers about an update"
+        android:text="Notify your users about an update"
         android:textColor="@color/white"
         android:gravity="center_horizontal"
         app:layout_constraintBottom_toBottomOf="parent"

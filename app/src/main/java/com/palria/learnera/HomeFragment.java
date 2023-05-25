@@ -451,17 +451,24 @@ public class HomeFragment extends Fragment {
         });
 
 
-String[] categories = getResources().getStringArray(R.array.category);
-for(int i=0; i<categories.length; i++) {
+//String[] categories = getResources().getStringArray(R.array.category);
+ArrayList<String> categories = GlobalConfig.getCategoryList(getContext());
+for(int i=0; i<categories.size(); i++) {
     if(i==0) {
         TabLayout.Tab firstTabItem = tabLayout.newTab();
-        firstTabItem.setText(categories[0]);
+        firstTabItem.setText(categories.get(0));
         tabLayout.addTab(firstTabItem, 0, true);
+        Toast.makeText(getContext(),categories.get(i)+" ---1", Toast.LENGTH_SHORT).show();
+
     }else {
         TabLayout.Tab otherTabItem = tabLayout.newTab();
-        otherTabItem.setText(categories[i]);
+        otherTabItem.setText(categories.get(i));
         tabLayout.addTab(otherTabItem, i);
+        Toast.makeText(getContext(),categories.get(i)+" ---2", Toast.LENGTH_SHORT).show();
+
     }
+//    Toast.makeText(getContext(),categories.get(i), Toast.LENGTH_SHORT).show();
+
 }
         /*
         TabLayout.Tab graphicDesignTabItem= tabLayout.newTab();

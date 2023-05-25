@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    >
+    
+   
+    <EditText
+        android:id="@+id/categoryTitleEditTextId"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="Category"
+        android:inputType="textPersonName"
+        android:gravity="center"
+        android:visibility="visible"
+        
+        />
+
+    <EditText
+        android:id="@+id/categoryPositionEditTextId"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:hint="Position"
+        android:inputType="number"
+        android:background="@android:color/transparent"
+        android:longClickable="false"
+        android:gravity="center"
+        android:visibility="visible"
+        
+        />
+    <ImageButton
+        android:id="@+id/removeCategoryImageButtonId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_outline_cancel_24"
+        android:longClickable="false"
+        android:gravity="center"
+        android:visibility="visible"
+        
+        />
+
+</LinearLayout>

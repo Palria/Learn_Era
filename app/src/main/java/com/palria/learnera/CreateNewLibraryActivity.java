@@ -617,10 +617,12 @@ toggleProgress(false);
     }
 
     private void getDynamicCategories() {
-String[] categories = getResources().getStringArray(R.array.category);
+//String[] categories = getResources().getStringArray(R.array.category);
+//
 
-        libraryCategoryArrayList=new ArrayList<>();
-        libraryCategoryArrayList.addAll(Arrays.asList(categories));
+        libraryCategoryArrayList = GlobalConfig.getCategoryList(getApplicationContext());
+//        libraryCategoryArrayList=new ArrayList<>();
+//        libraryCategoryArrayList.addAll(Arrays.asList(categories));
 //        libraryCategoryArrayList.add("Web Development");
 //        libraryCategoryArrayList.add("Graphic Design");
 //        libraryCategoryArrayList.add("Ui Design");

@@ -100,9 +100,9 @@ public class UserProfileFragment extends Fragment {
     ShimmerFrameLayout shimmerLayout;
 
     //replace all categories with categories from database
-    String[] categories = {"Software Development", "Ui Design", "Web Development", "Machine Learning",
-    "Database Design", "Furniture", "Internet", "Communication", "Story", "Drama", "Podcasts","Java","Android Dev","Python","Data Learning","OOPs Concept","Artificial Intelligence"};
-
+//    String[] categories = {"Software Development", "Ui Design", "Web Development", "Machine Learning",
+//    "Database Design", "Furniture", "Internet", "Communication", "Story", "Drama", "Podcasts","Java","Android Dev","Python","Data Learning","OOPs Concept","Artificial Intelligence"};
+    String[] categories = new String[1];
 
     boolean[] checkedCategories;
     ArrayList<Integer> catsList = new ArrayList<>();
@@ -147,8 +147,13 @@ public class UserProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
        View parentView = inflater.inflate(R.layout.fragment_user_profile, container, false);
-        if(!(GlobalConfig.getBlockedItemsList().contains(authorId+""))) {
+        if((GlobalConfig.getCurrentUserId().equals(authorId+"")) || !(GlobalConfig.getBlockedItemsList().contains(authorId+""))) {
             initUI(parentView);
+            categories =  new String[GlobalConfig.getCategoryList(getContext()).size()];
+
+                    for(int i=0; i<GlobalConfig.getCategoryList(getContext()).size();i++){
+                        categories[i] = GlobalConfig.getCategoryList(getContext()).get(i);
+                    }
             loadCurrentUserProfile();
 
             fetchAllLibrary(new LibraryFetchListener() {

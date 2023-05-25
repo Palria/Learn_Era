@@ -231,7 +231,7 @@ if(getArguments() != null){
          }
 
     private void fetchTutorial(String tutorialCategoryTag) {
-        Query tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY, GlobalConfig.getCurrentUserId());
+        Query tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY, GlobalConfig.getCurrentUserId()).limit(10);
 
         if (!isLoadingMoreTutorial) {
 
@@ -243,7 +243,7 @@ if(getArguments() != null){
 
 
             if (isFromLibraryActivityContext) {
-                tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.LIBRARY_CONTAINER_ID_KEY, libraryId);
+                tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.LIBRARY_CONTAINER_ID_KEY, libraryId).limit(10);
 
             } else {
 
@@ -251,23 +251,23 @@ if(getArguments() != null){
 
                 if (open_type.equals(OPEN_TYPE_USER_TUTORIAL)) {
                     if(lastRetrievedTutorialSnapshot == null) {
-                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY, authorId);
+                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY, authorId).limit(10);
                     }else{
-                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY, authorId).startAfter(lastRetrievedTutorialSnapshot);
+                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY, authorId).startAfter(lastRetrievedTutorialSnapshot).limit(10);
 
                     }
                 } else if (open_type.equals(OPEN_TYPE_ALL_TUTORIAL)) {
                     if(lastRetrievedTutorialSnapshot == null) {
-                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY);
+                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).limit(10);
                     }else {
-                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).startAfter(lastRetrievedTutorialSnapshot);
+                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).startAfter(lastRetrievedTutorialSnapshot).limit(10);
                         ;
                     }
                 } else if (isFromSearchContext) {
                     if(lastRetrievedTutorialSnapshot == null) {
-                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereArrayContains(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY, searchKeyword);
+                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereArrayContains(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY, searchKeyword).limit(10);
                     }else{
-                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereArrayContains(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY, searchKeyword).startAfter(lastRetrievedTutorialSnapshot);
+                        tutorialQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereArrayContains(GlobalConfig.TUTORIAL_SEARCH_ANY_MATCH_KEYWORD_KEY, searchKeyword).startAfter(lastRetrievedTutorialSnapshot).limit(10);
 
                     }
 
@@ -293,9 +293,9 @@ if(getArguments() != null){
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                         @Override
                         public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-                        tutorialDataModels.clear();
-                        popularTutorialsListViewAdapter.notifyDataSetChanged();
+//
+//                        tutorialDataModels.clear();
+//                        popularTutorialsListViewAdapter.notifyDataSetChanged();
                         if(queryDocumentSnapshots.size()==0 && isFromLibraryActivityContext){
                             noDataFound.setVisibility(View.VISIBLE);
                             TextView tv = noDataFound.findViewById(R.id.title);

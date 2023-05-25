@@ -116,6 +116,11 @@ public class HostActivity extends AppCompatActivity {
                 }
                 initFragment(bundle,new AllTutorialFragment());
                 break;
+            case GlobalConfig.CATEGORY_FRAGMENT_TYPE_KEY:
+                bundle = new Bundle();
+                materialToolbar.setTitle("Category");
+                initFragment(bundle, new AddCategoryFragment());
+                break;
         }
     }
 
