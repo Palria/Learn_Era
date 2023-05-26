@@ -38,6 +38,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.palria.learnera.bootservice.BootReceiver;
+import com.palria.learnera.bootservice.BootService;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
 import com.palria.learnera.models.StatisticsDataModel;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
@@ -80,6 +82,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
 
         super.onCreate(savedInstanceState);
+
+
         if(isFirstOpen()){
             setIsFirstOpen(false);
             Intent intent = new Intent(MainActivity.this,WelcomeActivity.class);
