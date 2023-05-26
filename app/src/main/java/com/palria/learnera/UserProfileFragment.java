@@ -108,6 +108,9 @@ public class UserProfileFragment extends Fragment {
     ArrayList<Integer> catsList = new ArrayList<>();
     ArrayList<String> selectedCategories = new ArrayList<>();
 
+    LinearLayout noLibraryFoundView ;
+    LinearLayout noTutorialFoundView ;
+
     public UserProfileFragment() {
         // Required empty public constructor
     }
@@ -453,6 +456,9 @@ public class UserProfileFragment extends Fragment {
             statsButton = parentView.findViewById(R.id.statsButton);
             ratedIcon = parentView.findViewById(R.id.ratedIcon);
             bookmarkedIcon = parentView.findViewById(R.id.bookmarkedIcon);
+
+            noLibraryFoundView = parentView.findViewById(R.id.noLibraryFoundView);
+            noTutorialFoundView = parentView.findViewById(R.id.noTutorialsFoundView);
 
 
             numOfLibraryTutorialRatingsLinearLayout = parentView.findViewById(R.id.numOfLibraryTutorialRatingsLinearLayoutId);
@@ -1208,6 +1214,16 @@ public class UserProfileFragment extends Fragment {
 //                                    documentSnapshot
                             ));
                         }
+
+                        if(queryDocumentSnapshots.size()==0){
+                            //show not found
+
+                            noLibraryFoundView.setVisibility(View.VISIBLE);
+
+                        }else{
+                            noLibraryFoundView.setVisibility(View.GONE);
+                        }
+
                     }
                 });
 
@@ -1281,6 +1297,15 @@ public class UserProfileFragment extends Fragment {
                             ));
 
 
+                        }
+
+                        if(queryDocumentSnapshots.size()==0){
+                            //show not found message
+
+                            noTutorialFoundView.setVisibility(View.VISIBLE);
+
+                        }else{
+                            noTutorialFoundView.setVisibility(View.GONE);
                         }
                     }
                 });

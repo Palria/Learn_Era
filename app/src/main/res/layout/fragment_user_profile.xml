@@ -15,7 +15,6 @@
 
     <com.facebook.shimmer.ShimmerFrameLayout
         app:shimmer_auto_start="true"
-        android:visibility="gone"
         android:id="@+id/shimmerLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -246,12 +245,11 @@
 
 
     <androidx.core.widget.NestedScrollView
-
         android:id="@+id/scrollView"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
+        android:visibility="gone"
         >
 
         <LinearLayout
@@ -636,9 +634,32 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recentLibraryRcv"
                     android:layout_marginTop="5pt"
-                    tools:listitem="@layout/home_single_library_item_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:paddingHorizontal="10pt"
+                    android:id="@+id/noLibraryFoundView"
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="60pt">
+
+                    <ImageView
+                        android:layout_margin="5pt"
+                        android:src="@drawable/undraw_no_data_re_kwbl"
+                        android:layout_width="20pt"
+                        android:layout_height="20pt"/>
+
+                    <TextView
+                        android:textAlignment="center"
+                        android:text="No Data Found..."
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -704,6 +725,31 @@
                 tools:listitem="@layout/single_tutorial_item_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:paddingBottom="15pt"
+                android:orientation="vertical"
+                android:paddingHorizontal="10pt"
+                android:id="@+id/noTutorialsFoundView"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="70pt">
+
+                <ImageView
+                    android:layout_margin="5pt"
+                    android:src="@drawable/undraw_no_data_re_kwbl"
+                    android:layout_width="20pt"
+                    android:layout_height="20pt"/>
+
+                <TextView
+                    android:textAlignment="center"
+                    android:text="No Data Found..."
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
