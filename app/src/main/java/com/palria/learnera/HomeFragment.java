@@ -458,13 +458,13 @@ for(int i=0; i<categories.size(); i++) {
         TabLayout.Tab firstTabItem = tabLayout.newTab();
         firstTabItem.setText(categories.get(0));
         tabLayout.addTab(firstTabItem, 0, true);
-        Toast.makeText(getContext(),categories.get(i)+" ---1", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(),categories.get(i)+" ---1", Toast.LENGTH_SHORT).show();
 
     }else {
         TabLayout.Tab otherTabItem = tabLayout.newTab();
         otherTabItem.setText(categories.get(i));
         tabLayout.addTab(otherTabItem, i);
-        Toast.makeText(getContext(),categories.get(i)+" ---2", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(),categories.get(i)+" ---2", Toast.LENGTH_SHORT).show();
 
     }
 //    Toast.makeText(getContext(),categories.get(i), Toast.LENGTH_SHORT).show();
