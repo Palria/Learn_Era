@@ -10,8 +10,12 @@ import androidx.core.splashscreen.SplashScreen;
 import androidx.fragment.app.Fragment;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -82,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
 
         super.onCreate(savedInstanceState);
-
+//manageNotificationAlarmBroadCast();
 
         if(isFirstOpen()){
             setIsFirstOpen(false);
@@ -96,6 +100,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 //        startActivity(new Intent(MainActivity.this, UploadPageActivity.class));
 
+
+//        Intent intent1 = new Intent(this, BootService.class);
+//        startForegroundService(intent1);
+
+//registerReceiver(new BootReceiver(){
+//    @Override
+//    public void onReceive(Context context, Intent intent) {
+//        super.onReceive(context, intent);
+//    }
+//},new IntentFilter(Intent.ACTION_SCREEN_ON));
 
         Toolbar tp = findViewById(R.id.topBar);
         setSupportActionBar(tp);
@@ -179,14 +193,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
      * This method must be invoked first after the inVocation of {@link AppCompatActivity#setContentView(View)} and  before any initializations
      * to avoid null pointer exception.
      * */
-    private void initUI(){
+    private void initUI() {
         bottomAppBar = findViewById(R.id.bottomAppBar);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         homeFrameLayout = findViewById(R.id.homeFragment);
         libraryFrameLayout = findViewById(R.id.libraryFragment);
         allTutorialFrameLayout = findViewById(R.id.allTutorialFragment);
         userProfileFrameLayout = findViewById(R.id.userProfileFragment);
-        currentUserProfile=findViewById(R.id.currentUserProfile);
+        currentUserProfile = findViewById(R.id.currentUserProfile);
 
 
         fab = findViewById(R.id.fab);
@@ -196,126 +210,140 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //        bottomNavigationView.getIt
         alertDialog = new AlertDialog.Builder(MainActivity.this)
                 .setCancelable(false)
-                .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
+                .setView(getLayoutInflater().inflate(R.layout.default_loading_layout, null))
                 .create();
 
         leBottomSheetDialog = new LEBottomSheetDialog(this);
 
         leBottomSheetDialog.addOptionItem("New Library", R.drawable.ic_baseline_library_add_24, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(GlobalConfig.isUserLoggedIn()) {
+            @Override
+            public void onClick(View view) {
+                if (GlobalConfig.isUserLoggedIn()) {
 
-                            Intent i = new Intent(MainActivity.this, CreateNewLibraryActivity.class);
-                        //creating new
+                    Intent i = new Intent(MainActivity.this, CreateNewLibraryActivity.class);
+                    //creating new
 
-                        i.putExtra(GlobalConfig.IS_CREATE_NEW_LIBRARY_KEY,true);
-                        leBottomSheetDialog.hide();
-                        startActivity(i);
-                        }else{
-                            Intent intent = new Intent(MainActivity.this,SignInActivity.class);
-                            startActivity(intent);
-                        }
+                    i.putExtra(GlobalConfig.IS_CREATE_NEW_LIBRARY_KEY, true);
+                    leBottomSheetDialog.hide();
+                    startActivity(i);
+                } else {
+                    Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+                    startActivity(intent);
+                }
 
-                    }
-                },0)
+            }
+        }, 0)
                 .addOptionItem("New Tutorial", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(GlobalConfig.isUserLoggedIn()) {
+                        if (GlobalConfig.isUserLoggedIn()) {
                             leBottomSheetDialog.hide();
-                        toggleProgress(true);
+                            toggleProgress(true);
 
-                        GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY)
-                                .whereEqualTo(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserId())
-                                .get()
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        toggleProgress(false);
+                            GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY)
+                                    .whereEqualTo(GlobalConfig.LIBRARY_AUTHOR_ID_KEY, GlobalConfig.getCurrentUserId())
+                                    .get()
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            toggleProgress(false);
 
-                                    }
-                                })
-                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        toggleProgress(false);
+                                        }
+                                    })
+                                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                            toggleProgress(false);
 
-                                        ArrayList<String>libraryIdArrayList= new ArrayList<>();
-                                        ArrayList<String>libraryNameArrayList= new ArrayList<>();
-                                        ArrayList<ArrayList<String>>libraryCategoryArrayList = new ArrayList<>();
-                                    for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                                       String libraryId = documentSnapshot.getId();
-                                       String libraryName = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
-                                       ArrayList<String> libraryCategory = (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
-                                        libraryIdArrayList.add(libraryId);
-                                        libraryNameArrayList.add(libraryName);
-                                        libraryCategoryArrayList.add(libraryCategory);
+                                            ArrayList<String> libraryIdArrayList = new ArrayList<>();
+                                            ArrayList<String> libraryNameArrayList = new ArrayList<>();
+                                            ArrayList<ArrayList<String>> libraryCategoryArrayList = new ArrayList<>();
+                                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                                String libraryId = documentSnapshot.getId();
+                                                String libraryName = "" + documentSnapshot.get(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY);
+                                                ArrayList<String> libraryCategory = (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY);
+                                                libraryIdArrayList.add(libraryId);
+                                                libraryNameArrayList.add(libraryName);
+                                                libraryCategoryArrayList.add(libraryCategory);
 
 
-                                    }
-                                        // Initialize alert dialog
-                                        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
+                                            }
+                                            // Initialize alert dialog
+                                            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
 
-                                        // set title
-                                        builder.setTitle("Select Library to add tutorial.");
+                                            // set title
+                                            builder.setTitle("Select Library to add tutorial.");
 
-                                        // set dialog non cancelable
-                                        builder.setCancelable(true);
+                                            // set dialog non cancelable
+                                            builder.setCancelable(true);
 
-                                        String[] arr = new String[libraryNameArrayList.size()];
-                                        for(int i=0; i<arr.length;i++){
-                                            arr[i]=libraryNameArrayList.get(i);
+                                            String[] arr = new String[libraryNameArrayList.size()];
+                                            for (int i = 0; i < arr.length; i++) {
+                                                arr[i] = libraryNameArrayList.get(i);
+                                            }
+
+                                            builder.setSingleChoiceItems(arr, 0, (dialog, which) -> {
+
+                                                Intent i = new Intent(MainActivity.this, CreateNewTutorialActivity.class);
+                                                //creating new
+
+                                                i.putExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY, true);
+                                                i.putExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY, libraryCategoryArrayList.get(which));
+                                                i.putExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY, libraryIdArrayList.get(which));
+                                                i.putExtra(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY, libraryNameArrayList.get(which));
+
+                                                startActivity(i);
+                                                // when selected an item the dialog should be closed with the dismiss method
+                                                dialog.dismiss();
+                                            });
+
+                                            // show dialog
+                                            builder.show();
+
                                         }
 
-                                        builder.setSingleChoiceItems(arr, 0, (dialog, which) -> {
+                                    });
 
-                                            Intent i = new Intent(MainActivity.this, CreateNewTutorialActivity.class);
-                                            //creating new
-
-                                            i.putExtra(GlobalConfig.IS_CREATE_NEW_TUTORIAL_KEY,true);
-                                            i.putExtra(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,libraryCategoryArrayList.get(which));
-                                            i.putExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryIdArrayList.get(which));
-                                            i.putExtra(GlobalConfig.LIBRARY_DISPLAY_NAME_KEY, libraryNameArrayList.get(which));
-
-                                            startActivity(i);
-                                            // when selected an item the dialog should be closed with the dismiss method
-                                            dialog.dismiss();
-                                        });
-
-                                        // show dialog
-                                        builder.show();
-
-                                    }
-
-                                });
-
-                        }else{
-                            Intent intent = new Intent(MainActivity.this,SignInActivity.class);
+                        } else {
+                            Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+                            startActivity(intent);
+                        }
+                    }
+                }, 0);
+        if(GlobalConfig.isLearnEraAccount()){
+        leBottomSheetDialog.addOptionItem("Notify", R.drawable.baseline_notifications_24, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (GlobalConfig.isUserLoggedIn()) {
+                    leBottomSheetDialog.hide();
+                    Intent intent = new Intent(MainActivity.this, CreateNewNotificationActivity.class);
+                    startActivity(intent);
+                }
+            }
+        }, 0)
+                .addOptionItem("Add Category", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (GlobalConfig.isUserLoggedIn()) {
+                            leBottomSheetDialog.hide();
+                            Intent intent = GlobalConfig.getHostActivityIntent(MainActivity.this, null, GlobalConfig.CATEGORY_FRAGMENT_TYPE_KEY, "");
                             startActivity(intent);
                         }
                     }
                 }, 0)
-                .addOptionItem("Notify", R.drawable.baseline_notifications_24, new View.OnClickListener() {
+                .addOptionItem("Verify Accounts", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(GlobalConfig.isUserLoggedIn()) {
+                        if (GlobalConfig.isUserLoggedIn()) {
+                            Intent i = new Intent(MainActivity.this, HostActivity.class);
+                            i.putExtra(GlobalConfig.IS_ACCOUNT_VERIFICATION_KEY, true);
+                            startActivity(GlobalConfig.getHostActivityIntent(MainActivity.this, i, GlobalConfig.AUTHORS_FRAGMENT_TYPE_KEY, null));
+
                             leBottomSheetDialog.hide();
-                            Intent intent = new Intent(MainActivity.this,CreateNewNotificationActivity.class);
-                            startActivity(intent);
                         }
                     }
-                }, 0)
-                .addOptionItem("Add Category", R.drawable.baseline_notifications_24, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(GlobalConfig.isUserLoggedIn()) {
-                            leBottomSheetDialog.hide();
-                            Intent intent = GlobalConfig.getHostActivityIntent(MainActivity.this,null,GlobalConfig.CATEGORY_FRAGMENT_TYPE_KEY,"");
-                                    startActivity(intent);
-                        }
-                    }
-                }, 0)
+                }, 0);
+    }
 //                .addOptionItem("New Post", R.drawable.ic_baseline_add_circle_24, new View.OnClickListener() {
 //                    @Override
 //                    public void onClick(View view) {
@@ -327,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //                    }
 //                }, 0)
 
-                .render();
+        leBottomSheetDialog.render();
 
 
         currentUserProfile.setOnClickListener(new View.OnClickListener() {
@@ -494,20 +522,22 @@ if(GlobalConfig.isUserLoggedIn()) {
         frameLayoutToSetVisible.setVisibility(View.VISIBLE);
     }
 
-    void fetchToken(){
-    FirebaseAuth.getInstance().getCurrentUser().getIdToken(false).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
-        @Override
-        public void onSuccess(GetTokenResult getTokenResult) {
-            GlobalConfig.setCurrentUserTokenId(getTokenResult.getToken());
+    void fetchToken() {
+        if( FirebaseAuth.getInstance().getCurrentUser()!=null){
+        FirebaseAuth.getInstance().getCurrentUser().getIdToken(false).addOnSuccessListener(new OnSuccessListener<GetTokenResult>() {
+            @Override
+            public void onSuccess(GetTokenResult getTokenResult) {
+                GlobalConfig.setCurrentUserTokenId(getTokenResult.getToken());
 
-        }
-    }).addOnFailureListener(new OnFailureListener() {
-        @Override
-        public void onFailure(@NonNull Exception e) {
-        //retries recursively until it succeeds
-            fetchToken();
-        }
-    });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //retries recursively until it succeeds
+                fetchToken();
+            }
+        });
+    }
 }
 
     private void initUserProfileData(){
@@ -548,7 +578,10 @@ if(GlobalConfig.isUserLoggedIn()) {
                             String userProfileImageDownloadUrl = documentSnapshot.getString(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
                             long totalNumberOfLibraries = (documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)!= null) ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY) : 0L;
                             boolean isAnAuthor = (documentSnapshot.get(GlobalConfig.IS_USER_AUTHOR_KEY)!=null )? (documentSnapshot.getBoolean(GlobalConfig.IS_USER_AUTHOR_KEY)) : false;
-
+                            boolean isAccountVerified = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY):false;
+                            boolean isAccountSubmittedForVerification = documentSnapshot.get(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY):false;
+                            GlobalConfig.setIsCurrentUserAccountVerified(isAccountVerified);
+                            GlobalConfig.setIsAccountSubmittedForVerification(isAccountSubmittedForVerification);
                             //show current user profile there .
                         try {
                             Glide.with(MainActivity.this)
@@ -600,7 +633,14 @@ if(GlobalConfig.isUserLoggedIn()) {
     FirebaseAuth.getInstance().signOut();
     finish();
     GlobalConfig.setCurrentUserId(null);
-    startActivity(new Intent(MainActivity.this,WelcomeActivity.class));
+        SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(),MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear().apply();
+        try {
+            GlobalConfig.class.newInstance();
+        }catch(Exception e){};
+        startActivity(new Intent(MainActivity.this,WelcomeActivity.class));
+         MainActivity.this.finish();
 
 }
 
@@ -631,6 +671,14 @@ private void loadConfiguration(){
 }
 
 //TODO: ALL_NOTIFICATIONS, PLATFORM_CONFIGURATION_FILE rules addition
+private void manageNotificationAlarmBroadCast(){
+    Intent intent = new Intent(this,BootReceiver.class);
+    PendingIntent pendingIntent = PendingIntent.getBroadcast(this.getApplicationContext(),2002,intent,0);
+    AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+    alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),60*60*1000,pendingIntent);
+
+}
 
 private interface OnConfigurationLoadCallback{
         void onLoad(DocumentSnapshot documentSnapshot);

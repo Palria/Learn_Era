@@ -1,5 +1,6 @@
 package com.palria.learnera.bootservice;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -28,11 +29,12 @@ public class BootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         this.context = context;
         createNotificationChannel(context); //creates notification channel.
-        Toast.makeText(context, "oo good bro", Toast.LENGTH_LONG).show();
-        Log.d("", "onReceive: ");
+        Log.d("FROM BOOT RECEIVER", "onReceive: HAS TRIGGERED ");
         Intent intent1 = new Intent(context, BootService.class);
         showNotification(context);//show
-        context.startService(intent);
+        context.startService(intent1);
+        Toast.makeText(context, "oo good bro", Toast.LENGTH_LONG).show();
+
     }
 
     public static void createNotificationChannel(Context context) {
@@ -51,7 +53,7 @@ public class BootReceiver extends BroadcastReceiver {
         }
     }
 
-    public static void showNotification(Context context) {
+    public static Notification showNotification(Context context) {
         LocalTime currentTime = LocalTime.now();
         String greeting="";
         int current_hour = Integer.parseInt(currentTime.toString().substring(0,2));
@@ -76,6 +78,11 @@ public class BootReceiver extends BroadcastReceiver {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(1, builder.build());
+
+        Notification builder1 = builder.build();
+        notificationManager.notify(1, builder1);
+
+        return builder1;
+
     }
 }

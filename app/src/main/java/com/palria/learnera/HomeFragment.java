@@ -77,6 +77,10 @@ public class HomeFragment extends Fragment {
         LinearLayout homeContents;
         TextView greetingTextView;
 
+        boolean isLibraryFound = false;
+        boolean isTutorialFound = false;
+        boolean isAuthorFound = false;
+
     ArrayList<AuthorDataModel> modelArrayList = new ArrayList<AuthorDataModel>();
     HomeAuthorListViewAdapter popularAuthorAdapter;
     ArrayList<LibraryDataModel> libraryArrayList = new ArrayList<>();
@@ -616,6 +620,8 @@ private void changeCategory(String categorySelected){
 //                                Toast.makeText(getContext(), "" +GlobalConfig.getBlockedItemsList().get(i), Toast.LENGTH_SHORT).show();
 //                            }
                         }
+                        toggleContentsVisibility(true);
+
                     }
                 });
     }
@@ -689,6 +695,8 @@ private void changeCategory(String categorySelected){
 
 
                         }
+                        toggleContentsVisibility(true);
+
                     }
                 });
     }
@@ -764,6 +772,8 @@ private void changeCategory(String categorySelected){
 
 
                         }
+                        toggleContentsVisibility(true);
+
                     }
                 });
     }

@@ -22,6 +22,8 @@ public class UsersDataModel implements Serializable {
      * in the database
      * */
     boolean isAnAuthor;
+    /**Tells if this user is verified or not*/
+    boolean isAccountVerified;
     /**The user's gender/sex*/
     String gender;
     /**The date when the user created his profile */
@@ -78,6 +80,7 @@ public class UsersDataModel implements Serializable {
             String userProfileImageDownloadUrl,
             int totalNumberOfLibrariesCreated,
             boolean isAnAuthor,
+            boolean isAccountVerified,
             String gender,
             String dateRegistered,
             String userPhoneNumber,
@@ -98,6 +101,7 @@ public class UsersDataModel implements Serializable {
         this.userProfileImageDownloadUrl = userProfileImageDownloadUrl;
         this.totalNumberOfLibrariesCreated = totalNumberOfLibrariesCreated;
         this.isAnAuthor = isAnAuthor;
+        this.isAccountVerified = isAccountVerified;
         this.gender = gender;
         this.dateRegistered = dateRegistered;
         this.userPhoneNumber = userPhoneNumber;
@@ -152,6 +156,13 @@ public class UsersDataModel implements Serializable {
     }
     void setIsAnAuthor(boolean isAnAuthor) {
         this.isAnAuthor = isAnAuthor;
+    }
+
+    public boolean isAccountVerified() {
+        return isAccountVerified;
+    }
+    public void setIsAccountVerified(boolean isAccountVerified) {
+        this.isAccountVerified = isAccountVerified;
     }
 
 

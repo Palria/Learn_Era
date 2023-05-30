@@ -37,11 +37,15 @@ public class UserReviewsFragment extends Fragment {
     RatingItemRecyclerViewAdapter ratingItemRecyclerViewAdapter;
     ArrayList<RatingDataModel> ratingDataModels = new ArrayList<>();
     View noDataFound;
+    String userId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if(getArguments()!=null){
+            userId = getArguments().getString(GlobalConfig.USER_ID_KEY,"0");
+        }
     }
 
     @Override
@@ -110,8 +114,11 @@ public class UserReviewsFragment extends Fragment {
     private  void fetchReviews(ReviewFetchListener reviewFetchListener){
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_USERS_KEY)
-                .document(GlobalConfig.getCurrentUserId())
+                .document(userId)
                 .collection(GlobalConfig.REVIEWS_KEY)
+//                .whereEqualTo(GlobalConfig.IS_AUTHOR_REVIEW_KEY,true)
+//                .document(GlobalConfig.getCurrentUserId())
+//                .collection(GlobalConfig.REVIEWS_KEY)
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override

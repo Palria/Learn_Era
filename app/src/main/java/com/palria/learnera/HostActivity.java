@@ -75,7 +75,15 @@ public class HostActivity extends AppCompatActivity {
             case GlobalConfig.AUTHORS_FRAGMENT_TYPE_KEY:
                 bundle = new Bundle();
                 bundle.putBoolean(GlobalConfig.IS_AUTHOR_OPEN_TYPE_KEY, true);
-                materialToolbar.setTitle("Authors");
+                if(getIntent().getBooleanExtra(GlobalConfig.IS_ACCOUNT_VERIFICATION_KEY,false)) {
+                    materialToolbar.setTitle("Verify accounts");
+
+                    bundle.putBoolean(GlobalConfig.IS_AUTHOR_OPEN_TYPE_KEY, false);
+                    bundle.putBoolean(GlobalConfig.IS_ACCOUNT_VERIFICATION_KEY, getIntent().getBooleanExtra(GlobalConfig.IS_ACCOUNT_VERIFICATION_KEY,false));
+
+                }else{
+                    materialToolbar.setTitle("Authors");
+                }
                 initFragment(bundle, new AllUsersFragment());
                 break;
             case GlobalConfig.LIBRARY_FRAGMENT_TYPE_KEY:

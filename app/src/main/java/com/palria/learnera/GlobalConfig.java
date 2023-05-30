@@ -67,11 +67,15 @@ public class GlobalConfig {
     private static ArrayList<String> BLOCKED_ITEM_LIST = new ArrayList<>();
     private static ArrayList<String> REPORTED_ITEM_LIST = new ArrayList<>();
     private static ArrayList<String> categoryList = new ArrayList<>();
+    private static boolean isCurrentUserAccountVerified = false;
+    private static boolean isCurrentUserAccountVerificationDeclined = false;
+    private static boolean isAccountSubmittedForVerification = false;
     /*FIRESTORE VARIABLE KEYS
     These String keys which will be  unique in  the database
     they are used to query a particular field within a document
     they have to be unique in a particular document
     */
+
 
 
 
@@ -133,6 +137,19 @@ public class GlobalConfig {
     public static final String IS_USER_PROFILE_COMPLETED_KEY = "IS_USER_PROFILE_COMPLETED";
     public static final String USER_RESIDENTIAL_ADDRESS_KEY = "USER_RESIDENTIAL_ADDRESS";
     public static final String USER_AGE_KEY = "USER_AGE";
+
+    public static final String IS_ACCOUNT_VERIFIED_KEY = "IS_ACCOUNT_VERIFIED";
+    public static final String DATE_VERIFIED_TIME_STAMP_KEY = "DATE_VERIFIED_TIME_STAMP";
+    public static final String DATE_UNVERIFIED_TIME_STAMP_KEY = "DATE_UNVERIFIED_TIME_STAMP";
+    public static final String IS_ACCOUNT_VERIFICATION_KEY = "IS_ACCOUNT_VERIFICATION";
+    public static final String IS_ACCOUNT_VERIFICATION_DECLINED_KEY = "IS_ACCOUNT_VERIFICATION_DECLINED";
+    public static final String DATE_DECLINED_TIME_STAMP_KEY = "DATE_DECLINED_TIME_STAMP";
+    public static final String ACCOUNT_VERIFICATION_DECLINE_REASONS_LIST_KEY = "ACCOUNT_VERIFICATION_DECLINE_REASONS_LIST";
+    public static final String IS_SUBMITTED_FOR_VERIFICATION_KEY = "IS_SUBMITTED_FOR_VERIFICATION";
+    public static final String IS_ACCOUNT_VERIFICATION_SEEN_KEY = "IS_ACCOUNT_VERIFICATION_SEEN";
+    public static final String IS_ACCOUNT_VERIFICATION_DECLINE_SEEN_KEY = "IS_ACCOUNT_VERIFICATION_DECLINE_SEEN";
+    public static final String DATE_VERIFICATION_SUBMITTED_TIME_STAMP_KEY = "DATE_VERIFICATION_SUBMITTED_TIME_STAMP";
+
     public static final String USER_DOCUMENT_SNAPSHOT_KEY = "USER_DOCUMENT_SNAPSHOT";
     public static final String USER_DATA_MODEL_KEY = "USER_DATA_MODEL_KEY";
     public static final String IS_USER_BLOCKED_KEY = "IS_USER_BLOCKED";
@@ -475,8 +492,8 @@ public class GlobalConfig {
     }
 
     /**This checks if the user is Learn Era Platform or not*/
-    static boolean isLearnEra(){
-if(getCurrentUserId().equals("learn era")) {
+    public static boolean isLearnEraAccount(){
+if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
     return true;
 }
         return false;
@@ -598,6 +615,24 @@ if(getCurrentUserId().equals("learn era")) {
         boolean isSaved = sharedPreferences.getBoolean(GlobalConfig.IS_CATEGORY_LIST_SAVED_KEY,false);
 
         return isSaved;
+    }
+    public static boolean isCurrentUserAccountVerified(){
+        return isCurrentUserAccountVerified;
+    }
+    public static void setIsCurrentUserAccountVerified(boolean isCurrrentUserAccountVerified){
+         GlobalConfig.isCurrentUserAccountVerified = isCurrrentUserAccountVerified;
+    }
+    public static boolean isCurrentUserAccountVerificationDeclined(){
+        return isCurrentUserAccountVerificationDeclined;
+    }
+    public static void setIsCurrentUserAccountVerificationDeclined(boolean isCurrrentUserAccountVerificationDeclined){
+         GlobalConfig.isCurrentUserAccountVerificationDeclined = isCurrrentUserAccountVerificationDeclined;
+    }
+    public static boolean isAccountSubmittedForVerification(){
+        return isAccountSubmittedForVerification;
+    }
+    public static void setIsAccountSubmittedForVerification(boolean isAccountSubmittedForVerification){
+         GlobalConfig.isAccountSubmittedForVerification = isAccountSubmittedForVerification;
     }
 
     /**

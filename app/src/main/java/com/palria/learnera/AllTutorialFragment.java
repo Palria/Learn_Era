@@ -163,9 +163,9 @@ if(getArguments() != null){
 
 
         //hide if from context of library or search
-        if(isFromLibraryActivityContext || isFromSearchContext){
+//        if(isFromLibraryActivityContext || isFromSearchContext){
             topContents.setVisibility(View.GONE);
-        }
+//        }
 
         //init and show some dummy tutorials
 //        tutorialDataModels.add(

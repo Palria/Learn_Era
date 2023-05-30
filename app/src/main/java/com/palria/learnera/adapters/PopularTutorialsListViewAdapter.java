@@ -105,55 +105,60 @@ public class PopularTutorialsListViewAdapter extends RecyclerView.Adapter<Popula
                     context.startActivity(intent);
                 }
             });
-            holder.moreActionButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    LEBottomSheetDialog leBottomSheetDialog = new LEBottomSheetDialog(context);
-                    leBottomSheetDialog.addOptionItem("Block Tutorial", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            leBottomSheetDialog.hide();
-                            Toast.makeText(context, "Blocking", Toast.LENGTH_SHORT).show();
-                            int position = tutorialDataModels.indexOf(tutorialDataModel);
-                            tutorialDataModels.remove(tutorialDataModel);
-                            PopularTutorialsListViewAdapter.this.notifyItemRemoved(position);
-                            GlobalConfig.block(GlobalConfig.ACTIVITY_LOG_USER_BLOCK_TUTORIAL_TYPE_KEY, tutorialDataModel.getAuthorId(), tutorialDataModel.getLibraryId(), tutorialDataModel.getTutorialId(), new GlobalConfig.ActionCallback() {
-                                @Override
-                                public void onSuccess() {
+            if(!tutorialDataModel.getAuthorId().equals(GlobalConfig.getCurrentUserId())) {
+                holder.moreActionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        LEBottomSheetDialog leBottomSheetDialog = new LEBottomSheetDialog(context);
+                        leBottomSheetDialog.addOptionItem("Block Tutorial", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                leBottomSheetDialog.hide();
+                                Toast.makeText(context, "Blocking", Toast.LENGTH_SHORT).show();
+                                int position = tutorialDataModels.indexOf(tutorialDataModel);
+                                tutorialDataModels.remove(tutorialDataModel);
+                                PopularTutorialsListViewAdapter.this.notifyItemRemoved(position);
+                                GlobalConfig.block(GlobalConfig.ACTIVITY_LOG_USER_BLOCK_TUTORIAL_TYPE_KEY, tutorialDataModel.getAuthorId(), tutorialDataModel.getLibraryId(), tutorialDataModel.getTutorialId(), new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
 
-                                }
+                                    }
 
-                                @Override
-                                public void onFailed(String errorMessage) {
+                                    @Override
+                                    public void onFailed(String errorMessage) {
 
-                                }
-                            });
-                        }
-                    }, 0);
-                    leBottomSheetDialog.addOptionItem("Report Tutorial", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            leBottomSheetDialog.hide();
-                            Toast.makeText(context, "reporting", Toast.LENGTH_SHORT).show();
-                            int position = tutorialDataModels.indexOf(tutorialDataModel);
-                            tutorialDataModels.remove(tutorialDataModel);
-                            PopularTutorialsListViewAdapter.this.notifyItemRemoved(position);
-                            GlobalConfig.report(GlobalConfig.ACTIVITY_LOG_USER_REPORT_TUTORIAL_TYPE_KEY, tutorialDataModel.getAuthorId(), tutorialDataModel.getLibraryId(), tutorialDataModel.getTutorialId(), new GlobalConfig.ActionCallback() {
-                                @Override
-                                public void onSuccess() {
+                                    }
+                                });
+                            }
+                        }, 0);
+                        leBottomSheetDialog.addOptionItem("Report Tutorial", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                leBottomSheetDialog.hide();
+                                Toast.makeText(context, "reporting", Toast.LENGTH_SHORT).show();
+                                int position = tutorialDataModels.indexOf(tutorialDataModel);
+                                tutorialDataModels.remove(tutorialDataModel);
+                                PopularTutorialsListViewAdapter.this.notifyItemRemoved(position);
+                                GlobalConfig.report(GlobalConfig.ACTIVITY_LOG_USER_REPORT_TUTORIAL_TYPE_KEY, tutorialDataModel.getAuthorId(), tutorialDataModel.getLibraryId(), tutorialDataModel.getTutorialId(), new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
 
-                                }
+                                    }
 
-                                @Override
-                                public void onFailed(String errorMessage) {
+                                    @Override
+                                    public void onFailed(String errorMessage) {
 
-                                }
-                            });
-                        }
-                    }, 0);
-                    leBottomSheetDialog.render().show();
-                }
-            });
+                                    }
+                                });
+                            }
+                        }, 0);
+                        leBottomSheetDialog.render().show();
+                    }
+                });
+
+            }else{
+                holder.moreActionButton.setVisibility(View.INVISIBLE);
+            }
         }else{
             holder.tutorialName.setText("Tutorial is private");
             holder.itemView.setEnabled(false);

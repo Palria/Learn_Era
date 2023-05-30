@@ -62,56 +62,61 @@ public class AllLibraryFragmentRcvAdapter extends RecyclerView.Adapter<AllLibrar
                 .placeholder(R.drawable.placeholder)
                 .into(holder.cover);
         holder.libraryViewCount.setText(libraryDataModel.getTotalNumberOfLibraryViews()+"");
-        holder.moreActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LEBottomSheetDialog leBottomSheetDialog = new LEBottomSheetDialog(context);
-                leBottomSheetDialog.addOptionItem("Block Library", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
+
+            if(!libraryDataModel.getAuthorUserId().equals(GlobalConfig.getCurrentUserId())) {
+                holder.moreActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        leBottomSheetDialog.hide();
-                        Toast.makeText(context,"Blocking",Toast.LENGTH_SHORT).show();
-                        int position = libraryDataModels.indexOf(libraryDataModel);
-                        libraryDataModels.remove(libraryDataModel);
-                        AllLibraryFragmentRcvAdapter.this.notifyItemRemoved(position);
-                        GlobalConfig.block(GlobalConfig.ACTIVITY_LOG_USER_BLOCK_LIBRARY_TYPE_KEY, libraryDataModel.getAuthorUserId(), libraryDataModel.getLibraryId(), null, new GlobalConfig.ActionCallback() {
+                        LEBottomSheetDialog leBottomSheetDialog = new LEBottomSheetDialog(context);
+                        leBottomSheetDialog.addOptionItem("Block Library", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
                             @Override
-                            public void onSuccess() {
+                            public void onClick(View view) {
+                                leBottomSheetDialog.hide();
+                                Toast.makeText(context,"Blocking",Toast.LENGTH_SHORT).show();
+                                int position = libraryDataModels.indexOf(libraryDataModel);
+                                libraryDataModels.remove(libraryDataModel);
+                                AllLibraryFragmentRcvAdapter.this.notifyItemRemoved(position);
+                                GlobalConfig.block(GlobalConfig.ACTIVITY_LOG_USER_BLOCK_LIBRARY_TYPE_KEY, libraryDataModel.getAuthorUserId(), libraryDataModel.getLibraryId(), null, new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
 
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+
+                                    }
+                                });
                             }
-
+                        }, 0);
+                        leBottomSheetDialog.addOptionItem("Report Library", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
                             @Override
-                            public void onFailed(String errorMessage) {
+                            public void onClick(View view) {
+                                leBottomSheetDialog.hide();
+                                Toast.makeText(context,"reporting",Toast.LENGTH_SHORT).show();
+                                int position = libraryDataModels.indexOf(libraryDataModel);
+                                libraryDataModels.remove(libraryDataModel);
+                                AllLibraryFragmentRcvAdapter.this.notifyItemRemoved(position);
+                                GlobalConfig.report(GlobalConfig.ACTIVITY_LOG_USER_REPORT_LIBRARY_TYPE_KEY, libraryDataModel.getAuthorUserId(), libraryDataModel.getLibraryId(), null, new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
 
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+
+                                    }
+                                });
                             }
-                        });
+                        }, 0);
+                        leBottomSheetDialog.render().show();
                     }
-                }, 0);
-                leBottomSheetDialog.addOptionItem("Report Library", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        leBottomSheetDialog.hide();
-                        Toast.makeText(context,"reporting",Toast.LENGTH_SHORT).show();
-                        int position = libraryDataModels.indexOf(libraryDataModel);
-                        libraryDataModels.remove(libraryDataModel);
-                        AllLibraryFragmentRcvAdapter.this.notifyItemRemoved(position);
-                        GlobalConfig.report(GlobalConfig.ACTIVITY_LOG_USER_REPORT_LIBRARY_TYPE_KEY, libraryDataModel.getAuthorUserId(), libraryDataModel.getLibraryId(), null, new GlobalConfig.ActionCallback() {
-                            @Override
-                            public void onSuccess() {
+                });
 
-                            }
-
-                            @Override
-                            public void onFailed(String errorMessage) {
-
-                            }
-                        });
-                    }
-                }, 0);
-                leBottomSheetDialog.render().show();
+            }else{
+                holder.moreActionButton.setVisibility(View.INVISIBLE);
             }
-        });
-
         int[] ratings =new int[5];
         ratings[0]= (int) libraryDataModel.getTotalNumberOfOneStarRate();
         ratings[1]= (int) libraryDataModel.getTotalNumberOfTwoStarRate();

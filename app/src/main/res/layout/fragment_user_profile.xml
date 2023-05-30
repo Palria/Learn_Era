@@ -293,6 +293,7 @@
 
 
                     <TextView
+                        android:id="@+id/verificationFlagTextViewId"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/imageView1"
@@ -301,9 +302,12 @@
                         android:background="@drawable/outlined_white_bg_button"
                         android:paddingHorizontal="5pt"
                         android:paddingVertical="1pt"
-                        android:text="Verified"
+                        android:text="Verifying"
                         android:textColor="@color/teal_700"
-                        android:textSize="5pt" />
+                        android:textSize="5pt"
+                        android:visibility="invisible"
+                        
+                        />
     
                     <LinearLayout
                         android:layout_width="wrap_content"

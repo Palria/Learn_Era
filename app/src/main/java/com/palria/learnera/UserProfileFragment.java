@@ -38,6 +38,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.adapters.HomeBooksRecyclerListViewAdapter;
 import com.palria.learnera.adapters.PopularTutorialsListViewAdapter;
@@ -81,6 +82,7 @@ public class UserProfileFragment extends Fragment {
     Button statsButton;
     String authorId = "";
     TextView logButton;
+    TextView verificationFlagTextView;
     ImageView bookmarkedIcon, ratedIcon;
     //learn era bottom sheet dialog
     LEBottomSheetDialog leBottomSheetDialog;
@@ -110,6 +112,7 @@ public class UserProfileFragment extends Fragment {
 
     LinearLayout noLibraryFoundView ;
     LinearLayout noTutorialFoundView ;
+    AlertDialog declineAlertDailog;
 
     public UserProfileFragment() {
         // Required empty public constructor
@@ -430,6 +433,20 @@ public class UserProfileFragment extends Fragment {
                     logButton.setVisibility(View.INVISIBLE);
                     GlobalConfig.incrementNumberOfVisitors(authorId,null,null,null,null,true,false,false,false,false,false);
                 }
+
+                if(GlobalConfig.isAccountSubmittedForVerification()){
+                    verificationFlagTextView.setVisibility(View.VISIBLE);
+                    verificationFlagTextView.setText("Verification in progress");
+                }
+                if(GlobalConfig.isCurrentUserAccountVerified()){
+                    verificationFlagTextView.setVisibility(View.VISIBLE);
+                    verificationFlagTextView.setText("Verified");
+                }
+                if(GlobalConfig.isCurrentUserAccountVerificationDeclined()){
+                    verificationFlagTextView.setVisibility(View.VISIBLE);
+                    verificationFlagTextView.setText("Verification Declined");
+                }
+
             }
 
             @Override
@@ -453,6 +470,7 @@ public class UserProfileFragment extends Fragment {
             currentCountryOfResidence = parentView.findViewById(R.id.current_country);
             joined_dateTextView = parentView.findViewById(R.id.joined_date);
             logButton = parentView.findViewById(R.id.logButton);
+            verificationFlagTextView = parentView.findViewById(R.id.verificationFlagTextViewId);
             statsButton = parentView.findViewById(R.id.statsButton);
             ratedIcon = parentView.findViewById(R.id.ratedIcon);
             bookmarkedIcon = parentView.findViewById(R.id.bookmarkedIcon);
@@ -1095,6 +1113,30 @@ public class UserProfileFragment extends Fragment {
                         long numOfTutorialCreated = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY):0L;
                         long numOfRatings = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY):0L;
 
+                        boolean isAccountSubmittedForVerification = documentSnapshot.get(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY):false;
+                        GlobalConfig.setIsAccountSubmittedForVerification(isAccountSubmittedForVerification);
+
+                        boolean isAccountVerificationDeclined = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFICATION_DECLINED_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFICATION_DECLINED_KEY):false;
+                        GlobalConfig.setIsCurrentUserAccountVerificationDeclined(isAccountVerificationDeclined);
+
+                        boolean isAccountVerified = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY):false;
+                        GlobalConfig.setIsCurrentUserAccountVerified(isAccountVerified);
+
+                        boolean isAccountVerificationSeen = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFICATION_SEEN_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFICATION_SEEN_KEY):true;
+                        boolean isAccountVerificationDeclineSeen = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFICATION_DECLINE_SEEN_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFICATION_DECLINE_SEEN_KEY):true;
+
+                        ArrayList<String> declineReasonsList = documentSnapshot.get(GlobalConfig.ACCOUNT_VERIFICATION_DECLINE_REASONS_LIST_KEY)!=null &&  documentSnapshot.get(GlobalConfig.ACCOUNT_VERIFICATION_DECLINE_REASONS_LIST_KEY) instanceof ArrayList? (ArrayList) documentSnapshot.get(GlobalConfig.ACCOUNT_VERIFICATION_DECLINE_REASONS_LIST_KEY) :new ArrayList<>();
+                        if(!isAccountVerificationDeclineSeen && isAccountVerificationDeclined){
+                            showAccountVerificationDeclineFeedback(declineReasonsList,true);
+                            clearVerificationDeclineFlag();
+
+                        }
+
+                        if(!isAccountVerificationSeen  && isAccountVerified){
+                            showAccountVerificationDeclineFeedback(null,false);
+                            clearVerificationSuccessFlag();
+
+                        }
 
                         boolean isUserAnAuthor = false;
                         boolean isUserBlocked = false;
@@ -1355,6 +1397,64 @@ libraryView.setOnClickListener(new View.OnClickListener() {
         }
     }
 
+    private void showAccountVerificationDeclineFeedback(@NonNull ArrayList<String> declineReasonList,boolean isDeclined) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setCancelable(false);
+        if (isDeclined) {
+            builder.setIcon(R.drawable.ic_baseline_error_outline_24);
+            builder.setPositiveButton("OK", null);
+            builder.setTitle("Account Verification declined!");
+
+            StringBuilder declineReason = new StringBuilder("Your account verification was declined with following reasons: ");
+
+            if (declineReasonList != null && !declineReasonList.isEmpty()) {
+                for (int i = 0; i < declineReasonList.size(); i++) {
+                    declineReason.append("\n- " + declineReasonList.get(i));
+                    if (i == (declineReasonList.size() - 1)) {
+                        declineReason.append("\nPlease review and fix your account issues and try again");
+
+                    }
+
+                }
+            } else {
+                builder.setMessage("Your account verification was declined with unspecified reasons, review your account and try again");
+
+            }
+
+
+
+        }
+        else{
+            builder.setIcon(R.drawable.ic_baseline_success_circle_outline_24);
+            builder.setPositiveButton("OK", null);
+            builder.setTitle("Hurray! Your account was successfully verified");
+            builder.setMessage("Congrats! Your account verification succeeded, you have unlocked more "+
+                    "privileges to study and also write and manage your own libraries and tutorials. Thanks for having your account verified in Learn Era platform");
+        }
+
+        declineAlertDailog = builder.create();
+        declineAlertDailog.show();
+    }
+    private void clearVerificationSuccessFlag(){
+        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+        DocumentReference userDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_USERS_KEY)
+                .document(authorId);
+        HashMap<String,Object> verifyDetails = new HashMap<>();
+        verifyDetails.put(GlobalConfig.IS_ACCOUNT_VERIFICATION_SEEN_KEY,true);
+        writeBatch.update(userDocumentReference,verifyDetails);
+        writeBatch.commit();
+    }
+    private void clearVerificationDeclineFlag(){
+        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+        DocumentReference userDocumentReference = GlobalConfig.getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_USERS_KEY)
+                .document(authorId);
+        HashMap<String,Object> verifyDetails = new HashMap<>();
+        verifyDetails.put(GlobalConfig.IS_ACCOUNT_VERIFICATION_DECLINE_SEEN_KEY,true);
+        writeBatch.update(userDocumentReference,verifyDetails);
+        writeBatch.commit();
+    }
     private void becomeAnAuthor(ArrayList<String> categoryTagList, BecomeAuthorListener becomeAuthorListener){
         DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
         HashMap<String,Object> authorDetails = new HashMap<>();

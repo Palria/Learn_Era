@@ -6,9 +6,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- <uses-permission android:name="android.permission.BATTERY_STATS" /> -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     
     <application
@@ -19,6 +19,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting">
+        <activity
+            android:name=".DeclineUserAccountVerificationActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".CreateNewNotificationActivity"
             android:exported="true"
@@ -169,19 +173,19 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
+        
         <receiver
             android:name=".bootservice.BootReceiver"
             android:enabled="true"
             android:exported="true">
-
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BATTERY_CHANGED" />
+    
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
+        
         <service android:name=".bootservice.BootService" />
-
     </application>
 
 </manifest>

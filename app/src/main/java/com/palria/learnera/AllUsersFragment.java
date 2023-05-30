@@ -29,6 +29,7 @@ RecyclerView recyclerView;
 
 
     boolean isFromSearchContext = false;
+    boolean isVerification = false;
     String searchKeyword = "";
 
     public AllUsersFragment() {
@@ -40,6 +41,7 @@ RecyclerView recyclerView;
         super.onCreate(savedInstanceState);
         if(getArguments() != null){
             isAuthorOpenType = getArguments().getBoolean(GlobalConfig.IS_AUTHOR_OPEN_TYPE_KEY,false);
+            isVerification = getArguments().getBoolean(GlobalConfig.IS_ACCOUNT_VERIFICATION_KEY,false);
             isFromSearchContext = getArguments().getBoolean(GlobalConfig.IS_FROM_SEARCH_CONTEXT_KEY,false);
             searchKeyword = getArguments().getString(GlobalConfig.SEARCH_KEYWORD_KEY,"");
 
@@ -70,10 +72,10 @@ RecyclerView recyclerView;
 
         return parentView;
     }
-
+//
 private void initUI(View parentView){
         recyclerView = parentView.findViewById(R.id.usersRecyclerListViewId);
-        usersRCVAdapter = new UsersRCVAdapter(usersDataModelArrayList,getContext());
+        usersRCVAdapter = new UsersRCVAdapter(usersDataModelArrayList,getContext(),isVerification);
     LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
     recyclerView.setAdapter(usersRCVAdapter);
     recyclerView.setLayoutManager(layoutManager);
@@ -87,13 +89,18 @@ private void initUI(View parentView){
         if(isAuthorOpenType){
             authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereEqualTo(GlobalConfig.IS_USER_AUTHOR_KEY,true);
             if(isFromSearchContext){
-                authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereEqualTo(GlobalConfig.IS_USER_AUTHOR_KEY,true).whereArrayContains(GlobalConfig.USER_SEARCH_VERBATIM_KEYWORD_KEY,searchKeyword);
+                authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereEqualTo(GlobalConfig.IS_USER_AUTHOR_KEY,true).whereArrayContains(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,searchKeyword);
             }
-        }else{
-             authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY);
+        }
+
+        else if(isVerification){
+            authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereEqualTo(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY,true);
             if(isFromSearchContext){
-                authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereArrayContains(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,searchKeyword);
+                authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereEqualTo(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY,true).whereArrayContains(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,searchKeyword);
             }
+        }
+        else if (isFromSearchContext){
+                authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereArrayContains(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,searchKeyword);
         }
 
 
@@ -116,11 +123,13 @@ private void initUI(View parentView){
                             final String userPhoneNumber = ""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY);
                             final String userEmail = ""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_EMAIL_ADDRESS_KEY);
                             final String userCountryOfOrigin = ""+ documentSnapshot.get(GlobalConfig.USER_COUNTRY_OF_RESIDENCE_KEY);
-                            final String dateRegistered =  documentSnapshot.get(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY)!=null ?  documentSnapshot.getTimestamp(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY).toDate()+""  :"Undefined";
+                            String dateRegistered =  documentSnapshot.get(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY)!=null ?  documentSnapshot.getTimestamp(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY).toDate()+""  :"Undefined";
                             if(dateRegistered.length()>10){
-                                dateRegistered.substring(0,10);
+                                dateRegistered = dateRegistered.substring(0,10);
                             }
+                            final String finalDateRegistered = dateRegistered;
                             final boolean isAnAuthor =  documentSnapshot.get(GlobalConfig.IS_USER_AUTHOR_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_USER_AUTHOR_KEY) :false;
+                            final boolean isAccountVerified =  documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) :false;
                             final String userProfilePhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
                             final long totalNumberOfLibrary = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)!= null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)  :0L ;
                             long totalNumberOfProfileVisitor = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY) : 0L;
@@ -138,8 +147,9 @@ private void initUI(View parentView){
                                      userProfilePhotoDownloadUrl,
                                      (int)totalNumberOfLibrary,
                                      isAnAuthor,
+                                    isAccountVerified,
                                      gender,
-                                     dateRegistered,
+                                    finalDateRegistered,
                                      userPhoneNumber,
                                      userEmail,
                                      userCountryOfOrigin,
