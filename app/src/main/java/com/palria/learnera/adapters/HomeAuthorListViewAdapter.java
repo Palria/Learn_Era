@@ -100,6 +100,9 @@ public class HomeAuthorListViewAdapter extends RecyclerView.Adapter<HomeAuthorLi
                 leBottomSheetDialog.render().show();
             }
         });
+        if(authorDataModel.isVerified()){
+            holder.verificationFlagImageView.setVisibility(View.VISIBLE);
+        }
 
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,6 +127,7 @@ public class HomeAuthorListViewAdapter extends RecyclerView.Adapter<HomeAuthorLi
         public TextView textView;
         public LinearLayout linearLayout;
         public ImageButton moreActionButton;
+        public ImageView verificationFlagImageView;
 
 
         public ViewHolder(View itemView) {
@@ -131,6 +135,7 @@ public class HomeAuthorListViewAdapter extends RecyclerView.Adapter<HomeAuthorLi
             this.imageView = (ImageView) itemView.findViewById(R.id.author_image_view);
             this.textView = (TextView) itemView.findViewById(R.id.author_name);
             this.moreActionButton = itemView.findViewById(R.id.moreActionButtonId);
+            this.verificationFlagImageView = itemView.findViewById(R.id.verificationFlagImageViewId);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.parentItem);
         }
     }

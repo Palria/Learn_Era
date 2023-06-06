@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:background="@color/teal_200"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
@@ -101,7 +102,7 @@
         android:orientation="vertical"
         >
         
-        <CheckedTextView
+        <CheckBox
             android:id="@+id/lessMonthReasonId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -109,15 +110,15 @@
             android:checked="false"
             />
         
-        <CheckedTextView
+        <CheckBox
             android:id="@+id/notAuthorReasonId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Account email address not verified"
+            android:text="You are not registered as an author"
             android:checked="false"
             />
         
-        <CheckedTextView
+        <CheckBox
             android:id="@+id/emailAddressReasonId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -125,7 +126,7 @@
             android:checked="false"
             />
         
-        <CheckedTextView
+        <CheckBox
             android:id="@+id/otherReasonsId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -35,7 +35,8 @@ public class AuthorDataModel {
      * in the database.
      * */
     int totalNumberOfFiveStarRate;
-
+    /**Checks if this author is verified or not*/
+    boolean isVerified = false;
 
 
     /**Empty constructor may be used to instantiate the class object if it is not
@@ -49,7 +50,7 @@ public class AuthorDataModel {
 
     /**This parameterized Constructor helps us in initializing all the global variables
      * */
-    public AuthorDataModel(String authorName,String authorId,String authorProfilePhotoDownloadUrl, int totalNumberOfLibraries, int totalNumberOfOneStarRate, int totalNumberOfTwoStarRate, int totalNumberOfThreeStarRate, int totalNumberOfFourStarRate, int totalNumberOfFiveStarRate){
+    public AuthorDataModel(String authorName,String authorId,String authorProfilePhotoDownloadUrl, int totalNumberOfLibraries, int totalNumberOfOneStarRate, int totalNumberOfTwoStarRate, int totalNumberOfThreeStarRate, int totalNumberOfFourStarRate, int totalNumberOfFiveStarRate,boolean isVerified){
                     this.authorName = authorName;
                     this.authorId = authorId;
                     this.authorProfilePhotoDownloadUrl = authorProfilePhotoDownloadUrl;
@@ -59,6 +60,7 @@ public class AuthorDataModel {
                     this.totalNumberOfThreeStarRate = totalNumberOfThreeStarRate;
                     this.totalNumberOfFourStarRate = totalNumberOfFourStarRate;
                     this.totalNumberOfFiveStarRate = totalNumberOfFiveStarRate;
+                    this.isVerified = isVerified;
                 }
 
     //The getters are for querying  the queried data and setters for setting the data
@@ -134,4 +136,9 @@ public class AuthorDataModel {
     void setTotalNumberOfFiveStarRate(int totalNumberOfFiveStarRate) {
         this.totalNumberOfFiveStarRate = totalNumberOfFiveStarRate;
     }
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
 }

@@ -17,6 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:background="@color/teal_200"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
@@ -51,15 +52,40 @@
             />
     </LinearLayout>
     
+    <LinearLayout
+        android:id="@+id/listLinearLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/topLinearLayoutId"
+        app:layout_constraintStart_toStartOf="parent"
+        >
+        
     <Button
         style="?attr/borderlessButtonStyle"
         android:id="@+id/submitActionButtonId"
         android:text="Submit your account for verification"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        app:layout_constraintTop_toBottomOf="@id/topLinearLayoutId"
-        app:layout_constraintStart_toStartOf="parent"
         />
+    
+    <Switch
+        android:id="@+id/visibilitySwitchId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dark Theme"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-condensed-medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:ignore="UseSwitchCompatOrMaterialXml"
+        android:checked="false"
+        android:paddingEnd="20dp"
+        android:layout_marginStart="10dp"
+        />
+    
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

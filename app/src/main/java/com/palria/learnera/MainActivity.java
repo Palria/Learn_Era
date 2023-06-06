@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.splashscreen.SplashScreen;
@@ -12,6 +13,9 @@ import androidx.fragment.app.Fragment;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -86,18 +90,20 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
 
         super.onCreate(savedInstanceState);
-//manageNotificationAlarmBroadCast();
-
+            scheduleJob();
         if(isFirstOpen()){
             setIsFirstOpen(false);
             Intent intent = new Intent(MainActivity.this,WelcomeActivity.class);
             startActivity(intent);
-            finish();
             MainActivity.this.finish();
             return;
         }
+        if(GlobalConfig.isNightMode()){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
         setContentView(R.layout.activity_main);
-
 //        startActivity(new Intent(MainActivity.this, UploadPageActivity.class));
 
 
@@ -113,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         Toolbar tp = findViewById(R.id.topBar);
         setSupportActionBar(tp);
-        Log.d("LEARN_ERA_USER_ID",GlobalConfig.getCurrentUserId());
+//        Log.d("LEARN_ERA_USER_ID",GlobalConfig.getCurrentUserId());
         onConfigurationLoadCallback = new OnConfigurationLoadCallback() {
             @Override
             public void onLoad(DocumentSnapshot documentSnapshot) {
@@ -331,7 +337,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         }
                     }
                 }, 0)
-                .addOptionItem("Verify Accounts", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
+                .addOptionItem("Verify Accounts", R.drawable.ic_baseline_stars_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (GlobalConfig.isUserLoggedIn()) {
@@ -368,6 +374,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         if(item.getItemId()== R.id.login_item){
                             Intent intent =new Intent(MainActivity.this, SignInActivity.class);
                             startActivity(intent);
+                            MainActivity.super.onBackPressed();
+
                         }
                         else if(item.getItemId() == R.id.notification_item){
 //                            Toast.makeText(MainActivity.this, "notification clicked.", Toast.LENGTH_SHORT).show();
@@ -392,9 +400,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 //                                             Toast.makeText(MainActivity.this, "logged out", Toast.LENGTH_SHORT).show();
                                             //log out code goes here ]
-
-
-
                                        }
                                    })
                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -639,8 +644,10 @@ if(GlobalConfig.isUserLoggedIn()) {
         try {
             GlobalConfig.class.newInstance();
         }catch(Exception e){};
-        startActivity(new Intent(MainActivity.this,WelcomeActivity.class));
-         MainActivity.this.finish();
+        Intent intent = new Intent(MainActivity.this,WelcomeActivity.class);
+        startActivity(intent);
+        super.onBackPressed();
+//         MainActivity.this.finish();
 
 }
 
@@ -669,6 +676,14 @@ private void loadConfiguration(){
         }
     });
 }
+private void scheduleJob(){
+
+        JobScheduler jb = (JobScheduler)(getSystemService(JOB_SCHEDULER_SERVICE));
+        ComponentName cN = new ComponentName(this,BootService.class);
+        JobInfo jobInfo = new JobInfo.Builder(1,cN).setRequiredNetworkType(JobInfo.NETWORK_TYPE_CELLULAR).build();
+        jb.schedule(jobInfo);
+}
+
 
 //TODO: ALL_NOTIFICATIONS, PLATFORM_CONFIGURATION_FILE rules addition
 private void manageNotificationAlarmBroadCast(){

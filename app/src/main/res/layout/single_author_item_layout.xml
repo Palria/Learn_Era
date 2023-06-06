@@ -8,6 +8,10 @@
     android:layout_marginVertical="4pt"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="50pt">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
     <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/author_image_view"
         android:layout_width="30pt"
@@ -19,8 +23,25 @@
         app:riv_border_width="0dip"
         app:riv_corner_radius="15dip"
         app:riv_mutate_background="true"
-        app:riv_oval="true" />
+        app:riv_oval="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+    
+        <ImageView
+            android:id="@+id/verificationFlagImageViewId"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:src="@drawable/ic_baseline_stars_24"
+            android:tint="@color/secondary_app_color"
+            android:layout_gravity="top"
+            android:visibility="invisible"
+            android:layout_marginLeft="-5dp"
+            app:layout_constraintStart_toEndOf="@id/author_image_view"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
     
     <LinearLayout
         android:orientation="horizontal"

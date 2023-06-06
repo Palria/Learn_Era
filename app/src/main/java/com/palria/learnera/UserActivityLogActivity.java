@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.palria.learnera.adapters.UserActivityItemRCVAdapter;
 import com.palria.learnera.models.UserActivityDataModel;
@@ -69,7 +70,7 @@ fetchLogs(new OnLogFetchListener() {
                 ;
                 return;
             case GlobalConfig.ACTIVITY_LOG_USER_VISIT_AUTHOR_TYPE_KEY:
-                activityDataModelArrayList.add(new UserActivityDataModel("You visited this author.",
+                activityDataModelArrayList.add(new UserActivityDataModel("You visited an author.",
                         eventDate, "...","null",1,"rating",false));
                 userActivityItemRCVAdapter.notifyItemChanged(activityDataModelArrayList.size());
 
@@ -270,7 +271,8 @@ fetchLogs(new OnLogFetchListener() {
         GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY)
                 .document(GlobalConfig.getCurrentUserId())
                 .collection(GlobalConfig.USER_ACTIVITY_LOG_KEY)
-                .limit(20L)
+                .orderBy(GlobalConfig.LOG_TIME_STAMP_KEY, Query.Direction.DESCENDING)
+                .limit(100L)
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -291,6 +293,10 @@ fetchLogs(new OnLogFetchListener() {
                                 String tutorialId = "" + documentSnapshot.get(GlobalConfig.TUTORIAL_ID_KEY);
                                 String activityLogType = "" + documentSnapshot.get(GlobalConfig.ACTIVITY_LOG_TYPE_KEY);
                                 String eventDate = documentSnapshot.get(GlobalConfig.LOG_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.LOG_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.LOG_TIME_STAMP_KEY).toDate() : "undefined";
+                                if (eventDate.length() > 10) {
+                                    eventDate = eventDate.substring(0, 10);
+                                }
+
                                 boolean isAuthorAffected = documentSnapshot.get(GlobalConfig.IS_AUTHOR_AFFECTED_KEY) != null ? documentSnapshot.getBoolean(GlobalConfig.IS_AUTHOR_AFFECTED_KEY) : true;
                                 boolean isLibraryAffected = documentSnapshot.get(GlobalConfig.IS_LIBRARY_AFFECTED_KEY) != null ? documentSnapshot.getBoolean(GlobalConfig.IS_LIBRARY_AFFECTED_KEY) : false;
                                 boolean isTutorialAffected = documentSnapshot.get(GlobalConfig.IS_TUTORIAL_AFFECTED_KEY) != null ? documentSnapshot.getBoolean(GlobalConfig.IS_TUTORIAL_AFFECTED_KEY) : false;

@@ -82,7 +82,7 @@ public class HomeFragment extends Fragment {
         boolean isAuthorFound = false;
 
     ArrayList<AuthorDataModel> modelArrayList = new ArrayList<AuthorDataModel>();
-    HomeAuthorListViewAdapter popularAuthorAdapter;
+    HomeAuthorListViewAdapter popularAuthorAdapter ;
     ArrayList<LibraryDataModel> libraryArrayList = new ArrayList<>();
     HomeBooksRecyclerListViewAdapter homeBooksRecyclerListViewAdapter ;
     ArrayList<TutorialDataModel> tutorialDataModels = new ArrayList<>();
@@ -128,9 +128,9 @@ public class HomeFragment extends Fragment {
                 tutorialDataModels.clear();
                 fetchPopularAuthor(categoryName, new PopularAuthorFetchListener() {
                     @Override
-                    public void onSuccess(String authorName, String authorId, String authorProfilePhotoDownloadUrl, long totalNumberOfLibrary) {
+                    public void onSuccess(String authorName, String authorId, String authorProfilePhotoDownloadUrl, long totalNumberOfLibrary,boolean isVerified) {
 //                        displayPopularAuthor(authorName,authorProfilePhotoDownloadUrl,totalNumberOfLibrary);
-                        modelArrayList.add(new AuthorDataModel(authorName,authorId,authorProfilePhotoDownloadUrl, (int) totalNumberOfLibrary,0,0,0,0,0));
+                        modelArrayList.add(new AuthorDataModel(authorName,authorId,authorProfilePhotoDownloadUrl, (int) totalNumberOfLibrary,0,0,0,0,0,isVerified));
                         popularAuthorAdapter.notifyItemChanged(modelArrayList.size());
                         toggleContentsVisibility(true);
 
@@ -545,7 +545,7 @@ for(int i=0; i<categories.size(); i++) {
         }
     }
 
-private void changeCategory(String categorySelected){
+    private void changeCategory(String categorySelected){
     popularAuthorLinearLayout.removeAllViews();
     libraryLinearLayout.removeAllViews();
     tutorialLinearLayout.removeAllViews();
@@ -554,7 +554,7 @@ private void changeCategory(String categorySelected){
 
     fetchPopularAuthor(categorySelected, new PopularAuthorFetchListener() {
         @Override
-        public void onSuccess(String authorName,String authorId, String authorProfilePhotoDownloadUrl, long totalNumberOfLibrary) {
+        public void onSuccess(String authorName,String authorId, String authorProfilePhotoDownloadUrl, long totalNumberOfLibrary,boolean isVerified) {
             displayPopularAuthor(authorName,authorProfilePhotoDownloadUrl,totalNumberOfLibrary);
         }
 
@@ -613,8 +613,9 @@ private void changeCategory(String categorySelected){
                             final String authorName = "" + documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
                             final String authorProfilePhotoDownloadUrl = "" + documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
                             final long totalNumberOfLibrary = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY) != null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY) : 0L;
+                            final boolean isVerified = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) != null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) : false;
                             if(!(GlobalConfig.getBlockedItemsList().contains(authorId+""))) {
-                                popularAuthorFetchListener.onSuccess(authorName, authorId, authorProfilePhotoDownloadUrl, totalNumberOfLibrary);
+                                popularAuthorFetchListener.onSuccess(authorName, authorId, authorProfilePhotoDownloadUrl, totalNumberOfLibrary,isVerified);
                         }
 //                            for(int i=0; i<GlobalConfig.getBlockedItemsList().size();i++) {
 //                                Toast.makeText(getContext(), "" +GlobalConfig.getBlockedItemsList().get(i), Toast.LENGTH_SHORT).show();
@@ -878,7 +879,7 @@ private void changeCategory(String categorySelected){
     }
 
     interface PopularAuthorFetchListener{
-        void onSuccess(final String authorName, final String authorId,final String authorProfilePhotoDownloadUrl,final long totalNumberOfLibrary );
+        void onSuccess(final String authorName, final String authorId,final String authorProfilePhotoDownloadUrl,final long totalNumberOfLibrary ,final boolean isVerified);
         void onFailed(String errorMessage);
     }
 

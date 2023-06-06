@@ -428,13 +428,13 @@ public class UserProfileFragment extends Fragment {
                     //he is the owner of this profile
 
                 }else{
-                    //he is not the owner of this profile
+                    //the current user is not the owner of this profile
                     editProfileButton.setVisibility(View.GONE);
                     logButton.setVisibility(View.INVISIBLE);
                     GlobalConfig.incrementNumberOfVisitors(authorId,null,null,null,null,true,false,false,false,false,false);
                 }
 
-                if(GlobalConfig.isAccountSubmittedForVerification()){
+                if((GlobalConfig.isAccountSubmittedForVerification() &&( GlobalConfig.getCurrentUserId().equals(authorId) || GlobalConfig.isLearnEraAccount()))){
                     verificationFlagTextView.setVisibility(View.VISIBLE);
                     verificationFlagTextView.setText("Verification in progress");
                 }
@@ -442,9 +442,15 @@ public class UserProfileFragment extends Fragment {
                     verificationFlagTextView.setVisibility(View.VISIBLE);
                     verificationFlagTextView.setText("Verified");
                 }
-                if(GlobalConfig.isCurrentUserAccountVerificationDeclined()){
+                if((GlobalConfig.isCurrentUserAccountVerificationDeclined() &&( GlobalConfig.getCurrentUserId().equals(authorId)|| GlobalConfig.isLearnEraAccount()))){
                     verificationFlagTextView.setVisibility(View.VISIBLE);
                     verificationFlagTextView.setText("Verification Declined");
+
+                    //check if he has submitted a fresh verification after the former that was declined
+                    if(GlobalConfig.isAccountSubmittedForVerification()){
+                        verificationFlagTextView.setVisibility(View.VISIBLE);
+                        verificationFlagTextView.setText("Verification in progress");
+                    }
                 }
 
             }
@@ -1126,13 +1132,13 @@ public class UserProfileFragment extends Fragment {
                         boolean isAccountVerificationDeclineSeen = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFICATION_DECLINE_SEEN_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFICATION_DECLINE_SEEN_KEY):true;
 
                         ArrayList<String> declineReasonsList = documentSnapshot.get(GlobalConfig.ACCOUNT_VERIFICATION_DECLINE_REASONS_LIST_KEY)!=null &&  documentSnapshot.get(GlobalConfig.ACCOUNT_VERIFICATION_DECLINE_REASONS_LIST_KEY) instanceof ArrayList? (ArrayList) documentSnapshot.get(GlobalConfig.ACCOUNT_VERIFICATION_DECLINE_REASONS_LIST_KEY) :new ArrayList<>();
-                        if(!isAccountVerificationDeclineSeen && isAccountVerificationDeclined){
+                        if((!isAccountVerificationDeclineSeen && isAccountVerificationDeclined)  &&( GlobalConfig.getCurrentUserId().equals(authorId))){
                             showAccountVerificationDeclineFeedback(declineReasonsList,true);
                             clearVerificationDeclineFlag();
 
                         }
 
-                        if(!isAccountVerificationSeen  && isAccountVerified){
+                        if((!isAccountVerificationSeen  && isAccountVerified) &&( GlobalConfig.getCurrentUserId().equals(authorId))){
                             showAccountVerificationDeclineFeedback(null,false);
                             clearVerificationSuccessFlag();
 
@@ -1416,8 +1422,9 @@ libraryView.setOnClickListener(new View.OnClickListener() {
                     }
 
                 }
+                builder.setMessage(declineReason+"");
             } else {
-                builder.setMessage("Your account verification was declined with unspecified reasons, review your account and try again");
+                builder.setMessage("Your account verification was declined with unspecified reason, review your account and try again");
 
             }
 

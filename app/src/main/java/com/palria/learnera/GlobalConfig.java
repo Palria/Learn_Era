@@ -1,5 +1,7 @@
 package com.palria.learnera;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -70,6 +72,7 @@ public class GlobalConfig {
     private static boolean isCurrentUserAccountVerified = false;
     private static boolean isCurrentUserAccountVerificationDeclined = false;
     private static boolean isAccountSubmittedForVerification = false;
+    private static  boolean isNightMode = false;
     /*FIRESTORE VARIABLE KEYS
     These String keys which will be  unique in  the database
     they are used to query a particular field within a document
@@ -100,6 +103,7 @@ public class GlobalConfig {
 
 
     public static final String PLATFORM_CONFIGURATION_FILE_KEY = "PLATFORM_CONFIGURATION_FILE";
+    public static final String IS_NIGHT_MODE_KEY = "IS_NIGHT_MODE";
     public static final String SEARCH_KEYWORD_KEY = "SEARCH_KEYWORD";
     public static final String IS_FROM_SEARCH_CONTEXT_KEY = "IS_FROM_SEARCH_CONTEXT";
 
@@ -520,6 +524,21 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
        return GlobalConfig.CURRENT_USER_ID+"";
     }
 
+/**
+ * sets the app to night mode */
+   static void setIsNightMode(Context context, boolean isNightMode){
+       SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(),MODE_PRIVATE);
+       SharedPreferences.Editor editor = sharedPreferences.edit();
+       editor.putBoolean(GlobalConfig.IS_NIGHT_MODE_KEY,isNightMode);
+       editor.apply();
+         GlobalConfig.isNightMode = isNightMode;
+    }
+      /**
+       *checks if app is in night mode*/
+   public static boolean isNightMode(){
+      return GlobalConfig.isNightMode;
+    }
+
     /**
      * This method sets the token of the current user
      * <p>This token is initialized from {@link com.google.firebase.auth.FirebaseUser#getIdToken(boolean)}</p>
@@ -569,7 +588,7 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
                    categoryConcattedString.append(categoryList.get(i));
                }
        }
-       SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(),Context.MODE_PRIVATE);
+       SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
        SharedPreferences.Editor editor = sharedPreferences.edit();
        editor.putString(GlobalConfig.CATEGORY_LIST_KEY,categoryConcattedString+"");
        editor.putBoolean(GlobalConfig.IS_CATEGORY_LIST_SAVED_KEY,true);
@@ -580,7 +599,7 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
  * */
    public static ArrayList<String> getCategoryList(Context context){
 
-       SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(),Context.MODE_PRIVATE);
+       SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
        String categorySavedList = sharedPreferences.getString(GlobalConfig.CATEGORY_LIST_KEY,"ALL,Basic Education,How To,Technology,Business,Skills");
        boolean isSaved = sharedPreferences.getBoolean(GlobalConfig.IS_CATEGORY_LIST_SAVED_KEY,false);
 
@@ -611,7 +630,7 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
 
     public static boolean isCategorySaved(Context context){
 
-        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(),Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
         boolean isSaved = sharedPreferences.getBoolean(GlobalConfig.IS_CATEGORY_LIST_SAVED_KEY,false);
 
         return isSaved;

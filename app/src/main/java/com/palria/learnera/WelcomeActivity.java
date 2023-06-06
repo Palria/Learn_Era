@@ -1,22 +1,17 @@
 package com.palria.learnera;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
-import android.transition.Fade;
-import android.transition.TransitionManager;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
+
 import com.palria.learnera.adapters.WelcomeScreenvpAdapter;
 import com.palria.learnera.models.WelcomeScreenItemModal;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -67,19 +62,20 @@ public class WelcomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if(activePosition == screens_items.size()-1){
+                if (activePosition == screens_items.size() - 1) {
                     //now move to next
                     Intent i = new Intent(WelcomeActivity.this, MainActivity.class);
                     startActivity(i);
-                    finish();
+                    WelcomeActivity.this.finish();
 
-                }
-                if(activePosition<screens_items.size()){
-                    activePosition++;
-                    viewPager.setCurrentItem(activePosition,true);
-                }
+                } else {
+                    if (activePosition < screens_items.size()) {
+                        activePosition++;
+                        viewPager.setCurrentItem(activePosition, true);
+                    }
 
-                initIndicators(activePosition);
+                    initIndicators(activePosition);
+                }
             }
         });
 

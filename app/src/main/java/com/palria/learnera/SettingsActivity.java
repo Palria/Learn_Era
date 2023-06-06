@@ -3,13 +3,16 @@ package com.palria.learnera;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.Switch;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -24,6 +27,8 @@ public class SettingsActivity extends AppCompatActivity {
     ImageButton backButton;
     Button submitActionButton;
     AlertDialog alertDialog;
+
+    Switch visibilitySwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +54,31 @@ public class SettingsActivity extends AppCompatActivity {
             submitActionButton.setText("Account verification in progress");
             if( GlobalConfig.isCurrentUserAccountVerified()){
                 submitActionButton.setText("Account verified");
+                submitActionButton.setVisibility(View.GONE);
             }
         }
-
+if(!GlobalConfig.isUserLoggedIn()){
+    submitActionButton.setVisibility(View.GONE);
+}
+        visibilitySwitch.setChecked(GlobalConfig.isNightMode());
+        visibilitySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+               GlobalConfig.setIsNightMode(SettingsActivity.this,b);
+               if(b){
+                   AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+               }else{
+                   AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+               }
+//                Intent intent = new Intent(SettingsActivity.this,SettingsActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//                startActivity(intent);
+//
+//                finish();
+//                SettingsActivity.this.finish();
+//                SettingsActivity.super.onDestroy();
+            }
+        });
     }
 
     void fetchIntentData(){
@@ -61,6 +88,7 @@ public class SettingsActivity extends AppCompatActivity {
     void iniUI(){
         backButton = findViewById(R.id.backButton);
         submitActionButton = findViewById(R.id.submitActionButtonId);
+        visibilitySwitch = findViewById(R.id.visibilitySwitchId);
 
         //init progress.
         alertDialog = new AlertDialog.Builder(SettingsActivity.this)

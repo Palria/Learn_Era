@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.CheckedTextView;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -35,10 +36,10 @@ public class DeclineUserAccountVerificationActivity extends AppCompatActivity {
     String userIconDownloadUrl ="";
 
 
-    CheckedTextView lessMonthReason;
-    CheckedTextView emailAddressReason;
-    CheckedTextView authorReason;
-    CheckedTextView otherReasons;
+    CheckBox lessMonthReason;
+    CheckBox emailAddressReason;
+    CheckBox authorReason;
+    CheckBox otherReasons;
 
     ArrayList<String> reasonList = new ArrayList<>();
     AlertDialog alertDialog;
@@ -151,7 +152,7 @@ public class DeclineUserAccountVerificationActivity extends AppCompatActivity {
                 }
             }).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
-                public void onSuccess(Void unused) {
+                public void onSuccess(Void unused){
                     toggleProgress(false);
                     GlobalConfig.createSnackBar(DeclineUserAccountVerificationActivity.this,declineActionButton, "User verification declined", Snackbar.LENGTH_LONG);
                 }
