@@ -210,6 +210,8 @@ public class UploadPageActivity extends AppCompatActivity {
     RoundedImageView coverImageView;
     ImageView coverUploadButton;
 
+    ImageView action_insert_table;
+
     LEBottomSheetDialog choosePhotoPickerModal;
 
     ArrayList<String> uploadedImagesList = new ArrayList<>();
@@ -841,7 +843,7 @@ public class UploadPageActivity extends AppCompatActivity {
          latex_editor=findViewById(R.id.latext_editor);
          submit_latex=findViewById(R.id.submit_latex);
          latex_equation=findViewById(R.id.latex_equation);
-
+         action_insert_table = findViewById(R.id.action_table);
         action_insert_video=findViewById(R.id.action_insert_video);
         coverImageView =findViewById(R.id.coverImage);
         Glide.with(this)
@@ -903,6 +905,15 @@ public class UploadPageActivity extends AppCompatActivity {
                 .render();
 
 
+
+        action_insert_table.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //show modal here to enter rows,cols and hasheading
+                wysiwygEditor.insertTable(2,4,true);
+
+            }
+        });
 
         action_undo.setOnClickListener(new View.OnClickListener() {
             @Override

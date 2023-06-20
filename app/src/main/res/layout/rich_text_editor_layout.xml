@@ -290,6 +290,15 @@
                 android:src="@drawable/blockquote" />
 
             <ImageView
+                android:id="@+id/action_table"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@null"
+                android:contentDescription="@null"
+                android:padding="10dp"
+                android:src="@drawable/table_icon" />
+
+            <ImageView
                 android:id="@+id/action_insert_image"
                 android:layout_width="48dp"
                 android:layout_height="48dp"

@@ -232,6 +232,40 @@ html= ` <div class="video-container">
       editor.insertHTML(html);
 }
 
+
+
+editor.insertTable = function(rows,cols,hasHeading){
+
+let html = '<table class="table">';
+
+if(hasHeading){
+let header = '<thead> <tr> ';
+
+for(var i = 0; i < cols; i++){
+    header += `<th> head ${i+1} </th>`;
+}
+header += "</tr> </thead>"
+html += header;
+}
+
+
+html += "<tbody>";
+
+for(var i = 0; i < rows; i++){
+html += "<tr>";
+for(var j =0; j < cols; j++){
+html += "<td> text  </td>";
+}
+html += "</tr>";
+
+}
+
+html += "</tbody> </table>";
+ editor.insertHTML(html);
+
+
+}
+
 editor.insertLatex = function(latex) {
     var html = '<img src="https://private.codecogs.com/png.download?\\dpi{300} \\fn_jvn \\tiny ' + latex + '" alt="' + latex + '" />';
     editor.insertHTML(html);

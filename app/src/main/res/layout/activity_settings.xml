@@ -13,6 +13,7 @@
         />
     
     <LinearLayout
+        android:paddingVertical="6pt"
         android:id="@+id/topLinearLayoutId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,25 +57,46 @@
         android:id="@+id/listLinearLayoutId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@id/topLinearLayoutId"
         app:layout_constraintStart_toStartOf="parent"
         >
+        <TextView
+            android:layout_marginTop="5pt"
+            android:paddingHorizontal="5pt"
+            android:textStyle="bold"
+            android:textSize="8pt"
+            android:text="Account Verification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
         
     <Button
         style="?attr/borderlessButtonStyle"
+        android:textAlignment="textStart"
         android:id="@+id/submitActionButtonId"
         android:text="Submit your account for verification"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         />
-    
+
+
+        <TextView
+            android:layout_marginTop="5pt"
+            android:paddingHorizontal="5pt"
+            android:textStyle="bold"
+            android:textSize="8pt"
+            android:text="Theme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
     <Switch
         android:id="@+id/visibilitySwitchId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Dark Theme"
+        android:layout_marginTop="5pt"
         android:textStyle="bold"
         android:fontFamily="sans-serif-condensed-medium"
         app:layout_constraintStart_toStartOf="parent"

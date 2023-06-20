@@ -2,6 +2,7 @@ package com.palria.learnera.lib.rcheditor;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -14,6 +15,9 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.annotation.NonNull;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -429,6 +433,14 @@ public final class WYSIWYG extends WebView {
         this.exec("javascript:editor.insertVideo('" + url + "')");
     }
 
+
+    public final void insertTable(@NotNull Integer rows, @NonNull Integer cols, @Nullable boolean hasHeading) {
+
+        this.exec("javascript:editor.prepareInsert();");
+        //pass rows,cols and has heading to param
+        this.exec("javascript:editor.insertTable('" + rows + "','" + cols + "', '"+hasHeading+"')");
+    }
+
     public final void insertLink(@NotNull String href, @NotNull String title) {
         Intrinsics.checkNotNullParameter(href, "href");
         Intrinsics.checkNotNullParameter(title, "title");
@@ -500,12 +512,14 @@ public final class WYSIWYG extends WebView {
         
     }
 
+
     public WYSIWYG(@NotNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 16842885);
         Intrinsics.checkNotNullParameter(context, "context");
         this.toggleThemeMode();
        
     }
+
 
     // $FF: synthetic method
     public static final void access$setMLoadListener$p(WYSIWYG $this, AfterInitialLoadListener var1) {
