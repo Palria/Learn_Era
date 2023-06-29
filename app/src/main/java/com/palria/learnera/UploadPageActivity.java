@@ -40,6 +40,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.ValueCallback;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -154,9 +155,11 @@ public class UploadPageActivity extends AppCompatActivity {
      * A  variable for launching the camera {@link Intent}
      * */
     ActivityResultLauncher<Intent> openCameraLauncher;
+    ActivityResultLauncher<Intent> openVideoLauncher;
     ActivityResultLauncher<Intent> openCoverImageLauncher;
     int COVER_IMAGE_GALLERY_REQUEST_CODE=123012;
     int CAMERA_PERMISSION_REQUEST_CODE = 2002;
+    int VIDEO_PERMISSION_REQUEST_CODE = 21;
     int GALLERY_PERMISSION_REQUEST_CODE = 23;
     int imageDisplayPosition = 0;
     int validPosition = 1;
@@ -213,8 +216,10 @@ public class UploadPageActivity extends AppCompatActivity {
     ImageView action_insert_table;
 
     LEBottomSheetDialog choosePhotoPickerModal;
+    LEBottomSheetDialog chooseVideoPickerModal;
 
-    ArrayList<String> uploadedImagesList = new ArrayList<>();
+    ArrayList<String> localImagesUriList = new ArrayList<>();
+    ArrayList<String> localVideosUriList = new ArrayList<>();
 
 
 
@@ -299,7 +304,7 @@ public class UploadPageActivity extends AppCompatActivity {
                                                       @Override
                                                       public void run() {
 
-                                                          uploadedImagesList.add(imageUriString);
+                                                          localImagesUriList.add(imageUriString);
                                                           wysiwygEditor.insertImage(imageUriString, "-");
                                                           toggleProgress(false);
 
@@ -372,7 +377,7 @@ public class UploadPageActivity extends AppCompatActivity {
                                                       @Override
                                                       public void run() {
 
-                                                          uploadedImagesList.add(imageUriString);
+                                                          localImagesUriList.add(imageUriString);
                                                           wysiwygEditor.insertImage(imageUriString, "-");
                                                           toggleProgress(false);
 
@@ -412,6 +417,65 @@ public class UploadPageActivity extends AppCompatActivity {
                     }
                 }else{
                     Toast.makeText(getApplicationContext(), "No image captured!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        openVideoLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if(result.getResultCode()==RESULT_OK) {
+
+                    if (result.getData() != null) {
+                        toggleProgress(true);
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent data = result.getData();
+                                String videoUri =""+ data.getData();
+                                  runOnUiThread(new Runnable() {
+                                                      @Override
+                                                      public void run() {
+
+                                                          localVideosUriList.add(videoUri);
+                                                          wysiwygEditor.insertVideo(videoUri);
+                                                          toggleProgress(false);
+
+                                                      }
+                                                  });
+
+
+//                            cameraImageBitmap = bitmapFromCamera;
+                                    //coverPhotoImageView.setImageBitmap(cameraImageBitmap);
+
+//                            ImageView partitionImage = new ImageView(getApplicationContext());
+//                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(70,70);
+//                            partitionImage.setLayoutParams(layoutParams);
+//                            receiverLinearLayout.addView(partitionImage);
+//
+//                            ImageView image = getImage();
+//
+//                            Glide.with(UploadPageActivity.this)
+//                                    .load(bitmapFromCamera)
+//                                    .centerCrop()
+//                                    .into(image);
+//                            if(containerLinearLayout.getChildCount() == (containerLinearLayout.indexOfChild(receiverLinearLayout)+1)) {
+//                                runOnUiThread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                      //  createPartition();
+//
+//                                    }
+//                                });
+//                            }
+//                            isLibraryCoverPhotoIncluded = true;
+//                            isLibraryCoverPhotoChanged = true;
+                            }
+                        }).start();
+
+                    }
+                }else{
+                    Toast.makeText(getApplicationContext(), "No video selected!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -528,22 +592,32 @@ public class UploadPageActivity extends AppCompatActivity {
 //                                showPageProgressNotification();
 //
 //                                //if form is valid now get the image to upload to store
-                                ArrayList<String> imagesFinalListToUpload = new ArrayList<>();
+                                //Configure images to be added to the database
+                                ArrayList<String> mediaFinalListToUpload = new ArrayList<>();
                                 if(isCoverImageIncluded){
-                                    imagesFinalListToUpload.add(0,coverImageUrl);
+                                    mediaFinalListToUpload.add(0,coverImageUrl);
                                 }
-                                for(String localUrl : uploadedImagesList){
+                                for(String localUrl : localImagesUriList){
                                     if(pageContent.contains(localUrl)){
                                         //remove duplicate upload multiple times
-                                       if(!imagesFinalListToUpload.contains(localUrl)){
-                                           imagesFinalListToUpload.add(localUrl);
+                                       if(!mediaFinalListToUpload.contains(localUrl)){
+                                           mediaFinalListToUpload.add(localUrl);
                                        }
+                                    }
+                                }
+
+                                //configure videos to be added to the database
+                                for(String videoUri: localVideosUriList){
+                                    if(pageContent.contains(videoUri)){
+                                        if(!mediaFinalListToUpload.contains(videoUri)){
+                                            mediaFinalListToUpload.add(videoUri);
+                                        }
                                     }
                                 }
 
 //                               startPageUploadService(imagesFinalListToUpload);
                                 //Let the author confirm his action before uploading the page
-                            showPageUploadConfirmationDialog(imagesFinalListToUpload);
+                            showPageUploadConfirmationDialog(mediaFinalListToUpload);
                             }
                         });
 
@@ -726,7 +800,7 @@ public class UploadPageActivity extends AppCompatActivity {
     }
 
     //this is the method that triggers the page upload from the UploadPageManagerService class
-    private void startPageUploadService(ArrayList<String> imagesFinalListToUpload){
+    private void startPageUploadService(ArrayList<String> mediaFinalListToUpload){
         Intent intent = new Intent(getApplicationContext(),UploadPageManagerService.class);
         intent.putExtra(GlobalConfig.PAGE_ID_KEY,pageId);
         intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryId);
@@ -739,7 +813,7 @@ public class UploadPageActivity extends AppCompatActivity {
         intent.putExtra(GlobalConfig.IS_CREATE_NEW_PAGE_KEY,isCreateNewPage);
         intent.putExtra(GlobalConfig.IS_PAGE_COVER_PHOTO_CHANGED_KEY,isCoverImageChanged);
         intent.putExtra(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY,retrievedCoverPhotoDownloadUrl);
-        intent.putExtra(GlobalConfig.PAGE_MEDIA_URL_LIST_KEY,imagesFinalListToUpload);
+        intent.putExtra(GlobalConfig.PAGE_MEDIA_URL_LIST_KEY,mediaFinalListToUpload);
         intent.putExtra(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY,retrievedActivePageMediaUrlArrayList);
         intent.putExtra(GlobalConfig.PAGE_NUMBER_KEY,pageNumber);
         startService(intent);
@@ -868,7 +942,7 @@ public class UploadPageActivity extends AppCompatActivity {
                         openGallery();
                     }
                 },0)
-                .addOptionItem("URL", R.drawable.baseline_link_24, new View.OnClickListener() {
+                .addOptionItem("Insert image URL", R.drawable.baseline_link_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         choosePhotoPickerModal.hide();
@@ -904,13 +978,90 @@ public class UploadPageActivity extends AppCompatActivity {
                 },0)
                 .render();
 
+        chooseVideoPickerModal= new LEBottomSheetDialog(UploadPageActivity.this)
+                .addOptionItem("Video Gallery", R.drawable.baseline_insert_photo_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        chooseVideoPickerModal.hide();
+                        openVideoGallery();
+                    }
+                },0)
+                .addOptionItem("Insert video URL", R.drawable.baseline_link_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        chooseVideoPickerModal.hide();
+
+                        LayoutInflater inflater = getLayoutInflater();
+                        View dialogView = inflater.inflate(R.layout.single_edit_text_layout, null);
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(UploadPageActivity.this);
+                        builder.setView(dialogView);
+                        builder.setTitle("Insert video url:")
+                                .setMessage("enter or paste video url to insert");
+
+                        builder.setPositiveButton("Insert", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // handle OK button click
+                                EditText editText = dialogView.findViewById(R.id.edit_text);
+                                String inputText = editText.getText().toString();
+                                // do something with the input text
+                                if(GlobalHelpers.isValidUrl(inputText)){
+                                    wysiwygEditor.insertVideo(inputText);
+                                }
+
+                            }
+                        });
+
+                        builder.setNegativeButton("Cancel", null);
+
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+
+                    }
+                },0)
+                .render();
+
 
 
         action_insert_table.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //show modal here to enter rows,cols and hasheading
-                wysiwygEditor.insertTable(2,4,true);
+
+                LayoutInflater inflater = getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.table_dialog_layout, null);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(UploadPageActivity.this);
+                builder.setView(dialogView);
+                builder.setTitle("Insert Table")
+                        .setMessage("-Check the box if you need your table with headings \n-Enter number of rows and columns you want to create in your table");
+
+                builder.setPositiveButton("Insert", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // handle OK button click
+                        CheckBox headingCheckbox = dialogView.findViewById(R.id.headingCheckboxId);
+                        EditText rowEditText = dialogView.findViewById(R.id.row_numbers_edit_text);
+                        EditText columnEditText = dialogView.findViewById(R.id.column_numbers_edit_text);
+                        // do something with the input text
+                        int rows = 0;
+                        int columns = 0;
+                        if(rowEditText.getText()!=null && !((rowEditText.getText()+"").isEmpty()) ){
+                            rows = Integer.parseInt(rowEditText.getText().toString());
+                        }
+                        if(columnEditText.getText()!=null && !((columnEditText.getText()+"").isEmpty()) ){
+                            columns = Integer.parseInt(columnEditText.getText().toString());
+                        }
+                        wysiwygEditor.insertTable(rows,columns,headingCheckbox.isChecked());
+
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", null);
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
 
             }
         });
@@ -1196,34 +1347,35 @@ public class UploadPageActivity extends AppCompatActivity {
         action_insert_video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                chooseVideoPickerModal.show();
 //                wysiwygEditor.insertVideo("https://www.youtube.com/watch?v=ZChsMjm5-mk");
                // wysiwygEditor.insertVideo("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4");
-                LayoutInflater inflater = getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.single_edit_text_layout, null);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(UploadPageActivity.this);
-                builder.setView(dialogView);
-                builder.setTitle("Insert video url:")
-                                .setMessage("enter or paste video url to insert");
-
-                builder.setPositiveButton("Insert", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // handle OK button click
-                        EditText editText = dialogView.findViewById(R.id.edit_text);
-                        String inputText = editText.getText().toString();
-                        // do something with the input text
-                        if(GlobalHelpers.isValidUrl(inputText)){
-                            wysiwygEditor.insertVideo(inputText);
-                        }
-
-                    }
-                });
-
-                builder.setNegativeButton("Cancel", null);
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
+//                LayoutInflater inflater = getLayoutInflater();
+//                View dialogView = inflater.inflate(R.layout.single_edit_text_layout, null);
+//
+//                AlertDialog.Builder builder = new AlertDialog.Builder(UploadPageActivity.this);
+//                builder.setView(dialogView);
+//                builder.setTitle("Insert video url:")
+//                                .setMessage("enter or paste video url to insert");
+//
+//                builder.setPositiveButton("Insert", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        // handle OK button click
+//                        EditText editText = dialogView.findViewById(R.id.edit_text);
+//                        String inputText = editText.getText().toString();
+//                        // do something with the input text
+//                        if(GlobalHelpers.isValidUrl(inputText)){
+//                            wysiwygEditor.insertVideo(inputText);
+//                        }
+//
+//                    }
+//                });
+//
+//                builder.setNegativeButton("Cancel", null);
+//
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
 
             }
         });
@@ -1264,7 +1416,7 @@ public class UploadPageActivity extends AppCompatActivity {
 
 
     }
-    private void showPageUploadConfirmationDialog(ArrayList<String> imagesListToUpload){
+    private void showPageUploadConfirmationDialog(ArrayList<String> mediaFinalListToUpload){
 
        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -1276,7 +1428,7 @@ public class UploadPageActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (!String.valueOf(pageTitleEditText.getText()).trim().equals("") ) {
-                startPageUploadService(imagesListToUpload);
+                startPageUploadService(mediaFinalListToUpload);
                 }else{
                     pageTitleEditText.requestFocus();
                     pageTitleEditText.setError("You must enter page title");
@@ -1497,12 +1649,21 @@ public class UploadPageActivity extends AppCompatActivity {
     public void openCamera(){
         requestForPermissionAndPickImage(CAMERA_PERMISSION_REQUEST_CODE);
     }
+    public void openVideoGallery(){
+        requestForPermissionAndPickImage(VIDEO_PERMISSION_REQUEST_CODE);
+    }
 
     public void fireGalleryIntent(){
         Intent galleryIntent = new Intent();
         galleryIntent.setAction(Intent.ACTION_PICK);
         galleryIntent.setType("image/*");
         openGalleryLauncher.launch(galleryIntent);
+    }
+    public void fireVideoGalleryIntent(){
+        Intent videoGalleryIntent = new Intent();
+        videoGalleryIntent.setAction(Intent.ACTION_PICK);
+        videoGalleryIntent.setType("video/*");
+        openVideoLauncher.launch(videoGalleryIntent);
     }
     public void fireCoverImageGalleryIntent(){
         Intent galleryCoverIntent = new Intent();
@@ -1524,6 +1685,9 @@ public class UploadPageActivity extends AppCompatActivity {
             }
             if(requestCode == GALLERY_PERMISSION_REQUEST_CODE) {
                 fireGalleryIntent();
+            }
+            if(requestCode == VIDEO_PERMISSION_REQUEST_CODE) {
+                fireVideoGalleryIntent();
             }
             if(requestCode== COVER_IMAGE_GALLERY_REQUEST_CODE){
                 fireCoverImageGalleryIntent();

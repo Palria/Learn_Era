@@ -306,7 +306,6 @@ ImageButton morePageActionButton;
 
                 }
             });
-
         }else{
 
             Toast.makeText(this, "Page Blocked! Unblock to explore the Page", Toast.LENGTH_SHORT).show();

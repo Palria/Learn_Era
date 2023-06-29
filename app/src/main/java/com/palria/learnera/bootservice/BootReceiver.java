@@ -27,6 +27,7 @@ public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        if(true)return;
         this.context = context;
         createNotificationChannel(context); //creates notification channel.
         Log.d("FROM BOOT RECEIVER", "onReceive: HAS TRIGGERED ");

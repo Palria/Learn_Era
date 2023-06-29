@@ -672,9 +672,9 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
             String imageId = GlobalConfig.getRandomString(15);
             StorageReference storageReference = null;
             if(isTutorialPage) {
-                storageReference = GlobalConfig.getFirebaseStorageInstance().getReference().child(GlobalConfig.ALL_USERS_KEY + "/" + GlobalConfig.getCurrentUserId() + "/" + GlobalConfig.ALL_LIBRARY_KEY + "/" + libraryId + "/" + GlobalConfig.ALL_TUTORIAL_KEY + "/" + tutorialId + "/" + GlobalConfig.ALL_TUTORIAL_PAGES_KEY + "/" + pageId + "/ALL_IMAGES/" + imageId + ".PNG");
+                storageReference = GlobalConfig.getFirebaseStorageInstance().getReference().child(GlobalConfig.ALL_USERS_KEY + "/" + GlobalConfig.getCurrentUserId() + "/" + GlobalConfig.ALL_LIBRARY_KEY + "/" + libraryId + "/" + GlobalConfig.ALL_TUTORIAL_KEY + "/" + tutorialId + "/" + GlobalConfig.ALL_TUTORIAL_PAGES_KEY + "/" + pageId + "/ALL_MEDIA/" + imageId );
             }else{
-                storageReference = GlobalConfig.getFirebaseStorageInstance().getReference().child(GlobalConfig.ALL_USERS_KEY + "/" + GlobalConfig.getCurrentUserId() + "/" + GlobalConfig.ALL_LIBRARY_KEY + "/" + libraryId + "/" + GlobalConfig.ALL_TUTORIAL_KEY + "/" + tutorialId + "/" + GlobalConfig.ALL_FOLDERS_KEY+"/"+folderId+"/"+GlobalConfig.ALL_FOLDER_PAGES_KEY + "/" + pageId + "/ALL_IMAGES/" + imageId + ".PNG");
+                storageReference = GlobalConfig.getFirebaseStorageInstance().getReference().child(GlobalConfig.ALL_USERS_KEY + "/" + GlobalConfig.getCurrentUserId() + "/" + GlobalConfig.ALL_LIBRARY_KEY + "/" + libraryId + "/" + GlobalConfig.ALL_TUTORIAL_KEY + "/" + tutorialId + "/" + GlobalConfig.ALL_FOLDERS_KEY+"/"+folderId+"/"+GlobalConfig.ALL_FOLDER_PAGES_KEY + "/" + pageId + "/ALL_MEDIA/" + imageId);
 
             }
             final StorageReference finalStorageReference = storageReference;
@@ -694,10 +694,10 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
 
                     progressCount.put(pageId,(int) ((100.0 * totalBytesTransferred.get(pageId)  /totalBytes.get(pageId)) ));
 
-                    Toast.makeText(UploadPageManagerService.this, ""+progressCount.get(pageId), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(UploadPageManagerService.this, ""+progressCount.get(pageId), Toast.LENGTH_SHORT).show();
 
                    // if((int)numberOfMedia.get(pageId) == (int) (numberOfProgressingMedia.get(pageId))) {
-                        Toast.makeText(UploadPageManagerService.this, "was true  tt"+totalBytes.get(pageId)+" :" +progressCount.get(pageId)+" yes true ttr : "+totalBytesTransferred.get(pageId), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(UploadPageManagerService.this, "was true  tt"+totalBytes.get(pageId)+" :" +progressCount.get(pageId)+" yes true ttr : "+totalBytesTransferred.get(pageId), Toast.LENGTH_SHORT).show();
 
                         UploadPageManagerService.this.onProgress(pageId, progressCount.get(pageId),folderId,  tutorialId,  isTutorialPage,  pageTitle);
                    /// }
