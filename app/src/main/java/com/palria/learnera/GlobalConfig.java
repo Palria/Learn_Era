@@ -141,6 +141,7 @@ public class GlobalConfig {
     public static final String IS_USER_PROFILE_COMPLETED_KEY = "IS_USER_PROFILE_COMPLETED";
     public static final String USER_RESIDENTIAL_ADDRESS_KEY = "USER_RESIDENTIAL_ADDRESS";
     public static final String USER_AGE_KEY = "USER_AGE";
+    public static final String USER_PERSONAL_WEBSITE_LINK_KEY = "USER_PERSONAL_WEBSITE_LINK";
 
     public static final String IS_ACCOUNT_VERIFIED_KEY = "IS_ACCOUNT_VERIFIED";
     public static final String DATE_VERIFIED_TIME_STAMP_KEY = "DATE_VERIFIED_TIME_STAMP";
@@ -535,8 +536,10 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
     }
       /**
        *checks if app is in night mode*/
-   public static boolean isNightMode(){
-      return GlobalConfig.isNightMode;
+   public static boolean isNightMode(Context context){
+       SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(),MODE_PRIVATE);
+
+       return sharedPreferences.getBoolean(GlobalConfig.IS_NIGHT_MODE_KEY,false);
     }
 
     /**
@@ -1089,6 +1092,19 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
         snackBar.setAction("Hide", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                snackBar.dismiss();
+            }
+        });
+        snackBar.show();
+
+        return snackBar;
+    }
+   public static  Snackbar createSnackBar2(Context context , View view,String text,String buttonLabel,int lengthPeriod,View.OnClickListener onClickListener){
+        Snackbar snackBar = Snackbar.make(view,text,lengthPeriod);
+        snackBar.setAction(buttonLabel, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickListener.onClick(view);
                 snackBar.dismiss();
             }
         });

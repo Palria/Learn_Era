@@ -82,6 +82,8 @@ private TextView errorMessageTextView;
             public void onClick(View view) {
                 Intent i = new Intent(ChangePasswordActivity.this, SignInActivity.class);
                 startActivity(i);
+                ChangePasswordActivity.super.onBackPressed();
+
             }
         });
     }

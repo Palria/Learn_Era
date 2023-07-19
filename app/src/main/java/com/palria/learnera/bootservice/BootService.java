@@ -18,6 +18,7 @@ public class BootService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
+        if(true)return false;
 
         Toast.makeText(getApplicationContext(), "job started ", Toast.LENGTH_LONG).show();
 
@@ -26,6 +27,8 @@ public class BootService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters jobParameters) {
+        if(true)return false;
+
         Toast.makeText(getApplicationContext(), "job stopped ", Toast.LENGTH_LONG).show();
 
         return false;

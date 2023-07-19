@@ -54,13 +54,13 @@ public class SettingsActivity extends AppCompatActivity {
             submitActionButton.setText("Account verification in progress");
             if( GlobalConfig.isCurrentUserAccountVerified()){
                 submitActionButton.setText("Account verified");
-                submitActionButton.setVisibility(View.GONE);
+                submitActionButton.setClickable(false);
             }
         }
 if(!GlobalConfig.isUserLoggedIn()){
     submitActionButton.setVisibility(View.GONE);
 }
-        visibilitySwitch.setChecked(GlobalConfig.isNightMode());
+        visibilitySwitch.setChecked(GlobalConfig.isNightMode(SettingsActivity.this));
         visibilitySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

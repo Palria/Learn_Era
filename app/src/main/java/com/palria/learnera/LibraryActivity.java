@@ -541,6 +541,7 @@ LibraryDataModel intentLibraryDataModel;
 
                                                 }
                                             });
+
                                             LibraryActivity.super.onBackPressed();
 
                                         }
@@ -586,17 +587,17 @@ LibraryDataModel intentLibraryDataModel;
 
                                 }
                             }, 0);
-                if(GlobalConfig.getCurrentUserId().equals(authorId+"")){
+                if(GlobalConfig.getCurrentUserId().equals(authorId+"") || GlobalConfig.isLearnEraAccount()){
                     leBottomSheetDialogMoreActon.addOptionItem("Delete Library", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
 
 
 
-                         new AlertDialog.Builder(getApplicationContext())
+                         new AlertDialog.Builder(LibraryActivity.this)
                                     .setCancelable(true)
                                     .setTitle("Delete Your Library!")
-                                    .setMessage("Action cannot be undone, are you sure you want to delete your library?")
+                                    .setMessage("Action cannot be reversed, are you sure you want to delete your library?")
                                     .setPositiveButton("Yes,delete", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -616,12 +617,12 @@ LibraryDataModel intentLibraryDataModel;
                                                 @Override
                                                 public void onFailed(String errorMessage) {
                                                     toggleProgress(false);
-                                                    GlobalHelpers.showAlertMessage("error",getApplicationContext(), "Unable to delete library",errorMessage);
+                                                    GlobalHelpers.showAlertMessage("error",LibraryActivity.this, "Unable to delete library",errorMessage);
                                                     Toast.makeText(getApplicationContext(), "Unable to deleted library!  please try again", Toast.LENGTH_SHORT).show();
 
                                                 }
                                             });
-                                            LibraryActivity.super.onBackPressed();
+
 
                                         }
                                     })

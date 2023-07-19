@@ -43,6 +43,19 @@
                         android:background="@android:drawable/screen_background_light_transparent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
+                    
+                    <TextView
+                        android:id="@+id/libraryTextId"
+                        android:layout_marginLeft="5pt"
+                        android:layout_marginTop="5pt"
+                        android:text="Library"
+                        android:textColor="@color/white"
+                        android:background="@android:drawable/screen_background_dark_transparent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/backButton"
+                        android:layout_alignParentTop="true"
+                        />
     
     
                     <ImageButton

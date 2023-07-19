@@ -1,8 +1,5 @@
 var editor = {};
 
-
-
-
 editor.currentSelection = {
     "startContainer": 0,
     "startOffset": 0,
@@ -10,8 +7,6 @@ editor.currentSelection = {
     "endOffset": 0};
 
 editor.editor = document.getElementById('editor');
-
-
 
 document.addEventListener("selectionchange", function() { editor.backuprange(); });
 
@@ -218,12 +213,12 @@ editor.insertVideo = function(url, alt) {
  let id = getYouTubeID(url);
 if(id && id.length){
 
-html = `<iframe width="100%" height="240px" src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>
+html = `<iframe allowfullscreen width="100%" height="240px" src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen></iframe>
 <p> &nbsp;</p> <p> &nbsp;</p>`;
 
 }else{
 html= ` <div class="video-container">
-           <video width="100%" height="240" controls>
+           <video allowfullscreen width="100%" height="240" controls>
                  <source src="${url}">
                </video>
         </div> <p> &nbsp; </p> <p> &nbsp; </p>`;
@@ -254,7 +249,7 @@ html += "<tbody>";
 for(var i = 0; i < rows; i++){
 html += "<tr>";
 for(var j =0; j < cols; j++){
-html += "<td> text  </td>";
+html += "<td>   </td>";
 }
 html += "</tr>";
 

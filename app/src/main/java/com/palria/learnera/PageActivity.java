@@ -80,7 +80,7 @@ ImageButton morePageActionButton;
 //        if(!authorId.equals(GlobalConfig.getCurrentUserId())){
 //            morePageActionButton.setVisibility(View.GONE);
 //        }
-            if(GlobalConfig.getCurrentUserId().equals(authorId+"")){
+            if(GlobalConfig.getCurrentUserId().equals(authorId+"") || GlobalConfig.isLearnEraAccount()){
 
                 leBottomSheetDialog.addOptionItem("Edit Page", R.drawable.ic_baseline_edit_24,
                         new View.OnClickListener() {
@@ -106,7 +106,7 @@ ImageButton morePageActionButton;
                         new AlertDialog.Builder(PageActivity.this)
                                 .setCancelable(true)
                                 .setTitle("Delete Your Page!")
-                                .setMessage("Action cannot be undone, are you sure you want to delete your Page?")
+                                .setMessage("Action cannot be reversed, are you sure you want to delete your Page?")
                                 .setPositiveButton("Yes,delete", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -118,7 +118,7 @@ ImageButton morePageActionButton;
                                             @Override
                                             public void onSuccess() {
                                                 toggleProgress(false);
-                                                Toast.makeText(getApplicationContext(), "Delete Page success", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(PageActivity.this, "Delete Page success", Toast.LENGTH_SHORT).show();
 
                                                 PageActivity.super.onBackPressed();
                                             }
@@ -126,12 +126,11 @@ ImageButton morePageActionButton;
                                             @Override
                                             public void onFailed(String errorMessage) {
                                                 toggleProgress(false);
-                                                GlobalHelpers.showAlertMessage("error",getApplicationContext(), "Unable to delete Page",errorMessage);
+                                                GlobalHelpers.showAlertMessage("error",PageActivity.this, "Unable to delete Page",errorMessage);
                                                 Toast.makeText(getApplicationContext(), "Unable to deleted Page!  please try again", Toast.LENGTH_SHORT).show();
 
                                             }
                                         });
-                                        PageActivity.super.onBackPressed();
 
                                     }
                                 })

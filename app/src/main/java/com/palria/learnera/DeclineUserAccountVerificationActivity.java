@@ -38,6 +38,7 @@ public class DeclineUserAccountVerificationActivity extends AppCompatActivity {
 
     CheckBox lessMonthReason;
     CheckBox emailAddressReason;
+    CheckBox nameNotAllowedReason;
     CheckBox authorReason;
     CheckBox otherReasons;
 
@@ -86,6 +87,7 @@ public class DeclineUserAccountVerificationActivity extends AppCompatActivity {
         lessMonthReason = findViewById(R.id.lessMonthReasonId);
         authorReason = findViewById(R.id.notAuthorReasonId);
         emailAddressReason = findViewById(R.id.emailAddressReasonId);
+        nameNotAllowedReason = findViewById(R.id.nameNotAllowedReasonId);
         otherReasons = findViewById(R.id.otherReasonsId);
 
 
@@ -123,6 +125,8 @@ public class DeclineUserAccountVerificationActivity extends AppCompatActivity {
           }
           if(emailAddressReason.isChecked()){
               reasonList.add(emailAddressReason.getText()+"");
+          }if(nameNotAllowedReason.isChecked()){
+              reasonList.add(nameNotAllowedReason.getText()+"");
           }
           if(otherReasons.isChecked()){
               reasonList.add(otherReasons.getText()+"");

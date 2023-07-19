@@ -73,7 +73,7 @@ boolean isInProgress = false;
                                     Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     Toast.makeText(getApplicationContext(), "You successfully signed in, go learn more, it is era of learning", Toast.LENGTH_LONG).show();
-                                    SignInActivity.this.finish();
+                                    SignInActivity.super.onBackPressed();
                                 }
 
                                 @Override
@@ -126,6 +126,8 @@ boolean isInProgress = false;
                 //register|sign up activity starts from here .
                 Intent i = new Intent(SignInActivity.this, SignUpActivity.class);
                 startActivity(i);
+                SignInActivity.super.onBackPressed();
+
             }
         });
 
@@ -135,6 +137,7 @@ boolean isInProgress = false;
                 //forget password activity intent starts from here .
                 Intent i = new Intent(SignInActivity.this, ChangePasswordActivity.class);
                 startActivity(i);
+                SignInActivity.super.onBackPressed();
             }
         });
       

@@ -438,6 +438,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="5pt"
                                 android:maxLines="1"
+                                android:autoLink="map"
                                 android:text="From Kathmandu, Nepal"
                                 android:textAlignment="textStart"
                                 android:textSize="8pt" />
@@ -445,6 +446,32 @@
 
                         </LinearLayout>
 
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="6pt"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_baseline_local_phone_24"
+                                app:tint="@color/grayDark" />
+
+                            <TextView
+                                android:id="@+id/currentPhoneNumberViewId"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5pt"
+                                android:maxLines="1"
+                                android:autoLink="phone"
+                                android:text="No phone"
+                                android:textAlignment="textStart"
+                                android:textSize="8pt" />
+
+
+                        </LinearLayout>
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -464,7 +491,35 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="5pt"
                                 android:maxLines="1"
-                                android:text="Contact Email rasasha125@gmail.com"
+                                android:autoLink="email"
+                                android:text="No email"
+                                android:textAlignment="textStart"
+                                android:textSize="8pt" />
+
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="6pt"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/baseline_link_24"
+                                app:tint="@color/grayDark" />
+
+                            <TextView
+                                android:id="@+id/current_website_link"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5pt"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:autoLink="web"
+                                android:text="No website"
                                 android:textAlignment="textStart"
                                 android:textSize="8pt" />
 

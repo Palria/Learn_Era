@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -55,9 +56,11 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
     private String userCountryOfResidence;
     private String contactEmail;
     private String contactPhoneNumber;
+    private String webLink;
     private String genderType;
     private EditText userDisplayNameEditText;
     private EditText contactEmailEditText;
+    private EditText webLinkInput;
     private EditText genderTypeEditText;
     private EditText contactPhoneNumberEditText;
     private EditText userCountryOfResidenceEditText;
@@ -104,10 +107,11 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
         toggleProgress(true);
    initUserProfileValuesBeforeEdition(new ProfileValueInitListener() {
        @Override
-       public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, String profilePhotoStorageReference, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
+       public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail,String webLink, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, String profilePhotoStorageReference, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
 
            userDisplayNameEditText.setText(userDisplayName);
            contactEmailEditText.setText(contactEmail);
+           webLinkInput.setText(webLink);
            contactPhoneNumberEditText.setText(contactPhoneNumber);
 //           genderTypeEditText.setText(genderType);
            retrievedProfilePictureDownloadUrl = userProfilePhotoDownloadUrl;
@@ -223,6 +227,7 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                 userCountryOfResidence = countrySpinner.getSelectedItem().toString();
                 genderType = genderTypeSpinner.getSelectedItem().toString();
                 contactEmail = contactEmailEditText.getText().toString();
+                webLink = webLinkInput.getText().toString();
                 contactPhoneNumber = contactPhoneNumberEditText.getText().toString();
 
                 if(!userDisplayName.isEmpty()){
@@ -389,6 +394,10 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    public void onBackPressed(){
+        createConfirmExitDialog();
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -418,6 +427,7 @@ private void initUI(){
 
     userDisplayNameEditText = findViewById(R.id.nameInput);
     contactEmailEditText = findViewById(R.id.emailInput);
+    webLinkInput = findViewById(R.id.webLinkInputId);
     contactPhoneNumberEditText = findViewById(R.id.contactInput);
 
     //gender and country is spinner.
@@ -470,6 +480,25 @@ private void initUI(){
             }
 
         }
+    }
+    private void createConfirmExitDialog(){
+        AlertDialog confirmExitDialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Exit");
+        builder.setMessage("Click exit button to exit the screen");
+        builder.setCancelable(false);
+        builder.setIcon(R.drawable.ic_baseline_error_outline_24);
+        builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                EditCurrentUserProfileActivity.super.onBackPressed();
+            }
+        })
+                .setNegativeButton("Stay back", null);
+        confirmExitDialog = builder.create();
+        confirmExitDialog.show();
+
     }
 
     public void openGallery(){
@@ -557,6 +586,7 @@ private void initUI(){
         userProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY,FieldValue.increment(0L));
         userProfileDetails.put(GlobalConfig.IS_USER_BLOCKED_KEY,isUserBlocked);
         userProfileDetails.put(GlobalConfig.USER_CONTACT_EMAIL_ADDRESS_KEY,contactEmail);
+        userProfileDetails.put(GlobalConfig.USER_PERSONAL_WEBSITE_LINK_KEY,webLink);
         userProfileDetails.put(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY,userProfilePhotoDownloadUrl);
         userProfileDetails.put(GlobalConfig.USER_PROFILE_PHOTO_STORAGE_REFERENCE_KEY,profilePhotoStorageReference);
         userProfileDetails.put(GlobalConfig.IS_USER_PROFILE_PHOTO_INCLUDED_KEY,isProfilePhotoIncluded);
@@ -610,6 +640,7 @@ private void initUI(){
                         String userCountryOfResidence =""+ documentSnapshot.get(GlobalConfig.USER_COUNTRY_OF_RESIDENCE_KEY);
                         String contactEmail =""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_EMAIL_ADDRESS_KEY);
                         String contactPhoneNumber =""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY);
+                        String webLink =documentSnapshot.get(GlobalConfig.USER_PERSONAL_WEBSITE_LINK_KEY)!=null? ""+ documentSnapshot.get(GlobalConfig.USER_PERSONAL_WEBSITE_LINK_KEY):"";
                         String genderType =""+ documentSnapshot.get(GlobalConfig.USER_GENDER_TYPE_KEY);
                         String userProfilePhotoDownloadUrl =""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
                         String profilePhotoStorageReference =""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_STORAGE_REFERENCE_KEY);
@@ -624,7 +655,7 @@ private void initUI(){
 
                         }
 
-                        profileValueInitListener.onSuccess( userDisplayName, userCountryOfResidence, contactEmail, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl,  profilePhotoStorageReference, isUserBlocked, isUserProfilePhotoIncluded);
+                        profileValueInitListener.onSuccess( userDisplayName, userCountryOfResidence, contactEmail,webLink, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl,  profilePhotoStorageReference, isUserBlocked, isUserProfilePhotoIncluded);
 
                     }
                 });
@@ -682,7 +713,7 @@ private void initUI(){
         void onFailed(String errorMessage);
     }
     interface ProfileValueInitListener{
-        void onSuccess(String userDisplayName,String userCountryOfResidence,String contactEmail,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,String profilePhotoStorageReference,boolean isUserBlocked,boolean isUserProfilePhotoIncluded);
+        void onSuccess(String userDisplayName,String userCountryOfResidence,String contactEmail,String webLink,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,String profilePhotoStorageReference,boolean isUserBlocked,boolean isUserProfilePhotoIncluded);
         void onFailed(String errorMessage);
     }
 

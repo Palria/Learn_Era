@@ -84,24 +84,24 @@ public class UploadPageManagerService extends Service implements OnPageUploadLis
             currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         }
 
+if(intent != null) {
+    String pageId = intent.getStringExtra(GlobalConfig.PAGE_ID_KEY);
+    int pageNumber = intent.getIntExtra(GlobalConfig.PAGE_NUMBER_KEY, 0);
+    String libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
+    String tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
+    String folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
+    String pageTitle = intent.getStringExtra(GlobalConfig.PAGE_TITLE_KEY);
+    String pageContent = intent.getStringExtra(GlobalConfig.PAGE_CONTENT_KEY);
+    String coverPhotoDownloadUrl = intent.getStringExtra(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
+    ArrayList<String> imageListToUpload = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.PAGE_MEDIA_URL_LIST_KEY);
+    ArrayList<String> retrievedActivePageMediaUrlArrayList = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY);
+    boolean isPublic = intent.getBooleanExtra(GlobalConfig.IS_PUBLIC_KEY, true);
+    boolean isTutorialPage = intent.getBooleanExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY, true);
+    boolean isCreateNewPage = intent.getBooleanExtra(GlobalConfig.IS_CREATE_NEW_PAGE_KEY, true);
+    boolean isPageCoverPhotoChanged = intent.getBooleanExtra(GlobalConfig.IS_PAGE_COVER_PHOTO_CHANGED_KEY, true);
+    UploadPageManagerService.this.onNewPage(isPublic, pageId, folderId, tutorialId, libraryId, pageNumber, isTutorialPage, isCreateNewPage, coverPhotoDownloadUrl, isPageCoverPhotoChanged, pageTitle, retrievedActivePageMediaUrlArrayList, pageContent, imageListToUpload);
 
-        String pageId = intent.getStringExtra(GlobalConfig.PAGE_ID_KEY);
-        int pageNumber = intent.getIntExtra(GlobalConfig.PAGE_NUMBER_KEY,0);
-        String libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
-        String tutorialId = intent.getStringExtra(GlobalConfig.TUTORIAL_ID_KEY);
-        String folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
-        String pageTitle = intent.getStringExtra(GlobalConfig.PAGE_TITLE_KEY);
-        String pageContent = intent.getStringExtra(GlobalConfig.PAGE_CONTENT_KEY);
-        String coverPhotoDownloadUrl = intent.getStringExtra(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
-        ArrayList<String> imageListToUpload = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.PAGE_MEDIA_URL_LIST_KEY);
-        ArrayList<String>retrievedActivePageMediaUrlArrayList = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY);
-        boolean isPublic = intent.getBooleanExtra(GlobalConfig.IS_PUBLIC_KEY,true);
-        boolean isTutorialPage = intent.getBooleanExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,true);
-        boolean isCreateNewPage = intent.getBooleanExtra(GlobalConfig.IS_CREATE_NEW_PAGE_KEY,true);
-        boolean isPageCoverPhotoChanged = intent.getBooleanExtra(GlobalConfig.IS_PAGE_COVER_PHOTO_CHANGED_KEY,true);
-        UploadPageManagerService.this.onNewPage(isPublic, pageId,  folderId,  tutorialId,  libraryId,  pageNumber,  isTutorialPage, isCreateNewPage, coverPhotoDownloadUrl,isPageCoverPhotoChanged,  pageTitle,retrievedActivePageMediaUrlArrayList,  pageContent,imageListToUpload);
-
-
+}
         return Service.START_STICKY;
     }
 

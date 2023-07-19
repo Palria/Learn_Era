@@ -270,6 +270,8 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                                             public void onSuccess() {
 
                                                 toggleProgress(false);
+                                                gotoNewlyCreatedTutorial();
+                                                CreateNewTutorialActivity.super.onBackPressed();
 //                                                GlobalHelpers.showAlertMessage("success",
 //                                                        CreateNewTutorialActivity.this,
 //                                                        "Tutorial created successfully",
@@ -281,10 +283,13 @@ public class CreateNewTutorialActivity extends AppCompatActivity {
                                             public void onFailed(String errorMessage) {
 
                                                 toggleProgress(false);
-                                                GlobalHelpers.showAlertMessage("success",
-                                                        CreateNewTutorialActivity.this,
-                                                        "Tutorial created successfully",
-                                                        "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
+                                                gotoNewlyCreatedTutorial();
+                                                CreateNewTutorialActivity.super.onBackPressed();
+
+//                                                GlobalHelpers.showAlertMessage("success",
+//                                                        CreateNewTutorialActivity.this,
+//                                                        "Tutorial created successfully",
+//                                                        "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
 
                                             }
                                         });
@@ -403,10 +408,13 @@ toggleProgress(false);
 
 
                                         toggleProgress(false);
-                                        GlobalHelpers.showAlertMessage("success",
-                                                CreateNewTutorialActivity.this,
-                                                "Tutorial created successfully",
-                                                "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
+                                        gotoNewlyCreatedTutorial();
+                                        CreateNewTutorialActivity.super.onBackPressed();
+
+//                                        GlobalHelpers.showAlertMessage("success",
+//                                                CreateNewTutorialActivity.this,
+//                                                "Tutorial created successfully",
+//                                                "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
                                     }
 
                                     @Override
@@ -414,10 +422,13 @@ toggleProgress(false);
 
 
                                         toggleProgress(false);
-                                        GlobalHelpers.showAlertMessage("success",
-                                                CreateNewTutorialActivity.this,
-                                                "Tutorial created successfully",
-                                                "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
+                                        gotoNewlyCreatedTutorial();
+                                        CreateNewTutorialActivity.super.onBackPressed();
+
+//                                        GlobalHelpers.showAlertMessage("success",
+//                                                CreateNewTutorialActivity.this,
+//                                                "Tutorial created successfully",
+//                                                "You have successfully created your tutorial,thanks go ahead and contribute to Learn Era ");
                                     }
                                 });
 
@@ -538,6 +549,10 @@ toggleProgress(false);
 
     }
 
+    @Override
+    public void onBackPressed(){
+        createConfirmExitDialog();
+    }
     private void getDynamicCategories() {
 //
 //        categoryArrayList=new ArrayList<>();
@@ -690,6 +705,25 @@ toggleProgress(false);
             }
 
         }
+    }
+    private void createConfirmExitDialog(){
+        AlertDialog confirmExitDialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Exit");
+        builder.setMessage("Click exit button to exit the screen");
+        builder.setCancelable(false);
+        builder.setIcon(R.drawable.ic_baseline_error_outline_24);
+        builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                CreateNewTutorialActivity.super.onBackPressed();
+            }
+        })
+                .setNegativeButton("Stay back", null);
+        confirmExitDialog = builder.create();
+        confirmExitDialog.show();
+
     }
 
     public void openGallery(){
@@ -928,6 +962,7 @@ toggleProgress(false);
         Intent intent  = new Intent(CreateNewTutorialActivity.this,TutorialActivity.class);
         intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
         intent.putExtra(GlobalConfig.LIBRARY_CONTAINER_ID_KEY,libraryContainerId);
+        intent.putExtra(GlobalConfig.TUTORIAL_AUTHOR_ID_KEY,GlobalConfig.getCurrentUserId());
         intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
         startActivity(intent);
     }

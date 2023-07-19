@@ -227,7 +227,7 @@ createTabLayout();
 
                             }
                         },0);
-                if(GlobalConfig.getCurrentUserId().equals(authorId+"")){
+                if(GlobalConfig.getCurrentUserId().equals(authorId+"") || GlobalConfig.isLearnEraAccount()){
                     leBottomSheetDialogMoreActon.addOptionItem("Delete Tutorial", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -237,11 +237,11 @@ createTabLayout();
                             new AlertDialog.Builder(TutorialActivity.this)
                                     .setCancelable(true)
                                     .setTitle("Delete Your Tutorial!")
-                                    .setMessage("Action cannot be undone, are you sure you want to delete your Tutorial?")
+                                    .setMessage("Action cannot be reversed, are you sure you want to delete your Tutorial?")
                                     .setPositiveButton("Yes,delete", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
-toggleProgress(true);
+                                            toggleProgress(true);
                                             Toast.makeText(getApplicationContext(), "Deleting", Toast.LENGTH_SHORT).show();
 
                                             leBottomSheetDialogMoreActon.hide();
@@ -249,7 +249,7 @@ toggleProgress(true);
                                                 @Override
                                                 public void onSuccess() {
                                                     toggleProgress(false);
-                                                    Toast.makeText(getApplicationContext(), "Delete Tutorial success", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(TutorialActivity.this, "Delete Tutorial success", Toast.LENGTH_SHORT).show();
 
                                                     TutorialActivity.super.onBackPressed();
                                                 }
@@ -257,12 +257,11 @@ toggleProgress(true);
                                                 @Override
                                                 public void onFailed(String errorMessage) {
                                                     toggleProgress(false);
-                                                    GlobalHelpers.showAlertMessage("error",getApplicationContext(), "Unable to delete Tutorial",errorMessage);
+                                                    GlobalHelpers.showAlertMessage("error",TutorialActivity.this, "Unable to delete Tutorial",errorMessage);
                                                     Toast.makeText(getApplicationContext(), "Unable to deleted Tutorial!  please try again", Toast.LENGTH_SHORT).show();
 
                                                 }
                                             });
-                                            TutorialActivity.super.onBackPressed();
 
                                         }
                                     })

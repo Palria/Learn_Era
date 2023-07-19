@@ -38,6 +38,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             MainActivity.this.finish();
             return;
         }
-        if(GlobalConfig.isNightMode()){
+        if(GlobalConfig.isNightMode(MainActivity.this)){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }else{
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -303,8 +304,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                                                 dialog.dismiss();
                                             });
 
-                                            // show dialog
-                                            builder.show();
+                                            if(!queryDocumentSnapshots.isEmpty()){
+                                                // show dialog
+                                                builder.show();
+                                            }else{
+                                                GlobalConfig.createSnackBar2(MainActivity.this, fab, "You have no library to add your tutorial please create library first and add tutorial", "Create library", Snackbar.LENGTH_INDEFINITE, new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+
+                                                        Intent i = new Intent(MainActivity.this, CreateNewLibraryActivity.class);
+                                                        //creating new
+                                                        i.putExtra(GlobalConfig.IS_CREATE_NEW_LIBRARY_KEY, true);
+                                                        startActivity(i);
+                                                    }
+                                                });
+                                            }
 
                                         }
 
@@ -505,6 +519,8 @@ if(GlobalConfig.isUserLoggedIn()) {
 
                     Intent intent = new Intent(MainActivity.this,SignInActivity.class);
                     startActivity(intent);
+                    super.onBackPressed();
+
                     return false;
                 }
         }

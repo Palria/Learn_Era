@@ -125,6 +125,13 @@
             android:text="Account email address not verified"
             android:checked="false"
             />
+        <CheckBox
+            android:id="@+id/nameNotAllowedReasonId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="User name not allowed, change it and try submit back your account for verification"
+            android:checked="false"
+            />
         
         <CheckBox
             android:id="@+id/otherReasonsId"

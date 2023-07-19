@@ -112,10 +112,42 @@
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
+                        android:hint="Phone number"
+                        android:inputType="phone"
+                        android:textSize="16sp"
+                        android:id="@+id/phoneNumberViewId"
+                        android:background="@drawable/default_input_bg"
+                        android:layout_height="wrap_content"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10pt"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
                         android:hint="Email Address"
                         android:inputType="textEmailAddress"
                         android:textSize="16sp"
                         android:id="@+id/emailInput"
+                        android:background="@drawable/default_input_bg"
+                        android:layout_height="wrap_content"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10pt"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:hint="Website link"
+                        android:inputType="textUri"
+                        android:textSize="16sp"
+                        android:id="@+id/webLinkInputId"
                         android:background="@drawable/default_input_bg"
                         android:layout_height="wrap_content"/>
 
@@ -222,7 +254,7 @@
                     android:id="@+id/startButton"
                     android:layout_marginTop="10pt"
                     android:background="@drawable/default_auth_btn"
-                    android:text="Start"
+                    android:text="Sign Up"
                     android:paddingVertical="4pt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>

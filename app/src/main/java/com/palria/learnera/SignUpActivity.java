@@ -43,13 +43,17 @@ public class SignUpActivity extends AppCompatActivity {
 
     private String userDisplayName;
     private String userCountryOfResidence;
+    private String phoneNumber;
     private String email;
+    private String webLink;
     private String password;
     private String confirmPassword;
     private String genderType;
     private EditText userDisplayNameEditText;
     private EditText userCountryOfResidenceEditText;
+    private EditText phoneNumberEditText;
     private EditText emailEditText;
+    private EditText webLinkEditText;
     private EditText passwordEditText;
     private EditText genderTypeEditText;
     private Button signUpActionButton;
@@ -83,7 +87,9 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View view) {
                 userDisplayName = userDisplayNameEditText.getText().toString();
                 //userCountryOfResidence = userCountryOfResidenceEditText.getText().toString();
+                phoneNumber = phoneNumberEditText.getText().toString();
                 email = emailEditText.getText().toString();
+                webLink = webLinkEditText.getText().toString();
                 password = passwordEditText.getText().toString();
                 confirmPassword = passwordConfirmEditText.getText().toString();
 
@@ -123,6 +129,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 //--do not login user directly we need to confirm email before login--//.
 //                                Toast.makeText(SignUpActivity.this, "up sign success", Toast.LENGTH_SHORT).show();
 
+                                /**Sign in user to enable us create his database in the server. When we are done creating the database we log hi out instantly*/
                                 GlobalConfig.signInUserWithEmailAndPassword(SignUpActivity.this, email, password, new GlobalConfig.SignInListener() {
                                     @Override
                                     public void onSuccess(String email, String password) {
@@ -150,7 +157,7 @@ public class SignUpActivity extends AppCompatActivity {
                                                 FirebaseAuth.getInstance().signOut();
                                                 Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
                                                 startActivity(intent);
-                                                SignUpActivity.this.finish();
+                                                SignUpActivity.super.onBackPressed();
                                             }
 
                                             @Override
@@ -207,7 +214,7 @@ public class SignUpActivity extends AppCompatActivity {
                          */
                         isInProgress=false;
                         toggleProgress(false);
-                        errorMessageTextView.setText("All fields are required, fill the form and try again!");
+                        errorMessageTextView.setText("Enter your user name");
                         errorMessageTextView.setVisibility(View.VISIBLE);
                     }
                 }
@@ -225,6 +232,8 @@ public class SignUpActivity extends AppCompatActivity {
                //register|sign up activity starts from here .
                 Intent i = new Intent(SignUpActivity.this, SignInActivity.class);
                 startActivity(i);
+                SignUpActivity.super.onBackPressed();
+
             }
         });
 
@@ -234,6 +243,8 @@ public class SignUpActivity extends AppCompatActivity {
                 //forget password activity intent starts from here .
                 Intent i = new Intent(SignUpActivity.this, ChangePasswordActivity.class);
                 startActivity(i);
+                SignUpActivity.super.onBackPressed();
+
             }
         });
     }
@@ -290,7 +301,9 @@ public class SignUpActivity extends AppCompatActivity {
         userProfileDetails.put(GlobalConfig.USER_DISPLAY_NAME_KEY,userDisplayName);
         userProfileDetails.put(GlobalConfig.USER_COUNTRY_OF_RESIDENCE_KEY,userCountryOfResidence);
         userProfileDetails.put(GlobalConfig.USER_GENDER_TYPE_KEY,genderType);
+        userProfileDetails.put(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY,phoneNumber);
         userProfileDetails.put(GlobalConfig.USER_EMAIL_ADDRESS_KEY,email);
+        userProfileDetails.put(GlobalConfig.USER_PERSONAL_WEBSITE_LINK_KEY,webLink);
         userProfileDetails.put(GlobalConfig.IS_USER_BLOCKED_KEY,false);
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_KEY,GlobalConfig.getDate());
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
@@ -349,7 +362,9 @@ public class SignUpActivity extends AppCompatActivity {
     /**Initializes the activity's views*/
     private void initUI(){
         userDisplayNameEditText = findViewById(R.id.nameInput);
+        phoneNumberEditText = (EditText) findViewById(R.id.phoneNumberViewId);
         emailEditText = (EditText) findViewById(R.id.emailInput);
+        webLinkEditText = (EditText) findViewById(R.id.webLinkInputId);
         passwordEditText = (EditText) findViewById(R.id.passwordInput);
         passwordConfirmEditText = findViewById(R.id.passwordConfirmInput);
         errorMessageTextView = (TextView) findViewById(R.id.errorMessage);

@@ -123,6 +123,8 @@ public class UploadPageActivity extends AppCompatActivity {
     AlertDialog confirmationDialog;
     AlertDialog initDialog;
 
+    boolean isForcedExit = false;
+
     boolean isPublic = true;
     boolean isTutorialPage = true;
     boolean isCreateNewPage = true;
@@ -161,6 +163,15 @@ public class UploadPageActivity extends AppCompatActivity {
     int CAMERA_PERMISSION_REQUEST_CODE = 2002;
     int VIDEO_PERMISSION_REQUEST_CODE = 21;
     int GALLERY_PERMISSION_REQUEST_CODE = 23;
+
+    int noOfImagesLoading = 0;
+    int noOfImagesCompleted = 0;
+
+    ImageProcessingListener imageProcessingListener;
+    boolean isImageProcessingStarted = false;
+    boolean isImageProcessingCompleted = false;
+    TextView imageProcessingIndicatorView;
+
     int imageDisplayPosition = 0;
     int validPosition = 1;
     ImageView receiverImage;
@@ -221,7 +232,7 @@ public class UploadPageActivity extends AppCompatActivity {
     ArrayList<String> localImagesUriList = new ArrayList<>();
     ArrayList<String> localVideosUriList = new ArrayList<>();
 
-
+    AlertDialog confirmExitDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -242,37 +253,64 @@ public class UploadPageActivity extends AppCompatActivity {
             @Override
             public void onActivityResult(ActivityResult result) {
                 if (result.getData() != null) {
-                    toggleProgress(true);
-                    Intent data=result.getData();
+//                    toggleProgress(true);
+                    Intent data = result.getData();
                     Bitmap bitmap = null;
                     try {
+                        noOfImagesLoading++;
+                        imageProcessingListener.onStart();
+
                         bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),data.getData());
+                        final Bitmap bitmap1 = bitmap;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    bitmap1.compress(Bitmap.CompressFormat.PNG, 10, new ByteArrayOutputStream());
+                                    coverImageUrl = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmap1).toString();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Glide.with(UploadPageActivity.this)
+                                                    .load(coverImageUrl)
+                                                    .into(coverImageView);
+                                        }
+                                    });
+                                    isCoverImageIncluded = true;
+                                    isCoverImageChanged = true;
+                                    toggleProgress(false);
+                                    noOfImagesCompleted++;
+                                    if (noOfImagesLoading == noOfImagesCompleted) {
+                                        imageProcessingListener.onComplete();
+                                    }
+
+                                }catch(Exception e){
+                                    coverImageUrl = ""+ data.getData();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Glide.with(UploadPageActivity.this)
+                                                    .load(coverImageUrl)
+                                                    .into(coverImageView);
+                                        }
+                                    });
+                                    isCoverImageIncluded = true;
+                                    isCoverImageChanged = true;
+                                    toggleProgress(false);
+                                    noOfImagesCompleted++;
+                                    if (noOfImagesLoading == noOfImagesCompleted) {
+                                        imageProcessingListener.onComplete();
+                                    }
+
+                                }
+                            }
+                        }).start();
+
                     } catch (IOException e) {
 //                        throw new RuntimeException(e);
                         toggleProgress(false);
 
                     }
-                    final Bitmap bitmap1 = bitmap;
-
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            bitmap1.compress(Bitmap.CompressFormat.PNG,10,new ByteArrayOutputStream());
-                            coverImageUrl=GlobalHelpers.getImageUri(UploadPageActivity.this, bitmap1).toString();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Glide.with(UploadPageActivity.this)
-                                                                .load(coverImageUrl)
-                                                                .into(coverImageView);
-                                }
-                              });
-                            isCoverImageIncluded = true;
-                            isCoverImageChanged = true;
-                            toggleProgress(false);
-
-                        }
-                    }).start();
 
 
                 }
@@ -284,9 +322,11 @@ public class UploadPageActivity extends AppCompatActivity {
             @Override
             public void onActivityResult(ActivityResult result) {
                 if (result.getData() != null) {
-                    toggleProgress(true);
+//                    toggleProgress(true);
 
                     Intent data=result.getData();
+                    noOfImagesLoading++;
+                    imageProcessingListener.onStart();
 
                     //upload this image when uploading the page as index
                     //insert image to
@@ -296,23 +336,51 @@ public class UploadPageActivity extends AppCompatActivity {
                                 try {
 
                                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
-                                bitmap.compress(Bitmap.CompressFormat.PNG, 10, new ByteArrayOutputStream());
-
-                                String imageUriString = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmap).toString();
-                                //insert image also upload image in uploading page with indexing.
+                                    String imageUriString = "";
+                                try {
+                                    bitmap.compress(Bitmap.CompressFormat.PNG, 10, new ByteArrayOutputStream());
+                                    imageUriString = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmap).toString();
+                                    final String finalImageUriString = imageUriString;
                                     runOnUiThread(new Runnable() {
-                                                      @Override
-                                                      public void run() {
+                                        @Override
+                                        public void run() {
 
-                                                          localImagesUriList.add(imageUriString);
-                                                          wysiwygEditor.insertImage(imageUriString, "-");
-                                                          toggleProgress(false);
+                                            localImagesUriList.add(finalImageUriString);
+                                            wysiwygEditor.insertImage(finalImageUriString, "-");
+                                            toggleProgress(false);
+                                            noOfImagesCompleted++;
+                                            if(noOfImagesLoading == noOfImagesCompleted) {
+                                                imageProcessingListener.onComplete();
+                                            }
+                                        }
+                                    });
+                                }catch (Exception e){
+                                    imageUriString = ""+ data.getData();
+                                    final String finalImageUriString = imageUriString;
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
 
-                                                      }
-                                                  });
+                                            localImagesUriList.add(finalImageUriString);
+                                            wysiwygEditor.insertImage(finalImageUriString, "-");
+                                            toggleProgress(false);
+                                            noOfImagesCompleted++;
+                                            if(noOfImagesLoading == noOfImagesCompleted) {
+                                                imageProcessingListener.onComplete();
+                                            }
+                                        }
+                                    });
+
+//                                    GlobalConfig.createSnackBar(UploadPageActivity.this,imageProcessingIndicatorView,e.getMessage(),Snackbar.LENGTH_LONG);
+                                }
+                                //insert image also upload image in uploading page with indexing.
+
                             } catch (IOException ioException) {
                                     toggleProgress(false);
-
+                                    noOfImagesCompleted++;
+                                    if(noOfImagesLoading == noOfImagesCompleted) {
+                                        imageProcessingListener.onComplete();
+                                    };
                                     ioException.printStackTrace();
 
                             }
@@ -361,7 +429,9 @@ public class UploadPageActivity extends AppCompatActivity {
                 if(result.getResultCode()==RESULT_OK) {
 
                     if (result.getData() != null) {
-                        toggleProgress(true);
+//                        toggleProgress(true);
+                        noOfImagesLoading++;
+                        imageProcessingListener.onStart();
 
                         new Thread(new Runnable() {
                             @Override
@@ -380,7 +450,10 @@ public class UploadPageActivity extends AppCompatActivity {
                                                           localImagesUriList.add(imageUriString);
                                                           wysiwygEditor.insertImage(imageUriString, "-");
                                                           toggleProgress(false);
-
+                                                          noOfImagesCompleted++;
+                                                          if(noOfImagesLoading == noOfImagesCompleted) {
+                                                              imageProcessingListener.onComplete();
+                                                          }
                                                       }
                                                   });
 
@@ -479,6 +552,22 @@ public class UploadPageActivity extends AppCompatActivity {
                 }
             }
         });
+
+        imageProcessingListener = new ImageProcessingListener() {
+            @Override
+            public void onComplete() {
+                isImageProcessingCompleted = true;
+                imageProcessingIndicatorView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onStart() {
+                imageProcessingIndicatorView.setVisibility(View.VISIBLE);
+                isImageProcessingStarted =true;
+                isImageProcessingCompleted = false;
+
+            }
+        };
 
         onPageUploadListener = new OnPageUploadListener() {
             @Override
@@ -632,6 +721,12 @@ public class UploadPageActivity extends AppCompatActivity {
                 requestForPermissionAndPickImage(COVER_IMAGE_GALLERY_REQUEST_CODE);
             }
         });
+        coverImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestForPermissionAndPickImage(COVER_IMAGE_GALLERY_REQUEST_CODE);
+            }
+        });
         visibilitySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -639,6 +734,16 @@ public class UploadPageActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+     public void onBackPressed(){
+        if(isForcedExit) {
+            super.onBackPressed();
+        }else{
+            createConfirmExitDialog();
+        }
+    }
+
     //uploaded images count tracker all complete or not
     int  uploaded = 0;
     private void startUploadService(String postTitle, String postContent, ArrayList<String> imagesListToUpload) {
@@ -818,6 +923,7 @@ public class UploadPageActivity extends AppCompatActivity {
         intent.putExtra(GlobalConfig.PAGE_NUMBER_KEY,pageNumber);
         startService(intent);
 
+        isForcedExit = true;
         this.onBackPressed();
 
     }
@@ -845,11 +951,13 @@ public class UploadPageActivity extends AppCompatActivity {
     private void initUI(){
 
     pageTitleEditText = findViewById(R.id.pageTitleEditTextId);
+        coverImageView =findViewById(R.id.coverImage);
         visibilitySwitch = findViewById(R.id.visibilitySwitchId);
     //containerLinearLayout = findViewById(R.id.containerLinearLayoutId);
     addImageActionButton = findViewById(R.id.addImageActionButtonId);
     addTodoListActionButton = findViewById(R.id.addTodoListActionButtonId);
     addTableActionButton = findViewById(R.id.addTableActionButtonId);
+        imageProcessingIndicatorView = findViewById(R.id.imageProcessingIndicatorViewId);
     btn = findViewById(R.id.btn);
         coverUploadButton=findViewById(R.id.coverImagePicker);
     //addEditText(0);
@@ -868,6 +976,25 @@ public class UploadPageActivity extends AppCompatActivity {
             .create();
 }
 
+ private void createConfirmExitDialog(){
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+     builder.setTitle("Exit");
+     builder.setMessage("Click exit button to exit the screen");
+     builder.setCancelable(false);
+     builder.setIcon(R.drawable.ic_baseline_error_outline_24);
+     builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+         @Override
+         public void onClick(DialogInterface dialog, int which) {
+            UploadPageActivity.super.onBackPressed();
+         }
+     })
+             .setNegativeButton("Stay back", null);
+     confirmExitDialog = builder.create();
+     confirmExitDialog.show();
+
+ }
+
     private void loadContentEditor() {
         //load the content editor here and render there that make it easy to handle without any external codes.
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
@@ -881,6 +1008,7 @@ public class UploadPageActivity extends AppCompatActivity {
         wysiwygEditor.setEditorFontSize(16);
         wysiwygEditor.setPadding(10, 10, 10, 10);
         wysiwygEditor.setPlaceholder("Insert your content here...");
+        wysiwygEditor.performClick();
 //        wysiwygEditor.setHtml("<p> your content...</p><br> <br> <br> &nbsp;");
 
          action_undo=findViewById(R.id.action_undo);
@@ -919,7 +1047,6 @@ public class UploadPageActivity extends AppCompatActivity {
          latex_equation=findViewById(R.id.latex_equation);
          action_insert_table = findViewById(R.id.action_table);
         action_insert_video=findViewById(R.id.action_insert_video);
-        coverImageView =findViewById(R.id.coverImage);
         Glide.with(this)
                 .load("https://via.placeholder.com/640x360?text=Cover%20Image")
                 .placeholder(R.drawable.placeholder)
@@ -1428,7 +1555,11 @@ public class UploadPageActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (!String.valueOf(pageTitleEditText.getText()).trim().equals("") ) {
-                startPageUploadService(mediaFinalListToUpload);
+                    if(isImageProcessingCompleted || !(imageProcessingIndicatorView.getVisibility()==View.VISIBLE)) {
+                        startPageUploadService(mediaFinalListToUpload);
+                    }else{
+                        GlobalConfig.createSnackBar(UploadPageActivity.this,imageProcessingIndicatorView,"Please wait images are still processing...When it's done processing you can continue",Snackbar.LENGTH_INDEFINITE);
+                    }
                 }else{
                     pageTitleEditText.requestFocus();
                     pageTitleEditText.setError("You must enter page title");
@@ -2366,5 +2497,10 @@ preparePage();
         }
 }
 
+    private interface ImageProcessingListener{
+        void onComplete();
+        void onStart();
+
+    }
 
 }

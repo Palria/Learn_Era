@@ -276,6 +276,8 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                                                 toggleProgress(false);
                                                 //showAddTutorialDialog();
                                                 gotoNewlyCreatedLibrary();
+                                                CreateNewLibraryActivity.super.onBackPressed();
+
 //
 //                                                GlobalHelpers.showAlertMessage("success",
 //                                                        CreateNewLibraryActivity.this,
@@ -289,6 +291,8 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                                                 toggleProgress(false);
                                                 //showAddTutorialDialog();
                                                 gotoNewlyCreatedLibrary();
+                                                CreateNewLibraryActivity.super.onBackPressed();
+
 
 //
 //                                                GlobalHelpers.showAlertMessage("success",
@@ -442,6 +446,8 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                                         toggleProgress(false);
                                         //showAddTutorialDialog();
                                         gotoNewlyCreatedLibrary();
+                                        CreateNewLibraryActivity.super.onBackPressed();
+
 
 //
 //                                        GlobalHelpers.showAlertMessage("success",
@@ -457,6 +463,7 @@ int GALLERY_PERMISSION_REQUEST_CODE = 23;
                                         toggleProgress(false);
                                         //showAddTutorialDialog();
                                         gotoNewlyCreatedLibrary();
+                                        CreateNewLibraryActivity.super.onBackPressed();
 
 //
 //                                        GlobalHelpers.showAlertMessage("success",
@@ -616,6 +623,11 @@ toggleProgress(false);
 
     }
 
+    @Override
+    public void onBackPressed(){
+        createConfirmExitDialog();
+    }
+
     private void getDynamicCategories() {
 //String[] categories = getResources().getStringArray(R.array.category);
 //
@@ -761,6 +773,25 @@ toggleProgress(false);
             libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
         }
 
+
+    }
+    private void createConfirmExitDialog(){
+        AlertDialog confirmExitDialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Exit");
+        builder.setMessage("Click exit button to exit the screen");
+        builder.setCancelable(false);
+        builder.setIcon(R.drawable.ic_baseline_error_outline_24);
+        builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                CreateNewLibraryActivity.super.onBackPressed();
+            }
+        })
+                .setNegativeButton("Stay back", null);
+        confirmExitDialog = builder.create();
+        confirmExitDialog.show();
 
     }
 

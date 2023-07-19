@@ -17,6 +17,7 @@
     <string name="edit_email_caption">Provide a valid contact email address where we can send some updates about in future.</string>
     <string name="email_address">Email Address</string>
     <string name="contact_caution">This is your primary phone number. This is used to contact you in the future when needed.</string>
+    <string name="web_link_caution">This is your link to any destination platform, it may be Social Media Account link or website and other platforms. This is used to lead your visitors to outside the Learn Era Platform.</string>
     <string name="cancel">Cancel</string>
     <string name="create">Create</string>
     <string name="rate">Rate</string>

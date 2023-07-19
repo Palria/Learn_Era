@@ -232,11 +232,35 @@
                         android:textSize="16sp"
                         android:background="@drawable/default_input_bg"
                         android:layout_height="wrap_content"/>
-<TextView
+                    
+                    <TextView
     android:textSize="5pt"
     android:text="@string/contact_caution"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="10pt"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/webLinkInputId"
+                        android:layout_width="match_parent"
+                        android:hint="Website link"
+                        android:inputType="textUri"
+                        android:textSize="16sp"
+                        android:background="@drawable/default_input_bg"
+                        android:layout_height="wrap_content"/>
+                    
+                    <TextView
+                        android:textSize="5pt"
+                        android:text="@string/web_link_caution"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
 

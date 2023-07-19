@@ -141,7 +141,7 @@ FolderDataModel intentFolderDataModel;
          leBottomSheetDialog=new LEBottomSheetDialog(this);
          //if author id equal current logged in user
 //        Snackbar saveSnackBar = GlobalConfig.createSnackBar(getApplicationContext(),pagesFrameLayout,authorId +" id ", Snackbar.LENGTH_INDEFINITE);
-        if(GlobalConfig.getCurrentUserId().equals(authorId+"")){
+        if(GlobalConfig.getCurrentUserId().equals(authorId+"") || GlobalConfig.isLearnEraAccount()){
 //            leBottomSheetDialog.addOptionItem("Edit Folder", R.drawable.ic_baseline_edit_24,
 //                    new View.OnClickListener() {
 //                        @Override
@@ -219,7 +219,7 @@ FolderDataModel intentFolderDataModel;
                     new AlertDialog.Builder(TutorialFolderActivity.this)
                             .setCancelable(true)
                             .setTitle("Delete Your Folder!")
-                            .setMessage("Action cannot be undone, are you sure you want to delete your Folder?")
+                            .setMessage("Action cannot be reversed, are you sure you want to delete your Folder?")
                             .setPositiveButton("Yes,delete", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -227,7 +227,7 @@ FolderDataModel intentFolderDataModel;
                                     Toast.makeText(getApplicationContext(), "Deleting", Toast.LENGTH_SHORT).show();
 
                                     leBottomSheetDialog.hide();
-                                    GlobalConfig.deleteTutorial(libraryId, tutorialId, new GlobalConfig.ActionCallback() {
+                                    GlobalConfig.deleteFolder(libraryId, tutorialId,folderId, new GlobalConfig.ActionCallback() {
                                         @Override
                                         public void onSuccess() {
                                             toggleProgress(false);
@@ -239,12 +239,11 @@ FolderDataModel intentFolderDataModel;
                                         @Override
                                         public void onFailed(String errorMessage) {
                                             toggleProgress(false);
-                                            GlobalHelpers.showAlertMessage("error",getApplicationContext(), "Unable to delete Folder",errorMessage);
-                                            Toast.makeText(getApplicationContext(), "Unable to deleted Folder!  please try again", Toast.LENGTH_SHORT).show();
+                                            GlobalHelpers.showAlertMessage("error",TutorialFolderActivity.this, "Unable to delete Folder",errorMessage);
+                                            Toast.makeText(TutorialFolderActivity.this, "Unable to deleted Folder!  please try again", Toast.LENGTH_SHORT).show();
 
                                         }
                                     });
-                                    TutorialFolderActivity.super.onBackPressed();
 
                                 }
                             })
