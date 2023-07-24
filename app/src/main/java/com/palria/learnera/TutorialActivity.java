@@ -245,7 +245,7 @@ createTabLayout();
                                             Toast.makeText(getApplicationContext(), "Deleting", Toast.LENGTH_SHORT).show();
 
                                             leBottomSheetDialogMoreActon.hide();
-                                            GlobalConfig.deleteTutorial(libraryId, libraryId, new GlobalConfig.ActionCallback() {
+                                            GlobalConfig.deleteTutorial(libraryId, tutorialId, new GlobalConfig.ActionCallback() {
                                                 @Override
                                                 public void onSuccess() {
                                                     toggleProgress(false);

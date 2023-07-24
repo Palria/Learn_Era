@@ -716,4 +716,50 @@ private interface OnConfigurationLoadCallback{
         void onSuccess();
         void onFailed(String errorMessage);
 }
+
+void pastes(){
+    //
+//            profileImageView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+////                    FirebaseAuth.getInstance().getCurrentUser().delete();
+////        DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.USER_PROFILE_KEY).document(GlobalConfig.getCurrentUserId());
+//                    DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId);
+//
+//                    HashMap<String,Object>userProfileDetails = new HashMap<>();
+//
+////                    userProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY,2L);
+////                    userProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY,0L);
+////                    userProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY,1L);
+////                    userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+//
+//                    writeBatch.delete(userProfileDocumentReference);
+//
+//                    writeBatch.commit();
+//                }
+//            });
+//            numOfLibraryTextView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+//
+////        DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.USER_PROFILE_KEY).document(GlobalConfig.getCurrentUserId());
+//                    DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId);
+//
+//                    HashMap<String,Object>userProfileDetails = new HashMap<>();
+//
+//                    userProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY,1L);
+////                    userProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY,0L);
+////                    userProfileDetails.put(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY,1L);
+////                    userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+//
+//                    writeBatch.set(userProfileDocumentReference,userProfileDetails, SetOptions.merge());
+//
+//                    writeBatch.commit();
+//
+//                }
+//            });
+
+}
 }

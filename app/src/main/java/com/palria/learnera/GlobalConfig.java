@@ -1882,20 +1882,23 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
                         @Override
                         public void onSuccess(Void unused) {
 //                            actionCallback.onSuccess();
-                            getFirebaseStorageInstance().getReferenceFromUrl(coverPhotoUrl).delete();
-                            for(int i=0; i<urlList.size(); i++){
-                                getFirebaseStorageInstance().getReferenceFromUrl(urlList.get(i)).delete();
+                            try {
+                                getFirebaseStorageInstance().getReferenceFromUrl(coverPhotoUrl).delete();
+                            }catch(Exception e){}
 
-                            }
+                                for (int i = 0; i < urlList.size(); i++) {
+                                   try{
+                                    getFirebaseStorageInstance().getReferenceFromUrl(urlList.get(i)).delete();
+                                }catch(Exception e){}
+                                }
+
                             GlobalConfig.updateActivityLog(ACTIVITY_LOG_USER_DELETE_TUTORIAL_PAGE_TYPE_KEY, getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
                                 @Override
                                 public void onSuccess() {
-                                    actionCallback.onSuccess();
                                 }
 
                                 @Override
                                 public void onFailed(String errorMessage) {
-                                    actionCallback.onSuccess();
 
                                 }
                             });
@@ -1937,21 +1940,23 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
                         @Override
                         public void onSuccess(Void unused) {
 //                            actionCallback.onSuccess();
-                            getFirebaseStorageInstance().getReferenceFromUrl(coverPhotoUrl).delete();
+                            try {
+                                getFirebaseStorageInstance().getReferenceFromUrl(coverPhotoUrl).delete();
+                            }catch(Exception e){}
                             for(int i=0; i<urlList.size(); i++){
-                                getFirebaseStorageInstance().getReferenceFromUrl(urlList.get(i)).delete();
+                                try {
 
+                                    getFirebaseStorageInstance().getReferenceFromUrl(urlList.get(i)).delete();
+                                }catch(Exception e){}
                             }
 
                             GlobalConfig.updateActivityLog(ACTIVITY_LOG_USER_DELETE_FOLDER_PAGE_TYPE_KEY, getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
                                 @Override
                                 public void onSuccess() {
-                                    actionCallback.onSuccess();
                                 }
 
                                 @Override
                                 public void onFailed(String errorMessage) {
-                                    actionCallback.onSuccess();
 
                                 }
                             });
@@ -1997,12 +2002,10 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
                               GlobalConfig.updateActivityLog(ACTIVITY_LOG_USER_DELETE_TUTORIAL_FOLDER_TYPE_KEY, getCurrentUserId(), libraryId, tutorialId, folderId, null, null,  new GlobalConfig.ActionCallback() {
                                   @Override
                                   public void onSuccess() {
-                                      actionCallback.onSuccess();
                                   }
 
                                   @Override
                                   public void onFailed(String errorMessage) {
-                                      actionCallback.onSuccess();
 
                                   }
                               });
@@ -2034,12 +2037,12 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
                       DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).document(libraryId);
                       HashMap<String, Object> details = new HashMap<>();
                       details.put(TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY, FieldValue.increment(-1L));
-                      writeBatch.update(tutorialDocumentReference, details);
+                      writeBatch.set(tutorialDocumentReference, details,SetOptions.merge());
 
                       DocumentReference tutorialDocumentReference2 = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId());
                       HashMap<String, Object> details2 = new HashMap<>();
                       details.put(TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY, FieldValue.increment(-1L));
-                      writeBatch.update(tutorialDocumentReference2, details2);
+                      writeBatch.set(tutorialDocumentReference2, details2,SetOptions.merge());
 
                       DocumentReference pageDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId);
                       writeBatch.delete(pageDocumentReference);
@@ -2056,12 +2059,10 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
                               GlobalConfig.updateActivityLog(ACTIVITY_LOG_USER_DELETE_TUTORIAL_TYPE_KEY, getCurrentUserId(), libraryId, tutorialId, null, null, null,  new GlobalConfig.ActionCallback() {
                                   @Override
                                   public void onSuccess() {
-                                      actionCallback.onSuccess();
                                   }
 
                                   @Override
                                   public void onFailed(String errorMessage) {
-                                      actionCallback.onSuccess();
 
                                   }
                               });
@@ -2087,7 +2088,7 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
               @Override
               public void onSuccess(DocumentSnapshot documentSnapshot) {
                   long numberOfTutorials = documentSnapshot.get(TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY) != null ? documentSnapshot.getLong(TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY) : 0L;
-                  if (numberOfTutorials>0) {
+                  if (numberOfTutorials<=0) {
 
                       DocumentReference tutorialDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId());
                       HashMap<String, Object> details = new HashMap<>();
@@ -2109,12 +2110,10 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
                               GlobalConfig.updateActivityLog(ACTIVITY_LOG_USER_DELETE_LIBRARY_TYPE_KEY, getCurrentUserId(), libraryId, null, null, null, null,  new GlobalConfig.ActionCallback() {
                                   @Override
                                   public void onSuccess() {
-                                      actionCallback.onSuccess();
                                   }
 
                                   @Override
                                   public void onFailed(String errorMessage) {
-                                      actionCallback.onSuccess();
 
                                   }
                               });

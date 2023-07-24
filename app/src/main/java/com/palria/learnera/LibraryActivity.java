@@ -632,7 +632,6 @@ LibraryDataModel intentLibraryDataModel;
 
                         }
                     }, 0);
-
 }
                     leBottomSheetDialogMoreActon.render();
                     leBottomSheetDialogMoreActon.show();

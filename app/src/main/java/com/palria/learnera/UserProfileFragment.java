@@ -33,11 +33,13 @@ import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.adapters.HomeBooksRecyclerListViewAdapter;
@@ -289,6 +291,30 @@ public class UserProfileFragment extends Fragment {
                     Intent intent = new Intent(getContext(), UserActivityLogActivity.class);
                     startActivity(intent);
 
+                }
+            });
+            numOfLibraryTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    startActivity(GlobalConfig.getHostActivityIntent(getContext(), null, GlobalConfig.LIBRARY_FRAGMENT_TYPE_KEY, authorId));
+
+                }
+            });
+            numOfTutorialsTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(GlobalConfig.getHostActivityIntent(getContext(), null, GlobalConfig.TUTORIAL_FRAGMENT_TYPE_KEY, authorId));
+
+                }
+            });
+            numOfRatingsTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Intent intent = new Intent(getContext(), UserStatsActivity.class);
+                    intent.putExtra(GlobalConfig.USER_ID_KEY, authorId);
+                    startActivity(intent);
                 }
             });
 

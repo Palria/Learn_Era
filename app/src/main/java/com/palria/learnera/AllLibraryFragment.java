@@ -246,16 +246,16 @@ searchKeywordInput.addTextChangedListener(new TextWatcher() {
                 }
             } else if (open_type.equals(OPEN_TYPE_ALL_LIBRARY)) {
                 if(lastRetrievedLibrarySnapshot == null) {
-                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).limit(5L);
+                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).limit(15L);
                 }else{
-                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).startAfter(lastRetrievedLibrarySnapshot).limit(5L);
+                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).startAfter(lastRetrievedLibrarySnapshot).limit(15L);
                 }
 
             }  else if (open_type.equals(OPEN_TYPE_SINGLE_CATEGORY)) {
                 if(lastRetrievedLibrarySnapshot == null) {
-                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,singleCategory).limit(5L);
+                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,singleCategory).limit(15L);
                 }else{
-                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,singleCategory).startAfter(lastRetrievedLibrarySnapshot).limit(5L);
+                    libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_LIBRARY_KEY).whereArrayContains(GlobalConfig.LIBRARY_CATEGORY_ARRAY_KEY,singleCategory).startAfter(lastRetrievedLibrarySnapshot).limit(15L);
                 }
 
             } else if (isFromSearchContext) {

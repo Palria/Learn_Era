@@ -123,7 +123,7 @@ private void initUI(View parentView){
                             final String userPhoneNumber = ""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY);
                             final String userEmail = ""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_EMAIL_ADDRESS_KEY);
                             final String userCountryOfOrigin = ""+ documentSnapshot.get(GlobalConfig.USER_COUNTRY_OF_RESIDENCE_KEY);
-                            String dateRegistered =  documentSnapshot.get(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY)!=null ?  documentSnapshot.getTimestamp(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY).toDate()+""  :"Undefined";
+                            String dateRegistered =  documentSnapshot.get(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY)!=null ?  documentSnapshot.getTimestamp(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY).toDate()+""  :"Moments ago";
                             if(dateRegistered.length()>10){
                                 dateRegistered = dateRegistered.substring(0,10);
                             }

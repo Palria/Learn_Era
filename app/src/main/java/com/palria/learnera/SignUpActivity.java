@@ -161,9 +161,12 @@ public class SignUpActivity extends AppCompatActivity {
                                             }
 
                                             @Override
-                                            public void onFailed(String errorMessage) {
-                                                isInProgress = false;
+                                            public void onFailed(String errorMessage) { isInProgress = false;
                                                 toggleProgress(false);
+                                                FirebaseAuth.getInstance().signOut();
+                                                Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
+                                                startActivity(intent);
+                                                SignUpActivity.super.onBackPressed();
                                             }
                                         });
                                     }
@@ -172,8 +175,10 @@ public class SignUpActivity extends AppCompatActivity {
                                     public void onFailed(String errorMessage) {
                                         isInProgress = false;
                                         toggleProgress(false);
-                                        errorMessageTextView.setText(errorMessage + "  Please try again!");
-                                        errorMessageTextView.setVisibility(View.VISIBLE);
+                                        FirebaseAuth.getInstance().signOut();
+                                        Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
+                                        startActivity(intent);
+                                        SignUpActivity.super.onBackPressed();
                                     }
 
                                     @Override
@@ -203,7 +208,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 // Either email or password is empty
                                 isInProgress = false;
                                 toggleProgress(false);
-                                errorMessageTextView.setText("All fields are required, fill the form and try again!");
+                                errorMessageTextView.setText("Please  enter your user name");
                                 errorMessageTextView.setVisibility(View.VISIBLE);
 
                             }
@@ -214,7 +219,7 @@ public class SignUpActivity extends AppCompatActivity {
                          */
                         isInProgress=false;
                         toggleProgress(false);
-                        errorMessageTextView.setText("Enter your user name");
+                        errorMessageTextView.setText("Plaease enter your user name");
                         errorMessageTextView.setVisibility(View.VISIBLE);
                     }
                 }
