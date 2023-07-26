@@ -387,10 +387,27 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     public boolean onMenuItemClicked(MenuItem item) {
 
                         if(item.getItemId()== R.id.login_item){
-                            Intent intent =new Intent(MainActivity.this, SignInActivity.class);
-                            startActivity(intent);
-                            MainActivity.super.onBackPressed();
-
+//                            Intent intent =new Intent(MainActivity.this, SignInActivity.class);
+//                            startActivity(intent);
+//                            MainActivity.super.onBackPressed();
+                            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
+                            builder.setTitle("Log out?")
+                                    .setMessage("Are you sure you want to log out now?")
+                                    .setCancelable(false)
+                                    .setPositiveButton("Log out", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            signOut();//                                             Toast.makeText(MainActivity.this, "logged out", Toast.LENGTH_SHORT).show();
+                                            //log out code goes here ]
+                                        }
+                                    })
+                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            Toast.makeText(MainActivity.this, "cancel log out.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .show();
                         }
                         else if(item.getItemId() == R.id.notification_item){
 //                            Toast.makeText(MainActivity.this, "notification clicked.", Toast.LENGTH_SHORT).show();
@@ -406,7 +423,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         //log out user code here 
                            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
                            builder.setTitle("Log out?")
-                                   .setMessage("Are you sure want to log out now?")
+                                   .setMessage("Are you sure you want to log out now?")
                                    .setCancelable(false)
                                    .setPositiveButton("Log out", new DialogInterface.OnClickListener() {
                                        @Override
@@ -765,6 +782,140 @@ void pastes(){
 //
 //                }
 //            });
-
+//<?xml version="1.0" encoding="utf-8"?>
+//<androidx.constraintlayout.widget.ConstraintLayout
+//    xmlns:android="http://schemas.android.com/apk/res/android"
+//    xmlns:app="http://schemas.android.com/apk/res-auto"
+//    xmlns:tools="http://schemas.android.com/tools"
+//    android:layout_width="match_parent"
+//    android:background="@color/teal_700"
+//    android:layout_height="match_parent"
+//    tools:context=".UploadPageActivity">
+//
+//
+//    <LinearLayout
+//        android:id="@+id/topLinearLayoutId"
+//        android:layout_width="match_parent"
+//        android:layout_height="wrap_content"
+//        android:paddingVertical="7pt"
+//        android:paddingHorizontal="5pt"
+//        android:orientation="horizontal"
+//        android:background="@color/teal_700"
+//        app:layout_constraintStart_toStartOf="parent"
+//        app:layout_constraintTop_toTopOf="parent"
+//        >
+//
+//
+// <EditText
+//        android:id="@+id/pageTitleEditTextId"
+//        android:layout_width="0dp"
+//        android:layout_height="wrap_content"
+//        android:layout_weight="1"
+//        android:layout_margin="2dp"
+//        android:hint="Title"
+//     android:paddingHorizontal="3pt"
+//     android:paddingVertical="5pt"
+//        android:textColor="@color/black"
+//        android:background="@drawable/default_input_bg"
+//        />
+//
+//        <ImageView
+//            android:layout_marginLeft="4pt"
+//            android:layout_gravity="center"
+//            app:tint="@color/white"
+//            android:id="@+id/coverImagePicker"
+//            android:src="@drawable/ic_baseline_add_photo_alternate_24"
+//            android:layout_width="48dp"
+//            android:layout_height="48dp"/>
+//
+//    </LinearLayout>
+//    <com.makeramen.roundedimageview.RoundedImageView
+//        android:id="@+id/coverImage"
+//        app:riv_corner_radius="4pt"
+//        app:riv_border_width="1pt"
+//        app:riv_border_color="@color/white"
+//        android:src="@drawable/placeholder"
+//        android:layout_marginHorizontal="5pt"
+//        android:scaleType="centerCrop"
+//        app:layout_constraintTop_toBottomOf="@+id/topLinearLayoutId"
+//        android:layout_marginVertical="2pt"
+//        android:layout_width="match_parent"
+//        android:layout_height="45pt"
+//        />
+//    <include
+//        android:layout_marginTop="2pt"
+//        app:layout_constraintTop_toBottomOf="@id/coverImage"
+//        android:layout_height="wrap_content"
+//        layout="@layout/rich_text_editor_layout"
+//        android:layout_width="match_parent" />
+//    <LinearLayout
+//        android:layout_width="match_parent"
+//        android:layout_height="wrap_content"
+//        android:orientation="horizontal"
+//        app:layout_constraintEnd_toEndOf="parent"
+//        app:layout_constraintBottom_toBottomOf="parent"
+//        >
+//
+//        <ImageButton
+//            android:visibility="gone"
+//            android:id="@+id/addImageActionButtonId"
+//            android:layout_width="wrap_content"
+//            android:layout_height="wrap_content"
+//            android:backgroundTint="@android:color/transparent"
+//            android:src="@drawable/ic_baseline_add_photo_alternate_24"
+//            />
+//
+//
+//        <ImageButton
+//            android:visibility="gone"
+//            android:id="@+id/addTodoListActionButtonId"
+//            android:layout_width="wrap_content"
+//            android:layout_height="wrap_content"
+//            android:backgroundTint="@android:color/transparent"
+//            android:src="@drawable/ic_baseline_format_list_bulleted_24"
+//            />
+//
+//
+//        <ImageButton
+//            android:visibility="gone"
+//            android:id="@+id/addTableActionButtonId"
+//            android:layout_width="wrap_content"
+//            android:layout_height="wrap_content"
+//            android:backgroundTint="@android:color/transparent"
+//            android:src="@drawable/ic_baseline_table_chart_24"
+//            />
+//
+//
+//
+//    </LinearLayout>
+//
+//    <com.google.android.material.floatingactionbutton.FloatingActionButton
+//        android:layout_width="wrap_content"
+//        android:id="@+id/btn"
+//        android:layout_margin="10pt"
+//        android:tint="@color/teal_700"
+//        android:backgroundTint="@color/teal_700"
+//        android:src="@drawable/baseline_check_circle_outline_24"
+//        app:layout_constraintEnd_toEndOf="parent"
+//        app:layout_constraintBottom_toBottomOf="parent"
+//        android:layout_height="wrap_content"/>
+//
+//
+//    <Switch
+//        android:id="@+id/visibilitySwitchId"
+//        android:layout_width="match_parent"
+//        android:layout_height="wrap_content"
+//        android:text="Make public"
+//        android:textStyle="bold"
+//        android:textColor="@color/black"
+//        android:fontFamily="sans-serif-condensed-medium"
+//        app:layout_constraintStart_toStartOf="parent"
+//        app:layout_constraintBottom_toBottomOf="parent"
+//        tools:ignore="UseSwitchCompatOrMaterialXml"
+//        android:checked="true"
+//        android:paddingEnd="200dp"
+//        android:background="@color/white"
+//        />
+//</androidx.constraintlayout.widget.ConstraintLayout>
 }
 }

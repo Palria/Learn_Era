@@ -154,6 +154,7 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
            Glide.with(EditCurrentUserProfileActivity.this)
                    .load(userProfilePhotoDownloadUrl)
                    .centerCrop()
+                   .error(R.drawable.default_profile)
                    .into(profile_image_view);
        }
 

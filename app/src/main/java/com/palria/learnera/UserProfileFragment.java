@@ -412,6 +412,7 @@ public class UserProfileFragment extends Fragment {
                     Glide.with(getContext())
                             .load(userProfilePhotoDownloadUrl)
                             .centerCrop()
+                            .error(R.drawable.default_profile)
                             .into(profileImageView);
                 }catch(Exception e){}
 

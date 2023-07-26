@@ -8,15 +8,6 @@
 
 
 
-           <com.palria.learnera.lib.rcheditor.WYSIWYG
-               android:id="@+id/editor"
-               android:layout_width="0dp"
-               android:layout_marginTop="28pt"
-               android:layout_height="match_parent"
-               app:layout_constraintEnd_toEndOf="parent"
-               app:layout_constraintStart_toStartOf="parent"
-               app:layout_constraintTop_toTopOf="parent" />
-
            <HorizontalScrollView
                android:id="@+id/latext_editor"
                android:layout_width="0dp"
@@ -392,5 +383,35 @@
                app:layout_constraintEnd_toEndOf="parent"
                app:layout_constraintStart_toStartOf="parent"
                />
-
+    
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/horizontalScrollView">
+    
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        
+            <com.palria.learnera.lib.rcheditor.WYSIWYG
+                android:id="@+id/editor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textColor="@color/white"
+                android:padding="20dp"
+                android:text="---Use the buttons to style your writeup---Photos load slowly, be patient to allow them load before uploading---Make sure you have stable internet connectivity before uploading your page---Monitor your page upload progress via the notification---"
+                />
+            
+        </LinearLayout>
+    </ScrollView>
+    
        </androidx.constraintlayout.widget.ConstraintLayout>

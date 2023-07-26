@@ -133,10 +133,10 @@ public class SignUpActivity extends AppCompatActivity {
                                 GlobalConfig.signInUserWithEmailAndPassword(SignUpActivity.this, email, password, new GlobalConfig.SignInListener() {
                                     @Override
                                     public void onSuccess(String email, String password) {
-                                        String uid = FirebaseAuth.getInstance().getCurrentUser()!=null?FirebaseAuth.getInstance().getCurrentUser().getUid():"0";
+                                        String userId = FirebaseAuth.getInstance().getCurrentUser()!=null?FirebaseAuth.getInstance().getCurrentUser().getUid():"0";
                                         //user has signed in so can now write to the database, now create his first profile
 //                                        Toast.makeText(SignUpActivity.this, "sign in success", Toast.LENGTH_SHORT).show();
-                                        createUserProfileInDatabase(new ProfileCreationListener() {
+                                        createUserProfileInDatabase(userId,new ProfileCreationListener() {
                                             @Override
                                             public void onSuccess(String userName) {
 //                                                Toast.makeText(SignUpActivity.this, "profile success", Toast.LENGTH_SHORT).show();
@@ -159,7 +159,7 @@ public class SignUpActivity extends AppCompatActivity {
                                             }
                                         });
 
-                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_SIGN_UP_TYPE_KEY, uid, null, null, null, null, null, new GlobalConfig.ActionCallback() {
+                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_SIGN_UP_TYPE_KEY, userId, null, null, null, null, null, new GlobalConfig.ActionCallback() {
                                             @Override
                                             public void onSuccess() {
 
@@ -299,16 +299,16 @@ public class SignUpActivity extends AppCompatActivity {
      * Creates the user's profile in the database
      * @param profileCreationListener the callback triggered when the profile is created in the database or if the creation fails
      * */
-    private void createUserProfileInDatabase(ProfileCreationListener profileCreationListener){
+    private void createUserProfileInDatabase(String userId,ProfileCreationListener profileCreationListener){
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
 
-        DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
+        DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(userId);
         HashMap<String,Object>userProfileDetails = new HashMap<>();
         userProfileDetails.put(GlobalConfig.USER_DISPLAY_NAME_KEY,userDisplayName);
         userProfileDetails.put(GlobalConfig.USER_COUNTRY_OF_RESIDENCE_KEY,userCountryOfResidence);
         userProfileDetails.put(GlobalConfig.USER_GENDER_TYPE_KEY,genderType);
         userProfileDetails.put(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY,phoneNumber);
-        userProfileDetails.put(GlobalConfig.USER_EMAIL_ADDRESS_KEY,email);
+        userProfileDetails.put(GlobalConfig.USER_CONTACT_EMAIL_ADDRESS_KEY,email);
         userProfileDetails.put(GlobalConfig.USER_PERSONAL_WEBSITE_LINK_KEY,webLink);
         userProfileDetails.put(GlobalConfig.IS_USER_BLOCKED_KEY,false);
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_KEY,GlobalConfig.getDate());

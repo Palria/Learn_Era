@@ -284,7 +284,7 @@
                         android:id="@+id/imageView1"
                         android:layout_width="60pt"
                         android:layout_height="60pt"
-                        android:background="@color/grayDark"
+                        android:src="@drawable/default_profile"
                         android:scaleType="fitCenter"
                         app:riv_border_color="@color/teal_700"
                         app:riv_corner_radius="30dip"
