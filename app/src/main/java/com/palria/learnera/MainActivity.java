@@ -39,6 +39,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
@@ -700,7 +701,11 @@ private void scheduleJob(){
         jb.schedule(jobInfo);
 }
 
-
+//private void validateApp(){
+//    FirebaseApp.initializeApp(this);
+//    FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+//
+//}
 //TODO: ALL_NOTIFICATIONS, PLATFORM_CONFIGURATION_FILE rules addition
 private void manageNotificationAlarmBroadCast(){
     Intent intent = new Intent(this,BootReceiver.class);

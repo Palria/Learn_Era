@@ -136,17 +136,6 @@ public class SignUpActivity extends AppCompatActivity {
                                         String uid = FirebaseAuth.getInstance().getCurrentUser()!=null?FirebaseAuth.getInstance().getCurrentUser().getUid():"0";
                                         //user has signed in so can now write to the database, now create his first profile
 //                                        Toast.makeText(SignUpActivity.this, "sign in success", Toast.LENGTH_SHORT).show();
-                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_TYPE_KEY, uid, null, null, null, null, null, new GlobalConfig.ActionCallback() {
-                                            @Override
-                                            public void onSuccess() {
-
-                                            }
-
-                                            @Override
-                                            public void onFailed(String errorMessage) {
-
-                                            }
-                                        });
                                         createUserProfileInDatabase(new ProfileCreationListener() {
                                             @Override
                                             public void onSuccess(String userName) {
@@ -167,6 +156,18 @@ public class SignUpActivity extends AppCompatActivity {
                                                 Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
                                                 startActivity(intent);
                                                 SignUpActivity.super.onBackPressed();
+                                            }
+                                        });
+
+                                        GlobalConfig.updateActivityLog(GlobalConfig.ACTIVITY_LOG_USER_SIGN_UP_TYPE_KEY, uid, null, null, null, null, null, new GlobalConfig.ActionCallback() {
+                                            @Override
+                                            public void onSuccess() {
+
+                                            }
+
+                                            @Override
+                                            public void onFailed(String errorMessage) {
+
                                             }
                                         });
                                     }
@@ -219,7 +220,7 @@ public class SignUpActivity extends AppCompatActivity {
                          */
                         isInProgress=false;
                         toggleProgress(false);
-                        errorMessageTextView.setText("Plaease enter your user name");
+                        errorMessageTextView.setText("Please enter your user name");
                         errorMessageTextView.setVisibility(View.VISIBLE);
                     }
                 }

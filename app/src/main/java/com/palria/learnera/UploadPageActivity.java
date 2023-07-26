@@ -981,7 +981,7 @@ public class UploadPageActivity extends AppCompatActivity {
 
      builder.setTitle("Exit");
      builder.setMessage("Click exit button to exit the screen");
-     builder.setCancelable(false);
+     builder.setCancelable(true);
      builder.setIcon(R.drawable.ic_baseline_error_outline_24);
      builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
          @Override

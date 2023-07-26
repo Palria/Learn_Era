@@ -13,8 +13,8 @@
         android:id="@+id/topLinearLayoutId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="7pt"
-        android:paddingHorizontal="5pt"
+        android:paddingVertical="1pt"
+        android:paddingHorizontal="1pt"
         android:orientation="horizontal"
         android:background="@color/teal_700"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,7 +27,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_margin="2dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="2dp"
+        android:inputType="textPersonName"
+        android:maxLength="200"
         android:hint="Title"
      android:paddingHorizontal="3pt"
      android:paddingVertical="5pt"
@@ -35,32 +38,34 @@
         android:background="@drawable/default_input_bg"
         />
 
-        <ImageView
-            android:layout_marginLeft="4pt"
-            android:layout_gravity="center"
-            app:tint="@color/white"
-            android:id="@+id/coverImagePicker"
-            android:src="@drawable/ic_baseline_add_photo_alternate_24"
-            android:layout_width="48dp"
-            android:layout_height="48dp"/>
-
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/coverImage"
+            app:riv_corner_radius="4pt"
+            app:riv_border_width="1pt"
+            app:riv_border_color="@color/white"
+            android:src="@drawable/ic_baseline_photo_camera_24"
+            android:layout_marginHorizontal="1dp"
+            android:scaleType="centerCrop"
+            android:layout_width="35pt"
+            android:layout_height="35pt"
+            />
+    
     </LinearLayout>
-    <com.makeramen.roundedimageview.RoundedImageView
-        android:id="@+id/coverImage"
-        app:riv_corner_radius="4pt"
-        app:riv_border_width="1pt"
-        app:riv_border_color="@color/white"
-        android:src="@drawable/placeholder"
-        android:layout_marginHorizontal="5pt"
-        android:scaleType="centerCrop"
-        app:layout_constraintTop_toBottomOf="@+id/topLinearLayoutId"
-        android:layout_marginVertical="2pt"
-        android:layout_width="match_parent"
-        android:layout_height="45pt"
+    
+    <ImageView
+        android:layout_gravity="center"
+        app:tint="@color/white"
+        android:id="@+id/coverImagePicker"
+        android:src="@drawable/ic_baseline_add_photo_alternate_24"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_margin="3dp"
+        app:layout_constraintEnd_toEndOf="@id/topLinearLayoutId"
+        app:layout_constraintBottom_toBottomOf="@id/topLinearLayoutId"
         />
     <include
-        android:layout_marginTop="2pt"
-        app:layout_constraintTop_toBottomOf="@id/coverImage"
+        android:layout_marginTop="1dp"
+        app:layout_constraintTop_toBottomOf="@+id/topLinearLayoutId"
         android:layout_height="wrap_content"
         layout="@layout/rich_text_editor_layout"
         android:layout_width="match_parent" />
