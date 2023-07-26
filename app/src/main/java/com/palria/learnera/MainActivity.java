@@ -387,9 +387,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     public boolean onMenuItemClicked(MenuItem item) {
 
                         if(item.getItemId()== R.id.login_item){
-//                            Intent intent =new Intent(MainActivity.this, SignInActivity.class);
-//                            startActivity(intent);
-//                            MainActivity.super.onBackPressed();
+//
                             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
                             builder.setTitle("Log out?")
                                     .setMessage("Are you sure you want to log out now?")
@@ -397,8 +395,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                                     .setPositiveButton("Log out", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                            signOut();//                                             Toast.makeText(MainActivity.this, "logged out", Toast.LENGTH_SHORT).show();
-                                            //log out code goes here ]
+                                            FirebaseAuth.getInstance().signOut();
+                                            GlobalConfig.setCurrentUserId(null);
+                                            SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(),MODE_PRIVATE);
+                                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                                            editor.clear().apply();
+                                            Intent intent =new Intent(MainActivity.this, SignInActivity.class);
+                                            startActivity(intent);
+                                            MainActivity.super.onBackPressed();
                                         }
                                     })
                                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
