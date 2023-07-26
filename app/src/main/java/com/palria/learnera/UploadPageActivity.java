@@ -735,6 +735,8 @@ public class UploadPageActivity extends AppCompatActivity {
         });
     }
 
+
+
     @Override
      public void onBackPressed(){
         if(isForcedExit) {
@@ -1004,12 +1006,13 @@ public class UploadPageActivity extends AppCompatActivity {
         int screenHeight = size.y;
 
         wysiwygEditor=findViewById(R.id.editor);
-        wysiwygEditor.setEditorHeight(screenHeight-820);
+        wysiwygEditor.setEditorHeight(screenHeight-844);
         wysiwygEditor.setEditorFontSize(16);
-        wysiwygEditor.setPadding(10, 10, 10, 10);
+        wysiwygEditor.setPadding(10, 10, 10, 30);
         wysiwygEditor.setPlaceholder("Insert your content here...");
         wysiwygEditor.performClick();
-//        wysiwygEditor.setHtml("<p> your content...</p><br> <br> <br> &nbsp;");
+
+
 
          action_undo=findViewById(R.id.action_undo);
          action_redo=findViewById(R.id.action_redo);
