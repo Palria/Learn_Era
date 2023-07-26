@@ -51,6 +51,7 @@
         <activity
             android:name=".HostActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.LearnEra">
             <meta-data
                 android:name="android.app.lib_name"
@@ -59,6 +60,7 @@
         <activity
             android:name=".LibraryActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.LearnEra">
             <meta-data
                 android:name="android.app.lib_name"

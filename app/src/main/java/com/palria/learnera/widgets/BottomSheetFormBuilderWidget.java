@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.LocaleList;
 import android.text.InputType;
 import android.util.DisplayMetrics;
@@ -57,7 +58,20 @@ public class BottomSheetFormBuilderWidget extends BottomSheetDialog {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         dialogView = (View) layoutInflater.inflate(R.layout.bottom_sheet_dialog_host_layout,null);
 
-
+        this.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        BottomSheetDialog d = (BottomSheetDialog) dialog;
+                        FrameLayout bottomSheet = d.findViewById(R.id.design_bottom_sheet);
+                        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+                        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    }
+                },0);
+            }
+        });
 
         parentLayout=dialogView.findViewById(R.id.container);
 
