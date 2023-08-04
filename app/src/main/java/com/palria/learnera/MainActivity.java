@@ -9,6 +9,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -550,10 +551,12 @@ if(GlobalConfig.isUserLoggedIn()) {
     }
 
     private void initFragment(Fragment fragment,FrameLayout frameLayout){
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(frameLayout.getId(), fragment)
-                .commit();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+       try {
+           fragmentManager.beginTransaction()
+                   .replace(frameLayout.getId(), fragment)
+                   .commit();
+       }catch(Exception e){}
 
     }
 

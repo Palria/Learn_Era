@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -68,6 +69,7 @@ public class BottomSheetFormBuilderWidget extends BottomSheetDialog {
                         FrameLayout bottomSheet = d.findViewById(R.id.design_bottom_sheet);
                         BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
                         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                        ColorStateList b;
                     }
                 },0);
             }

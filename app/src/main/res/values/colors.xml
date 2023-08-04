@@ -20,5 +20,6 @@
     <color name="color_warning">#ffcc00</color>
     <color name="light_dark">#353535</color>
     <color name="darkIcon">#333333</color>
+    <color name="transparent">#00000000</color>
     <color name="whiteBgColor">#FFFFFF</color>
 </resources>

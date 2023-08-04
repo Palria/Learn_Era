@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,6 +34,7 @@ public class AllTutorialPageFragment extends Fragment {
 
     LinearLayout noDataFound;
     LinearLayout loadingLayout;
+    View dummyView;
 
     public AllTutorialPageFragment() {
         // Required empty public constructor
@@ -43,9 +45,13 @@ public class AllTutorialPageFragment extends Fragment {
         String tutorialId = "";
         String folderId = "";
         String authorId = "";
+        String pageId = "";
         long numberOfPagesCreated = 0;
-ArrayList<PageDataModel> pageDataModels=new ArrayList<>();
-RecyclerView pagesRecyclerListView;
+
+        boolean isForPreview = false;
+
+    ArrayList<PageDataModel> pageDataModels=new ArrayList<>();
+    RecyclerView pagesRecyclerListView;
     PagesRcvAdapter adapter;
     TextView startPaginationTextView;
     Button paginateButton;
@@ -58,7 +64,11 @@ if(getArguments()!= null){
     tutorialId = getArguments().getString(GlobalConfig.TUTORIAL_ID_KEY);
     folderId = getArguments().getString(GlobalConfig.FOLDER_ID_KEY);
     authorId = getArguments().getString(GlobalConfig.AUTHOR_ID_KEY);
+    pageId = getArguments().getString(GlobalConfig.PAGE_ID_KEY);
     numberOfPagesCreated = getArguments().getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGES_CREATED_KEY,0);
+
+    isForPreview = getArguments().getBoolean(GlobalConfig.IS_FOR_PREVIEW_KEY,false);
+
 }
     }
 
@@ -99,6 +109,10 @@ if(!GlobalConfig.getCurrentUserId().equals(""+authorId)){
                 startActivity(intent);
             }
         });
+        if(isForPreview){
+            startPaginationTextView.setVisibility(View.GONE);
+            dummyView.setVisibility(View.GONE);
+        }
        return parentView;
     }
 
@@ -120,6 +134,7 @@ if(!GlobalConfig.getCurrentUserId().equals(""+authorId)){
 
         loadingLayout=parentView.findViewById(R.id.loadingLayout);
         noDataFound=parentView.findViewById(R.id.noDataFound);
+        dummyView=parentView.findViewById(R.id.dummyViewId);
         toggleContentVisibility(false);
 //
 //        pageDataModels.add(new PageDataModel("How to hold","this is content",
@@ -178,6 +193,16 @@ if(!GlobalConfig.getCurrentUserId().equals(""+authorId)){
                     .collection(GlobalConfig.ALL_TUTORIAL_KEY)
                     .document(tutorialId)
                     .collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY);
+
+            if(isForPreview){
+                pageQuery =   GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_TUTORIAL_KEY)
+                        .document(tutorialId)
+                        .collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY)
+                        .whereEqualTo(GlobalConfig.PAGE_ID_KEY,pageId)
+                        .limit(1L);
+            }
+
             if(!GlobalConfig.getCurrentUserId().equals(authorId+"")){
                 pageQuery.whereEqualTo(GlobalConfig.IS_PUBLIC_KEY,true);
 
@@ -228,11 +253,13 @@ if(!GlobalConfig.getCurrentUserId().equals(authorId+"")){
                             boolean isPublic  =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY): true;
                             long totalViews  =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_PAGE_VISITOR_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_PAGE_VISITOR_KEY): 0L;
                             long pageNumber  =  documentSnapshot.get(GlobalConfig.PAGE_NUMBER_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.PAGE_NUMBER_KEY): 0L;
+                            long discussionCount  =  documentSnapshot.get(GlobalConfig.TOTAL_DISCUSSIONS_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_DISCUSSIONS_KEY): 0L;
+                            long likeCount  =  documentSnapshot.get(GlobalConfig.TOTAL_LIKES_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_LIKES_KEY): 0L;
                             String dateCreated  =  documentSnapshot.get(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY)!=null ? documentSnapshot.getTimestamp(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY).toDate()+"" : "Undefined";
                             if(dateCreated.length()>10){
                                 dateCreated = dateCreated.substring(0,10);
                             }
-                            fetchPageListener.onSuccess(new PageDataModel(pageTitle,"",coverPhotoDownloadUrl,authorId,pageId,tutorialId,folderId,dateCreated,totalViews,isTutorialPage,isPublic,(int)pageNumber));
+                            fetchPageListener.onSuccess(new PageDataModel(pageTitle,"",coverPhotoDownloadUrl,authorId,pageId,tutorialId,folderId,dateCreated,totalViews,isTutorialPage,isPublic,(int)pageNumber,(int)discussionCount,(int)likeCount));
                         }
                         if(queryDocumentSnapshots.isEmpty()){
                                 startPaginationTextView.setVisibility(View.GONE);
@@ -243,7 +270,7 @@ if(!GlobalConfig.getCurrentUserId().equals(authorId+"")){
                                 paginateButton.setVisibility(View.VISIBLE);
                             }else{
 
-                                if(GlobalConfig.getCurrentUserId().equals(""+authorId)){
+                                if(GlobalConfig.getCurrentUserId().equals(""+authorId) && !isForPreview){
                                     startPaginationTextView.setVisibility(View.VISIBLE);
                                 }else{
                                     startPaginationTextView.setVisibility(View.GONE);

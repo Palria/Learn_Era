@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -36,6 +38,8 @@ import com.palria.learnera.PageActivity;
 import com.palria.learnera.R;
 import com.palria.learnera.models.LibraryDataModel;
 import com.palria.learnera.models.PageDataModel;
+import com.palria.learnera.models.PageDiscussionDataModel;
+import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
 
 import org.w3c.dom.Text;
 
@@ -95,6 +99,35 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
             holder.dateCreated.setText(pageDataModel.getDateCreated());//view counts here
 
             holder.pageTitle.setText(pageDataModel.getTitle());
+            holder.likeCountTextView.setText(pageDataModel.getLikeCount()+"");
+
+            if(pageDataModel.getDiscussionCount()>0) {
+                if (pageDataModel.getDiscussionCount() == 1) {
+                    holder.viewDiscussionsTextView.setText("See " + pageDataModel.getDiscussionCount() + " Discussion");
+                } else {
+                    holder.viewDiscussionsTextView.setText("See " + pageDataModel.getDiscussionCount() + " Discussions");
+                }
+            }
+            holder.discussionCountTextView.setText(pageDataModel.getDiscussionCount()+"");
+
+            DocumentReference likedDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.LIKED_PAGES_KEY).document(pageDataModel.getPageId());
+            GlobalConfig.checkIfDocumentExists(likedDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+                @Override
+                public void onExist(DocumentSnapshot documentSnapshot) {
+                    holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_baseline_thumb_up_24,context.getTheme()));
+                }
+
+                @Override
+                public void onNotExist() {
+                    holder.likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
+                }
+
+                @Override
+                public void onFailed(@NonNull String errorMessage) {
+
+                }
+            });
+
             try {
                 Glide.with(context)
                         .load(pageDataModel.getCoverDownloadUrl())
@@ -124,7 +157,7 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
 
 
             if (isPagination) {
-//    holder.pageNumberEditText.setVisibility(View.VISIBLE);
+                //    holder.pageNumberEditText.setVisibility(View.VISIBLE);
                 holder.pageNumberEditText.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -198,6 +231,96 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
                 }
             });
 
+
+
+            holder.viewDiscussionsTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Intent intent = new Intent();
+                    intent.putExtra(GlobalConfig.IS_FROM_PAGE_CONTEXT_KEY,false);
+                    intent.putExtra(GlobalConfig.IS_VIEW_ALL_DISCUSSIONS_FOR_SINGLE_PAGE_KEY,true);
+                    intent.putExtra(GlobalConfig.IS_VIEW_SINGLE_DISCUSSION_REPLY_KEY,false);
+                    intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,isTutorialPage);
+                    intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,pageDataModel.getAuthorId());
+                    intent.putExtra(GlobalConfig.PARENT_DISCUSSION_ID_KEY,"");
+                    intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,pageDataModel.getTutorialId());
+                    intent.putExtra(GlobalConfig.FOLDER_ID_KEY,pageDataModel.getFolderId());
+                    intent.putExtra(GlobalConfig.PAGE_ID_KEY,pageDataModel.getPageId());
+                    context.startActivity(GlobalConfig.getHostActivityIntent(context,intent,GlobalConfig.DISCUSSION_FRAGMENT_TYPE_KEY,""));
+
+                }
+            });
+            holder.likeActionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                            int currentLikesCount = Integer.parseInt((holder.likeCountTextView.getText()+""));
+
+                            holder.likeActionButton.setEnabled(false);
+                            DocumentReference likedDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.LIKED_PAGES_KEY).document(pageDataModel.getPageId());
+                            GlobalConfig.checkIfDocumentExists(likedDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+                                @Override
+                                public void onExist(DocumentSnapshot documentSnapshot) {
+                                    holder.likeCountTextView.setText((currentLikesCount-1)+"");
+                                    holder.likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
+                                    GlobalConfig.likePage(pageDataModel.getPageId(), pageDataModel.getTutorialId(), pageDataModel.getFolderId(), pageDataModel.getAuthorId(), isTutorialPage, false, new GlobalConfig.ActionCallback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            holder.likeActionButton.setEnabled(true);
+
+                                        }
+
+                                        @Override
+                                        public void onFailed(String errorMessage) {
+                                            holder.likeActionButton.setEnabled(true);
+
+                                        }
+                                    });
+
+                                }
+
+                                @Override
+                                public void onNotExist() {
+                                    holder.likeCountTextView.setText((currentLikesCount+1)+"");
+                                    holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_baseline_thumb_up_24,context.getTheme()));
+                                    GlobalConfig.likePage(pageDataModel.getPageId(), pageDataModel.getTutorialId(), pageDataModel.getFolderId(), pageDataModel.getAuthorId(), isTutorialPage, true, new GlobalConfig.ActionCallback() {
+                                        @Override
+                                        public void onSuccess() {
+                                            holder.likeActionButton.setEnabled(true);
+
+                                        }
+
+                                        @Override
+                                        public void onFailed(String errorMessage) {
+                                            holder.likeActionButton.setEnabled(true);
+
+                                        }
+                                    });
+
+                                }
+
+                                @Override
+                                public void onFailed(@NonNull String errorMessage) {
+                                    holder.likeActionButton.setEnabled(true);
+
+                                }
+                            });
+
+
+
+                }
+            });
+
+            holder.discussActionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showDiscussionForm(holder,pageDataModel);
+                }
+            });
+
+
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -226,6 +349,57 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
     public int getItemCount() {
         return pageDataModels.size();
     }
+    void showDiscussionForm(ViewHolder holder,PageDataModel pageDataModel){
+        new BottomSheetFormBuilderWidget(context)
+                .setTitle("Join in discussion of this lesson by contributing your idea")
+                .setPositiveTitle("Discuss")
+                .addInputField(new BottomSheetFormBuilderWidget.EditTextInput(context)
+                        .setHint("Enter your idea")
+                        .autoFocus())
+                .setOnSubmit(new BottomSheetFormBuilderWidget.OnSubmitHandler() {
+                    @Override
+                    public void onSubmit(String[] values) {
+                        super.onSubmit(values);
+
+//                         Toast.makeText(PageActivity.this, values[0], Toast.LENGTH_SHORT).show();
+                        //values will be returned as array of strings as per input list position
+                        //eg first added input has first value
+                        String body = values[0];
+                        if (body.trim().equals("")) {
+                            //     leBottomSheetDialog.setTitle("Folder needs name, must enter name for the folder");
+
+                            Toast.makeText(context, "Please enter your idea",Toast.LENGTH_SHORT).show();
+
+                        } else {
+
+                            String discussionId = GlobalConfig.getRandomString(80);
+                            GlobalConfig.createSnackBar(context,holder.discussActionButton, "Adding discussion: "+body,Snackbar.LENGTH_INDEFINITE);
+
+                            GlobalConfig.discuss(new PageDiscussionDataModel(discussionId,GlobalConfig.getCurrentUserId(),body,"",pageDataModel.getPageId(),pageDataModel.getAuthorId(),"",pageDataModel.getTutorialId(),pageDataModel.getFolderId(),isTutorialPage,false,false,false,false,"",0L,0L,new ArrayList(),new ArrayList()),new GlobalConfig.ActionCallback(){
+                                @Override
+                                public void onFailed(String errorMessage){
+                                    Toast.makeText(context, "failed", Toast.LENGTH_SHORT).show();
+
+                                }
+                                @Override
+                                public void onSuccess(){
+//                                     Toast.makeText(PageActivity.this, body, Toast.LENGTH_SHORT).show();
+                                    GlobalConfig.createSnackBar(context,holder.discussActionButton, "Thanks discussion added: "+body,Snackbar.LENGTH_SHORT);
+                                    int currentDiscussionCount = Integer.parseInt((holder.discussionCountTextView.getText()+""));
+                                    holder.discussionCountTextView.setText((currentDiscussionCount+1)+"");
+
+                                }
+                            });
+//                             createNewFolder(values[0],isPublic[0]);
+//                                           leBottomSheetDialog.setTitle("Creating "+values[0]+" folder in progress...");
+//                                           leBottomSheetDialog.hide();
+                        }
+                        //create folder process here
+                    }
+                })
+                .render()
+                .show();
+    }
 
     class ViewHolder extends RecyclerView.ViewHolder{
 
@@ -241,6 +415,12 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
         public TextView dateCreated;
         public EditText pageNumberEditText;
 
+        public ImageView likeActionButton;
+        public ImageView discussActionButton;
+        public TextView likeCountTextView;
+        public TextView discussionCountTextView;
+        public TextView viewDiscussionsTextView;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -255,6 +435,12 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
             dateCreated=itemView.findViewById(R.id.dateCreated);
             pageNumberEditText=itemView.findViewById(R.id.pageNumberEditTextId);
 
+            likeActionButton=itemView.findViewById(R.id.likeActionButtonId);
+            likeCountTextView=itemView.findViewById(R.id.likeCountTextViewId);
+
+            discussActionButton=itemView.findViewById(R.id.discussActionButtonId);
+            discussionCountTextView=itemView.findViewById(R.id.discussionCountTextViewId);
+            viewDiscussionsTextView=itemView.findViewById(R.id.viewDiscussionsTextViewId);
 
         }
     }

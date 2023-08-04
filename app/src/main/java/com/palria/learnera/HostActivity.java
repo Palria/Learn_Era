@@ -129,6 +129,21 @@ public class HostActivity extends AppCompatActivity {
                 materialToolbar.setTitle("Category");
                 initFragment(bundle, new AddCategoryFragment());
                 break;
+            case GlobalConfig.DISCUSSION_FRAGMENT_TYPE_KEY:
+                bundle = new Bundle();
+                bundle.putBoolean(GlobalConfig.IS_FROM_PAGE_CONTEXT_KEY,getIntent().getBooleanExtra(GlobalConfig.IS_FROM_PAGE_CONTEXT_KEY,false));
+                bundle.putBoolean(GlobalConfig.IS_VIEW_ALL_DISCUSSIONS_FOR_SINGLE_PAGE_KEY,getIntent().getBooleanExtra(GlobalConfig.IS_VIEW_ALL_DISCUSSIONS_FOR_SINGLE_PAGE_KEY,false));
+                bundle.putBoolean(GlobalConfig.IS_VIEW_SINGLE_DISCUSSION_REPLY_KEY,getIntent().getBooleanExtra(GlobalConfig.IS_VIEW_SINGLE_DISCUSSION_REPLY_KEY,false));
+                bundle.putBoolean(GlobalConfig.IS_TUTORIAL_PAGE_KEY,getIntent().getBooleanExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,false));
+                bundle.putString(GlobalConfig.AUTHOR_ID_KEY,getIntent().getStringExtra(GlobalConfig.AUTHOR_ID_KEY));
+                bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,getIntent().getStringExtra(GlobalConfig.TUTORIAL_ID_KEY));
+                bundle.putString(GlobalConfig.FOLDER_ID_KEY,getIntent().getStringExtra(GlobalConfig.FOLDER_ID_KEY));
+                bundle.putString(GlobalConfig.PAGE_ID_KEY,getIntent().getStringExtra(GlobalConfig.PAGE_ID_KEY));
+                bundle.putString(GlobalConfig.PARENT_DISCUSSION_ID_KEY,getIntent().getStringExtra(GlobalConfig.PARENT_DISCUSSION_ID_KEY));
+
+                materialToolbar.setTitle("Discussions");
+                initFragment(bundle, new AllPageDiscussionsFragment());
+                break;
         }
     }
 

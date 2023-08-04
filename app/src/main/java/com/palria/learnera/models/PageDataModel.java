@@ -21,8 +21,10 @@ public class PageDataModel implements Serializable {
     //add other fields below
     private DocumentSnapshot pageDocumentSnapshot;
     private int pageNumber;
+    private int discussionCount;
+    private int likeCount;
 
-    public PageDataModel(String title, String description, String coverDownloadUrl, String authorId, String pageId,String tutorialId,String folderId, String dateCreated,long totalViews,boolean isTutorialPage,boolean isPublic,int pageNumber) {
+    public PageDataModel(String title, String description, String coverDownloadUrl, String authorId, String pageId,String tutorialId,String folderId, String dateCreated,long totalViews,boolean isTutorialPage,boolean isPublic,int pageNumber,int discussionCount,int likeCount) {
         this.title = title;
         this.description = description;
         this.coverDownloadUrl = coverDownloadUrl;
@@ -36,6 +38,8 @@ public class PageDataModel implements Serializable {
         this.isTutorialPage = isTutorialPage;
         this.isPublic = isPublic;
         this.pageNumber = pageNumber;
+        this.discussionCount = discussionCount;
+        this.likeCount = likeCount;
     }
 
     public String getTitle() {
@@ -131,5 +135,12 @@ public class PageDataModel implements Serializable {
     }
     public int getPageNumber() {
         return pageNumber;
+    }
+
+    public int getDiscussionCount() {
+        return  discussionCount;
+    }
+    public int getLikeCount() {
+        return likeCount;
     }
 }

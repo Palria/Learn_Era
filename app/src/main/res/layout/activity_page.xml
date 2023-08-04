@@ -50,43 +50,10 @@
                 android:layout_marginTop="5pt"
                 android:layout_marginHorizontal="5pt"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                >
 
-                <LinearLayout
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content">
-
-                    <com.makeramen.roundedimageview.RoundedImageView
-                        android:layout_marginEnd="2pt"
-                        android:layout_gravity="center"
-                        app:riv_corner_radius="15pt"
-                        app:riv_oval="true"
-                        android:id="@+id/authorPicture"
-                        android:src="@drawable/default_profile"
-                        android:layout_width="15pt"
-                        android:layout_height="15pt"/>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:id="@+id/authorName"
-                            android:textSize="7pt"
-                            android:textStyle="bold"
-                            android:text="..."
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-                        <TextView
-                            android:id="@+id/dateCreatedTextViewId"
-                            android:textSize="6pt"
-                            android:textColor="@color/grayDark"
-                            android:text="moments ago"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-                    </LinearLayout>
-                </LinearLayout>
     
     
                 <TextView
@@ -106,17 +73,89 @@
                     >
 
                     <ImageView
+                        android:id="@+id/likeActionButtonId"
+                        app:tint="@color/darkIcon"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_outline_thumb_up_24"
+                        android:layout_width="11pt"
+                        android:layout_height="11pt"/>
+
+                    <TextView
+                        android:id="@+id/likeCountTextViewId"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+                
+<!--                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <ImageView
+                        android:id="@+id/dislikeActionButtonId"
+                        app:tint="@color/darkIcon"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_baseline_thumb_down_24"
+                        android:layout_width="11pt"
+                        android:layout_height="11pt"/>
+
+                    <TextView
+                        android:id="@+id/dislikeCountTextViewId"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+                -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <ImageView
+                        android:id="@+id/discussActionButtonId"
+                        app:tint="@color/darkIcon"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_baseline_message_24"
+                        android:layout_width="11pt"
+                        android:layout_height="11pt"/>
+
+                    <TextView
+                        android:id="@+id/discussionCountTextViewId"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <ImageView
                         app:tint="@color/darkIcon"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_baseline_remove_red_eye_24"
-                        android:layout_width="7pt"
-                        android:layout_height="7pt"/>
+                        android:layout_width="11pt"
+                        android:layout_height="11pt"/>
 
                     <TextView
                         android:id="@+id/viewCount"
                         android:text="0"
                         android:textStyle="bold"
                         android:layout_marginLeft="2pt"
+                        android:layout_marginEnd="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
@@ -129,23 +168,135 @@
 
                     <ImageView
                         app:tint="@color/darkIcon"
-                        android:id="@+id/bookmarksCountImageViewId"
+                        android:id="@+id/bookmarksCountTextViewId"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_baseline_bookmarks_24"
-                        android:layout_width="7pt"
-                        android:layout_height="7pt"/>
+                        android:layout_width="11pt"
+                        android:layout_height="11pt"/>
 
                     <TextView
                         android:id="@+id/bookmarkCountTextViewId"
                         android:text="0"
                         android:textStyle="bold"
                         android:layout_marginLeft="2pt"
+                        android:layout_marginEnd="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
 
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+        
+                <com.makeramen.roundedimageview.RoundedImageView
+                    android:layout_marginEnd="2pt"
+                    android:layout_gravity="center"
+                    app:riv_corner_radius="15pt"
+                    app:riv_oval="true"
+                    android:id="@+id/authorPicture"
+                    android:src="@drawable/default_profile"
+                    android:layout_width="15pt"
+                    android:layout_height="15pt"/>
+        
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/authorName"
+                        android:textSize="7pt"
+                        android:textStyle="bold"
+                        android:text="..."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/dateCreatedTextViewId"
+                        android:textSize="6pt"
+                        android:textColor="@color/grayDark"
+                        android:text="moments ago"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+                <ImageButton
+                    app:tint="@color/darkIcon"
+                    android:id="@+id/morePageActionButtonId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_baseline_more_vert_24"
+                    />
 
+            </LinearLayout>
+
+     <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+         <TextView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:textStyle="bold"
+             android:textSize="12sp"
+             android:text="Discussions"
+             />
+    
+         <FrameLayout
+             android:visibility="visible"
+             android:id="@+id/discussionsFrameLayoutId"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content">
+<!--             <TextView-->
+<!--                 android:id="@+id/discussionsIndicatorTextViewId"-->
+<!--                 android:layout_width="wrap_content"-->
+<!--                 android:layout_height="wrap_content"-->
+<!--                 android:textStyle="italic"-->
+<!--                 android:textSize="12sp"-->
+<!--                 android:text="No discussions yet"-->
+<!--                 />-->
+         </FrameLayout>
+    
+    
+         <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_gravity="end"
+            >
+        <TextView
+            android:id="@+id/addDiscussionTextViewId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20pt"
+            android:drawableLeft="@drawable/ic_baseline_post_add_24"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@color/secondary_app_color"
+            android:text="Discuss"
+            />
+        <TextView
+            android:id="@+id/viewDiscussionTextViewId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:textColor="@color/secondary_app_color"
+            android:text="See discussions"
+            />
+            <ImageButton
+            android:id="@+id/viewDiscussionImageButtonId"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+                android:layout_marginTop="2dp"
+            android:src="@drawable/ic_baseline_unfold_more_24"
+            />
+    </LinearLayout>
+    </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -167,15 +318,6 @@
                     android:text="..."
                     />
 
-                <ImageButton
-                    app:tint="@color/darkIcon"
-                    android:id="@+id/morePageActionButtonId"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/ic_baseline_more_vert_24"
-                    />
 
             </LinearLayout>
 
@@ -199,7 +341,8 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
     
-    <LinearLayout
+   
+        <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -235,6 +378,6 @@
     android:backgroundTint="@color/gray"
     android:drawableTint="@color/white"
     />
-    </LinearLayout>
+        </LinearLayout>
     
 </androidx.constraintlayout.widget.ConstraintLayout>

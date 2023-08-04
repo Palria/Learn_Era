@@ -42,6 +42,7 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
+import com.palria.learnera.models.PageDiscussionDataModel;
 import com.palria.learnera.models.WelcomeScreenItemModal;
 
 import java.lang.reflect.Array;
@@ -119,8 +120,14 @@ public class GlobalConfig {
     public static final String AUTHORS_FRAGMENT_TYPE_KEY = "AUTHORS_FRAGMENT_TYPE";
     public static final String TUTORIAL_FRAGMENT_TYPE_KEY = "TUTORIAL_FRAGMENT_TYPE";
     public static final String CATEGORY_FRAGMENT_TYPE_KEY = "CATEGORY_FRAGMENT_TYPE";
+    public static final String DISCUSSION_FRAGMENT_TYPE_KEY = "DISCUSSION_FRAGMENT_TYPE";
 
     public static final String IS_AUTHOR_OPEN_TYPE_KEY = "IS_AUTHOR_OPEN_TYPE";
+
+    public static final String IS_FOR_PREVIEW_KEY = "IS_FOR_PREVIEW";
+    public static final String IS_FROM_PAGE_CONTEXT_KEY = "IS_FROM_PAGE_CONTEXT";
+    public static final String IS_VIEW_ALL_DISCUSSIONS_FOR_SINGLE_PAGE_KEY = "IS_VIEW_ALL_DISCUSSIONS_FOR_SINGLE_PAGE";
+    public static final String IS_VIEW_SINGLE_DISCUSSION_REPLY_KEY = "IS_VIEW_SINGLE_DISCUSSION_REPLY";
 
 
     public static final String TYPE_KEY = "TYPE";
@@ -483,6 +490,32 @@ public class GlobalConfig {
 //    public static final String DATE_NOTIFIED_TIME_STAMP_KEY = "DATE_NOTIFIED_TIME_STAMP";
     public static final String NOTIFICATION_MESSAGE_KEY = "NOTIFICATION_MESSAGE";
     public static final String NOTIFICATION_TITLE_KEY = "NOTIFICATION_TITLE";
+
+
+    public static final String DISCUSSION_ID_KEY = "DISCUSSION_ID";
+    public static final String PARENT_DISCUSSION_ID_KEY = "PARENT_DISCUSSION_ID";
+    public static final String LIKED_DISCUSSIONS_KEY = "LIKED_DISCUSSIONS";
+    public static final String MY_PAGES_DISCUSSION_KEY = "MY_PAGES_DISCUSSION";
+    public static final String DISCUSSION_POSTER_ID_KEY = "DISCUSSION_POSTER_ID";
+    public static final String TOTAL_DISCUSSIONS_KEY = "TOTAL_DISCUSSIONS";
+    public static final String DISCUSSION_DESCRIPTION_KEY = "DISCUSSION_DESCRIPTION";
+    public static final String DISCUSSION_COVER_PHOTO_DOWNLOAD_URL_KEY = "DISCUSSION_COVER_PHOTO_DOWNLOAD_URL";
+    public static final String HAS_PARENT_DISCUSSION_KEY = "HAS_PARENT_DISCUSSION";
+    public static final String HAS_REPLIES_KEY = "HAS_REPLIES";
+    public static final String IS_HIDDEN_BY_AUTHOR_KEY = "IS_HIDDEN_BY_AUTHOR";
+    public static final String IS_HIDDEN_BY_POSTER_KEY = "IS_HIDDEN_BY_POSTER";
+    public static final String TOTAL_REPLIES_KEY = "TOTAL_REPLIES";
+    public static final String TOTAL_LIKES_KEY = "TOTAL_LIKES";
+//    public static final String TOTAL_DISLIKES_KEY = "TOTAL_DISLIKES";
+    public static final String REPLIERS_ID_LIST_KEY = "REPLIERS_ID_LIST";
+    public static final String LIKERS_ID_LIST_KEY = "LIKERS_ID_LIST";
+//    public static final String DISLIKERS_ID_LIST_KEY = "DISLIKERS_ID_LIST";
+    public static final String AUTHOR_ID_LIST_KEY = "AUTHOR_ID_LIST";
+    public static final String PAGE_ID_LIST_KEY = "PAGE_ID_LIST";
+    public static final String PARENT_DISCUSSION_ID_LIST_KEY = "PARENT_DISCUSSION_ID_LIST";
+    public static final String LIKED_PAGES_KEY = "LIKED_PAGES";
+    public static final String OTHER_PAGES_DISCUSSION_KEY = "OTHER_PAGES_DISCUSSION";
+    public static final String DATE_CREATED_TIME_STAMP_KEY = "DATE_CREATED_TIME_STAMP";
 
     private static FirebaseFirestore firebaseFirestoreInstance;
     private static FirebaseStorage firebaseStorageInstance;
@@ -2556,7 +2589,7 @@ if(isUserLoggedIn()) {
         if(intent == null){
             intent = new Intent(context,HostActivity.class);
         }
-
+        intent.setClass(context,HostActivity.class);
         intent.putExtra(GlobalConfig.FRAGMENT_TYPE_KEY,fragmentOpenType);
         intent.putExtra(GlobalConfig.USER_ID_KEY,userId);
 
@@ -3778,6 +3811,246 @@ String activityLogType = "NONE";
           }
       });
     }
+
+    public static void discuss(PageDiscussionDataModel pageDiscussionDataModel, ActionCallback actionCallback ){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(pageDiscussionDataModel.getAuthorId()).collection(GlobalConfig.MY_PAGES_DISCUSSION_KEY).document(pageDiscussionDataModel.getDiscussionId());
+        HashMap<String,Object> discussionDetails = new HashMap<>();
+        discussionDetails.put(GlobalConfig.DISCUSSION_POSTER_ID_KEY,pageDiscussionDataModel.getDiscussionPosterId());
+        discussionDetails.put(GlobalConfig.DISCUSSION_DESCRIPTION_KEY,pageDiscussionDataModel.getDescription());
+        discussionDetails.put(GlobalConfig.DISCUSSION_COVER_PHOTO_DOWNLOAD_URL_KEY,pageDiscussionDataModel.getCoverDownloadUrl());
+        discussionDetails.put(GlobalConfig.PAGE_ID_KEY,pageDiscussionDataModel.getPageId());
+        discussionDetails.put(GlobalConfig.AUTHOR_ID_KEY,pageDiscussionDataModel.getAuthorId());
+        discussionDetails.put(GlobalConfig.PARENT_DISCUSSION_ID_KEY,pageDiscussionDataModel.getParentDiscussionId());
+        discussionDetails.put(GlobalConfig.DISCUSSION_ID_KEY,pageDiscussionDataModel.getDiscussionId());
+        discussionDetails.put(GlobalConfig.TUTORIAL_ID_KEY,pageDiscussionDataModel.getTutorialId());
+        discussionDetails.put(GlobalConfig.FOLDER_ID_KEY,pageDiscussionDataModel.getFolderId());
+        discussionDetails.put(GlobalConfig.IS_TUTORIAL_PAGE_KEY,pageDiscussionDataModel.isTutorialPage());
+        discussionDetails.put(GlobalConfig.HAS_PARENT_DISCUSSION_KEY,pageDiscussionDataModel.hasParentDiscussion());
+        discussionDetails.put(GlobalConfig.HAS_REPLIES_KEY,pageDiscussionDataModel.hasReplies());
+        discussionDetails.put(GlobalConfig.IS_HIDDEN_BY_AUTHOR_KEY,pageDiscussionDataModel.isHiddenByAuthor());
+        discussionDetails.put(GlobalConfig.IS_HIDDEN_BY_POSTER_KEY,pageDiscussionDataModel.isHiddenByPoster());
+//        discussionDetails.put(GlobalConfig.TOTAL_REPLIES_KEY,FieldValue.increment(1L));
+//        discussionDetails.put(GlobalConfig.TOTAL_LIKES_KEY,FieldValue.increment(1L));
+//        discussionDetails.put(GlobalConfig.TOTAL_DISLIKES_KEY,FieldValue.increment(1L));
+        discussionDetails.put(GlobalConfig.REPLIERS_ID_LIST_KEY,pageDiscussionDataModel.getRepliersIdList());
+        discussionDetails.put(GlobalConfig.LIKERS_ID_LIST_KEY,pageDiscussionDataModel.getLikersIdList());
+//        discussionDetails.put(GlobalConfig.DISLIKERS_ID_LIST_KEY,pageDiscussionDataModel.getDisLikersIdList());
+        discussionDetails.put(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+        writeBatch.set(documentReference1,discussionDetails,SetOptions.merge());
+
+        DocumentReference documentReference2 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId()).collection(GlobalConfig.OTHER_PAGES_DISCUSSION_KEY).document(pageDiscussionDataModel.getPageId());
+        HashMap<String,Object> discussionDetails2 = new HashMap<>();
+        discussionDetails2.put(GlobalConfig.AUTHOR_ID_LIST_KEY,FieldValue.arrayUnion(pageDiscussionDataModel.getAuthorId()));
+        discussionDetails2.put(GlobalConfig.PAGE_ID_LIST_KEY,FieldValue.arrayUnion(pageDiscussionDataModel.getPageId()));
+        if(pageDiscussionDataModel.hasParentDiscussion()) {
+            discussionDetails2.put(GlobalConfig.PARENT_DISCUSSION_ID_LIST_KEY, FieldValue.arrayUnion(pageDiscussionDataModel.getPageId()));
+        }
+        writeBatch.set(documentReference2,discussionDetails2,SetOptions.merge());
+
+
+        if(pageDiscussionDataModel.hasParentDiscussion()) {
+            DocumentReference documentReference4 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(pageDiscussionDataModel.getAuthorId()).collection(GlobalConfig.MY_PAGES_DISCUSSION_KEY).document(pageDiscussionDataModel.getParentDiscussionId());
+            HashMap<String, Object> discussionDetails4 = new HashMap<>();
+            discussionDetails4.put(GlobalConfig.TOTAL_REPLIES_KEY, FieldValue.increment(1L));
+            writeBatch.set(documentReference4, discussionDetails4, SetOptions.merge());
+        }else{
+        if(pageDiscussionDataModel.isTutorialPage()) {
+            DocumentReference documentReference3 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(pageDiscussionDataModel.getTutorialId()).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageDiscussionDataModel.getPageId());
+            HashMap<String, Object> discussionDetails3 = new HashMap<>();
+            discussionDetails3.put(GlobalConfig.TOTAL_DISCUSSIONS_KEY, FieldValue.increment(1L));
+            writeBatch.set(documentReference3, discussionDetails3, SetOptions.merge());
+        }else{
+            DocumentReference documentReference4 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(pageDiscussionDataModel.getTutorialId()).collection(GlobalConfig.ALL_FOLDERS_KEY).document(pageDiscussionDataModel.getFolderId()).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageDiscussionDataModel.getPageId());
+            HashMap<String, Object> discussionDetails4 = new HashMap<>();
+            discussionDetails4.put(GlobalConfig.TOTAL_DISCUSSIONS_KEY, FieldValue.increment(1L));
+            writeBatch.set(documentReference4, discussionDetails4, SetOptions.merge());
+        }
+        }
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+    public static void deleteDiscussion(String discussionId,String parentDiscussionId,String pageId, String tutorialId,String folderId, String authorId, boolean isTutorialPage,boolean hasParentDiscussion, ActionCallback actionCallback ){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId).collection(GlobalConfig.MY_PAGES_DISCUSSION_KEY).document(discussionId);
+        writeBatch.delete(documentReference1);
+
+
+        if(hasParentDiscussion) {
+            DocumentReference documentReference4 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId).collection(GlobalConfig.MY_PAGES_DISCUSSION_KEY).document(parentDiscussionId);
+            HashMap<String, Object> discussionDetails4 = new HashMap<>();
+            discussionDetails4.put(GlobalConfig.TOTAL_DISCUSSIONS_KEY, FieldValue.increment(-1L));
+            writeBatch.set(documentReference4, discussionDetails4, SetOptions.merge());
+        }else{
+        if(isTutorialPage) {
+            DocumentReference documentReference3 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId);
+            HashMap<String, Object> discussionDetails3 = new HashMap<>();
+            discussionDetails3.put(GlobalConfig.TOTAL_DISCUSSIONS_KEY, FieldValue.increment(-1L));
+            writeBatch.set(documentReference3, discussionDetails3, SetOptions.merge());
+        }else{
+            DocumentReference documentReference4 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageId);
+            HashMap<String, Object> discussionDetails4 = new HashMap<>();
+            discussionDetails4.put(GlobalConfig.TOTAL_DISCUSSIONS_KEY, FieldValue.increment(-1L));
+            writeBatch.set(documentReference4, discussionDetails4, SetOptions.merge());
+        }
+        }
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+    public static void likePage(String pageId, String tutorialId,String folderId, String authorId, boolean isTutorialPage,boolean isIncreaseCount, ActionCallback actionCallback ) {
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+
+        DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId()).collection(GlobalConfig.LIKED_PAGES_KEY).document(pageId);
+        if(isIncreaseCount){
+        HashMap<String, Object> discussionDetails1 = new HashMap<>();
+        discussionDetails1.put(GlobalConfig.IS_TUTORIAL_PAGE_KEY, isTutorialPage);
+        discussionDetails1.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
+        discussionDetails1.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
+        discussionDetails1.put(GlobalConfig.FOLDER_ID_KEY, folderId);
+        discussionDetails1.put(GlobalConfig.PAGE_ID_KEY, pageId);
+        writeBatch.set(documentReference1, discussionDetails1, SetOptions.merge());
+    }else{
+            writeBatch.delete(documentReference1);
+        }
+        if(isTutorialPage) {
+            DocumentReference documentReference3 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId);
+            HashMap<String, Object> discussionDetails3 = new HashMap<>();
+            if(isIncreaseCount){
+                discussionDetails3.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(1L));
+            }else{
+                discussionDetails3.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(-1L));
+            }
+            writeBatch.set(documentReference3, discussionDetails3, SetOptions.merge());
+        }else{
+            DocumentReference documentReference4 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageId);
+            HashMap<String, Object> discussionDetails4 = new HashMap<>();
+            if(isIncreaseCount){
+                discussionDetails4.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(1L));
+            }else{
+                discussionDetails4.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(-1L));
+            }
+            writeBatch.set(documentReference4, discussionDetails4, SetOptions.merge());
+        }
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+    public static void likePageDiscussion(String discussionId, String pageId, String tutorialId,String folderId, String authorId, boolean isTutorialPage,boolean isIncreaseCount, ActionCallback actionCallback ) {
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+
+        DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId()).collection(GlobalConfig.LIKED_DISCUSSIONS_KEY).document(discussionId);
+        if(isIncreaseCount){
+        HashMap<String, Object> discussionDetails1 = new HashMap<>();
+        discussionDetails1.put(GlobalConfig.IS_TUTORIAL_PAGE_KEY, isTutorialPage);
+        discussionDetails1.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
+        discussionDetails1.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
+        discussionDetails1.put(GlobalConfig.FOLDER_ID_KEY, folderId);
+        discussionDetails1.put(GlobalConfig.PAGE_ID_KEY, pageId);
+        discussionDetails1.put(GlobalConfig.DISCUSSION_ID_KEY, discussionId);
+        writeBatch.set(documentReference1, discussionDetails1, SetOptions.merge());
+    }else{
+            writeBatch.delete(documentReference1);
+        }
+
+        DocumentReference documentReference4 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId).collection(GlobalConfig.MY_PAGES_DISCUSSION_KEY).document(discussionId);
+            HashMap<String, Object> discussionDetails4 = new HashMap<>();
+            if(isIncreaseCount){
+                discussionDetails4.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(1L));
+            }else{
+                discussionDetails4.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(-1L));
+            }
+            writeBatch.set(documentReference4, discussionDetails4, SetOptions.merge());
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+//    public static void dislikePage(String pageId,boolean isIncreaseCount, String tutorialId,String folderId, boolean isTutorialPage, ActionCallback actionCallback ){
+//        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+//        if(isTutorialPage) {
+//            DocumentReference documentReference3 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId);
+//            HashMap<String, Object> discussionDetails3 = new HashMap<>();
+//            if(isIncreaseCount){
+//                discussionDetails3.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(1L));
+//            }else{
+//                discussionDetails3.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(-1L));
+//            }
+//            writeBatch.set(documentReference3, discussionDetails3, SetOptions.merge());
+//        }else{
+//            DocumentReference documentReference4 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_FOLDERS_KEY).document(folderId).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageId);
+//            HashMap<String, Object> discussionDetails4 = new HashMap<>();
+//            if(isIncreaseCount){
+//                discussionDetails4.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(1L));
+//            }else{
+//                discussionDetails4.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(-1L));
+//            }
+//            writeBatch.set(documentReference4, discussionDetails4, SetOptions.merge());
+//        }
+//
+//
+//        writeBatch.commit()
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        actionCallback.onFailed(e.getMessage());
+//                    }
+//                })
+//                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void unused) {
+//                        actionCallback.onSuccess();
+//                    }
+//                });
+//    }
 
     /*
         static HashMap<String,Double> getStarMap(int fiveStar,int fourStar, int threeStar, int twoStar, int oneStar){

@@ -3,6 +3,8 @@ package com.palria.learnera;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.Fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,6 +31,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.lib.rcheditor.WYSIWYG;
+import com.palria.learnera.models.PageDiscussionDataModel;
+import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
 import com.palria.learnera.widgets.LEBottomSheetDialog;
 
 import java.util.ArrayList;
@@ -65,6 +70,18 @@ ImageButton morePageActionButton;
 
     ImageButton backButton;
 
+    FrameLayout discussionsFrameLayout;
+    ImageView likeActionButton;
+    TextView likeCountTextView;
+//    ImageView dislikeActionButton;
+//    TextView dislikeCountTextView;
+    ImageView discussActionButton;
+    TextView discussionCountTextView;
+    TextView viewDiscussionTextView;
+    TextView addDiscussionTextView;
+
+//    TextView discussionsIndicatorTextView;
+
 
     
     @Override
@@ -74,12 +91,31 @@ ImageButton morePageActionButton;
         initUI();
         fetchIntentData();
         if(!(GlobalConfig.getBlockedItemsList().contains(authorId+"")) &&!(GlobalConfig.getBlockedItemsList().contains(libraryId+"")) && !(GlobalConfig.getBlockedItemsList().contains(tutorialId+"")))  {
+            DocumentReference likedDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.LIKED_PAGES_KEY).document(pageId);
+            GlobalConfig.checkIfDocumentExists(likedDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+                @Override
+                public void onExist(DocumentSnapshot documentSnapshot) {
+                   likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_baseline_thumb_up_24,getTheme()));
+                }
+
+                @Override
+                public void onNotExist() {
+                    likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
+                }
+
+                @Override
+                public void onFailed(@NonNull String errorMessage) {
+                    likeActionButton.setEnabled(true);
+
+                }
+            });
 
             fetchPageData(true);
             fetchAuthorProfile();
 //        if(!authorId.equals(GlobalConfig.getCurrentUserId())){
 //            morePageActionButton.setVisibility(View.GONE);
 //        }
+            manageDiscussion();
             if(GlobalConfig.getCurrentUserId().equals(authorId+"") || GlobalConfig.isLearnEraAccount()){
 
                 leBottomSheetDialog.addOptionItem("Edit Page", R.drawable.ic_baseline_edit_24,
@@ -142,7 +178,7 @@ ImageButton morePageActionButton;
                 }, 0);
 
             }
-
+//            initDiscussionFragment();
             leBottomSheetDialog.addOptionItem("Bookmark", R.drawable.ic_baseline_bookmarks_24,
                     new View.OnClickListener() {
                         @Override
@@ -335,6 +371,80 @@ ImageButton morePageActionButton;
         nextButton=findViewById(R.id.nextButtonId);
         backButton=findViewById(R.id.backButton);
 
+        discussionsFrameLayout=findViewById(R.id.discussionsFrameLayoutId);
+
+        likeActionButton=findViewById(R.id.likeActionButtonId);
+        likeCountTextView=findViewById(R.id.likeCountTextViewId);
+
+        likeActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int currentLikesCount = Integer.parseInt((likeCountTextView.getText()+""));
+
+                likeActionButton.setEnabled(false);
+                DocumentReference likedDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.LIKED_PAGES_KEY).document(pageId);
+                GlobalConfig.checkIfDocumentExists(likedDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+                    @Override
+                    public void onExist(DocumentSnapshot documentSnapshot) {
+                        likeCountTextView.setText((currentLikesCount-1)+"");
+                        likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
+                        GlobalConfig.likePage(pageId, tutorialId, folderId, authorId, isTutorialPage, false, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+                                likeActionButton.setEnabled(true);
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                likeActionButton.setEnabled(true);
+
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onNotExist() {
+                        likeCountTextView.setText((currentLikesCount+1)+"");
+                        likeActionButton.setImageResource(R.drawable.ic_baseline_thumb_up_24);
+                        GlobalConfig.likePage(pageId, tutorialId, folderId, authorId, isTutorialPage, true, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+                                likeActionButton.setEnabled(true);
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                likeActionButton.setEnabled(true);
+
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onFailed(@NonNull String errorMessage) {
+                        likeActionButton.setEnabled(true);
+
+                    }
+                });
+            }
+        });
+
+//        dislikeActionButton=findViewById(R.id.dislikeActionButtonId);
+//        dislikeCountTextView=findViewById(R.id.dislikeCountTextViewId);
+
+        discussActionButton=findViewById(R.id.discussActionButtonId);
+        discussionCountTextView=findViewById(R.id.discussionCountTextViewId);
+
+//        discussionsIndicatorTextView=findViewById(R.id.discussionsIndicatorTextViewId);
+
+        addDiscussionTextView=findViewById(R.id.addDiscussionTextViewId);
+        viewDiscussionTextView=findViewById(R.id.viewDiscussionTextViewId);
+        addDiscussionTextView=findViewById(R.id.addDiscussionTextViewId);
+
         pageContentViewer.setPadding(10,10,10,10);
         pageContentViewer.setEnabled(false);//disable editing.
         pageContentViewer.setEditorFontSize(16);
@@ -453,7 +563,105 @@ ImageButton morePageActionButton;
              }
          
      }
-    
+
+     void manageDiscussion(){
+         AllPageDiscussionsFragment allDiscussionsFragment = new AllPageDiscussionsFragment();
+         Bundle bundle = new Bundle();
+         bundle.putBoolean(GlobalConfig.IS_FROM_PAGE_CONTEXT_KEY,true);
+         bundle.putBoolean(GlobalConfig.IS_TUTORIAL_PAGE_KEY,isTutorialPage);
+         bundle.putString(GlobalConfig.AUTHOR_ID_KEY,authorId);
+         bundle.putString(GlobalConfig.PAGE_ID_KEY,pageId);
+         allDiscussionsFragment.setArguments(bundle);
+         getSupportFragmentManager()
+                 .beginTransaction()
+                 .replace(R.id.discussionsFrameLayoutId, allDiscussionsFragment)
+                 .commit();
+
+         addDiscussionTextView.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+                 showDiscussionForm();
+             }
+         });
+         discussActionButton.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+                 showDiscussionForm();
+             }
+         });
+
+         viewDiscussionTextView.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+                 Intent intent = new Intent();
+                 intent.putExtra(GlobalConfig.IS_FROM_PAGE_CONTEXT_KEY,false);
+                 intent.putExtra(GlobalConfig.IS_VIEW_ALL_DISCUSSIONS_FOR_SINGLE_PAGE_KEY,true);
+                 intent.putExtra(GlobalConfig.IS_VIEW_SINGLE_DISCUSSION_REPLY_KEY,false);
+                 intent.putExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY,isTutorialPage);
+                 intent.putExtra(GlobalConfig.PARENT_DISCUSSION_ID_KEY,"");
+                 intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,authorId);
+                 intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
+                 intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderId);
+                 intent.putExtra(GlobalConfig.PAGE_ID_KEY,pageId);
+                 startActivity(GlobalConfig.getHostActivityIntent(PageActivity.this,intent,GlobalConfig.DISCUSSION_FRAGMENT_TYPE_KEY,""));
+
+             }
+         });
+
+
+     }
+
+     void showDiscussionForm(){
+         new BottomSheetFormBuilderWidget(PageActivity.this)
+                 .setTitle("Join in discussion of this lesson by contributing your idea")
+                 .setPositiveTitle("Discuss")
+                 .addInputField(new BottomSheetFormBuilderWidget.EditTextInput(PageActivity.this)
+                         .setHint("Enter your idea")
+                         .autoFocus())
+                 .setOnSubmit(new BottomSheetFormBuilderWidget.OnSubmitHandler() {
+                     @Override
+                     public void onSubmit(String[] values) {
+                         super.onSubmit(values);
+
+//                         Toast.makeText(PageActivity.this, values[0], Toast.LENGTH_SHORT).show();
+                         //values will be returned as array of strings as per input list position
+                         //eg first added input has first value
+                         String body = values[0];
+                         if (body.trim().equals("")) {
+                             //     leBottomSheetDialog.setTitle("Folder needs name, must enter name for the folder");
+
+                               Toast.makeText(PageActivity.this, "Please enter your idea",Toast.LENGTH_SHORT).show();
+
+                         } else {
+
+                             String discussionId = GlobalConfig.getRandomString(80);
+                             GlobalConfig.createSnackBar(PageActivity.this,discussActionButton, "Adding discussion: "+body,Snackbar.LENGTH_INDEFINITE);
+
+                             GlobalConfig.discuss(new PageDiscussionDataModel(discussionId,GlobalConfig.getCurrentUserId(),body,"",pageId,authorId,"",tutorialId,folderId,isTutorialPage,false,false,false,false,"",0L,0L,new ArrayList(),new ArrayList()),new GlobalConfig.ActionCallback(){
+                                 @Override
+                                 public void onFailed(String errorMessage){
+                                     Toast.makeText(PageActivity.this, "failed", Toast.LENGTH_SHORT).show();
+
+                                 }
+                                 @Override
+                                 public void onSuccess(){
+//                                     Toast.makeText(PageActivity.this, body, Toast.LENGTH_SHORT).show();
+                                     GlobalConfig.createSnackBar(PageActivity.this,discussActionButton, "Thanks discussion added: "+body,Snackbar.LENGTH_SHORT);
+                                     int currentDiscussionCount = Integer.parseInt((discussionCountTextView.getText()+""));
+                                     discussionCountTextView.setText((currentDiscussionCount+1)+"");
+
+                                 }
+                             });
+//                             createNewFolder(values[0],isPublic[0]);
+//                                           leBottomSheetDialog.setTitle("Creating "+values[0]+" folder in progress...");
+//                                           leBottomSheetDialog.hide();
+                         }
+                         //create folder process here
+                     }
+                 })
+                 .render()
+                 .show();
+     }
 
     void renderPage(DocumentSnapshot documentSnapshot) {
 //
@@ -505,6 +713,13 @@ ImageButton morePageActionButton;
 
         renderHtmlFromDatabase(html);
         GlobalConfig.incrementNumberOfVisitors(authorId,null,tutorialId,folderId,pageId,false,false,false,false,isTutorialPage,!isTutorialPage);
+
+        long totalLikes = documentSnapshot.get(GlobalConfig.TOTAL_LIKES_KEY)!=null? documentSnapshot.getLong(GlobalConfig.TOTAL_LIKES_KEY) :0L;
+//        long totalDisLikes = documentSnapshot.get(GlobalConfig.TOTAL_DISLIKES_KEY)!=null? documentSnapshot.getLong(GlobalConfig.TOTAL_DISLIKES_KEY) :0L;
+        long totalDiscussions = documentSnapshot.get(GlobalConfig.TOTAL_DISCUSSIONS_KEY)!=null? documentSnapshot.getLong(GlobalConfig.TOTAL_DISCUSSIONS_KEY) :0L;
+        likeCountTextView.setText(totalLikes+"");
+//        dislikeCountTextView.setText(totalDisLikes+"");
+        discussionCountTextView.setText(totalDiscussions+"");
 
         fetchedPagesNumber.put(pageId, (int) pageNumber);
         fetchedPagesSnapshot.put((int) pageNumber,documentSnapshot);
@@ -561,6 +776,11 @@ ImageButton morePageActionButton;
 //                        }
 
     }
+
+//    private void initDiscussionFragment(){
+//
+//
+//    }
 
     @Deprecated
     void renderPageTextData(ArrayList<String> textDetails){

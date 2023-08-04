@@ -557,7 +557,7 @@ public class UploadPageActivity extends AppCompatActivity {
             @Override
             public void onComplete() {
                 isImageProcessingCompleted = true;
-                imageProcessingIndicatorView.setVisibility(View.GONE);
+                imageProcessingIndicatorView.setVisibility(View.INVISIBLE);
             }
 
             @Override

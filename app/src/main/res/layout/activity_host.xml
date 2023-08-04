@@ -13,7 +13,7 @@
         app:titleTextColor="@color/white"
         app:title="hello"
         android:theme="@style/ToolbarColoredBackArrow"
-        android:background="@color/teal_700"
+        android:background="@color/secondary_app_color"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

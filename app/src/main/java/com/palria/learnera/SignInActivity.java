@@ -69,10 +69,10 @@ boolean isInProgress = false;
 
                                     isInProgress = false;
                                     //hide progress
-                                    toggleProgress(false);
                                     Intent intent = new Intent(SignInActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     Toast.makeText(getApplicationContext(), "You successfully signed in, go learn more, it is era of learning", Toast.LENGTH_LONG).show();
+                                    toggleProgress(false);
                                     SignInActivity.super.onBackPressed();
                                 }
 
