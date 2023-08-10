@@ -13,6 +13,7 @@
         android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:visibility="invisible"
         >
 
         <LinearLayout
@@ -333,6 +334,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 />
+            
+            <LinearLayout
+                android:visibility="visible"
+                android:id="@+id/adLinearLayoutId"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+    
             <View
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -343,11 +352,13 @@
     
    
         <LinearLayout
+            android:id="@+id/buttonsLinearLayoutId"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         android:background="@color/teal_200"
+        android:visibility="invisible"
         >
 <Button
     android:id="@+id/previousButtonId"
@@ -379,5 +390,110 @@
     android:drawableTint="@color/white"
     />
         </LinearLayout>
+    <com.facebook.shimmer.ShimmerFrameLayout
+        app:shimmer_auto_start="true"
+        android:id="@+id/shimmerLayoutId"
+        android:layout_width="match_parent"
+        android:visibility="visible"
+        android:layout_height="match_parent">
+        
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            
+            
+            
+            <LinearLayout
+                android:background="@drawable/rounded_white_bg"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+                
+                
+                
+                
+                
+                <LinearLayout
+                    android:layout_marginHorizontal="5pt"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    
+                    
+                    <TextView
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="match_parent"
+                        android:layout_height="70pt"/>
     
+                    <LinearLayout
+                        android:layout_marginTop="5pt"
+                        android:layout_marginHorizontal="5pt"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        >
+    
+                    <TextView
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="10pt"
+                        android:layout_marginBottom="3pt"
+                        android:layout_marginHorizontal="3pt"
+                        android:layout_height="5pt"/>
+                    <TextView
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="10pt"
+                        android:layout_marginBottom="3pt"
+                        android:layout_marginHorizontal="3pt"
+                        android:layout_height="5pt"/>
+                    <TextView
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="10pt"
+                        android:layout_marginBottom="3pt"
+                        android:layout_marginHorizontal="3pt"
+                        android:layout_height="5pt"/>
+                </LinearLayout>
+                    
+                    <TextView
+                        android:layout_marginTop="3pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:layout_height="500dp"/>
+    
+                    <LinearLayout
+                        android:layout_marginTop="1pt"
+                        android:layout_marginHorizontal="1pt"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        >
+        
+                        <TextView
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="0dp"
+                            android:layout_marginEnd="3pt"
+                            android:layout_height="30pt"
+                            android:layout_weight="1"
+                            />
+                        <TextView
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="0dp"
+                            android:layout_height="30pt"
+                            android:layout_weight="1"
+                            />
+                    </LinearLayout>
+
+                </LinearLayout>
+            
+            </LinearLayout>
+        
+        </LinearLayout>
+    
+    
+    
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

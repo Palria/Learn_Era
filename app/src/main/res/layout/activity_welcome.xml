@@ -63,7 +63,9 @@
             <LinearLayout
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                >
                <TextView
                    android:visibility="invisible"
                    android:id="@+id/skip_prev"
@@ -81,7 +83,9 @@
                 android:gravity="end"
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                >
                 <TextView
                     android:id="@+id/skip_next"
                     android:background="@drawable/default_outlined_button"
@@ -96,6 +100,41 @@
 
         </LinearLayout>
 
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/secondary_app_color"
+        android:layout_alignParentBottom="true"
+        >
+        <Button
+            android:id="@+id/signUpActionButtonId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sign Up"
+            android:background="@color/gray"
+            android:backgroundTint="@color/gray"
+            android:drawableTint="@color/white"
+            
+            />
+        <View
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="2dp"
+            android:background="@color/gray"
+            />
+        <Button
+            android:id="@+id/signInActionButtonId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sign In"
+            android:background="@color/gray"
+            android:backgroundTint="@color/gray"
+            android:drawableTint="@color/white"
+            />
     </LinearLayout>
 
 </RelativeLayout>

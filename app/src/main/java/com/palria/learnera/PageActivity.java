@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import android.content.Context;
@@ -22,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
@@ -81,7 +84,10 @@ ImageButton morePageActionButton;
     TextView addDiscussionTextView;
 
 //    TextView discussionsIndicatorTextView;
-
+    LinearLayout adLinearLayout;
+    NestedScrollView scrollView;
+    LinearLayout buttonsLinearLayout;
+    ShimmerFrameLayout shimmerLayout;
 
     
     @Override
@@ -116,6 +122,17 @@ ImageButton morePageActionButton;
 //            morePageActionButton.setVisibility(View.GONE);
 //        }
             manageDiscussion();
+            GlobalConfig.loadNativeAd(this,0, GlobalConfig.PAGE_NATIVE_AD_UNIT_ID,adLinearLayout,false,new com.google.android.gms.ads.nativead.NativeAd.OnNativeAdLoadedListener() {
+                @Override
+                public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                    NativeAd nativeAdToLoad = nativeAd;
+                    View view = GlobalConfig.getNativeAdView(PageActivity.this,adLinearLayout,nativeAdToLoad, GlobalConfig.PAGE_NATIVE_AD_UNIT_ID,false);
+                    if(view!=null) {
+                        adLinearLayout.addView(view);
+                    }
+                }
+            });
+
             if(GlobalConfig.getCurrentUserId().equals(authorId+"") || GlobalConfig.isLearnEraAccount()){
 
                 leBottomSheetDialog.addOptionItem("Edit Page", R.drawable.ic_baseline_edit_24,
@@ -370,11 +387,15 @@ ImageButton morePageActionButton;
         previousButton=findViewById(R.id.previousButtonId);
         nextButton=findViewById(R.id.nextButtonId);
         backButton=findViewById(R.id.backButton);
+        scrollView=findViewById(R.id.scrollView);
+        buttonsLinearLayout=findViewById(R.id.buttonsLinearLayoutId);
+        shimmerLayout=findViewById(R.id.shimmerLayoutId);
 
         discussionsFrameLayout=findViewById(R.id.discussionsFrameLayoutId);
 
         likeActionButton=findViewById(R.id.likeActionButtonId);
         likeCountTextView=findViewById(R.id.likeCountTextViewId);
+        adLinearLayout=findViewById(R.id.adLinearLayoutId);
 
         likeActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -500,7 +521,8 @@ ImageButton morePageActionButton;
     }
     void fetchPageData(boolean isNext){
      
-                toggleProgress(true);
+//                toggleProgress(true);
+                showShimmer();
              DocumentReference documentReference = null;
              Query query = null;
              if (isTutorialPage) {
@@ -526,6 +548,7 @@ ImageButton morePageActionButton;
                          .addOnFailureListener(new OnFailureListener() {
                              @Override
                              public void onFailure(@NonNull Exception e) {
+                                 hideShimmer();
                                  toggleProgress(false);
                                  GlobalConfig.createSnackBar(PageActivity.this, previousButton, "Failed: "+ e.getMessage(), Snackbar.LENGTH_INDEFINITE);
 
@@ -543,6 +566,8 @@ ImageButton morePageActionButton;
                  query.get().addOnFailureListener(new OnFailureListener() {
                      @Override
                      public void onFailure(@NonNull Exception e) {
+
+                         hideShimmer();
                          toggleProgress(false);
                          GlobalConfig.createSnackBar(PageActivity.this, previousButton, "Failed: "+ e.getMessage(), Snackbar.LENGTH_INDEFINITE);
 
@@ -556,6 +581,8 @@ ImageButton morePageActionButton;
                              GlobalConfig.createSnackBar(PageActivity.this, previousButton, "No data found!", Snackbar.LENGTH_INDEFINITE);
 
                          }
+
+                         hideShimmer();
                          toggleProgress(false);
 
                      }
@@ -676,6 +703,8 @@ ImageButton morePageActionButton;
         if( !isPublic && !(authorId!=null && authorId.equals(GlobalConfig.getCurrentUserId()))){
             GlobalConfig.createSnackBar(this, morePageActionButton,"OOPS! The page you are trying to load is private!", Snackbar.LENGTH_INDEFINITE).show();
             //PageActivity.super.onBackPressed();
+
+            hideShimmer();
             toggleProgress(false);
             return;
         }
@@ -734,6 +763,8 @@ ImageButton morePageActionButton;
         }else{
             nextButton.setEnabled(true);
         }
+
+        hideShimmer();
         toggleProgress(false);
 
 //                        for(int i=0; i<totalNumberOfPageData; i++){
@@ -776,6 +807,18 @@ ImageButton morePageActionButton;
 //                        }
 
     }
+    void showShimmer(){
+    shimmerLayout.setVisibility(View.VISIBLE);
+    scrollView.setVisibility(View.INVISIBLE);
+    buttonsLinearLayout.setVisibility(View.INVISIBLE);
+    shimmerLayout.startShimmer();
+}
+    void hideShimmer(){
+    shimmerLayout.setVisibility(View.GONE);
+    scrollView.setVisibility(View.VISIBLE);
+    buttonsLinearLayout.setVisibility(View.VISIBLE);
+    shimmerLayout.stopShimmer();
+}
 
 //    private void initDiscussionFragment(){
 //

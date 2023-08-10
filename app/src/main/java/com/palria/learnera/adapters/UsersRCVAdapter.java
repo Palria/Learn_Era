@@ -74,7 +74,52 @@ public class UsersRCVAdapter extends RecyclerView.Adapter<UsersRCVAdapter.ViewHo
             }else{
                 holder.description.setText("User");
             }
+            if(userDataModels.getUserId().equals(GlobalConfig.getCurrentUserId())){
+                holder.followActionTextView.setVisibility(View.GONE);
+            }
+            if(GlobalConfig.isFollowing(context,userDataModels.getUserId())){
+                holder.followActionTextView.setText("Following");
 
+            }else{
+                holder.followActionTextView.setText("Follow");
+            }
+            holder.followActionTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    holder.followActionTextView.setEnabled(false);
+                    if(GlobalConfig.isFollowing(context,userDataModels.getUserId())){
+                        GlobalConfig.unFollowUser(context, userDataModels.getUserId(), new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+                                holder.followActionTextView.setEnabled(true);
+                                holder.followActionTextView.setText("Follow");
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                holder.followActionTextView.setEnabled(true);
+
+                            }
+                        });
+                    }else{
+                        GlobalConfig.followUser(context, userDataModels.getUserId(), new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+                                holder.followActionTextView.setEnabled(true);
+                                holder.followActionTextView.setText("Following");
+
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                holder.followActionTextView.setEnabled(true);
+
+                            }
+                        });
+                    }
+                }
+            });
             Glide.with(context)
                     .load(userDataModels.getUserProfileImageDownloadUrl())
                     .placeholder(R.drawable.default_profile)
@@ -185,6 +230,7 @@ public class UsersRCVAdapter extends RecyclerView.Adapter<UsersRCVAdapter.ViewHo
             public ImageView verificationFlagImageView;
             public Button verifyActionButton;
             public Button declineActionButton;
+            public TextView followActionTextView;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -196,6 +242,7 @@ public class UsersRCVAdapter extends RecyclerView.Adapter<UsersRCVAdapter.ViewHo
                 verifyActionButton = itemView.findViewById(R.id.verifyAccountActionButtonId);
                 declineActionButton = itemView.findViewById(R.id.declineActionButtonId);
                 verificationFlagImageView = itemView.findViewById(R.id.verificationFlagImageViewId);
+                followActionTextView = itemView.findViewById(R.id.followActionTextViewId);
 
             }
         }

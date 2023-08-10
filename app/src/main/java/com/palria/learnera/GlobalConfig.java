@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.os.CountDownTimer;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -15,7 +16,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +27,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.VideoController;
+import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.ads.nativead.NativeAdView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -97,6 +108,20 @@ public class GlobalConfig {
      *
      * */
 
+
+    static final String TEST_NATIVE_AD_UNIT_ID = "ca-app-pub-3940256099942544/2247696110";
+    static final String MainActivity_NATIVE_AD_UNIT_ID = "ca-app-pub-3296946983872591/2627538156";
+    static final String PAGE_NATIVE_AD_UNIT_ID = "ca-app-pub-3296946983872591/6970624761";
+    static final String LIBRARY_NATIVE_AD_UNIT_ID = "ca-app-pub-3296946983872591/2852513836";
+    static final String TUTORIAL_NATIVE_AD_UNIT_ID = "ca-app-pub-3296946983872591/9520249567";
+    static final String FOLDER_NATIVE_AD_UNIT_ID = "ca-app-pub-3296946983872591/7242087507";
+    static final String HOST_ACTIVITY_NATIVE_AD_UNIT_ID = "ca-app-pub-3296946983872591/8866477599";
+    static final String STATS_ACTIVITY_NATIVE_AD_UNIT_ID = "ca-app-pub-3296946983872591/4404488400";
+
+
+    static final String ViewerSingleMainUserSinglePostActivity_REWARDED_VIDEO_AD_UNIT_ID = "ca-app-pub-3296946983872591/3315322962";
+    static final String ViewerSinglePageSinglePostActivity_REWARDED_VIDEO_AD_UNIT_ID = "ca-app-pub-3296946983872591/8102699492";
+
     public static final String TEXT_TYPE = "TEXT_TYPE";
     public static final String IMAGE_TYPE = "IMAGE_TYPE";
     public static final String TODO_TYPE = "TODO_TYPE";
@@ -149,6 +174,12 @@ public class GlobalConfig {
     public static final String USER_RESIDENTIAL_ADDRESS_KEY = "USER_RESIDENTIAL_ADDRESS";
     public static final String USER_AGE_KEY = "USER_AGE";
     public static final String USER_PERSONAL_WEBSITE_LINK_KEY = "USER_PERSONAL_WEBSITE_LINK";
+
+    public static final String TIME_STAMP_KEY = "TIME_STAMP";
+    public static final String TOTAL_USERS_FOLLOWING_KEY = "TOTAL_USERS_FOLLOWING";
+    public static final String USERS_FOLLOWING_LIST_KEY = "USERS_FOLLOWING_LIST";
+    public static final String TOTAL_FOLLOWERS_KEY = "TOTAL_FOLLOWERS";
+    public static final String FOLLOWERS_LIST_KEY = "FOLLOWERS_LIST";
 
     public static final String IS_ACCOUNT_VERIFIED_KEY = "IS_ACCOUNT_VERIFIED";
     public static final String DATE_VERIFIED_TIME_STAMP_KEY = "DATE_VERIFIED_TIME_STAMP";
@@ -434,6 +465,9 @@ public class GlobalConfig {
     public static final String ACTIVITY_LOG_USER_EDIT_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_EDIT_TUTORIAL_PAGE_TYPE";
     public static final String ACTIVITY_LOG_USER_DELETE_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_DELETE_TUTORIAL_PAGE_TYPE";
     public static final String ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_TUTORIAL_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_REMOVE_BOOK_MARK_TUTORIAL_PAGE_TYPE";
+
+    public static final String ACTIVITY_LOG_USER_FOLLOW_USER_TYPE_KEY = "ACTIVITY_LOG_USER_FOLLOW_USER_TYPE";
+    public static final String ACTIVITY_LOG_USER_UNFOLLOW_USER_TYPE_KEY = "ACTIVITY_LOG_USER_UNFOLLOW_USER_TYPE";
 
 
     public static final String ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE_KEY = "ACTIVITY_LOG_USER_CREATE_NEW_FOLDER_PAGE_TYPE";
@@ -2313,7 +2347,19 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
 
         return list;
     }
-//
+
+    public static boolean isFirstOpen(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+GlobalConfig.getCurrentUserId(),MODE_PRIVATE);
+        return sharedPreferences.getBoolean(GlobalConfig.IS_FIRST_OPEN_KEY,true);
+
+    }
+    public static void setIsFirstOpen(Context context,boolean isFirstOpen){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+GlobalConfig.getCurrentUserId(),MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(GlobalConfig.IS_FIRST_OPEN_KEY,isFirstOpen);
+        editor.apply();
+
+    }
     public static void updateActivityLog(String activityLogType, String authorId, String libraryId, String tutorialId,String tutorialFolderId ,String pageId ,String reviewId , ActionCallback actionCallback){
             String activityLogId = getRandomString(10);
             HashMap<String,Object> activityLogDetails = new HashMap<>();
@@ -3419,107 +3465,109 @@ if(isUserLoggedIn()) {
     }
     
     public static void block(String type,String userId,String libraryId,String tutorialId,ActionCallback actionCallback){
-        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
-      DocumentReference blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(userId);
-      HashMap<String,Object> blockedDetails = new HashMap<>();
-        blockedDetails.put(USER_ID_KEY,userId);
-        blockedDetails.put(LIBRARY_ID_KEY,libraryId);
-        blockedDetails.put(TUTORIAL_ID_KEY,tutorialId);
-        blockedDetails.put(DATE_BLOCKED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
-        blockedDetails.put(TYPE_KEY,type);
+        if(!getCurrentUserId().equals(userId)) {
+            WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+            DocumentReference blockedUserReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(userId);
+            HashMap<String, Object> blockedDetails = new HashMap<>();
+            blockedDetails.put(USER_ID_KEY, userId);
+            blockedDetails.put(LIBRARY_ID_KEY, libraryId);
+            blockedDetails.put(TUTORIAL_ID_KEY, tutorialId);
+            blockedDetails.put(DATE_BLOCKED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+            blockedDetails.put(TYPE_KEY, type);
 
 
- DocumentReference blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(BLOCKERS_KEY).document(getCurrentUserId());
-      HashMap<String,Object> blockerIncrementDetails = new HashMap<>();
-        blockerIncrementDetails.put(BLOCKER_USER_ID_KEY,getCurrentUserId());
-        blockerIncrementDetails.put(DATE_BLOCKED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+            DocumentReference blockerIncrementReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(BLOCKERS_KEY).document(getCurrentUserId());
+            HashMap<String, Object> blockerIncrementDetails = new HashMap<>();
+            blockerIncrementDetails.put(BLOCKER_USER_ID_KEY, getCurrentUserId());
+            blockerIncrementDetails.put(DATE_BLOCKED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
 
 
+            DocumentReference reference1 = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+            HashMap<String, Object> details1 = new HashMap<>();
+            details1.put(TOTAL_NUMBER_OF_BLOCKS_KEY, FieldValue.increment(1L));
 
-        DocumentReference reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
-      HashMap<String,Object> details1 = new HashMap<>();
-        details1.put(TOTAL_NUMBER_OF_BLOCKS_KEY,FieldValue.increment(1L));
+            switch (type) {
+                case AUTHOR_TYPE_KEY:
+                    blockedUserReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(userId);
+                    blockerIncrementReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(BLOCKERS_KEY).document(getCurrentUserId());
+                    reference1 = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
 
-      switch(type){
-          case AUTHOR_TYPE_KEY:
-              blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(userId);
-              blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(BLOCKERS_KEY).document(getCurrentUserId());
-              reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+                    DocumentReference blockedIncrementReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+                    HashMap<String, Object> blockedIncrementDetails = new HashMap<>();
+                    blockedIncrementDetails.put(TOTAL_NUMBER_OF_USERS_BLOCKED_KEY, FieldValue.increment(1L));
+                    writeBatch.set(blockedIncrementReference, blockedIncrementDetails, SetOptions.merge());
 
-              DocumentReference blockedIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
-              HashMap<String,Object> blockedIncrementDetails = new HashMap<>();
-              blockedIncrementDetails.put(TOTAL_NUMBER_OF_USERS_BLOCKED_KEY,FieldValue.increment(1L));
-              writeBatch.set(blockedIncrementReference,blockedIncrementDetails,SetOptions.merge());
+                    break;
+                case LIBRARY_TYPE_KEY:
 
-              break;
-          case LIBRARY_TYPE_KEY:
+                    blockedUserReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(libraryId);
+                    blockerIncrementReference = getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId).collection(BLOCKERS_KEY).document(getCurrentUserId());
+                    reference1 = getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId);
 
-              blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(libraryId);
-              blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId).collection(BLOCKERS_KEY).document(getCurrentUserId());
-              reference1 =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId);
+                    DocumentReference blockedIncrementReference1 = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+                    HashMap<String, Object> blockedIncrementDetails1 = new HashMap<>();
+                    blockedIncrementDetails1.put(TOTAL_NUMBER_OF_LIBRARY_BLOCKED_KEY, FieldValue.increment(1L));
+                    writeBatch.set(blockedIncrementReference1, blockedIncrementDetails1, SetOptions.merge());
 
-              DocumentReference blockedIncrementReference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
-              HashMap<String,Object> blockedIncrementDetails1 = new HashMap<>();
-              blockedIncrementDetails1.put(TOTAL_NUMBER_OF_LIBRARY_BLOCKED_KEY,FieldValue.increment(1L));
-              writeBatch.set(blockedIncrementReference1,blockedIncrementDetails1,SetOptions.merge());
+                    break;
+                case TUTORIAL_TYPE_KEY:
 
-              break;
-          case TUTORIAL_TYPE_KEY:
-
-              blockedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(tutorialId);
-              blockerIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(BLOCKERS_KEY).document(getCurrentUserId());
-              reference1 =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId);
-
-
-              DocumentReference blockedIncrementReference2 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
-              HashMap<String,Object> blockedIncrementDetails2 = new HashMap<>();
-              blockedIncrementDetails2.put(TOTAL_NUMBER_OF_TUTORIALS_BLOCKED_KEY,FieldValue.increment(1L));
-              writeBatch.set(blockedIncrementReference2,blockedIncrementDetails2,SetOptions.merge());
-
-              break;
-      }
-        writeBatch.set(blockedUserReference,blockedDetails,SetOptions.merge());
-        writeBatch.set(blockerIncrementReference,blockerIncrementDetails,SetOptions.merge());
-        writeBatch.set(reference1,details1,SetOptions.merge());
-
-      writeBatch.commit().addOnFailureListener(new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception e) {
-
-          }
-      }).addOnSuccessListener(new OnSuccessListener<Void>() {
-          @Override
-          public void onSuccess(Void unused) {
-String activityLogType = "NONE";
-              switch(type){
-                  case AUTHOR_TYPE_KEY:
-                      activityLogType = ACTIVITY_LOG_USER_BLOCK_USER_TYPE_KEY;
-                      break;
-
-                  case LIBRARY_TYPE_KEY:
-                      activityLogType = ACTIVITY_LOG_USER_BLOCK_LIBRARY_TYPE_KEY;
-                      break;
-
-                  case TUTORIAL_TYPE_KEY:
-                      activityLogType = ACTIVITY_LOG_USER_BLOCK_TUTORIAL_TYPE_KEY;
-                      break;
-              }
-              GlobalConfig.updateActivityLog(activityLogType, userId, libraryId, tutorialId, null, null, null,  new GlobalConfig.ActionCallback() {
-                  @Override
-                  public void onSuccess() {
-                      actionCallback.onSuccess();
-                  }
-
-                  @Override
-                  public void onFailed(String errorMessage) {
-                      actionCallback.onSuccess();
-
-                  }
-              });
+                    blockedUserReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(BLOCKED_ITEMS_KEY).document(tutorialId);
+                    blockerIncrementReference = getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(BLOCKERS_KEY).document(getCurrentUserId());
+                    reference1 = getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId);
 
 
-          }
-      });
+                    DocumentReference blockedIncrementReference2 = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+                    HashMap<String, Object> blockedIncrementDetails2 = new HashMap<>();
+                    blockedIncrementDetails2.put(TOTAL_NUMBER_OF_TUTORIALS_BLOCKED_KEY, FieldValue.increment(1L));
+                    writeBatch.set(blockedIncrementReference2, blockedIncrementDetails2, SetOptions.merge());
+
+                    break;
+            }
+            writeBatch.set(blockedUserReference, blockedDetails, SetOptions.merge());
+            writeBatch.set(blockerIncrementReference, blockerIncrementDetails, SetOptions.merge());
+            writeBatch.set(reference1, details1, SetOptions.merge());
+
+            writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                }
+            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    String activityLogType = "NONE";
+                    switch (type) {
+                        case AUTHOR_TYPE_KEY:
+                            activityLogType = ACTIVITY_LOG_USER_BLOCK_USER_TYPE_KEY;
+                            break;
+
+                        case LIBRARY_TYPE_KEY:
+                            activityLogType = ACTIVITY_LOG_USER_BLOCK_LIBRARY_TYPE_KEY;
+                            break;
+
+                        case TUTORIAL_TYPE_KEY:
+                            activityLogType = ACTIVITY_LOG_USER_BLOCK_TUTORIAL_TYPE_KEY;
+                            break;
+                    }
+                    GlobalConfig.updateActivityLog(activityLogType, userId, libraryId, tutorialId, null, null, null, new GlobalConfig.ActionCallback() {
+                        @Override
+                        public void onSuccess() {
+                            actionCallback.onSuccess();
+                        }
+
+                        @Override
+                        public void onFailed(String errorMessage) {
+                            actionCallback.onSuccess();
+
+                        }
+                    });
+
+
+                }
+            });
+
+        }
     }
     public static void unBlock(String type,String userId,String libraryId,String tutorialId,ActionCallback actionCallback){
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
@@ -3616,107 +3664,108 @@ String activityLogType = "NONE";
     }
 
     public static void report(String type,String userId,String libraryId,String tutorialId,ActionCallback actionCallback){
-        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
-        DocumentReference reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(userId);
-        HashMap<String,Object> reportedDetails = new HashMap<>();
-        reportedDetails.put(USER_ID_KEY,userId);
-        reportedDetails.put(LIBRARY_ID_KEY,libraryId);
-        reportedDetails.put(TUTORIAL_ID_KEY,tutorialId);
-        reportedDetails.put(DATE_BLOCKED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
-        reportedDetails.put(TYPE_KEY,type);
+        if(!getCurrentUserId().equals(userId)) {
+            WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+            DocumentReference reportedUserReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(userId);
+            HashMap<String, Object> reportedDetails = new HashMap<>();
+            reportedDetails.put(USER_ID_KEY, userId);
+            reportedDetails.put(LIBRARY_ID_KEY, libraryId);
+            reportedDetails.put(TUTORIAL_ID_KEY, tutorialId);
+            reportedDetails.put(DATE_BLOCKED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+            reportedDetails.put(TYPE_KEY, type);
 
 
-        DocumentReference reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(REPORTERS_KEY).document(getCurrentUserId());
-        HashMap<String,Object> reporterIncrementDetails = new HashMap<>();
-        reporterIncrementDetails.put(REPORTER_USER_ID_KEY,getCurrentUserId());
-        reporterIncrementDetails.put(DATE_REPORTED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+            DocumentReference reporterIncrementReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(REPORTERS_KEY).document(getCurrentUserId());
+            HashMap<String, Object> reporterIncrementDetails = new HashMap<>();
+            reporterIncrementDetails.put(REPORTER_USER_ID_KEY, getCurrentUserId());
+            reporterIncrementDetails.put(DATE_REPORTED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
 
 
+            DocumentReference reference1 = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+            HashMap<String, Object> details1 = new HashMap<>();
+            details1.put(TOTAL_NUMBER_OF_REPORTS_KEY, FieldValue.increment(1L));
 
-        DocumentReference reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
-        HashMap<String,Object> details1 = new HashMap<>();
-        details1.put(TOTAL_NUMBER_OF_REPORTS_KEY,FieldValue.increment(1L));
+            switch (type) {
+                case AUTHOR_TYPE_KEY:
+                    reportedUserReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(userId);
+                    reporterIncrementReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(REPORTERS_KEY).document(getCurrentUserId());
+                    reference1 = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
 
-        switch(type){
-            case AUTHOR_TYPE_KEY:
-                reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(userId);
-                reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId).collection(REPORTERS_KEY).document(getCurrentUserId());
-                reference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+                    DocumentReference reportedIncrementReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+                    HashMap<String, Object> reportedIncrementDetails = new HashMap<>();
+                    reportedIncrementDetails.put(TOTAL_NUMBER_OF_USERS_REPORTED_KEY, FieldValue.increment(1L));
+                    writeBatch.set(reportedIncrementReference, reportedIncrementDetails, SetOptions.merge());
 
-                DocumentReference reportedIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
-                HashMap<String,Object> reportedIncrementDetails = new HashMap<>();
-                reportedIncrementDetails.put(TOTAL_NUMBER_OF_USERS_REPORTED_KEY,FieldValue.increment(1L));
-                writeBatch.set(reportedIncrementReference,reportedIncrementDetails,SetOptions.merge());
+                    break;
+                case LIBRARY_TYPE_KEY:
 
-                break;
-            case LIBRARY_TYPE_KEY:
+                    reportedUserReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(libraryId);
+                    reporterIncrementReference = getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId).collection(REPORTERS_KEY).document(getCurrentUserId());
+                    reference1 = getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId);
 
-                reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(libraryId);
-                reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId).collection(REPORTERS_KEY).document(getCurrentUserId());
-                reference1 =  getFirebaseFirestoreInstance().collection(ALL_LIBRARY_KEY).document(libraryId);
+                    DocumentReference reportedIncrementReference1 = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+                    HashMap<String, Object> reportedIncrementDetails1 = new HashMap<>();
+                    reportedIncrementDetails1.put(TOTAL_NUMBER_OF_LIBRARY_REPORTED_KEY, FieldValue.increment(1L));
+                    writeBatch.set(reportedIncrementReference1, reportedIncrementDetails1, SetOptions.merge());
 
-                DocumentReference reportedIncrementReference1 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
-                HashMap<String,Object> reportedIncrementDetails1 = new HashMap<>();
-                reportedIncrementDetails1.put(TOTAL_NUMBER_OF_LIBRARY_REPORTED_KEY,FieldValue.increment(1L));
-                writeBatch.set(reportedIncrementReference1,reportedIncrementDetails1,SetOptions.merge());
+                    break;
+                case TUTORIAL_TYPE_KEY:
 
-                break;
-            case TUTORIAL_TYPE_KEY:
-
-                reportedUserReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(tutorialId);
-                reporterIncrementReference =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(REPORTERS_KEY).document(getCurrentUserId());
-                reference1 =  getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId);
+                    reportedUserReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId()).collection(REPORTED_ITEMS_KEY).document(tutorialId);
+                    reporterIncrementReference = getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId).collection(REPORTERS_KEY).document(getCurrentUserId());
+                    reference1 = getFirebaseFirestoreInstance().collection(ALL_TUTORIAL_KEY).document(tutorialId);
 
 
-                DocumentReference reportedIncrementReference2 =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
-                HashMap<String,Object> reportedIncrementDetails2 = new HashMap<>();
-                reportedIncrementDetails2.put(TOTAL_NUMBER_OF_TUTORIALS_REPORTED_KEY,FieldValue.increment(1L));
-                writeBatch.set(reportedIncrementReference2,reportedIncrementDetails2,SetOptions.merge());
+                    DocumentReference reportedIncrementReference2 = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+                    HashMap<String, Object> reportedIncrementDetails2 = new HashMap<>();
+                    reportedIncrementDetails2.put(TOTAL_NUMBER_OF_TUTORIALS_REPORTED_KEY, FieldValue.increment(1L));
+                    writeBatch.set(reportedIncrementReference2, reportedIncrementDetails2, SetOptions.merge());
 
-                break;
-        }
-        writeBatch.set(reportedUserReference,reportedDetails,SetOptions.merge());
-        writeBatch.set(reporterIncrementReference,reporterIncrementDetails,SetOptions.merge());
-        writeBatch.set(reference1,details1,SetOptions.merge());
-
-        writeBatch.commit().addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-
+                    break;
             }
-        }).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                String activityLogType = "NONE";
-                switch(type){
-                    case AUTHOR_TYPE_KEY:
-                        activityLogType = ACTIVITY_LOG_USER_REPORT_USER_TYPE_KEY;
-                        break;
+            writeBatch.set(reportedUserReference, reportedDetails, SetOptions.merge());
+            writeBatch.set(reporterIncrementReference, reporterIncrementDetails, SetOptions.merge());
+            writeBatch.set(reference1, details1, SetOptions.merge());
 
-                    case LIBRARY_TYPE_KEY:
-                        activityLogType = ACTIVITY_LOG_USER_REPORT_LIBRARY_TYPE_KEY;
-                        break;
+            writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
 
-                    case TUTORIAL_TYPE_KEY:
-                        activityLogType = ACTIVITY_LOG_USER_REPORT_TUTORIAL_TYPE_KEY;
-                        break;
                 }
-                GlobalConfig.updateActivityLog(activityLogType, userId, libraryId, tutorialId, null, null, null,  new GlobalConfig.ActionCallback() {
-                    @Override
-                    public void onSuccess() {
-                        actionCallback.onSuccess();
+            }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    String activityLogType = "NONE";
+                    switch (type) {
+                        case AUTHOR_TYPE_KEY:
+                            activityLogType = ACTIVITY_LOG_USER_REPORT_USER_TYPE_KEY;
+                            break;
+
+                        case LIBRARY_TYPE_KEY:
+                            activityLogType = ACTIVITY_LOG_USER_REPORT_LIBRARY_TYPE_KEY;
+                            break;
+
+                        case TUTORIAL_TYPE_KEY:
+                            activityLogType = ACTIVITY_LOG_USER_REPORT_TUTORIAL_TYPE_KEY;
+                            break;
                     }
+                    GlobalConfig.updateActivityLog(activityLogType, userId, libraryId, tutorialId, null, null, null, new GlobalConfig.ActionCallback() {
+                        @Override
+                        public void onSuccess() {
+                            actionCallback.onSuccess();
+                        }
 
-                    @Override
-                    public void onFailed(String errorMessage) {
-                        actionCallback.onSuccess();
+                        @Override
+                        public void onFailed(String errorMessage) {
+                            actionCallback.onSuccess();
 
-                    }
-                });
+                        }
+                    });
 
 
-            }
-        });
+                }
+            });
+        }
     }
     public static void unReport(String type,String userId,String libraryId,String tutorialId,ActionCallback actionCallback){
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
@@ -3812,6 +3861,124 @@ String activityLogType = "NONE";
       });
     }
 
+    public static void followUser(Context context,String userId,ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference userReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+        HashMap<String,Object> userDetails = new HashMap<>();
+        userDetails.put(TOTAL_USERS_FOLLOWING_KEY,FieldValue.increment(1L));
+        userDetails.put(USERS_FOLLOWING_LIST_KEY,FieldValue.arrayUnion(userId));
+        userDetails.put(TIME_STAMP_KEY,FieldValue.serverTimestamp());
+        writeBatch.set(userReference,userDetails,SetOptions.merge());
+
+
+        DocumentReference authorReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+        HashMap<String,Object> authorDetails = new HashMap<>();
+        userDetails.put(TOTAL_FOLLOWERS_KEY,FieldValue.increment(1L));
+        userDetails.put(FOLLOWERS_LIST_KEY,FieldValue.arrayUnion(getCurrentUserId()));
+        userDetails.put(TIME_STAMP_KEY,FieldValue.serverTimestamp());
+        writeBatch.set(authorReference,authorDetails,SetOptions.merge());
+
+
+        writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                actionCallback.onFailed(e.getMessage());
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                actionCallback.onSuccess();
+                addToUsersFollowingList(context,userId);
+
+                GlobalConfig.updateActivityLog(ACTIVITY_LOG_USER_FOLLOW_USER_TYPE_KEY, userId, "", "", null, null, null,  new GlobalConfig.ActionCallback() {
+                    @Override
+                    public void onSuccess() {
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+
+                    }
+                });
+
+
+            }
+        });
+    }
+    public static void unFollowUser(Context context,String userId,ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference userReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(getCurrentUserId());
+        HashMap<String,Object> userDetails = new HashMap<>();
+        userDetails.put(TOTAL_USERS_FOLLOWING_KEY,FieldValue.increment(-1L));
+        userDetails.put(USERS_FOLLOWING_LIST_KEY,FieldValue.arrayRemove(userId));
+        userDetails.put(TIME_STAMP_KEY,FieldValue.serverTimestamp());
+        writeBatch.set(userReference,userDetails,SetOptions.merge());
+
+
+        DocumentReference authorReference =  getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(userId);
+        HashMap<String,Object> authorDetails = new HashMap<>();
+        userDetails.put(TOTAL_FOLLOWERS_KEY,FieldValue.increment(-1L));
+        userDetails.put(FOLLOWERS_LIST_KEY,FieldValue.arrayRemove(getCurrentUserId()));
+        userDetails.put(TIME_STAMP_KEY,FieldValue.serverTimestamp());
+        writeBatch.set(authorReference,authorDetails,SetOptions.merge());
+
+
+        writeBatch.commit().addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                actionCallback.onFailed(e.getMessage());
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                actionCallback.onSuccess();
+                removeUserFromUsersFollowingList(context,userId);
+
+                GlobalConfig.updateActivityLog(ACTIVITY_LOG_USER_UNFOLLOW_USER_TYPE_KEY, userId, "", "", null, null, null,  new GlobalConfig.ActionCallback() {
+                    @Override
+                    public void onSuccess() {
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+
+                    }
+                });
+
+
+            }
+        });
+    }
+
+    public static boolean isFollowing(Context context,String userId){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+getCurrentUserId(), MODE_PRIVATE);
+        String followingList = sharedPreferences.getString(GlobalConfig.USERS_FOLLOWING_LIST_KEY,"");
+
+        return followingList.contains(userId);
+    }
+    public static void addToUsersFollowingList(Context context,String userId){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+getCurrentUserId(), MODE_PRIVATE);
+        String oldList = sharedPreferences.getString(GlobalConfig.USERS_FOLLOWING_LIST_KEY,"");
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if(!oldList.contains(userId)) {
+            editor.putString(GlobalConfig.USERS_FOLLOWING_LIST_KEY, oldList + userId + "-NEXT-");
+        }
+        editor.apply();
+
+    }
+    public static void removeUserFromUsersFollowingList(Context context,String userId){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+getCurrentUserId(), MODE_PRIVATE);
+        String oldList = sharedPreferences.getString(GlobalConfig.USERS_FOLLOWING_LIST_KEY,"");
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if(oldList.contains(userId)) {
+           String newList = oldList.replace(userId + "-NEXT-","");
+            editor.putString(GlobalConfig.USERS_FOLLOWING_LIST_KEY, newList);
+        }
+        editor.apply();
+
+    }
     public static void discuss(PageDiscussionDataModel pageDiscussionDataModel, ActionCallback actionCallback ){
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
         DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(pageDiscussionDataModel.getAuthorId()).collection(GlobalConfig.MY_PAGES_DISCUSSION_KEY).document(pageDiscussionDataModel.getDiscussionId());
@@ -4051,6 +4218,284 @@ String activityLogType = "NONE";
 //                    }
 //                });
 //    }
+
+
+    @SuppressLint("MissingPermission")
+    public static void loadNativeAd(Context context,int position,String nativeAdUnitId,ViewGroup viewGroup, boolean isFromCountDown, NativeAd.OnNativeAdLoadedListener onNativeAdLoadedListener){
+
+        if (context != null) {
+//            String nativeAdUnitId = null;
+            //if(GlobalConfig.isLearnEraAccount()){
+//                nativeAdUnitId = GlobalConfig.TEST_NATIVE_AD_UNIT_ID;
+//            }else{
+//            nativeAdUnitId = GlobalConfig.MainActivity_NATIVE_AD_UNIT_ID;
+//            }
+
+
+            if(!isFromCountDown) {
+                //load Ad Once
+                new CountDownTimer(10000, 10000) {
+                    @Override
+                    public void onTick(long l) {
+
+                        AdLoader.Builder builder = new AdLoader.Builder(context, nativeAdUnitId);
+
+                        builder.forNativeAd(new com.google.android.gms.ads.nativead.NativeAd.OnNativeAdLoadedListener() {
+                            @Override
+                            public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                                NativeAd nativeAdToLoad = nativeAd;
+                                onNativeAdLoadedListener.onNativeAdLoaded(nativeAdToLoad);
+//                    Toast.makeText(context, "adloader is ", Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
+
+                        AdLoader adLoader = builder.withAdListener(new AdListener() {
+                            @Override
+                            public void onAdClicked() {
+                                super.onAdClicked();
+                            }
+
+                            @Override
+                            public void onAdClosed() {
+                                super.onAdClosed();
+                            }
+
+                            @Override
+                            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                                super.onAdFailedToLoad(loadAdError);
+//                  Toast.makeText(getContext(), "failed at "+adLoadCounter + loadAdError , Toast.LENGTH_SHORT).show();
+
+                            }
+
+                            @Override
+                            public void onAdImpression() {
+                                super.onAdImpression();
+                            }
+
+                            @Override
+                            public void onAdLoaded() {
+                                super.onAdLoaded();
+                            }
+
+                            @Override
+                            public void onAdOpened() {
+                                super.onAdOpened();
+//                  Toast.makeText(getContext(), "opened at "+adLoadCounter  , Toast.LENGTH_SHORT).show();
+
+                            }
+                        }).build();
+                        adLoader.loadAd(new AdRequest.Builder().build());
+                    }
+
+                    @Override
+                    public void onFinish() {
+
+                    }
+                }.start();
+
+                //Load ad consequently
+                new CountDownTimer(6100000, 35000) {
+                    @Override
+                    public void onTick(long l) {
+//                    Toast.makeText(context, "counted: " + l, Toast.LENGTH_SHORT).show();
+
+                        loadNativeAd(context, 0, nativeAdUnitId,viewGroup,true, new NativeAd.OnNativeAdLoadedListener() {
+                            @Override
+                            public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+
+                                NativeAd nativeAdToLoad = nativeAd;
+                                View view = GlobalConfig.getNativeAdView(context, viewGroup, nativeAdToLoad, nativeAdUnitId, true);
+                                if (view != null) {
+                                    viewGroup.removeAllViews();
+                                    viewGroup.addView(view);
+                                }
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+
+                    }
+                }.start();
+            }
+            else{
+
+                AdLoader.Builder builder = new AdLoader.Builder(context, nativeAdUnitId);
+
+                builder.forNativeAd(new com.google.android.gms.ads.nativead.NativeAd.OnNativeAdLoadedListener() {
+                    @Override
+                    public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                        NativeAd nativeAdToLoad = nativeAd;
+                        onNativeAdLoadedListener.onNativeAdLoaded(nativeAdToLoad);
+//                    Toast.makeText(context, "adloader is ", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+                AdLoader adLoader = builder.withAdListener(new AdListener() {
+                    @Override
+                    public void onAdClicked() {
+                        super.onAdClicked();
+                    }
+
+                    @Override
+                    public void onAdClosed() {
+                        super.onAdClosed();
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        super.onAdFailedToLoad(loadAdError);
+//                  Toast.makeText(getContext(), "failed at "+adLoadCounter + loadAdError , Toast.LENGTH_SHORT).show();
+
+                    }
+
+                    @Override
+                    public void onAdImpression() {
+                        super.onAdImpression();
+                    }
+
+                    @Override
+                    public void onAdLoaded() {
+                        super.onAdLoaded();
+                    }
+
+                    @Override
+                    public void onAdOpened() {
+                        super.onAdOpened();
+//                  Toast.makeText(getContext(), "opened at "+adLoadCounter  , Toast.LENGTH_SHORT).show();
+
+                    }
+                }).build();
+                adLoader.loadAd(new AdRequest.Builder().build());
+            }
+        }
+
+
+
+    }
+    //         *
+//    * https://googlemobileadssdk.page.link/admob-android-update-manifest         *
+//    * to add a valid App ID inside the AndroidManifest.                          *
+//    * Google Ad Manager publishers should follow instructions here:              *
+//    * https://googlemobileadssdk.page.link/ad-manager-android-update-manifest.   *
+//    ******************************************************************************
+    public static NativeAdView getNativeAdView(Context context,ViewGroup viewGroup, NativeAd nativeAd, String nativeAdUnitId, boolean isFromCountDown) {
+//        totalNumberOfNativeAdsOpened++;
+        NativeAdView adView = null;
+        if (context != null ) {
+            LayoutInflater layoutInflater = (LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            adView = (NativeAdView) layoutInflater.inflate(R.layout.native_adview_template_layout, viewGroup, false);
+            adView.setHeadlineView(adView.findViewById(R.id.ad_headline));
+            adView.setMediaView(adView.findViewById(R.id.ad_media));
+            adView.setBodyView(adView.findViewById(R.id.ad_body));
+            adView.setCallToActionView(adView.findViewById(R.id.ad_call_to_action));
+            adView.setIconView(adView.findViewById(R.id.ad_app_icon));
+            adView.setPriceView(adView.findViewById(R.id.ad_price));
+            adView.setStarRatingView(adView.findViewById(R.id.ad_stars));
+            adView.setStoreView(adView.findViewById(R.id.ad_store));
+            adView.setAdvertiserView(adView.findViewById(R.id.ad_advertiser));
+
+            // The headline and mediaContent are guaranteed to be in every NativeAd.
+            if (adView.getHeadlineView() != null) {
+                ((TextView) adView.getHeadlineView()).setText(nativeAd.getHeadline());
+            }
+            if (adView.getMediaView() != null) {
+                adView.getMediaView().setMediaContent(nativeAd.getMediaContent());
+            } else {
+                adView.findViewById(R.id.ad_media).setVisibility(View.GONE);
+            }
+            // These assets aren't guaranteed to be in every NativeAd, so it's important to
+            // check before trying to display them.
+            if (nativeAd.getBody() == null) {
+                adView.getBodyView().setVisibility(View.INVISIBLE);
+            } else {
+                adView.getBodyView().setVisibility(View.VISIBLE);
+                ((TextView) adView.getBodyView()).setText(nativeAd.getBody());
+            }
+
+            if (nativeAd.getCallToAction() == null) {
+                adView.getCallToActionView().setVisibility(View.INVISIBLE);
+            } else {
+                adView.getCallToActionView().setVisibility(View.VISIBLE);
+                ((Button) adView.getCallToActionView()).setText(nativeAd.getCallToAction());
+            }
+
+            if (nativeAd.getIcon() == null) {
+                adView.getIconView().setVisibility(View.GONE);
+            } else {
+                ((ImageView) adView.getIconView()).setImageDrawable(
+                        nativeAd.getIcon().getDrawable());
+                adView.getIconView().setVisibility(View.VISIBLE);
+            }
+
+            if (nativeAd.getPrice() == null) {
+                adView.getPriceView().setVisibility(View.INVISIBLE);
+            } else {
+                adView.getPriceView().setVisibility(View.VISIBLE);
+                ((TextView) adView.getPriceView()).setText(nativeAd.getPrice());
+            }
+
+            if (nativeAd.getStore() == null) {
+                adView.getStoreView().setVisibility(View.INVISIBLE);
+            } else {
+                adView.getStoreView().setVisibility(View.VISIBLE);
+                ((TextView) adView.getStoreView()).setText(nativeAd.getStore());
+            }
+
+            if (nativeAd.getStarRating() == null) {
+                adView.getStarRatingView().setVisibility(View.INVISIBLE);
+            } else {
+                ((RatingBar) adView.getStarRatingView())
+                        .setRating(nativeAd.getStarRating().floatValue());
+                adView.getStarRatingView().setVisibility(View.VISIBLE);
+            }
+
+            if (nativeAd.getAdvertiser() == null) {
+                adView.getAdvertiserView().setVisibility(View.INVISIBLE);
+            } else {
+                ((TextView) adView.getAdvertiserView()).setText(nativeAd.getAdvertiser());
+                adView.getAdvertiserView().setVisibility(View.VISIBLE);
+            }
+            // native ad view with this native ad.
+            adView.setNativeAd(nativeAd);
+
+            // Get the video controller for the ad. One will always be provided, even if the ad doesn't
+            // have a video asset.
+            VideoController vc = nativeAd.getMediaContent().getVideoController();
+
+            // Updates the UI to say whether or not this ad has a video asset.
+            if (vc.hasVideoContent()) {
+
+
+                // Create a new VideoLifecycleCallbacks object and pass it to the VideoController. The
+                // VideoController will call methods on this object when events occur in the video
+                // lifecycle.
+                vc.setVideoLifecycleCallbacks(new VideoController.VideoLifecycleCallbacks() {
+                    @Override
+                    public void onVideoEnd() {
+                        // Publishers should allow native ads to complete video playback before
+                        // refreshing or replacing them with another ad in the same UI location.
+//                   refresh.setEnabled(true);
+//                   videoStatus.setText("Video status: Video playback has ended.");
+                        super.onVideoEnd();
+                    }
+                });
+            } else {
+//           videoStatus.setText("Video status: Ad does not contain a video asset.");
+//           refresh.setEnabled(true);
+            }
+
+            nativeAd = null;
+        }
+//        Toast.makeText(context, "returned", Toast.LENGTH_SHORT).show();
+
+        return adView;
+    }
+
 
     /*
         static HashMap<String,Double> getStarMap(int fiveStar,int fourStar, int threeStar, int twoStar, int oneStar){

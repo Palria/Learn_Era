@@ -1,5 +1,6 @@
 package com.palria.learnera;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -9,19 +10,32 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.VideoController;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.nativead.NativeAd;
+import com.google.android.gms.ads.nativead.NativeAdView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomappbar.BottomAppBar;
@@ -67,6 +81,7 @@ public class HomeFragment extends Fragment {
         TextView seeAllTutorialTextView;
 
         LinearLayout categoryTabsContainer;
+        LinearLayout adLinearLayout;
 
         RecyclerView popularAuthorRecyclerView;
         RecyclerView booksItemRecyclerListView;
@@ -80,6 +95,8 @@ public class HomeFragment extends Fragment {
         boolean isLibraryFound = false;
         boolean isTutorialFound = false;
         boolean isAuthorFound = false;
+
+        boolean isAdsInitialized = false;
 
     ArrayList<AuthorDataModel> modelArrayList = new ArrayList<AuthorDataModel>();
     HomeAuthorListViewAdapter popularAuthorAdapter ;
@@ -103,6 +120,34 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
        View parentView = inflater.inflate(R.layout.fragment_home, container, false);
         initUI(parentView);
+        new CountDownTimer(10000, 10000) {
+            @Override
+            public void onTick(long l) {
+                MobileAds.initialize(getContext(), new OnInitializationCompleteListener() {
+                    @Override
+                    public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
+                        isAdsInitialized = true;
+                        GlobalConfig.loadNativeAd(getContext(),0, GlobalConfig.MainActivity_NATIVE_AD_UNIT_ID,adLinearLayout,false,new com.google.android.gms.ads.nativead.NativeAd.OnNativeAdLoadedListener() {
+                            @Override
+                            public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                                NativeAd nativeAdToLoad = nativeAd;
+                                View view = GlobalConfig.getNativeAdView(getContext(),adLinearLayout,nativeAdToLoad, GlobalConfig.MainActivity_NATIVE_AD_UNIT_ID,false);
+                                if(view!=null) {
+                                    adLinearLayout.addView(view);
+                                }
+                            }
+                        });
+                        Toast.makeText(getContext(), "Loaded", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        }.start();
 
         //geret the curent user Good morning, evening etc.
 
@@ -316,6 +361,7 @@ public class HomeFragment extends Fragment {
 
 
         parentScrollView=parentView.findViewById(R.id.scrollView);
+        adLinearLayout=parentView.findViewById(R.id.adLinearLayoutId);
 
         shimmerLayout=parentView.findViewById(R.id.shimmerLayout);
         homeContents=parentView.findViewById(R.id.homeContents);
@@ -877,6 +923,8 @@ for(int i=0; i<categories.size(); i++) {
         }
         */
     }
+
+
 
     interface PopularAuthorFetchListener{
         void onSuccess(final String authorName, final String authorId,final String authorProfilePhotoDownloadUrl,final long totalNumberOfLibrary ,final boolean isVerified);

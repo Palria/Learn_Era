@@ -228,9 +228,15 @@
                     android:id="@+id/myRatingsFrameLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
-
-
-
+    
+    
+    
+                <LinearLayout
+                    android:visibility="visible"
+                    android:id="@+id/adLinearLayoutId"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

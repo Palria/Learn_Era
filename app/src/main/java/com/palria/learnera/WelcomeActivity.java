@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -23,7 +24,8 @@ public class WelcomeActivity extends AppCompatActivity {
     LinearLayout dotsContainer;
     WelcomeScreenvpAdapter welcomeScreenvpAdapter;
     int activePosition=0;
-
+    Button signInActionButton;
+    Button signUpActionButton;
     ArrayList<WelcomeScreenItemModal> screens_items;
 
     @Override
@@ -45,6 +47,8 @@ public class WelcomeActivity extends AppCompatActivity {
         nextBtn = findViewById(R.id.skip_next);
         prevBtn =findViewById(R.id.skip_prev);
         dotsContainer = findViewById(R.id.dots);
+        signInActionButton = findViewById(R.id.signInActionButtonId);
+        signUpActionButton = findViewById(R.id.signUpActionButtonId);
 
 
         screens_items = GlobalConfig.getWelcomeScreenItemsList();
@@ -64,7 +68,9 @@ public class WelcomeActivity extends AppCompatActivity {
 
                 if (activePosition == screens_items.size() - 1) {
                     //now move to next
-                    Intent i = new Intent(WelcomeActivity.this, MainActivity.class);
+                    GlobalConfig.setIsFirstOpen(WelcomeActivity.this,false);
+
+                    Intent i = new Intent(WelcomeActivity.this, SignInActivity.class);
                     startActivity(i);
                     WelcomeActivity.this.finish();
 
@@ -87,6 +93,27 @@ public class WelcomeActivity extends AppCompatActivity {
                     viewPager.setCurrentItem(activePosition,true);
                     initIndicators(activePosition);
                 }
+            }
+        });
+        signInActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GlobalConfig.setIsFirstOpen(WelcomeActivity.this,false);
+
+                Intent i = new Intent(WelcomeActivity.this, SignInActivity.class);
+                startActivity(i);
+                WelcomeActivity.this.finish();
+            }
+        });
+
+        signUpActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GlobalConfig.setIsFirstOpen(WelcomeActivity.this,false);
+
+                Intent i = new Intent(WelcomeActivity.this, SignUpActivity.class);
+                startActivity(i);
+                WelcomeActivity.this.finish();
             }
         });
 

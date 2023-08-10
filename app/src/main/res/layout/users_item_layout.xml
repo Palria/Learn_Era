@@ -15,7 +15,9 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        >
         
         <com.makeramen.roundedimageview.RoundedImageView
             android:layout_width="20pt"
@@ -66,7 +68,7 @@
                         android:layout_width="10dp"
                         android:layout_height="10dp"
                         android:src="@drawable/ic_baseline_stars_24"
-                        android:tint="@color/secondary_app_color"
+                        app:tint="@color/secondary_app_color"
                         android:layout_gravity="top"
                         android:visibility="invisible"
                         app:layout_constraintStart_toEndOf="@id/title"
@@ -115,7 +117,7 @@
         style="?attr/borderlessButtonStyle"
         android:textSize="5pt"
         android:id="@+id/verifyAccountActionButtonId"
-        android:text="Verify account"
+        android:text="Verify"
         android:layout_marginTop="1pt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -143,6 +145,19 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        />
+    <TextView
+        android:id="@+id/followActionTextViewId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="9pt"
+        android:textAlignment="textEnd"
+        android:text="Follow"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif-condensed-medium"
+        android:textColor="@color/secondary_app_color"
+        android:layout_marginTop="1pt"
+        android:layout_marginLeft="3dp"
         />
     </LinearLayout>
 

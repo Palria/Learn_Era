@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
@@ -56,6 +57,7 @@ public class UserStatsActivity extends AppCompatActivity {
     boolean isAllReviewsFragmentOpened=false;
     boolean ismyReviewsFragmentOpened=false;
 
+    LinearLayout adLinearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +86,7 @@ public class UserStatsActivity extends AppCompatActivity {
 
             }
         });
-
+        loadNativeAd();
 
 
 
@@ -152,6 +154,7 @@ public class UserStatsActivity extends AppCompatActivity {
          bookmarksFrameLayout=findViewById(R.id.bookmarksFrameLayout);
          allRatingsFrameLayout=findViewById(R.id.allRatingsFrameLayout);
          myRatingsFrameLayout=findViewById(R.id.myRatingsFrameLayout);
+        adLinearLayout=findViewById(R.id.adLinearLayoutId);
 
 
         alertDialog = new AlertDialog.Builder(this)
@@ -300,6 +303,18 @@ public class UserStatsActivity extends AppCompatActivity {
                 });
     }
 
+    void loadNativeAd(){
+        GlobalConfig.loadNativeAd(UserStatsActivity.this,0, GlobalConfig.STATS_ACTIVITY_NATIVE_AD_UNIT_ID,adLinearLayout,false,new com.google.android.gms.ads.nativead.NativeAd.OnNativeAdLoadedListener() {
+            @Override
+            public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                NativeAd nativeAdToLoad = nativeAd;
+                View view = GlobalConfig.getNativeAdView(UserStatsActivity.this,adLinearLayout,nativeAdToLoad,GlobalConfig.STATS_ACTIVITY_NATIVE_AD_UNIT_ID,false);
+                if(view!=null) {
+                    adLinearLayout.addView(view);
+                }
+            }
+        });
+    }
     interface InitStatsListener{
         void onSuccess(StatisticsDataModel statisticsDataModel);
         void onFailed(String errorMessage);

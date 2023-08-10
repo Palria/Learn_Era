@@ -1,18 +1,8 @@
 package com.palria.learnera;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.widget.NestedScrollView;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,21 +15,28 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.bumptech.glide.Glide;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.adapters.HomeBooksRecyclerListViewAdapter;
@@ -87,6 +84,7 @@ public class UserProfileFragment extends Fragment {
     String authorId = "";
     TextView logButton;
     TextView verificationFlagTextView;
+    TextView followActionTextView;
     ImageView bookmarkedIcon, ratedIcon;
     //learn era bottom sheet dialog
     LEBottomSheetDialog leBottomSheetDialog;
@@ -117,6 +115,8 @@ public class UserProfileFragment extends Fragment {
     LinearLayout noLibraryFoundView ;
     LinearLayout noTutorialFoundView ;
     AlertDialog declineAlertDailog;
+
+    LinearLayout adLinearLayout;
 
     public UserProfileFragment() {
         // Required empty public constructor
@@ -165,13 +165,13 @@ public class UserProfileFragment extends Fragment {
                         categories[i] = GlobalConfig.getCategoryList(getContext()).get(i);
                     }
             loadCurrentUserProfile();
-
+            manageFollowActions();
             fetchAllLibrary(new LibraryFetchListener() {
                 @Override
                 public void onFailed(String errorMessage) {
 //               toggleProgress(false);
 //                    swipeRefreshLayout.setRefreshing(false);
-//                    Toast.makeText(getContext(), "failed to fetch library.", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getContext()(), "failed to fetch library.", Toast.LENGTH_SHORT).show();
 
                 }
 
@@ -192,7 +192,7 @@ public class UserProfileFragment extends Fragment {
 
                 }
             });
-
+            loadNativeAd();
             fetchTutorial(new TutorialFetchListener() {
                 @Override
                 public void onSuccess(TutorialDataModel tutorialDataModel) {
@@ -431,7 +431,7 @@ public class UserProfileFragment extends Fragment {
                 shimmerLayout.setVisibility(View.GONE);
 
                 parentScrollView.setVisibility(View.VISIBLE);
-//                Toast.makeText(getContext(), "Libraries loaded.", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext()(), "Libraries loaded.", Toast.LENGTH_SHORT).show();
 
                 if(!isUserAuthor && authorId.equals(GlobalConfig.getCurrentUserId())){
 //                if(authorId.equals(GlobalConfig.getCurrentUserId())) {
@@ -516,12 +516,15 @@ public class UserProfileFragment extends Fragment {
             statsButton = parentView.findViewById(R.id.statsButton);
             ratedIcon = parentView.findViewById(R.id.ratedIcon);
             bookmarkedIcon = parentView.findViewById(R.id.bookmarkedIcon);
+            followActionTextView = parentView.findViewById(R.id.followActionTextViewId);
 
             noLibraryFoundView = parentView.findViewById(R.id.noLibraryFoundView);
             noTutorialFoundView = parentView.findViewById(R.id.noTutorialsFoundView);
 
 
             numOfLibraryTutorialRatingsLinearLayout = parentView.findViewById(R.id.numOfLibraryTutorialRatingsLinearLayoutId);
+
+            adLinearLayout = parentView.findViewById(R.id.adLinearLayoutId);
 
 
             numOfLibraryTextView = parentView.findViewById(R.id.numOfLibraryCreatedTextView);
@@ -619,7 +622,7 @@ public class UserProfileFragment extends Fragment {
                                                     GlobalConfig.removeBookmark(authorId, null, null, null, null, GlobalConfig.AUTHOR_TYPE_KEY, new GlobalConfig.ActionCallback() {
                                                         @Override
                                                         public void onSuccess() {
-//                                                        Toast.makeText(getContext(), "bookmark removed", Toast.LENGTH_SHORT).show();
+//                                                        Toast.makeText(getContext()(), "bookmark removed", Toast.LENGTH_SHORT).show();
                                                             snackBar.dismiss();
                                                             GlobalConfig.createSnackBar(getContext(), editProfileButton, "Bookmark removed!", Snackbar.LENGTH_SHORT);
                                                             bookmarkedIcon.setVisibility(View.GONE);
@@ -1227,7 +1230,7 @@ public class UserProfileFragment extends Fragment {
                             String libraryId = documentSnapshot.getId();
                             boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null?  documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY)  :true;
 
-//                            Toast.makeText(getContext(), libraryId,Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(getContext()(), libraryId,Toast.LENGTH_SHORT).show();
                             long totalNumberOfLibraryView = 0L;
                             if(documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VIEWS_KEY) != null){
                                 totalNumberOfLibraryView =   documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_VIEWS_KEY);
@@ -1401,7 +1404,7 @@ public class UserProfileFragment extends Fragment {
     private void displayLibrary(LibraryDataModel libraryDataModel){
 
                  if(getContext() != null) {
-    LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(getContext().LAYOUT_INFLATER_SERVICE);
 
     //Uncomment and implement
 
@@ -1411,14 +1414,14 @@ public class UserProfileFragment extends Fragment {
     ImageView libraryCoverPhoto = libraryView.findViewById(R.id.libraryCoverPhotoId);
 
     libraryNameTextView.setText(libraryDataModel.getLibraryName());
-    Glide.with(getContext())
+    Glide.with(getContext()())
             .load(libraryDataModel.getLibraryCoverPhotoDownloadUrl())
             .centerCrop()
             .into(libraryCoverPhoto);
 libraryView.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View view) {
-        Intent intent = new Intent(getContext(),LibraryActivity.class);
+        Intent intent = new Intent(getContext()(),LibraryActivity.class);
         intent.putExtra(GlobalConfig.LIBRARY_ID_KEY,libraryDataModel.getLibraryId());
         intent.putExtra(GlobalConfig.LIBRARY_AUTHOR_ID_KEY,libraryDataModel.getAuthorUserId());
         startActivity(intent);
@@ -1518,6 +1521,73 @@ libraryView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onSuccess(Void unused) {
                 becomeAuthorListener.onSuccess();
+            }
+        });
+    }
+
+    private void manageFollowActions(){
+
+        if(authorId.equals(GlobalConfig.getCurrentUserId())){
+            followActionTextView.setVisibility(View.GONE);
+        }
+        if(GlobalConfig.isFollowing(getContext(),authorId)){
+            followActionTextView.setText("Following");
+
+        }else{
+            followActionTextView.setText("Follow");
+        }
+        followActionTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                followActionTextView.setEnabled(false);
+                if(GlobalConfig.isFollowing(getContext(),authorId)){
+                    GlobalConfig.unFollowUser(getContext(), authorId, new GlobalConfig.ActionCallback() {
+                        @Override
+                        public void onSuccess() {
+                            followActionTextView.setEnabled(true);
+                            followActionTextView.setText("Follow");
+
+                        }
+
+                        @Override
+                        public void onFailed(String errorMessage) {
+                            followActionTextView.setEnabled(true);
+
+                        }
+                    });
+                }else{
+                    GlobalConfig.followUser(getContext(), authorId, new GlobalConfig.ActionCallback() {
+                        @Override
+                        public void onSuccess() {
+                            followActionTextView.setEnabled(true);
+                            followActionTextView.setText("Following");
+
+                        }
+
+                        @Override
+                        public void onFailed(String errorMessage) {
+                           followActionTextView.setEnabled(true);
+
+                        }
+                    });
+                }
+            }
+        });
+    }
+    void loadNativeAd(){
+        String adId = GlobalConfig.LIBRARY_NATIVE_AD_UNIT_ID;
+        if(getActivity().getComponentName().getClassName().equals(HostActivity.class.getName())){
+            adId = GlobalConfig.HOST_ACTIVITY_NATIVE_AD_UNIT_ID;
+        }
+        final String finalAdId = adId;
+        GlobalConfig.loadNativeAd(getContext(),0, adId,adLinearLayout,false,new com.google.android.gms.ads.nativead.NativeAd.OnNativeAdLoadedListener() {
+            @Override
+            public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                NativeAd nativeAdToLoad = nativeAd;
+                View view = GlobalConfig.getNativeAdView(getContext(),adLinearLayout,nativeAdToLoad,finalAdId,false);
+                if(view!=null) {
+                    adLinearLayout.addView(view);
+                }
             }
         });
     }

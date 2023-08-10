@@ -14,9 +14,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -56,6 +58,7 @@ MaterialToolbar toolbar;
 FolderDataModel intentFolderDataModel;
     OnFolderFetchListener onFolderFetchListener;
     int numberOfPages;
+    LinearLayout adLinearLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +110,8 @@ FolderDataModel intentFolderDataModel;
         }else{
             onFolderFetchListener.onSuccess(intentFolderDataModel);
         }
-        openAllPageFragment();
+            loadNativeAd();
+            openAllPageFragment();
 
     }else{
 
@@ -131,6 +135,7 @@ FolderDataModel intentFolderDataModel;
          libraryName=findViewById(R.id.libraryName);
          folderViewCount=findViewById(R.id.viewCount);
          pagesCount=findViewById(R.id.pagesCount);
+        adLinearLayout=findViewById(R.id.adLinearLayoutId);
 
          floatingActionButton=findViewById(R.id.fab);
         alertDialog = new AlertDialog.Builder(TutorialFolderActivity.this)
@@ -506,6 +511,21 @@ FolderDataModel intentFolderDataModel;
                     }
                 });
     }
+
+
+    void loadNativeAd(){
+        GlobalConfig.loadNativeAd(TutorialFolderActivity.this,0, GlobalConfig.FOLDER_NATIVE_AD_UNIT_ID,adLinearLayout,false,new com.google.android.gms.ads.nativead.NativeAd.OnNativeAdLoadedListener() {
+            @Override
+            public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                NativeAd nativeAdToLoad = nativeAd;
+                View view = GlobalConfig.getNativeAdView(TutorialFolderActivity.this,adLinearLayout,nativeAdToLoad,GlobalConfig.FOLDER_NATIVE_AD_UNIT_ID,false);
+                if(view!=null) {
+                    adLinearLayout.addView(view);
+                }
+            }
+        });
+    }
+
     public interface OnFolderFetchListener{
         void onSuccess(FolderDataModel folderDataModel);
         void onFailed(String errorMessage);

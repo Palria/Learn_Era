@@ -15,10 +15,12 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
@@ -83,6 +85,7 @@ TextView tutorialDescription;
     TutorialFetchListener tutorialFetchListener;
     DocumentSnapshot intentTutorialDocumentSnapshot;
     TutorialDataModel intentTutorialDataModel;
+    LinearLayout adLinearLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -153,7 +156,9 @@ TextView tutorialDescription;
         }else{
             tutorialFetchListener.onSuccess(intentTutorialDataModel);
         }
-createTabLayout();
+            createTabLayout();
+            loadNativeAd();
+
 //        tabLayout.getChildAt(tabLayout.getTabAt(0).getPosition()).setSelected(true);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -669,6 +674,7 @@ createTabLayout();
         backButton=findViewById(R.id.backButton);
         moreActionButton=findViewById(R.id.moreActionButtonId);
         privacyIndicatorTextView=findViewById(R.id.privacyIndicatorTextViewId);
+        adLinearLayout=findViewById(R.id.adLinearLayoutId);
 
 
         tabLayout=findViewById(R.id.tab_layout);
@@ -1043,6 +1049,18 @@ if(!isFirstView) {
                 });
     }
 
+    void loadNativeAd(){
+        GlobalConfig.loadNativeAd(TutorialActivity.this,0, GlobalConfig.TUTORIAL_NATIVE_AD_UNIT_ID,adLinearLayout,false,new com.google.android.gms.ads.nativead.NativeAd.OnNativeAdLoadedListener() {
+            @Override
+            public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                NativeAd nativeAdToLoad = nativeAd;
+                View view = GlobalConfig.getNativeAdView(TutorialActivity.this,adLinearLayout,nativeAdToLoad,GlobalConfig.TUTORIAL_NATIVE_AD_UNIT_ID,false);
+                if(view!=null) {
+                    adLinearLayout.addView(view);
+                }
+            }
+        });
+    }
     interface TutorialFetchListener{
         void onSuccess(TutorialDataModel tutorialDataModel);
         void onFailed(String errorMessage);

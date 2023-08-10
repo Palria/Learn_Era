@@ -13,10 +13,12 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.chip.Chip;
@@ -76,6 +78,7 @@ ImageButton moreActionButton;
 DocumentSnapshot intentLibraryDocumentSnapshot;
 LibraryDataModel intentLibraryDataModel;
     LibraryProfileFetchListener libraryProfileFetchListener;
+    LinearLayout adLinearLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,7 +176,7 @@ LibraryDataModel intentLibraryDataModel;
             } else {
                 libraryProfileFetchListener.onSuccess(intentLibraryDataModel);
             }
-
+            loadNativeAd();
             getAuthorProfile(new AuthorProfileFetchListener() {
                 @Override
                 public void onFailed(String errorMessage) {
@@ -761,6 +764,7 @@ LibraryDataModel intentLibraryDataModel;
         addActionButton=findViewById(R.id.addActionButton);
         saveActionButton=findViewById(R.id.saveActionButton);
         rateActionButton=findViewById(R.id.rateActionButton);
+        adLinearLayout=findViewById(R.id.adLinearLayoutId);
 
         backButton=findViewById(R.id.backButton);
         editLibraryActionButton=findViewById(R.id.editLibraryActionButtonId);
@@ -968,6 +972,18 @@ if(!isFirstView) {
                 .commit();
     }
 
+    void loadNativeAd(){
+        GlobalConfig.loadNativeAd(LibraryActivity.this,0, GlobalConfig.LIBRARY_NATIVE_AD_UNIT_ID,adLinearLayout,false,new com.google.android.gms.ads.nativead.NativeAd.OnNativeAdLoadedListener() {
+            @Override
+            public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                NativeAd nativeAdToLoad = nativeAd;
+                View view = GlobalConfig.getNativeAdView(LibraryActivity.this,adLinearLayout,nativeAdToLoad, GlobalConfig.LIBRARY_NATIVE_AD_UNIT_ID,false);
+                if(view!=null) {
+                    adLinearLayout.addView(view);
+                }
+            }
+        });
+    }
 
     interface LibraryProfileFetchListener{
         void onFailed(String errorMessage);

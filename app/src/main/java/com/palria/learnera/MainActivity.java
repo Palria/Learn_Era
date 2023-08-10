@@ -88,19 +88,29 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
      */
     AlertDialog alertDialog;
     GlobalConfig.OnCurrentUserProfileFetchListener onCurrentUserProfileFetchListener;
+
+//
+//    final String MAIN_ACTIVITY_BANNER_AD_UNIT_ID = "/9395051129" ;
+//    final String MAIN_ACTIVITY_INTERSTITIAL_AD_UNIT_ID = "/9817152131" ;
+//    final String MAIN_ACTIVITY_REWARDED_VIDEO_AD_UNIT_ID = "/5095308492" ;
+//    final String MAIN_ACTIVITY_REWARDED_INTERSTITIAL_AD_UNIT_ID = "/8094960632" ;
+//    final String MAIN_ACTIVITY_APP_OPEN_AD_UNIT_ID = "/9106705696" ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
 
         super.onCreate(savedInstanceState);
             scheduleJob();
-        if(isFirstOpen()){
-            setIsFirstOpen(false);
-            Intent intent = new Intent(MainActivity.this,WelcomeActivity.class);
-            startActivity(intent);
-            MainActivity.this.finish();
-            return;
-        }
+      if( !GlobalConfig.isUserLoggedIn()) {
+//          if (GlobalConfig.isFirstOpen(MainActivity.this)) {
+              GlobalConfig.setIsFirstOpen(MainActivity.this, false);
+              Intent intent = new Intent(MainActivity.this, WelcomeActivity.class);
+              startActivity(intent);
+              MainActivity.this.finish();
+              return;
+//          }
+      }
         if(GlobalConfig.isNightMode(MainActivity.this)){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }else{
@@ -626,6 +636,12 @@ if(GlobalConfig.isUserLoggedIn()) {
                             boolean isAnAuthor = (documentSnapshot.get(GlobalConfig.IS_USER_AUTHOR_KEY)!=null )? (documentSnapshot.getBoolean(GlobalConfig.IS_USER_AUTHOR_KEY)) : false;
                             boolean isAccountVerified = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY):false;
                             boolean isAccountSubmittedForVerification = documentSnapshot.get(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY):false;
+
+                            ArrayList<String> usersFollowingList = documentSnapshot.get(GlobalConfig.USERS_FOLLOWING_LIST_KEY)!=null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.USERS_FOLLOWING_LIST_KEY):new ArrayList<>();
+                            for(String userFollowingId : usersFollowingList){
+                                GlobalConfig.addToUsersFollowingList(MainActivity.this,userFollowingId);
+                            }
+
                             GlobalConfig.setIsCurrentUserAccountVerified(isAccountVerified);
                             GlobalConfig.setIsAccountSubmittedForVerification(isAccountSubmittedForVerification);
                             //show current user profile there .
@@ -692,18 +708,6 @@ if(GlobalConfig.isUserLoggedIn()) {
 
 }
 
-private boolean isFirstOpen(){
-    SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(),MODE_PRIVATE);
-    return sharedPreferences.getBoolean(GlobalConfig.IS_FIRST_OPEN_KEY,true);
-
-}
-private void setIsFirstOpen(boolean isFirstOpen){
-    SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(),MODE_PRIVATE);
-    SharedPreferences.Editor editor = sharedPreferences.edit();
-    editor.putBoolean(GlobalConfig.IS_FIRST_OPEN_KEY,isFirstOpen);
-    editor.apply();
-
-}
 private void loadConfiguration(){
     GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.PLATFORM_CONFIGURATION_FILE_KEY).document(GlobalConfig.PLATFORM_CONFIGURATION_FILE_KEY).get().addOnFailureListener(new OnFailureListener() {
         @Override
