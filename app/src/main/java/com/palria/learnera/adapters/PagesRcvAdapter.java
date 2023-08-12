@@ -262,7 +262,9 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
                             GlobalConfig.checkIfDocumentExists(likedDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                                 @Override
                                 public void onExist(DocumentSnapshot documentSnapshot) {
-                                    holder.likeCountTextView.setText((currentLikesCount-1)+"");
+                                    if(!(holder.likeCountTextView.getText()+"").equals("0")) {
+                                        holder.likeCountTextView.setText((currentLikesCount - 1) + "");
+                                    }
                                     holder.likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
                                     GlobalConfig.likePage(pageDataModel.getPageId(), pageDataModel.getTutorialId(), pageDataModel.getFolderId(), pageDataModel.getAuthorId(), isTutorialPage, false, new GlobalConfig.ActionCallback() {
                                         @Override

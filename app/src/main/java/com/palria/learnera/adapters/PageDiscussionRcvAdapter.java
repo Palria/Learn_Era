@@ -206,8 +206,13 @@ public class PageDiscussionRcvAdapter extends RecyclerView.Adapter<PageDiscussio
                     GlobalConfig.checkIfDocumentExists(likedDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                         @Override
                         public void onExist(DocumentSnapshot documentSnapshot) {
-                            holder.likeCountTextView.setText((currentLikesCount-1)+"");
-                            holder.likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
+
+                            if(!(holder.likeCountTextView.getText()+"").equals("0")) {
+                                holder.likeCountTextView.setText((currentLikesCount - 1) + "");
+                            }
+
+
+                            holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_outline_thumb_up_24,context.getTheme()));
                             GlobalConfig.likePageDiscussion(pageDiscussionDataModel.getDiscussionId(), pageDiscussionDataModel.getPageId(), pageDiscussionDataModel.getTutorialId(), pageDiscussionDataModel.getFolderId(), pageDiscussionDataModel.getAuthorId(), isTutorialPage, false, new GlobalConfig.ActionCallback() {
                                 @Override
                                 public void onSuccess() {

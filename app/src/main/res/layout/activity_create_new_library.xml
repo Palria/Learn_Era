@@ -11,6 +11,7 @@
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         app:title="New Library"
+
         app:navigationIconTint="@color/white"
         app:titleTextColor="@color/white"
         android:theme="@style/ToolbarColoredBackArrow"
