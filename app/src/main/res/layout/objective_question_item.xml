@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+    
+    <androidx.cardview.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="7dp"
+        app:cardBackgroundColor="@color/secondary_app_color"
+        android:id="@+id/objectiveQuestionViewId"
+        android:layout_marginHorizontal="5pt"
+        app:cardCornerRadius="3pt">
+        
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:paddingHorizontal="5pt"
+            android:paddingVertical="5pt"
+            android:layout_height="match_parent"
+            android:layout_margin="3dp"
+            android:background="@color/white"
+            >
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:paddingHorizontal="5pt"
+                android:paddingVertical="5pt"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Objective Question"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    />
+                <ImageView
+                    android:id="@+id/removeItemActionImageId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:src="@drawable/ic_baseline_delete_forever_24"
+            
+                    />
+            </LinearLayout>
+    
+            <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:paddingHorizontal="5pt"
+            android:paddingVertical="5pt"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_border_gray_bg"
+            android:gravity="end"
+         >
+         
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select time limit in seconds"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:drawableEnd="@drawable/ic_baseline_access_time_filled_24"
+                android:drawableTint="@color/grayDark"
+                />
+            <Spinner
+                android:id="@+id/timeSelectorSpinnerId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                
+                />
+     </LinearLayout>
+            
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:counterEnabled="true"
+                app:helperText="max 200 chars"
+                android:layout_height="wrap_content">
+                
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:hint="Question"
+                    android:inputType="textMultiLine"
+                    android:textSize="15sp"
+                    android:maxLength="200"
+                    android:id="@+id/questionInput1Id"
+                    android:gravity="start|top"
+                    android:minHeight="100dp"
+                    android:layout_height="wrap_content"/>
+            
+            </com.google.android.material.textfield.TextInputLayout>
+    
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fill answer options"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-condensed-medium"
+                />
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:counterEnabled="true"
+                app:helperText="max 100 chars"
+                android:layout_height="wrap_content">
+                
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:hint="Option 1"
+                    android:inputType="textMultiLine"
+                    android:textSize="11sp"
+                    android:maxLength="100"
+                    android:id="@+id/answerInput1Id"
+                    android:layout_height="wrap_content"/>
+            
+            </com.google.android.material.textfield.TextInputLayout>
+            
+            
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="4pt"
+                app:counterEnabled="true"
+                app:helperText="max 100 chars"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_height="wrap_content">
+                
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:hint="Option 2"
+                    android:inputType="textMultiLine"
+                    android:textSize="11sp"
+                    android:maxLength="100"
+                    android:id="@+id/answerInput2Id"
+                    android:layout_height="wrap_content"/>
+            
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="4pt"
+                app:counterEnabled="true"
+                app:helperText="max 100 chars"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_height="wrap_content">
+                
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:hint="Option 3"
+                    android:inputType="textMultiLine"
+                    android:textSize="11sp"
+                    android:maxLength="100"
+                    android:id="@+id/answerInput3Id"
+                    android:layout_height="wrap_content"/>
+            
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="4pt"
+                app:counterEnabled="true"
+                app:helperText="max 100 chars"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_height="wrap_content">
+                
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:hint="Option 4"
+                    android:inputType="textMultiLine"
+                    android:textSize="11sp"
+                    android:maxLength="100"
+                    android:id="@+id/answerInput4Id"
+                    android:layout_height="wrap_content"/>
+            
+            </com.google.android.material.textfield.TextInputLayout>
+            
+            
+        </LinearLayout>
+    
+    </androidx.cardview.widget.CardView>
+

@@ -341,6 +341,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                             startActivity(intent);
                         }
                     }
+                }, 0)
+                .addOptionItem("Create Quiz", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (GlobalConfig.isUserLoggedIn()) {
+                            leBottomSheetDialog.hide();
+                            Intent intent = new Intent(MainActivity.this, CreateQuizActivity.class);
+                            startActivity(intent);
+                        }
+                    }
                 }, 0);
         if(GlobalConfig.isLearnEraAccount()){
         leBottomSheetDialog.addOptionItem("Notify", R.drawable.baseline_notifications_24, new View.OnClickListener() {

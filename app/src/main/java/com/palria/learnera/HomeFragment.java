@@ -123,6 +123,7 @@ public class HomeFragment extends Fragment {
         new CountDownTimer(10000, 10000) {
             @Override
             public void onTick(long l) {
+                if(getContext()!=null){
                 MobileAds.initialize(getContext(), new OnInitializationCompleteListener() {
                     @Override
                     public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
@@ -140,7 +141,7 @@ public class HomeFragment extends Fragment {
                         Toast.makeText(getContext(), "Loaded", Toast.LENGTH_SHORT).show();
                     }
                 });
-
+                }
             }
 
             @Override

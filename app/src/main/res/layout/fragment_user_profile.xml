@@ -327,7 +327,7 @@
                             android:textStyle="bold"
                             android:fontFamily="sans-serif-condensed-medium"
                             android:textColor="@color/secondary_app_color"
-                            android:layout_marginBottom="10pt"
+                            android:layout_marginBottom="8pt"
                             android:layout_marginLeft="3dp"
                             />
                         
@@ -337,7 +337,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10pt"
-                        android:paddingHorizontal="4pt"
+                        android:paddingHorizontal="1pt"
                         android:paddingVertical="3dp"
                         android:src="@drawable/ic_baseline_bookmarks_24"
                         app:tint="@color/teal_700"
@@ -352,7 +352,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10pt"
-                        android:paddingHorizontal="4pt"
+                        android:paddingHorizontal="1pt"
                         android:paddingVertical="3dp"
                         android:src="@drawable/ic_baseline_star_24"
                         app:tint="@color/teal_700"
@@ -366,7 +366,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10pt"
                         android:background="@drawable/rounded_white_bg"
-                        android:paddingHorizontal="4pt"
+                        android:paddingHorizontal="1pt"
                         android:paddingVertical="3dp"
                         android:src="@drawable/ic_baseline_edit_24" />
                     </LinearLayout>

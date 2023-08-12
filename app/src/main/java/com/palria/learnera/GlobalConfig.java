@@ -181,6 +181,8 @@ public class GlobalConfig {
     public static final String TOTAL_FOLLOWERS_KEY = "TOTAL_FOLLOWERS";
     public static final String FOLLOWERS_LIST_KEY = "FOLLOWERS_LIST";
 
+    public static final String IS_EDITION_KEY = "IS_EDITION";
+
     public static final String IS_ACCOUNT_VERIFIED_KEY = "IS_ACCOUNT_VERIFIED";
     public static final String DATE_VERIFIED_TIME_STAMP_KEY = "DATE_VERIFIED_TIME_STAMP";
     public static final String DATE_UNVERIFIED_TIME_STAMP_KEY = "DATE_UNVERIFIED_TIME_STAMP";
@@ -550,6 +552,42 @@ public class GlobalConfig {
     public static final String LIKED_PAGES_KEY = "LIKED_PAGES";
     public static final String OTHER_PAGES_DISCUSSION_KEY = "OTHER_PAGES_DISCUSSION";
     public static final String DATE_CREATED_TIME_STAMP_KEY = "DATE_CREATED_TIME_STAMP";
+    public static final String DATE_EDITED_TIME_STAMP_KEY = "DATE_EDITED_TIME_STAMP";
+
+    public static final String QUIZ_ID_KEY = "QUIZ_ID";
+    public static final String QUIZ_DESCRIPTION_KEY = "QUIZ_DESCRIPTION";
+    public static final String QUIZ_TITLE_KEY = "QUIZ_TITLE";
+    public static final String TOTAL_QUESTIONS_KEY = "TOTAL_QUESTIONS";
+    public static final String TOTAL_TIME_LIMIT_KEY = "TOTAL_TIME_LIMIT";
+    public static final String SINGLE_QUESTION_TIME_LIMIT_KEY = "SINGLE_QUESTION_TIME_LIMIT";
+    public static final String TOTAL_QUIZ_KEY = "TOTAL_QUIZ";
+    public static final String QUESTION_LIST_KEY = "QUESTION_LIST";
+    public static final String ALL_QUIZ_KEY = "ALL_QUIZ";
+    public static final String QUIZ_DATE_LIST_KEY = "QUIZ_DATE_LIST";
+    public static final String QUIZ_FEE_DESCRIPTION_KEY = "QUIZ_FEE_DESCRIPTION";
+    public static final String QUIZ_REWARD_DESCRIPTION_KEY = "QUIZ_REWARD_DESCRIPTION";
+
+    public static final String TOTAL_PARTICIPANTS_KEY = "TOTAL_PARTICIPANTS";
+    public static final String PARTICIPANTS_LIST_KEY = "PARTICIPANTS_LIST";
+    public static final String TOTAL_QUIZ_JOINED_KEY = "TOTAL_QUIZ_JOINED";
+    public static final String QUIZ_JOINED_LIST_KEY = "QUIZ_JOINED_LIST";
+    public static final String ALL_PARTICIPANTS_KEY = "ALL_PARTICIPANTS";
+
+    public static final String TOTAL_ANSWERS_SUBMITTED_KEY = "TOTAL_ANSWERS_SUBMITTED";
+    public static final String ANSWER_SUBMITTED_POSITIONS_LIST_KEY = "ANSWER_SUBMITTED_POSITIONS_LIST";
+    public static final String ANSWER_SUBMITTED_TIME_STAMP_KEY = "ANSWER_SUBMITTED_TIME_STAMP";
+    public static final String ANSWER_LIST_KEY = "ANSWER_LIST";
+    public static final String LAST_SUBMITTED_TIME_STAMP_KEY = "LAST_SUBMITTED_TIME_STAMP";
+    public static final String PARTICIPANT_ID_KEY = "PARTICIPANT_ID";
+
+    public static final String SUBMITTED_QUESTION_LIST_KEY = "SUBMITTED_QUESTION_LIST";
+    public static final String VIEWED_QUESTION_LIST_KEY = "VIEWED_QUESTION_LIST";
+    public static final String LAST_SUBMITTED_QUESTION_POSITION_KEY = "LAST_SUBMITTED_QUESTION_POSITION";
+
+
+
+    public static final String IS_THEORY_QUESTION_KEY = "IS_THEORY_QUESTION";
+    public static final String IS_OBJECTIVE_QUESTION_KEY = "IS_OBJECTIVE_QUESTION";
 
     private static FirebaseFirestore firebaseFirestoreInstance;
     private static FirebaseStorage firebaseStorageInstance;
@@ -4492,8 +4530,183 @@ if(isUserLoggedIn()) {
             nativeAd = null;
         }
 //        Toast.makeText(context, "returned", Toast.LENGTH_SHORT).show();
-
+        viewGroup.removeAllViews();
         return adView;
+    }
+
+    public static void createQuiz(Context context, String quizId, String quizTitle, int totalQuestions, int totalTimeLimit, String quizDescription, String quizFeeDescription, String quizRewardDescription, ArrayList<ArrayList<String>> questionArrayList, ArrayList<Integer> quizDateList, boolean isEdition, boolean isPublic, ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId);
+        HashMap<String,Object> quizDetails = new HashMap<>();
+        quizDetails.put(GlobalConfig.QUIZ_ID_KEY,quizId);
+        quizDetails.put(GlobalConfig.AUTHOR_ID_KEY,getCurrentUserId());
+        quizDetails.put(GlobalConfig.QUIZ_DESCRIPTION_KEY,quizDescription);
+        quizDetails.put(GlobalConfig.QUIZ_TITLE_KEY,quizTitle);
+        quizDetails.put(GlobalConfig.TOTAL_QUESTIONS_KEY,totalQuestions);
+        quizDetails.put(GlobalConfig.TOTAL_TIME_LIMIT_KEY,totalTimeLimit);
+//      quizDetails.put(GlobalConfig.SINGLE_QUESTION_TIME_LIMIT_KEY,singleQuestionTimeLimit);
+        quizDetails.put(GlobalConfig.IS_PUBLIC_KEY,isPublic);
+        quizDetails.put(GlobalConfig.QUIZ_FEE_DESCRIPTION_KEY,quizFeeDescription);
+        quizDetails.put(GlobalConfig.QUIZ_REWARD_DESCRIPTION_KEY,quizRewardDescription);
+        quizDetails.put(GlobalConfig.QUIZ_DATE_LIST_KEY,quizDateList);
+        if(isEdition){
+            quizDetails.put(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+
+        }else {
+            quizDetails.put(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+            quizDetails.put(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        }
+
+        for(int i=0; i<questionArrayList.size(); i++){
+            quizDetails.put(GlobalConfig.QUESTION_LIST_KEY+"-"+i,questionArrayList.get(i));
+        }
+
+        writeBatch.set(documentReference1,quizDetails,SetOptions.merge());
+
+        if (!isEdition) {
+            DocumentReference userReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId());
+            HashMap<String, Object> userDetails = new HashMap<>();
+            userDetails.put(GlobalConfig.TOTAL_QUIZ_KEY, FieldValue.increment(1L));
+            writeBatch.set(userReference, userDetails, SetOptions.merge());
+        }
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+    public static void joinQuiz(Context context, String quizId, ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference participantReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId).collection(GlobalConfig.ALL_PARTICIPANTS_KEY).document(getCurrentUserId());
+        HashMap<String,Object> participantDetails = new HashMap<>();
+        participantDetails.put(GlobalConfig.QUIZ_ID_KEY,quizId);
+        participantDetails.put(GlobalConfig.PARTICIPANT_ID_KEY,getCurrentUserId());
+        participantDetails.put(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+        writeBatch.set(participantReference1,participantDetails,SetOptions.merge());
+
+        DocumentReference quizReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId);
+        HashMap<String,Object> quizDetails = new HashMap<>();
+        quizDetails.put(GlobalConfig.TOTAL_PARTICIPANTS_KEY, FieldValue.increment(1L));
+        quizDetails.put(GlobalConfig.PARTICIPANTS_LIST_KEY, FieldValue.arrayUnion(getCurrentUserId()));
+        writeBatch.set(quizReference,quizDetails,SetOptions.merge());
+
+
+        DocumentReference userReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId());
+        HashMap<String,Object> userDetails = new HashMap<>();
+        userDetails.put(GlobalConfig.TOTAL_QUIZ_JOINED_KEY, FieldValue.increment(1L));
+        userDetails.put(GlobalConfig.QUIZ_JOINED_LIST_KEY, FieldValue.arrayUnion(quizId));
+        writeBatch.set(userReference,userDetails,SetOptions.merge());
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+    public static void submitQuiz(Context context, String quizId,ArrayList<String> answerList,int questionSubmittedPosition, ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference participantReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId).collection(GlobalConfig.ALL_PARTICIPANTS_KEY).document(getCurrentUserId());
+        HashMap<String,Object> participantDetails = new HashMap<>();
+        participantDetails.put(GlobalConfig.TOTAL_ANSWERS_SUBMITTED_KEY, FieldValue.increment(1L));
+        participantDetails.put(GlobalConfig.ANSWER_SUBMITTED_POSITIONS_LIST_KEY, FieldValue.arrayUnion(questionSubmittedPosition));
+        participantDetails.put(GlobalConfig.ANSWER_SUBMITTED_TIME_STAMP_KEY+"-"+questionSubmittedPosition,FieldValue.serverTimestamp());
+        participantDetails.put(GlobalConfig.ANSWER_LIST_KEY+"-"+questionSubmittedPosition,answerList);
+        participantDetails.put(GlobalConfig.LAST_SUBMITTED_QUESTION_POSITION_KEY,questionSubmittedPosition);
+        participantDetails.put(GlobalConfig.LAST_SUBMITTED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+        writeBatch.set(participantReference1,participantDetails,SetOptions.merge());
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                    }
+                });
+
+        recordSubmittedQuestion(context,quizId,questionSubmittedPosition);
+    }
+    public static void getQuiz(Context context,String quizId,QuizCallback quizCallback){
+        getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId)
+                .get()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        quizCallback.onFailed(e.getMessage());
+
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        quizCallback.onSuccess(documentSnapshot);
+
+                    }
+                });
+
+    }
+
+    public static void recordViewedQuestion(Context context,String quizId,int questionPosition){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+getCurrentUserId(), MODE_PRIVATE);
+        String oldList = sharedPreferences.getString(GlobalConfig.VIEWED_QUESTION_LIST_KEY,"");
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if(!oldList.contains(quizId+"-POSITION-"+questionPosition)) {
+            editor.putString(GlobalConfig.VIEWED_QUESTION_LIST_KEY, oldList + quizId+"-POSITION-"+questionPosition + "-NEXT-");
+        }
+        editor.apply();
+
+    }
+
+    public static boolean isQuestionViewed(Context context,String quizId,int questionPosition){
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+getCurrentUserId(), MODE_PRIVATE);
+        String viewedList = sharedPreferences.getString(GlobalConfig.VIEWED_QUESTION_LIST_KEY,"");
+
+        return viewedList.contains(quizId+"-POSITION-"+questionPosition);
+    }
+    public static void recordSubmittedQuestion(Context context,String quizId,int questionPosition){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+getCurrentUserId(), MODE_PRIVATE);
+        String oldList = sharedPreferences.getString(GlobalConfig.SUBMITTED_QUESTION_LIST_KEY,"");
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        if(!oldList.contains(quizId+"-POSITION-"+questionPosition)) {
+            editor.putString(GlobalConfig.SUBMITTED_QUESTION_LIST_KEY, oldList + quizId+"-POSITION-"+questionPosition + "-NEXT-");
+        }
+        editor.apply();
+
+    }
+
+    public static boolean isQuestionSubmitted(Context context,String quizId,int questionPosition){
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+getCurrentUserId(), MODE_PRIVATE);
+        String submittedList = sharedPreferences.getString(GlobalConfig.SUBMITTED_QUESTION_LIST_KEY,"");
+
+        return submittedList.contains(quizId+"-POSITION-"+questionPosition);
     }
 
 
@@ -4556,7 +4769,7 @@ if(isUserLoggedIn()) {
         starHashMap.put("ONE",oneStar_2);
         return starHashMap;
     }
-*/
+    */
      //
     //INTERFACES
     //
@@ -4579,6 +4792,10 @@ if(isUserLoggedIn()) {
 
     public interface ActionCallback{
             void onSuccess();
+            void onFailed(String errorMessage);
+    }
+    public interface QuizCallback{
+            void onSuccess(DocumentSnapshot documentSnapshot);
             void onFailed(String errorMessage);
     }
     interface OnCurrentUserProfileFetchListener{

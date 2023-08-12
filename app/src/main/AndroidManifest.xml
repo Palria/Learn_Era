@@ -28,6 +28,10 @@
             android:value="ca-app-pub-3296946983872591~6715737224" />
         
         <activity
+            android:name=".CreateQuizActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
+        <activity
             android:name=".DeclineUserAccountVerificationActivity"
             android:exported="true"
             android:theme="@style/Theme.LearnEra" />
