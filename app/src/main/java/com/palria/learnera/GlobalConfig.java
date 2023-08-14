@@ -2399,6 +2399,13 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
 
     }
     public static void updateActivityLog(String activityLogType, String authorId, String libraryId, String tutorialId,String tutorialFolderId ,String pageId ,String reviewId , ActionCallback actionCallback){
+
+            //We disable logging for now till further notice. So if true just return and perform no action .
+        if(true){
+            actionCallback.onSuccess();
+            return;
+        }
+
             String activityLogId = getRandomString(10);
             HashMap<String,Object> activityLogDetails = new HashMap<>();
 //            activityLogDetails.put(LOG_NOTE_KEY,);
@@ -4260,7 +4267,7 @@ if(isUserLoggedIn()) {
 
     @SuppressLint("MissingPermission")
     public static void loadNativeAd(Context context,int position,String nativeAdUnitId,ViewGroup viewGroup, boolean isFromCountDown, NativeAd.OnNativeAdLoadedListener onNativeAdLoadedListener){
-
+            if(true)return;
         if (context != null) {
 //            String nativeAdUnitId = null;
             //if(GlobalConfig.isLearnEraAccount()){

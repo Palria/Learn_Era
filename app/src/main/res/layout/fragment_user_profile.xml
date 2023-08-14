@@ -415,7 +415,9 @@
                                 android:text="Activity Log"
                                 android:textAlignment="center"
                                 android:textColor="@color/teal_700"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                android:visibility="invisible"
+                                />
 
                             <ImageButton
                                 android:id="@+id/profileMoreIcon"

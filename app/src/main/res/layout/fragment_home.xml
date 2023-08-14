@@ -47,7 +47,7 @@
             android:layout_marginHorizontal="8pt"
             android:textSize="7pt"
             android:layout_marginTop="5pt"
-            android:text="Hello, User"
+            android:text="Hello"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView

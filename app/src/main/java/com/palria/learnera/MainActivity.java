@@ -63,7 +63,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, Serializable {
-
+    /*
+    TODO enable google ads in production release but disable if in debug mode (just remove the if statement in the ads methods)
+    TODO disable activity log feature for now. maybe later we enable it.
+     */
     BottomNavigationView bottomNavigationView;
     BottomAppBar bottomAppBar;
     boolean isHomeFragmentOpen = false;

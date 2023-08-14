@@ -123,6 +123,7 @@ public class HomeFragment extends Fragment {
         new CountDownTimer(10000, 10000) {
             @Override
             public void onTick(long l) {
+                if(true)return;
                 if(getContext()!=null){
                 MobileAds.initialize(getContext(), new OnInitializationCompleteListener() {
                     @Override
@@ -165,7 +166,6 @@ public class HomeFragment extends Fragment {
 
         //show the greeting to
         greetingTextView.setText(greeting);
-
         createTabLayout(new OnNewCategorySelectedListener() {
             @Override
             public void onSelected(String categoryName) {

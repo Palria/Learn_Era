@@ -1021,6 +1021,8 @@ if(!isFirstView) {
                             Intent intent  = new Intent(TutorialActivity.this,TutorialFolderActivity.class);
                                 intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY,tutorialId);
                                 intent.putExtra(GlobalConfig.FOLDER_ID_KEY,folderId);
+                                intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,GlobalConfig.getCurrentUserId());
+                                intent.putExtra(GlobalConfig.LIBRARY_ID_KEY, libraryId);
                                 intent.putExtra(GlobalConfig.FOLDER_NAME_KEY,folderName);
                                 intent.putExtra(GlobalConfig.IS_FIRST_VIEW_KEY,true);
                                 startActivity(intent);

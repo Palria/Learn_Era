@@ -436,16 +436,16 @@ public class UserProfileFragment extends Fragment {
                 if(!isUserAuthor && authorId.equals(GlobalConfig.getCurrentUserId())){
 //                if(authorId.equals(GlobalConfig.getCurrentUserId())) {
                  if(isFirstLoad) {
-                     leBottomSheetDialog.addOptionItem("Become An Author", R.drawable.ic_baseline_edit_24, new View.OnClickListener() {
-                         @Override
-                         public void onClick(View view) {
-                             //show they are going to become an author
-                             leBottomSheetDialog.hide();
-
-                             showPromptToBeAnAuthor();
-
-                         }
-                     }, 0);
+//                     leBottomSheetDialog.addOptionItem("Become An Author", R.drawable.ic_baseline_edit_24, new View.OnClickListener() {
+//                         @Override
+//                         public void onClick(View view) {
+//                             //show they are going to become an author
+//                             leBottomSheetDialog.hide();
+//
+//                             showPromptToBeAnAuthor();
+//
+//                         }
+//                     }, 0);
                      leBottomSheetDialog.render();
                      isFirstLoad = false;
                  }
