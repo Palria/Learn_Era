@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
@@ -18,14 +19,15 @@
         android:visibility="visible">
         
         <com.makeramen.roundedimageview.RoundedImageView
-            android:layout_width="15pt"
+            android:layout_width="20pt"
             android:id="@+id/discussionPosterProfilePhotoId"
             app:riv_corner_radius="4pt"
             app:riv_oval="false"
-            android:layout_gravity="center"
+            android:layout_gravity="start"
             android:scaleType="centerCrop"
             android:src="@drawable/default_profile"
-            android:layout_height="15pt"/>
+            android:layout_height="20pt"
+            tools:ignore="MissingClass" />
         
         <LinearLayout
             android:paddingLeft="8pt"
@@ -86,8 +88,8 @@
                 
                 <ImageButton
                     android:id="@+id/moreActionButtonId"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:background="@drawable/ic_baseline_more_vert_24"
                     android:backgroundTint="@color/black"
                     android:layout_gravity="top"
@@ -95,24 +97,25 @@
             
             </LinearLayout>
             <TextView
-                android:ellipsize="end"
-                android:maxLines="1"
                 android:id="@+id/discussionDescriptionTextViewId"
                 android:text="I like this content, it's absolutely teachable"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
-    
-    
+
+
             <TextView
-                android:layout_marginTop="1pt"
-                android:id="@+id/viewDiscussionsTextViewId"
-                android:text="See replies"
-                android:textColor="@color/secondary_app_color"
-                android:textStyle="bold"
-                android:fontFamily="sans-serif-condensed-medium"
+                android:textSize="6pt"
+                android:textStyle="italic|bold"
+                android:id="@+id/dateCreatedTextViewId"
+                android:text="moments ago"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />
+            <TextView
+                android:id="@+id/dateCreated"
+                android:text=""
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
     
@@ -127,16 +130,7 @@
         android:visibility="gone"
         >
        
-        <TextView
-            android:textSize="5pt"
-            android:id="@+id/dateCreatedTextViewId"
-            android:textAlignment="textEnd"
-            android:text="moments ago"
-            android:layout_marginEnd="5pt"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            />
+
         <Button
             style="?attr/borderlessButtonStyle"
             android:textSize="5pt"
@@ -157,6 +151,7 @@
             android:textSize="5pt"
             android:id="@+id/disLikeAccountActionButtonId"
             android:text="0"
+            android:drawablePadding="2pt"
             android:textAlignment="textStart"
             android:drawableLeft="@drawable/ic_baseline_thumb_down_24"
             android:background="@color/transparent"
@@ -172,6 +167,7 @@
             android:textSize="5pt"
             android:id="@+id/replyAccountActionButtonId"
             android:text="0"
+         android:drawablePadding="2pt"
             android:textAlignment="textStart"
             android:drawableTint="@color/black"
             android:drawableLeft="@drawable/ic_baseline_message_24"
@@ -184,21 +180,38 @@
             />
 
     </LinearLayout>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="end"
         >
-        
+        <TextView
+            android:layout_marginStart="28pt"
+            android:layout_marginTop="1pt"
+            android:id="@+id/viewDiscussionsTextViewId"
+            android:text="See replies"
+            android:textColor="@color/secondary_app_color"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+        <View
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
         
         <LinearLayout
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             >
             
             <ImageView
+                android:layout_marginRight="2pt"
                 android:id="@+id/likeActionButtonId"
                 app:tint="@color/darkIcon"
                 android:layout_gravity="center"
@@ -217,12 +230,16 @@
         </LinearLayout>
         
         <LinearLayout
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
             >
             
             <ImageView
+                android:layout_marginRight="2pt"
                 android:id="@+id/discussActionButtonId"
                 app:tint="@color/darkIcon"
                 android:layout_gravity="center"
@@ -239,31 +256,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
-        
-        
-        <LinearLayout
-            android:id="@+id/dateContainer"
-            android:layout_marginLeft="5pt"
-            android:layout_marginTop="1pt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            
-            <ImageView
-                android:layout_gravity="center"
-                app:tint="@color/grayDark"
-                android:src="@drawable/ic_baseline_access_time_filled_24"
-                android:layout_width="10pt"
-                android:layout_height="10pt"/>
-            
-            <TextView
-                android:id="@+id/dateCreated"
-                android:text="0"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        
-        </LinearLayout>
-    
-    
     
     </LinearLayout>
 
