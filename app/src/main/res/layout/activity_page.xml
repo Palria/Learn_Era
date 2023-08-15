@@ -47,146 +47,10 @@
 
 
 
+
             <LinearLayout
-                android:layout_marginTop="5pt"
-                android:layout_marginHorizontal="5pt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                >
-
-    
-    
-                <TextView
-                    android:id="@+id/privacyIndicatorTextViewId"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginTop="2dp"
-                    android:text="public"
-                    android:textSize="9sp"
-                    android:textColor="@color/secondary_app_color"
-                    android:textStyle="bold" />
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-
-                    <ImageView
-                        android:id="@+id/likeActionButtonId"
-                        app:tint="@color/darkIcon"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_outline_thumb_up_24"
-                        android:layout_width="11pt"
-                        android:layout_height="11pt"/>
-
-                    <TextView
-                        android:id="@+id/likeCountTextViewId"
-                        android:text="0"
-                        android:textStyle="bold"
-                        android:layout_marginLeft="2pt"
-                        android:layout_marginEnd="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-                
-<!--                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-
-                    <ImageView
-                        android:id="@+id/dislikeActionButtonId"
-                        app:tint="@color/darkIcon"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_baseline_thumb_down_24"
-                        android:layout_width="11pt"
-                        android:layout_height="11pt"/>
-
-                    <TextView
-                        android:id="@+id/dislikeCountTextViewId"
-                        android:text="0"
-                        android:textStyle="bold"
-                        android:layout_marginLeft="2pt"
-                        android:layout_marginEnd="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-                -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-
-                    <ImageView
-                        android:id="@+id/discussActionButtonId"
-                        app:tint="@color/darkIcon"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_baseline_message_24"
-                        android:layout_width="11pt"
-                        android:layout_height="11pt"/>
-
-                    <TextView
-                        android:id="@+id/discussionCountTextViewId"
-                        android:text="0"
-                        android:textStyle="bold"
-                        android:layout_marginLeft="2pt"
-                        android:layout_marginEnd="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-
-                    <ImageView
-                        app:tint="@color/darkIcon"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_baseline_remove_red_eye_24"
-                        android:layout_width="11pt"
-                        android:layout_height="11pt"/>
-
-                    <TextView
-                        android:id="@+id/viewCount"
-                        android:text="0"
-                        android:textStyle="bold"
-                        android:layout_marginLeft="2pt"
-                        android:layout_marginEnd="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-               
-
-                <LinearLayout
-                    android:layout_marginLeft="5pt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        app:tint="@color/darkIcon"
-                        android:id="@+id/bookmarksCountTextViewId"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_baseline_bookmarks_24"
-                        android:layout_width="11pt"
-                        android:layout_height="11pt"/>
-
-                    <TextView
-                        android:id="@+id/bookmarkCountTextViewId"
-                        android:text="0"
-                        android:textStyle="bold"
-                        android:layout_marginLeft="2pt"
-                        android:layout_marginEnd="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-
-            </LinearLayout>
-            <LinearLayout
+                android:paddingHorizontal="5pt"
+                android:paddingTop="5pt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
         
@@ -212,92 +76,195 @@
                         android:text="..."
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
-                    <TextView
-                        android:id="@+id/dateCreatedTextViewId"
-                        android:textSize="6pt"
-                        android:textColor="@color/grayDark"
-                        android:text="moments ago"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/dateCreatedTextViewId"
+                            android:textSize="6pt"
+                            android:textColor="@color/grayDark"
+                            android:text="moments ago"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:textAlignment="center"
+                            android:text="·"
+                            android:layout_width="5pt"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:gravity="center"
+
+                            android:id="@+id/privacyIndicatorTextViewId"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Public"
+                            android:textSize="6pt"
+
+                            android:textColor="@color/grayDark"
+                             />
+                    </LinearLayout>
                 </LinearLayout>
                 <ImageButton
                     app:tint="@color/darkIcon"
                     android:id="@+id/morePageActionButtonId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
+                    android:layout_gravity="center_vertical"
                     android:background="@android:color/transparent"
                     android:src="@drawable/ic_baseline_more_vert_24"
                     />
 
             </LinearLayout>
 
-     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        >
-         <TextView
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:textStyle="bold"
-             android:textSize="12sp"
-             android:text="Discussions"
-             />
-    
-         <FrameLayout
-             android:visibility="visible"
-             android:id="@+id/discussionsFrameLayoutId"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content">
-<!--             <TextView-->
-<!--                 android:id="@+id/discussionsIndicatorTextViewId"-->
-<!--                 android:layout_width="wrap_content"-->
-<!--                 android:layout_height="wrap_content"-->
-<!--                 android:textStyle="italic"-->
-<!--                 android:textSize="12sp"-->
-<!--                 android:text="No discussions yet"-->
-<!--                 />-->
-         </FrameLayout>
-    
-    
-         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_gravity="end"
-            >
-        <TextView
-            android:id="@+id/addDiscussionTextViewId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20pt"
-            android:drawableLeft="@drawable/ic_baseline_post_add_24"
-            android:textStyle="bold"
-            android:textSize="12sp"
-            android:textColor="@color/secondary_app_color"
-            android:text="Discuss"
-            />
-        <TextView
-            android:id="@+id/viewDiscussionTextViewId"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="12sp"
-            android:textColor="@color/secondary_app_color"
-            android:text="See discussions"
-            />
-            <ImageButton
-            android:id="@+id/viewDiscussionImageButtonId"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-                android:layout_marginTop="2dp"
-            android:src="@drawable/ic_baseline_unfold_more_24"
-            />
-    </LinearLayout>
-    </LinearLayout>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                app:dividerColor="@color/gray"
+                android:layout_marginVertical="5pt"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_marginVertical="5pt"
+                android:layout_marginHorizontal="5pt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start">
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <ImageView
+                        android:layout_marginRight="4pt"
+                        android:id="@+id/likeActionButtonId"
+                        app:tint="@color/darkIcon"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_outline_thumb_up_24"
+                        android:layout_width="11pt"
+                        android:layout_height="11pt"/>
+
+                    <TextView
+                        android:id="@+id/likeCountTextViewId"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!--                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    >
+
+                                    <ImageView
+                                        android:id="@+id/dislikeActionButtonId"
+                                        app:tint="@color/darkIcon"
+                                        android:layout_gravity="center"
+                                        android:src="@drawable/ic_baseline_thumb_down_24"
+                                        android:layout_width="11pt"
+                                        android:layout_height="11pt"/>
+
+                                    <TextView
+                                        android:id="@+id/dislikeCountTextViewId"
+                                        android:text="0"
+                                        android:textStyle="bold"
+                                        android:layout_marginLeft="2pt"
+                                        android:layout_marginEnd="20dp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"/>
+                                </LinearLayout>
+                                -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <ImageView
+                        android:layout_marginRight="4pt"
+                        android:id="@+id/discussActionButtonId"
+                        app:tint="@color/darkIcon"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_baseline_message_24"
+                        android:layout_width="11pt"
+                        android:layout_height="11pt"/>
+
+                    <TextView
+                        android:id="@+id/discussionCountTextViewId"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <ImageView
+                        android:layout_marginRight="4pt"
+                        app:tint="@color/darkIcon"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_baseline_remove_red_eye_24"
+                        android:layout_width="11pt"
+                        android:layout_height="11pt"/>
+
+                    <TextView
+                        android:id="@+id/viewCount"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <View
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <LinearLayout
+
+                    android:layout_marginLeft="5pt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_marginRight="4pt"
+                        app:tint="@color/darkIcon"
+                        android:id="@+id/bookmarksCountTextViewId"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_baseline_bookmarks_24"
+                        android:layout_width="11pt"
+                        android:layout_height="11pt"/>
+
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/bookmarkCountTextViewId"
+                        android:text=""
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                app:dividerColor="@color/gray"
+                android:layout_marginVertical="5pt"
+                android:layout_height="wrap_content"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -322,11 +289,7 @@
 
             </LinearLayout>
 
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                app:dividerColor="@color/gray"
-                android:layout_marginVertical="10pt"
-                android:layout_height="wrap_content"/>
+
 
             <com.palria.learnera.lib.rcheditor.WYSIWYG
                 android:id="@+id/pageContentViewer"
@@ -334,20 +297,102 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="0dp"
                 />
-            
+            <LinearLayout
+
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                >
+                <TextView
+                    android:drawableLeft="@drawable/ic_baseline_message_24"
+                    android:textAlignment="textStart"
+                    android:drawableTint="@color/white"
+                    android:textColor="@color/white"
+                    android:drawablePadding="5pt"
+                    android:background="@color/teal_700"
+                    android:paddingHorizontal="5pt"
+                    android:paddingVertical="4pt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="8pt"
+                    android:text="Discussions"
+                    />
+
+                <FrameLayout
+                    android:visibility="visible"
+                    android:id="@+id/discussionsFrameLayoutId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <!--             <TextView-->
+                    <!--                 android:id="@+id/discussionsIndicatorTextViewId"-->
+                    <!--                 android:layout_width="wrap_content"-->
+                    <!--                 android:layout_height="wrap_content"-->
+                    <!--                 android:textStyle="italic"-->
+                    <!--                 android:textSize="12sp"-->
+                    <!--                 android:text="No discussions yet"-->
+                    <!--                 />-->
+                </FrameLayout>
+
+
+                <LinearLayout
+                    android:paddingVertical="5pt"
+                    android:paddingHorizontal="5pt"
+                    android:paddingBottom="15pt"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    >
+                    <TextView
+                        android:drawablePadding="4pt"
+                        android:id="@+id/addDiscussionTextViewId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="20pt"
+                        android:drawableLeft="@drawable/ic_baseline_post_add_24"
+                        android:textStyle="bold"
+                        android:textSize="7pt"
+                        android:textColor="@color/secondary_app_color"
+                        android:text="Discuss"
+                        />
+
+                    <View
+                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/viewDiscussionTextViewId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="7pt"
+                        android:drawablePadding="5pt"
+                        android:drawableEnd="@drawable/ic_baseline_unfold_more_24"
+                        android:textColor="@color/secondary_app_color"
+                        android:text="See discussions"
+                        />
+
+                </LinearLayout>
+            </LinearLayout>
+
             <LinearLayout
                 android:visibility="visible"
                 android:id="@+id/adLinearLayoutId"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-    
+
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 />
 
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
     
    

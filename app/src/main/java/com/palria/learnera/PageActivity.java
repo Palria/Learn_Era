@@ -121,16 +121,16 @@ ImageButton morePageActionButton;
 //            morePageActionButton.setVisibility(View.GONE);
 //        }
             manageDiscussion();
-            GlobalConfig.loadNativeAd(this,0, GlobalConfig.PAGE_NATIVE_AD_UNIT_ID,adLinearLayout,false,new com.google.android.gms.ads.nativead.NativeAd.OnNativeAdLoadedListener() {
-                @Override
-                public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
-                    NativeAd nativeAdToLoad = nativeAd;
-                    View view = GlobalConfig.getNativeAdView(PageActivity.this,adLinearLayout,nativeAdToLoad, GlobalConfig.PAGE_NATIVE_AD_UNIT_ID,false);
-                    if(view!=null) {
-                        adLinearLayout.addView(view);
-                    }
-                }
-            });
+//            GlobalConfig.loadNativeAd(this,0, GlobalConfig.PAGE_NATIVE_AD_UNIT_ID,adLinearLayout,false,new com.google.android.gms.ads.nativead.NativeAd.OnNativeAdLoadedListener() {
+//                @Override
+//                public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+//                    NativeAd nativeAdToLoad = nativeAd;
+//                    View view = GlobalConfig.getNativeAdView(PageActivity.this,adLinearLayout,nativeAdToLoad, GlobalConfig.PAGE_NATIVE_AD_UNIT_ID,false);
+//                    if(view!=null) {
+//                        adLinearLayout.addView(view);
+//                    }
+//                }
+//            });
 
             if(GlobalConfig.getCurrentUserId().equals(authorId+"") || GlobalConfig.isLearnEraAccount()){
 
