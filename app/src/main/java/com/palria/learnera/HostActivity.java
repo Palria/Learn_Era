@@ -144,6 +144,11 @@ public class HostActivity extends AppCompatActivity {
                 materialToolbar.setTitle("Discussions");
                 initFragment(bundle, new AllPageDiscussionsFragment());
                 break;
+            case GlobalConfig.QUIZ_FRAGMENT_TYPE_KEY:
+                bundle = new Bundle();
+                materialToolbar.setTitle("Join Ongoing Quiz");
+                initFragment(bundle, new AllQuizFragment());
+                break;
         }
     }
 

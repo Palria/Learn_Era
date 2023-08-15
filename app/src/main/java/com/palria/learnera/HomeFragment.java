@@ -47,9 +47,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.palria.learnera.adapters.HomeAuthorListViewAdapter;
 import com.palria.learnera.adapters.HomeBooksRecyclerListViewAdapter;
 import com.palria.learnera.adapters.PopularTutorialsListViewAdapter;
+import com.palria.learnera.adapters.QuizRcvAdapter;
 import com.palria.learnera.models.AuthorDataModel;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
 import com.palria.learnera.models.LibraryDataModel;
+import com.palria.learnera.models.QuizDataModel;
 import com.palria.learnera.models.TutorialDataModel;
 
 import java.time.LocalTime;
@@ -77,6 +79,7 @@ public class HomeFragment extends Fragment {
         LinearLayout tutorialLinearLayout;
 
         TextView seeAllLibraryTextView;
+        TextView seeAllQuizTextView;
         TextView seeAllAuthorTextView;
         TextView seeAllTutorialTextView;
 
@@ -85,6 +88,7 @@ public class HomeFragment extends Fragment {
 
         RecyclerView popularAuthorRecyclerView;
         RecyclerView booksItemRecyclerListView;
+        RecyclerView quizItemRecyclerListView;
         RecyclerView popularTutorialsContainerRcv;
         TabLayout tabLayout;
 
@@ -101,7 +105,9 @@ public class HomeFragment extends Fragment {
     ArrayList<AuthorDataModel> modelArrayList = new ArrayList<AuthorDataModel>();
     HomeAuthorListViewAdapter popularAuthorAdapter ;
     ArrayList<LibraryDataModel> libraryArrayList = new ArrayList<>();
+    ArrayList<QuizDataModel> quizArrayList = new ArrayList<>();
     HomeBooksRecyclerListViewAdapter homeBooksRecyclerListViewAdapter ;
+    QuizRcvAdapter quizRecyclerListViewAdapter ;
     ArrayList<TutorialDataModel> tutorialDataModels = new ArrayList<>();
     PopularTutorialsListViewAdapter popularTutorialsListViewAdapter;
     //test categories
@@ -123,6 +129,7 @@ public class HomeFragment extends Fragment {
         new CountDownTimer(10000, 10000) {
             @Override
             public void onTick(long l) {
+                // TODO remove this if statement during production release
                 if(true)return;
                 if(getContext()!=null){
                 MobileAds.initialize(getContext(), new OnInitializationCompleteListener() {
@@ -205,6 +212,22 @@ public class HomeFragment extends Fragment {
 
                     }
                 });
+                fetchQuiz(categoryName, new QuizFetchListener() {
+                    @Override
+                    public void onSuccess(QuizDataModel quizDataModel) {
+                        if(quizDataModel.isPublic() || (GlobalConfig.getCurrentUserId().equals(quizDataModel.getAuthorId()+""))) {
+                            quizArrayList.add(quizDataModel);
+                            quizRecyclerListViewAdapter.notifyItemChanged(quizArrayList.size());
+//                        Toast.makeText(getContext(), "quiz gotten", Toast.LENGTH_SHORT).show();
+                        }
+                        toggleContentsVisibility(true);
+
+                    }
+                    @Override
+                    public void onFailed(String errorMessage) {
+
+                    }
+                });
                 fetchTutorial(categoryName, new TutorialFetchListener() {
                     @Override
                     public void onSuccess(TutorialDataModel tutorialDataModel) {
@@ -280,6 +303,13 @@ public class HomeFragment extends Fragment {
 
             }
         });
+        seeAllQuizTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.QUIZ_FRAGMENT_TYPE_KEY,null));
+
+            }
+        });
         seeAllAuthorTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -350,14 +380,17 @@ public class HomeFragment extends Fragment {
 //        categoryTabsContainer = parentView.findViewById(R.id.categoryTabContainer);
         helloUserTextView = parentView.findViewById(R.id.helloUserTextViewId);
         booksItemRecyclerListView = parentView.findViewById(R.id.booksItemContainer);
+        quizItemRecyclerListView = parentView.findViewById(R.id.quizItemContainer);
         popularAuthorRecyclerView = parentView.findViewById(R.id.popular_authors_listview);
         seeAllAuthorTextView = parentView.findViewById(R.id.seeAllAuthorTextViewId);
         seeAllLibraryTextView = parentView.findViewById(R.id.seeAllLibraryTextViewId);
+        seeAllQuizTextView = parentView.findViewById(R.id.seeAllQuizTextViewId);
         seeAllTutorialTextView = parentView.findViewById(R.id.seeAllTutorialTextViewId);
         popularTutorialsContainerRcv = parentView.findViewById(R.id.popularTutorialsContainer);
         tabLayout = parentView.findViewById(R.id.categoryTabLayoutId);
         popularAuthorAdapter = new HomeAuthorListViewAdapter(modelArrayList,getContext());
         homeBooksRecyclerListViewAdapter = new HomeBooksRecyclerListViewAdapter(libraryArrayList,getContext());
+        quizRecyclerListViewAdapter = new QuizRcvAdapter(quizArrayList,getContext(),true);
         popularTutorialsListViewAdapter = new PopularTutorialsListViewAdapter(tutorialDataModels,getContext());
 
 
@@ -389,6 +422,9 @@ public class HomeFragment extends Fragment {
 //        booksItemRecyclerListView.setHasFixedSize(true);
         booksItemRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
         booksItemRecyclerListView.setAdapter(homeBooksRecyclerListViewAdapter);
+
+        quizItemRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
+        quizItemRecyclerListView.setAdapter(quizRecyclerListViewAdapter);
 
 
 /**
@@ -748,6 +784,70 @@ for(int i=0; i<categories.size(); i++) {
                     }
                 });
     }
+    private void fetchQuiz(String categoryTag,QuizFetchListener quizFetchListener){
+        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.CATEGORY_KEY,categoryTag).limit(20L);
+        libraryQuery.get()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        quizFetchListener.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                        quizArrayList.clear();
+                        quizRecyclerListViewAdapter.notifyDataSetChanged();
+
+
+                        for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                            String quizId = ""+ documentSnapshot.getId();
+                            String authorId = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
+                            String quizTitle = ""+ documentSnapshot.get(GlobalConfig.QUIZ_TITLE_KEY);
+                            String quizDescription = ""+ documentSnapshot.get(GlobalConfig.QUIZ_DESCRIPTION_KEY);
+                            String quizFeeDescription = ""+ documentSnapshot.get(GlobalConfig.QUIZ_FEE_DESCRIPTION_KEY);
+                            String quizRewardDescription = ""+ documentSnapshot.get(GlobalConfig.QUIZ_REWARD_DESCRIPTION_KEY);
+                            long totalQuestions =  documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUESTIONS_KEY) : 0L;
+                            long totalTimeLimit =  documentSnapshot.get(GlobalConfig.TOTAL_TIME_LIMIT_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_TIME_LIMIT_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_TIME_LIMIT_KEY) : 0L;
+                            long totalParticipants =  documentSnapshot.get(GlobalConfig.TOTAL_PARTICIPANTS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_PARTICIPANTS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_PARTICIPANTS_KEY) : 0L;
+                            boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) != null && documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY) : true;
+                            boolean isClosed =  documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) != null && documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_CLOSED_KEY) : false;
+                            ArrayList dateList =  documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) : new ArrayList();
+                            ArrayList participantsList =  documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) : new ArrayList();
+                            String dateCreated = documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY).toDate() : "Moment ago";
+                            if (dateCreated.length() > 10) {
+                                dateCreated = dateCreated.substring(0, 10);
+                            }
+                            String dateEdited = documentSnapshot.get(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY).toDate() : "Moment ago";
+                            if (dateEdited.length() > 10) {
+                                dateEdited = dateEdited.substring(0, 10);
+                            }
+                                quizFetchListener.onSuccess(new QuizDataModel(
+                                         quizId,
+                                         authorId,
+                                         quizTitle,
+                                         quizDescription,
+                                         quizFeeDescription,
+                                         quizRewardDescription,
+                                         dateCreated,
+                                         dateEdited,
+                              totalQuestions,
+                              totalTimeLimit,
+                              totalParticipants,
+                              isPublic,
+                              isClosed,
+                             dateList,
+                            participantsList
+            ));
+
+
+                        }
+                        toggleContentsVisibility(true);
+
+                    }
+                });
+    }
 
     private void fetchTutorial(String tutorialCategoryTag,TutorialFetchListener tutorialFetchListener){
 //        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY);
@@ -934,6 +1034,10 @@ for(int i=0; i<categories.size(); i++) {
 
     interface LibraryFetchListener{
         void onSuccess(LibraryDataModel libraryDataModel);
+        void onFailed(String errorMessage);
+    }
+    interface QuizFetchListener{
+        void onSuccess(QuizDataModel quizDataModel);
         void onFailed(String errorMessage);
     }
 

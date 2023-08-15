@@ -60,6 +60,8 @@ public class UserProfileFragment extends Fragment {
     ImageView editProfileButton;
     RoundedImageView profileImageView;
     TextView currentDisplayNameView;
+    TextView descriptionTextView;
+    TextView birthdateTextView;
     TextView currentEmailView;
     TextView currentPhoneNumberView;
     TextView currentWebsiteLinkView;
@@ -405,7 +407,7 @@ public class UserProfileFragment extends Fragment {
     private void loadCurrentUserProfile(){
         getProfile(new OnUserProfileFetchListener() {
             @Override
-            public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail, String webLink, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, String joined_date,String numOfLibraryCreated,String numOfTutorialCreated,String numOfRatings, boolean isUserBlocked, boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor) {
+            public void onSuccess(String userDisplayName,String description,String birthdate, String userCountryOfResidence, String contactEmail, String webLink, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, String joined_date,String numOfLibraryCreated,String numOfTutorialCreated,String numOfRatings, boolean isUserBlocked, boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor) {
                 swipeRefreshLayout.setRefreshing(false);
                 isUserAuthor = isUserAnAuthor;
                 try {
@@ -420,7 +422,9 @@ public class UserProfileFragment extends Fragment {
                 currentWebsiteLinkView.setText(Html.fromHtml("Website <b>"+webLink+"</b> "));
                 currentPhoneNumberView.setText(Html.fromHtml("Contact Phone <b>"+contactPhoneNumber+"</b> "));
                 currentDisplayNameView.setText(userDisplayName);
+                descriptionTextView.setText(Html.fromHtml("Info <b>"+description+"</b> "));
                 currentCountryOfResidence.setText(Html.fromHtml("From <b>"+userCountryOfResidence+"</b> "));
+                birthdateTextView.setText(Html.fromHtml("Birth Date <b>"+birthdate+"</b> "));
                 joined_dateTextView.setText(Html.fromHtml("Joined <b>"+joined_date+"</b> "));
 
                 numOfLibraryTextView.setText(numOfLibraryCreated);
@@ -506,6 +510,8 @@ public class UserProfileFragment extends Fragment {
             editProfileButton = parentView.findViewById(R.id.editProfileIcon);
             profileImageView = parentView.findViewById(R.id.imageView1);
             currentDisplayNameView = parentView.findViewById(R.id.current_name);
+            descriptionTextView = parentView.findViewById(R.id.descriptionTextViewId);
+            birthdateTextView = parentView.findViewById(R.id.birthdateTextViewId);
             currentEmailView = parentView.findViewById(R.id.current_email);
             currentWebsiteLinkView = parentView.findViewById(R.id.current_website_link);
             currentPhoneNumberView = parentView.findViewById(R.id.currentPhoneNumberViewId);
@@ -1145,6 +1151,8 @@ public class UserProfileFragment extends Fragment {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                         String userDisplayName =""+ documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                        String description =""+ documentSnapshot.get(GlobalConfig.USER_DESCRIPTION_KEY);
+                        String birthdate =""+ documentSnapshot.get(GlobalConfig.USER_BIRTH_DATE_KEY);
                         String userCountryOfResidence =""+ documentSnapshot.get(GlobalConfig.USER_COUNTRY_OF_RESIDENCE_KEY);
                         String contactEmail =""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_EMAIL_ADDRESS_KEY);
                         String webLink = documentSnapshot.get(GlobalConfig.USER_PERSONAL_WEBSITE_LINK_KEY)!=null? ""+documentSnapshot.get(GlobalConfig.USER_PERSONAL_WEBSITE_LINK_KEY):"No link";
@@ -1200,7 +1208,7 @@ public class UserProfileFragment extends Fragment {
 
                         }
 
-                        onUserProfileFetchListener.onSuccess( userDisplayName, userCountryOfResidence, contactEmail,webLink, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl,joined_date,""+ numOfLibraryCreated,""+ numOfTutorialCreated,""+ numOfRatings, isUserBlocked, isUserProfilePhotoIncluded,isUserAnAuthor);
+                        onUserProfileFetchListener.onSuccess( userDisplayName,description,birthdate, userCountryOfResidence, contactEmail,webLink, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl,joined_date,""+ numOfLibraryCreated,""+ numOfTutorialCreated,""+ numOfRatings, isUserBlocked, isUserProfilePhotoIncluded,isUserAnAuthor);
                         }
                 });
     }
@@ -1606,7 +1614,7 @@ libraryView.setOnClickListener(new View.OnClickListener() {
     }
 
     interface OnUserProfileFetchListener{
-        void onSuccess(String userDisplayName,String userCountryOfResidence,String contactEmail,String webLink,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,String joined_date,String numOfLibraryCreated,String numOfTutorialCreated,String numberOfRatings,boolean isUserBlocked,boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor);
+        void onSuccess(String userDisplayName,String description,String birthdate,String userCountryOfResidence,String contactEmail,String webLink,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,String joined_date,String numOfLibraryCreated,String numOfTutorialCreated,String numberOfRatings,boolean isUserBlocked,boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor);
         void onFailed(String errorMessage);
     }
 }

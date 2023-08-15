@@ -121,6 +121,7 @@ private void initUI(View parentView){
 
                             String authorId  = documentSnapshot.getId();
                             final String userName = ""+ documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                            final String description = ""+ documentSnapshot.get(GlobalConfig.USER_DESCRIPTION_KEY);
                             final String gender = ""+ documentSnapshot.get(GlobalConfig.USER_GENDER_TYPE_KEY);
                             final String userPhoneNumber = ""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY);
                             final String userEmail = ""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_EMAIL_ADDRESS_KEY);
@@ -145,6 +146,7 @@ private void initUI(View parentView){
 
                             userFetchListener.onSuccess(new UsersDataModel(
                                      userName,
+                                     description,
                                      authorId,
                                      userProfilePhotoDownloadUrl,
                                      (int)totalNumberOfLibrary,

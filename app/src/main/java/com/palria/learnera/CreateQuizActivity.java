@@ -72,7 +72,9 @@ public class CreateQuizActivity extends AppCompatActivity {
     ArrayList<Integer> quizDateList = new ArrayList<>();
 //    String[] timeLimits = {"5","10","15","20","25","30","35","40","45","50","55","60"};
     ArrayList<String> timeLimits = new ArrayList<>();
-
+    Spinner categorySelector;
+    String category;
+    boolean isCategorySelected = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -213,7 +215,7 @@ public class CreateQuizActivity extends AppCompatActivity {
             addTheoryQuestion(containerLinearLayout.getChildCount(),"30","");
             addObjectiveQuestion(containerLinearLayout.getChildCount(),"30","","","","", "");
         }
-
+        initCategorySpinner(categorySelector);
         prepareDatePickerDialog();
         prepareTimePickerDialog();
     }
@@ -230,6 +232,7 @@ public class CreateQuizActivity extends AppCompatActivity {
         menuButton = findViewById(R.id.menuButtonId);
 
         quizTitleInput = findViewById(R.id.quizTitleInput1Id);
+        categorySelector = findViewById(R.id.categorySelectorSpinnerId);
         quizDateInput = findViewById(R.id.quizDateInputId);
         quizDescriptionInput = findViewById(R.id.quizDescriptionInput1Id);
         quizFeeDescriptionInput = findViewById(R.id.quizFeeInputId);
@@ -338,12 +341,28 @@ public class CreateQuizActivity extends AppCompatActivity {
             }
         });
     }
+    private void initCategorySpinner(Spinner categorySelectorSpinner){
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this,R.layout.support_simple_spinner_dropdown_item,GlobalConfig.getCategoryList(CreateQuizActivity.this));
+        categorySelectorSpinner.setAdapter(arrayAdapter);
+
+        categorySelectorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                isCategorySelected = true;
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
 
     private void showQuizCompletionConfirmationDialog(){
 
         AlertDialog confirmationDialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
         builder.setTitle("Confirm your action");
         builder.setMessage("You are about to save your quiz, please confirm if you are ready");
         builder.setCancelable(true);
@@ -382,99 +401,106 @@ public class CreateQuizActivity extends AppCompatActivity {
     }
 
     private void processAndSaveQuiz() {
-        toggleProgress(true);
-        ArrayList<ArrayList<String>> questionList = new ArrayList<>();
-        int totalTimeLimit = 0;
-        for (int i = 0; i < containerLinearLayout.getChildCount(); i++) {
-            View questionView = containerLinearLayout.getChildAt(i);
+        if (isCategorySelected) {
+            toggleProgress(true);
+            category = categorySelector.getSelectedItem() + "";
+            ArrayList<ArrayList<String>> questionList = new ArrayList<>();
+            int totalTimeLimit = 0;
+            for (int i = 0; i < containerLinearLayout.getChildCount(); i++) {
+                View questionView = containerLinearLayout.getChildAt(i);
 
-            Spinner timeSelector1 = questionView.findViewById(R.id.timeSelectorSpinnerId);
-            totalTimeLimit = totalTimeLimit + (Integer.parseInt(timeSelector1.getSelectedItem() + ""));
+                Spinner timeSelector1 = questionView.findViewById(R.id.timeSelectorSpinnerId);
+                totalTimeLimit = totalTimeLimit + (Integer.parseInt(timeSelector1.getSelectedItem() + ""));
 
-            ArrayList<String> theoryQuestionList = new ArrayList<>();
+                ArrayList<String> theoryQuestionList = new ArrayList<>();
 
-            if (questionView.getId() == R.id.theoryQuestionViewId) {
+                if (questionView.getId() == R.id.theoryQuestionViewId) {
 //                        Toast.makeText(CreateQuizActivity.this, "theory", Toast.LENGTH_SHORT).show();
-                TextInputEditText question = questionView.findViewById(R.id.questionInput1Id);
-                Spinner timeSelector = questionView.findViewById(R.id.timeSelectorSpinnerId);
+                    TextInputEditText question = questionView.findViewById(R.id.questionInput1Id);
+                    Spinner timeSelector = questionView.findViewById(R.id.timeSelectorSpinnerId);
 
-                //Indicates that this is an objective question
-                theoryQuestionList.add(0, GlobalConfig.IS_THEORY_QUESTION_KEY);
-                //stores the position of this question
-                theoryQuestionList.add(1, i + "");
-                //stores the time limit of this particular question
-                theoryQuestionList.add(2, timeSelector.getSelectedItem() + "");
-                //This stores the question
-                theoryQuestionList.add(3, question.getText() + "");
+                    //Indicates that this is an objective question
+                    theoryQuestionList.add(0, GlobalConfig.IS_THEORY_QUESTION_KEY);
+                    //stores the position of this question
+                    theoryQuestionList.add(1, i + "");
+                    //stores the time limit of this particular question
+                    theoryQuestionList.add(2, timeSelector.getSelectedItem() + "");
+                    //This stores the question
+                    theoryQuestionList.add(3, question.getText() + "");
 
-                questionList.add(i, theoryQuestionList);
-            } else if (questionView.getId() == R.id.objectiveQuestionViewId) {
+                    questionList.add(i, theoryQuestionList);
+                } else if (questionView.getId() == R.id.objectiveQuestionViewId) {
 //                        Toast.makeText(CreateQuizActivity.this, "objective", Toast.LENGTH_SHORT).show();
-                ArrayList<String> objectiveQuestionList = new ArrayList<>();
+                    ArrayList<String> objectiveQuestionList = new ArrayList<>();
 
-                TextInputEditText question = questionView.findViewById(R.id.questionInput1Id);
+                    TextInputEditText question = questionView.findViewById(R.id.questionInput1Id);
 
-                TextInputEditText option1 = questionView.findViewById(R.id.answerInput1Id);
-                TextInputEditText option2 = questionView.findViewById(R.id.answerInput2Id);
-                TextInputEditText option3 = questionView.findViewById(R.id.answerInput3Id);
-                TextInputEditText option4 = questionView.findViewById(R.id.answerInput4Id);
+                    TextInputEditText option1 = questionView.findViewById(R.id.answerInput1Id);
+                    TextInputEditText option2 = questionView.findViewById(R.id.answerInput2Id);
+                    TextInputEditText option3 = questionView.findViewById(R.id.answerInput3Id);
+                    TextInputEditText option4 = questionView.findViewById(R.id.answerInput4Id);
 
-                Spinner timeSelector = questionView.findViewById(R.id.timeSelectorSpinnerId);
-                //Indicates that this is an objective question
-                objectiveQuestionList.add(0, GlobalConfig.IS_OBJECTIVE_QUESTION_KEY);
-                //stores the position of this question
-                objectiveQuestionList.add(1, i + "");
-                //stores the time limit of this particular question
-                objectiveQuestionList.add(2, timeSelector.getSelectedItem() + "");
-                //This stores the question
-                objectiveQuestionList.add(3, question.getText() + "");
-                //These are the answer options to the question
-                objectiveQuestionList.add(4, option1.getText() + "");
-                objectiveQuestionList.add(5, option2.getText() + "");
-                objectiveQuestionList.add(6, option3.getText() + "");
-                objectiveQuestionList.add(7, option4.getText() + "");
+                    Spinner timeSelector = questionView.findViewById(R.id.timeSelectorSpinnerId);
+                    //Indicates that this is an objective question
+                    objectiveQuestionList.add(0, GlobalConfig.IS_OBJECTIVE_QUESTION_KEY);
+                    //stores the position of this question
+                    objectiveQuestionList.add(1, i + "");
+                    //stores the time limit of this particular question
+                    objectiveQuestionList.add(2, timeSelector.getSelectedItem() + "");
+                    //This stores the question
+                    objectiveQuestionList.add(3, question.getText() + "");
+                    //These are the answer options to the question
+                    objectiveQuestionList.add(4, option1.getText() + "");
+                    objectiveQuestionList.add(5, option2.getText() + "");
+                    objectiveQuestionList.add(6, option3.getText() + "");
+                    objectiveQuestionList.add(7, option4.getText() + "");
 
 
-                questionList.add(i, objectiveQuestionList);
+                    questionList.add(i, objectiveQuestionList);
+                }
+
             }
 
+            String quizTitle = quizTitleInput.getText() + "";
+            String quizDescription = quizDescriptionInput.getText() + "";
+            String quizFeeDescription = quizFeeDescriptionInput.getText() + "";
+            String quizRewardDescription = quizRewardDescriptionInput.getText() + "";
+            int totalQuestions = questionList.size();
+            int finalTotalTimeLimit = totalTimeLimit;
+
+            GlobalConfig.createQuiz(CreateQuizActivity.this, quizId, quizTitle, category, totalQuestions, totalTimeLimit, quizDescription, quizFeeDescription, quizRewardDescription, questionList, quizDateList, isQuizEdition, isPublish, new GlobalConfig.ActionCallback() {
+                @Override
+                public void onSuccess() {
+                    toggleProgress(false);
+
+                    GlobalConfig.createSnackBar2(CreateQuizActivity.this, quizTitleInput, "Your quiz is successfully posted", "View", Snackbar.LENGTH_INDEFINITE, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailed(String errorMessage) {
+
+                    toggleProgress(false);
+
+                    GlobalConfig.createSnackBar2(CreateQuizActivity.this, quizTitleInput, "Failed", "Retry", Snackbar.LENGTH_INDEFINITE, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            processAndSaveQuiz();
+
+                        }
+                    });
+
+                }
+            });
         }
-
-        String quizTitle = quizTitleInput.getText() + "";
-        String quizDescription = quizDescriptionInput.getText() + "";
-        String quizFeeDescription = quizFeeDescriptionInput.getText() + "";
-        String quizRewardDescription = quizRewardDescriptionInput.getText() + "";
-        int totalQuestions = questionList.size();
-        int finalTotalTimeLimit = totalTimeLimit;
-
-        GlobalConfig.createQuiz(CreateQuizActivity.this, quizId, quizTitle, totalQuestions, totalTimeLimit, quizDescription, quizFeeDescription, quizRewardDescription, questionList,quizDateList, isQuizEdition, isPublish, new GlobalConfig.ActionCallback() {
-            @Override
-            public void onSuccess() {
-                toggleProgress(false);
-
-                GlobalConfig.createSnackBar2(CreateQuizActivity.this, quizTitleInput, "Your quiz is successfully posted", "View", Snackbar.LENGTH_INDEFINITE, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                    }
-                });
-            }
-
-            @Override
-            public void onFailed(String errorMessage) {
-
-                        toggleProgress(false);
-
-                        GlobalConfig.createSnackBar2(CreateQuizActivity.this, quizTitleInput, "Failed", "Retry", Snackbar.LENGTH_INDEFINITE, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                processAndSaveQuiz();
-
-                            }
-                        });
-
-            }
-        });
+        else{
+          categorySelector.performClick();
+            Toast.makeText(this, "Please select category", Toast.LENGTH_SHORT).show();
+        }
     }
     void prepareDatePickerDialog(){
 

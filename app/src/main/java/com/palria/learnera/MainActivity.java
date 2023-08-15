@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     /*
     TODO enable google ads in production release but disable if in debug mode (just remove the if statement in the ads methods)
     TODO disable activity log feature for now. maybe later we enable it.
+    TODO apply from: 'https://raw.githubusercontent.com/duanhong169/bintray-gradle/master/bintray.gradle'
      */
     BottomNavigationView bottomNavigationView;
     BottomAppBar bottomAppBar;
@@ -636,7 +637,7 @@ if(GlobalConfig.isUserLoggedIn()) {
                             String userName = documentSnapshot.getString(GlobalConfig.USER_DISPLAY_NAME_KEY);
                             String userId = documentSnapshot.getString(GlobalConfig.USER_ID_KEY);
                             String gender = documentSnapshot.getString(GlobalConfig.USER_GENDER_TYPE_KEY);
-                            String dateOfBirth = documentSnapshot.getString(GlobalConfig.USER_DATE_OF_BIRTH_KEY);
+                            String dateOfBirth = documentSnapshot.getString(GlobalConfig.USER_BIRTH_DATE_KEY);
                             String dateRegistered = documentSnapshot.getString(GlobalConfig.USER_PROFILE_DATE_CREATED_KEY);
                             String userPhoneNumber = documentSnapshot.getString(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY);
                             String userEmail = documentSnapshot.getString(GlobalConfig.USER_CONTACT_EMAIL_ADDRESS_KEY);
@@ -653,6 +654,15 @@ if(GlobalConfig.isUserLoggedIn()) {
                             ArrayList<String> usersFollowingList = documentSnapshot.get(GlobalConfig.USERS_FOLLOWING_LIST_KEY)!=null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.USERS_FOLLOWING_LIST_KEY):new ArrayList<>();
                             for(String userFollowingId : usersFollowingList){
                                 GlobalConfig.addToUsersFollowingList(MainActivity.this,userFollowingId);
+                            }
+
+                            ArrayList<String> likedPageList = documentSnapshot.get(GlobalConfig.LIKED_PAGES_LIST_KEY)!=null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIKED_PAGES_LIST_KEY):new ArrayList<>();
+                            for(String likedPageId : likedPageList){
+                                GlobalConfig.recordLikedPage(MainActivity.this,likedPageId,true);
+                            }
+                            ArrayList<String> likedPageDiscussionList = documentSnapshot.get(GlobalConfig.LIKED_PAGE_DISCUSSION_LIST_KEY)!=null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.LIKED_PAGE_DISCUSSION_LIST_KEY):new ArrayList<>();
+                            for(String likedPageDiscussionId : likedPageDiscussionList){
+                                GlobalConfig.recordLikedPageDiscussion(MainActivity.this,likedPageDiscussionId,true);
                             }
 
                             GlobalConfig.setIsCurrentUserAccountVerified(isAccountVerified);

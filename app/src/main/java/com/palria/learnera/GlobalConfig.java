@@ -146,6 +146,7 @@ public class GlobalConfig {
     public static final String TUTORIAL_FRAGMENT_TYPE_KEY = "TUTORIAL_FRAGMENT_TYPE";
     public static final String CATEGORY_FRAGMENT_TYPE_KEY = "CATEGORY_FRAGMENT_TYPE";
     public static final String DISCUSSION_FRAGMENT_TYPE_KEY = "DISCUSSION_FRAGMENT_TYPE";
+    public static final String QUIZ_FRAGMENT_TYPE_KEY = "QUIZ_FRAGMENT_TYPE";
 
     public static final String IS_AUTHOR_OPEN_TYPE_KEY = "IS_AUTHOR_OPEN_TYPE";
 
@@ -169,7 +170,6 @@ public class GlobalConfig {
     public static final String ALL_USERS_KEY = "ALL_USERS";
     public static final String USER_PROFILE_KEY = "USER_PROFILE";
     public static final String USER_ID_KEY = "USER_ID";
-    public static final String USER_DATE_OF_BIRTH_KEY = "USER_DATE_OF_BIRTH";
     public static final String IS_USER_PROFILE_COMPLETED_KEY = "IS_USER_PROFILE_COMPLETED";
     public static final String USER_RESIDENTIAL_ADDRESS_KEY = "USER_RESIDENTIAL_ADDRESS";
     public static final String USER_AGE_KEY = "USER_AGE";
@@ -216,6 +216,7 @@ public class GlobalConfig {
     public static final String TOTAL_NUMBER_OF_USER_PROFILE_REACH_KEY = "TOTAL_NUMBER_OF_USER_PROFILE_REACH";
 
     public static final String USER_DESCRIPTION_KEY = "USER_DESCRIPTION";
+    public static final String USER_BIRTH_DATE_KEY = "USER_BIRTH_DATE";
     public static final String USER_PROFILE_PHOTO_KEY = "USER_PROFILE_PHOTO";
     public static final String IS_USER_PROFILE_PHOTO_INCLUDED_KEY = "IS_USER_PROFILE_PHOTO_INCLUDED";
     public static final String USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY = "USER_PROFILE_PHOTO_DOWNLOAD_URL";
@@ -232,6 +233,7 @@ public class GlobalConfig {
     public static final String USER_COUNTRY_OF_RESIDENCE_KEY = "USER_COUNTRY_OF_RESIDENCE";
     public static final String USER_SEARCH_VERBATIM_KEYWORD_KEY = "USER_SEARCH_VERBATIM_KEYWORD";
     public static final String USER_SEARCH_ANY_MATCH_KEYWORD_KEY = "USER_SEARCH_ANY_MATCH_KEYWORD";
+
     //USER FIELD KEYS END
 
 
@@ -374,6 +376,7 @@ public class GlobalConfig {
     public static final String FOLDER_PAGE_ID_KEY = "FOLDER_PAGE_ID";
 
     public static final String PAGE_ID_KEY = "PAGE_ID";
+    public static final String LIKED_PAGES_LIST_KEY = "LIKED_PAGES_LIST";
     public static final String IS_TUTORIAL_PAGE_KEY = "IS_TUTORIAL_PAGE";
     public static final String IS_PAGINATION_KEY = "IS_PAGINATION";
     public static final String FOLDER_CREATED_DATE_TIME_STAMP_KEY = "FOLDER_CREATED_DATE_TIME_STAMP";
@@ -385,6 +388,7 @@ public class GlobalConfig {
 
     public static final String ALL_CATEGORY_KEY = "ALL_CATEGORY";
     public static final String CATEGORY_LIST_KEY = "CATEGORY_LIST";
+    public static final String CATEGORY_KEY = "CATEGORY";
     public static final String IS_CATEGORY_LIST_SAVED_KEY = "IS_CATEGORY_LIST_SAVED";
 
 
@@ -531,6 +535,7 @@ public class GlobalConfig {
     public static final String DISCUSSION_ID_KEY = "DISCUSSION_ID";
     public static final String PARENT_DISCUSSION_ID_KEY = "PARENT_DISCUSSION_ID";
     public static final String LIKED_DISCUSSIONS_KEY = "LIKED_DISCUSSIONS";
+    public static final String LIKED_PAGE_DISCUSSION_LIST_KEY = "LIKED_PAGE_DISCUSSION_LIST";
     public static final String MY_PAGES_DISCUSSION_KEY = "MY_PAGES_DISCUSSION";
     public static final String DISCUSSION_POSTER_ID_KEY = "DISCUSSION_POSTER_ID";
     public static final String TOTAL_DISCUSSIONS_KEY = "TOTAL_DISCUSSIONS";
@@ -567,6 +572,10 @@ public class GlobalConfig {
     public static final String QUIZ_FEE_DESCRIPTION_KEY = "QUIZ_FEE_DESCRIPTION";
     public static final String QUIZ_REWARD_DESCRIPTION_KEY = "QUIZ_REWARD_DESCRIPTION";
 
+    public static final String QUIZ_SEARCH_VERBATIM_KEYWORD_KEY = "QUIZ_SEARCH_VERBATIM_KEYWORD";
+    public static final String QUIZ_SEARCH_ANY_MATCH_KEYWORD_KEY = "QUIZ_SEARCH_ANY_MATCH_KEYWORD";
+
+    public static final String IS_CLOSED_KEY = "IS_CLOSED";
     public static final String TOTAL_PARTICIPANTS_KEY = "TOTAL_PARTICIPANTS";
     public static final String PARTICIPANTS_LIST_KEY = "PARTICIPANTS_LIST";
     public static final String TOTAL_QUIZ_JOINED_KEY = "TOTAL_QUIZ_JOINED";
@@ -2400,7 +2409,7 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
     }
     public static void updateActivityLog(String activityLogType, String authorId, String libraryId, String tutorialId,String tutorialFolderId ,String pageId ,String reviewId , ActionCallback actionCallback){
 
-            //We disable logging for now till further notice. So if true just return and perform no action .
+            //We disable logging for now till further notice. So this if statement just returns and performs no action and it's always true .
         if(true){
             actionCallback.onSuccess();
             return;
@@ -4135,7 +4144,7 @@ if(isUserLoggedIn()) {
                     }
                 });
     }
-    public static void likePage(String pageId, String tutorialId,String folderId, String authorId, boolean isTutorialPage,boolean isIncreaseCount, ActionCallback actionCallback ) {
+    public static void likePage(Context context,String pageId, String tutorialId,String folderId, String authorId, boolean isTutorialPage,boolean isIncreaseCount, ActionCallback actionCallback ) {
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
 
         DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId()).collection(GlobalConfig.LIKED_PAGES_KEY).document(pageId);
@@ -4170,6 +4179,14 @@ if(isUserLoggedIn()) {
             writeBatch.set(documentReference4, discussionDetails4, SetOptions.merge());
         }
 
+        DocumentReference userReference3 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId());
+        HashMap<String, Object> userDetails3 = new HashMap<>();
+        if(isIncreaseCount){
+            userDetails3.put(GlobalConfig.LIKED_PAGES_LIST_KEY, FieldValue.arrayUnion(pageId));
+        }else{
+            userDetails3.put(GlobalConfig.LIKED_PAGES_LIST_KEY, FieldValue.arrayRemove(pageId));
+        }
+        writeBatch.set(userReference3, userDetails3, SetOptions.merge());
 
         writeBatch.commit()
                 .addOnFailureListener(new OnFailureListener() {
@@ -4182,10 +4199,36 @@ if(isUserLoggedIn()) {
                     @Override
                     public void onSuccess(Void unused) {
                         actionCallback.onSuccess();
+                        recordLikedPage( context, pageId,isIncreaseCount);
                     }
                 });
     }
-    public static void likePageDiscussion(String discussionId, String pageId, String tutorialId,String folderId, String authorId, boolean isTutorialPage,boolean isIncreaseCount, ActionCallback actionCallback ) {
+
+    public static boolean isPageLiked(Context context,String pageId){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+getCurrentUserId(), MODE_PRIVATE);
+        String likedList = sharedPreferences.getString(GlobalConfig.LIKED_PAGES_LIST_KEY,"");
+
+        return likedList.contains(pageId);
+    }
+    public static void recordLikedPage(Context context,String pageId,boolean isIncreaseCount){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+getCurrentUserId(), MODE_PRIVATE);
+        String oldList = sharedPreferences.getString(GlobalConfig.LIKED_PAGES_LIST_KEY,"");
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        if(!oldList.contains(pageId)) {
+
+            editor.putString(GlobalConfig.LIKED_PAGES_LIST_KEY, oldList + pageId + "-NEXT-");
+        }else{
+            if(!isIncreaseCount) {
+                oldList = oldList.replace(pageId,"");
+                editor.putString(GlobalConfig.LIKED_PAGES_LIST_KEY, oldList + pageId + "-NEXT-");
+            }
+        }
+        editor.apply();
+
+    }
+
+    public static void likePageDiscussion(Context context,String discussionId, String pageId, String tutorialId,String folderId, String authorId, boolean isTutorialPage,boolean isIncreaseCount, ActionCallback actionCallback ) {
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
 
         DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId()).collection(GlobalConfig.LIKED_DISCUSSIONS_KEY).document(discussionId);
@@ -4212,6 +4255,15 @@ if(isUserLoggedIn()) {
             writeBatch.set(documentReference4, discussionDetails4, SetOptions.merge());
 
 
+        DocumentReference userReference3 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId());
+        HashMap<String, Object> userDetails3 = new HashMap<>();
+        if(isIncreaseCount){
+            userDetails3.put(GlobalConfig.LIKED_PAGE_DISCUSSION_LIST_KEY, FieldValue.arrayUnion(discussionId));
+        }else{
+            userDetails3.put(GlobalConfig.LIKED_PAGE_DISCUSSION_LIST_KEY, FieldValue.arrayRemove(discussionId));
+        }
+        writeBatch.set(userReference3, userDetails3, SetOptions.merge());
+
         writeBatch.commit()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -4223,8 +4275,35 @@ if(isUserLoggedIn()) {
                     @Override
                     public void onSuccess(Void unused) {
                         actionCallback.onSuccess();
+                        recordLikedPageDiscussion( context, discussionId,isIncreaseCount);
+
                     }
                 });
+    }
+
+
+    public static boolean isPageDiscussionLiked(Context context,String discussionId){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+getCurrentUserId(), MODE_PRIVATE);
+        String likedList = sharedPreferences.getString(GlobalConfig.LIKED_PAGE_DISCUSSION_LIST_KEY,"");
+
+        return likedList.contains(discussionId);
+    }
+    public static void recordLikedPageDiscussion(Context context,String discussionId,boolean isIncreaseCount){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+getCurrentUserId(), MODE_PRIVATE);
+        String oldList = sharedPreferences.getString(GlobalConfig.LIKED_PAGE_DISCUSSION_LIST_KEY,"");
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        if(!oldList.contains(discussionId)) {
+
+            editor.putString(GlobalConfig.LIKED_PAGE_DISCUSSION_LIST_KEY, oldList + discussionId + "-NEXT-");
+        }else{
+            if(!isIncreaseCount) {
+                oldList = oldList.replace(discussionId,"");
+                editor.putString(GlobalConfig.LIKED_PAGE_DISCUSSION_LIST_KEY, oldList + discussionId + "-NEXT-");
+            }
+        }
+        editor.apply();
+
     }
 //    public static void dislikePage(String pageId,boolean isIncreaseCount, String tutorialId,String folderId, boolean isTutorialPage, ActionCallback actionCallback ){
 //        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
@@ -4267,6 +4346,7 @@ if(isUserLoggedIn()) {
 
     @SuppressLint("MissingPermission")
     public static void loadNativeAd(Context context,int position,String nativeAdUnitId,ViewGroup viewGroup, boolean isFromCountDown, NativeAd.OnNativeAdLoadedListener onNativeAdLoadedListener){
+          // TODO remove this if statement during production release
             if(true)return;
         if (context != null) {
 //            String nativeAdUnitId = null;
@@ -4541,7 +4621,7 @@ if(isUserLoggedIn()) {
         return adView;
     }
 
-    public static void createQuiz(Context context, String quizId, String quizTitle, int totalQuestions, int totalTimeLimit, String quizDescription, String quizFeeDescription, String quizRewardDescription, ArrayList<ArrayList<String>> questionArrayList, ArrayList<Integer> quizDateList, boolean isEdition, boolean isPublic, ActionCallback actionCallback){
+    public static void createQuiz(Context context, String quizId, String quizTitle,String category, int totalQuestions, int totalTimeLimit, String quizDescription, String quizFeeDescription, String quizRewardDescription, ArrayList<ArrayList<String>> questionArrayList, ArrayList<Integer> quizDateList, boolean isEdition, boolean isPublic, ActionCallback actionCallback){
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
         DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId);
         HashMap<String,Object> quizDetails = new HashMap<>();
@@ -4549,10 +4629,12 @@ if(isUserLoggedIn()) {
         quizDetails.put(GlobalConfig.AUTHOR_ID_KEY,getCurrentUserId());
         quizDetails.put(GlobalConfig.QUIZ_DESCRIPTION_KEY,quizDescription);
         quizDetails.put(GlobalConfig.QUIZ_TITLE_KEY,quizTitle);
+        quizDetails.put(GlobalConfig.CATEGORY_KEY,category);
         quizDetails.put(GlobalConfig.TOTAL_QUESTIONS_KEY,totalQuestions);
         quizDetails.put(GlobalConfig.TOTAL_TIME_LIMIT_KEY,totalTimeLimit);
 //      quizDetails.put(GlobalConfig.SINGLE_QUESTION_TIME_LIMIT_KEY,singleQuestionTimeLimit);
         quizDetails.put(GlobalConfig.IS_PUBLIC_KEY,isPublic);
+        quizDetails.put(GlobalConfig.IS_CLOSED_KEY,false);
         quizDetails.put(GlobalConfig.QUIZ_FEE_DESCRIPTION_KEY,quizFeeDescription);
         quizDetails.put(GlobalConfig.QUIZ_REWARD_DESCRIPTION_KEY,quizRewardDescription);
         quizDetails.put(GlobalConfig.QUIZ_DATE_LIST_KEY,quizDateList);

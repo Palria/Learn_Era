@@ -109,7 +109,7 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
                 }
             }
             holder.discussionCountTextView.setText(pageDataModel.getDiscussionCount()+"");
-
+/*
             DocumentReference likedDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.LIKED_PAGES_KEY).document(pageDataModel.getPageId());
             GlobalConfig.checkIfDocumentExists(likedDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
                 @Override
@@ -127,6 +127,13 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
 
                 }
             });
+*/
+
+            if(GlobalConfig.isPageLiked(context,pageDataModel.getPageId())){
+                holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_baseline_thumb_up_24,context.getTheme()));
+            }else{
+                holder.likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
+            }
 
             try {
                 Glide.with(context)
@@ -266,7 +273,7 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
                                         holder.likeCountTextView.setText((currentLikesCount - 1) + "");
                                     }
                                     holder.likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
-                                    GlobalConfig.likePage(pageDataModel.getPageId(), pageDataModel.getTutorialId(), pageDataModel.getFolderId(), pageDataModel.getAuthorId(), isTutorialPage, false, new GlobalConfig.ActionCallback() {
+                                    GlobalConfig.likePage(context,pageDataModel.getPageId(), pageDataModel.getTutorialId(), pageDataModel.getFolderId(), pageDataModel.getAuthorId(), isTutorialPage, false, new GlobalConfig.ActionCallback() {
                                         @Override
                                         public void onSuccess() {
                                             holder.likeActionButton.setEnabled(true);
@@ -286,7 +293,7 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
                                 public void onNotExist() {
                                     holder.likeCountTextView.setText((currentLikesCount+1)+"");
                                     holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_baseline_thumb_up_24,context.getTheme()));
-                                    GlobalConfig.likePage(pageDataModel.getPageId(), pageDataModel.getTutorialId(), pageDataModel.getFolderId(), pageDataModel.getAuthorId(), isTutorialPage, true, new GlobalConfig.ActionCallback() {
+                                    GlobalConfig.likePage(context,pageDataModel.getPageId(), pageDataModel.getTutorialId(), pageDataModel.getFolderId(), pageDataModel.getAuthorId(), isTutorialPage, true, new GlobalConfig.ActionCallback() {
                                         @Override
                                         public void onSuccess() {
                                             holder.likeActionButton.setEnabled(true);

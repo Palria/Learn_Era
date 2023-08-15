@@ -97,24 +97,23 @@ ImageButton morePageActionButton;
         initUI();
         fetchIntentData();
         if(!(GlobalConfig.getBlockedItemsList().contains(authorId+"")) &&!(GlobalConfig.getBlockedItemsList().contains(libraryId+"")) && !(GlobalConfig.getBlockedItemsList().contains(tutorialId+"")))  {
-            DocumentReference likedDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.LIKED_PAGES_KEY).document(pageId);
-            GlobalConfig.checkIfDocumentExists(likedDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
-                @Override
-                public void onExist(DocumentSnapshot documentSnapshot) {
-                   likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_baseline_thumb_up_24,getTheme()));
-                }
+//            DocumentReference likedDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.LIKED_PAGES_KEY).document(pageId);
+//            GlobalConfig.checkIfDocumentExists(likedDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+//                @Override
+//                public void onExist(DocumentSnapshot documentSnapshot) {
+//                }
+//
+//                @Override
+//                public void onNotExist() {
+//                }
+//
+//                @Override
+//                public void onFailed(@NonNull String errorMessage) {
+//                    likeActionButton.setEnabled(true);
+//
+//                }
+//            });
 
-                @Override
-                public void onNotExist() {
-                    likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
-                }
-
-                @Override
-                public void onFailed(@NonNull String errorMessage) {
-                    likeActionButton.setEnabled(true);
-
-                }
-            });
 
             fetchPageData(true);
             fetchAuthorProfile();
@@ -409,7 +408,7 @@ ImageButton morePageActionButton;
                     public void onExist(DocumentSnapshot documentSnapshot) {
                         likeCountTextView.setText((currentLikesCount-1)+"");
                         likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
-                        GlobalConfig.likePage(pageId, tutorialId, folderId, authorId, isTutorialPage, false, new GlobalConfig.ActionCallback() {
+                        GlobalConfig.likePage(PageActivity.this,pageId, tutorialId, folderId, authorId, isTutorialPage, false, new GlobalConfig.ActionCallback() {
                             @Override
                             public void onSuccess() {
                                 likeActionButton.setEnabled(true);
@@ -429,7 +428,7 @@ ImageButton morePageActionButton;
                     public void onNotExist() {
                         likeCountTextView.setText((currentLikesCount+1)+"");
                         likeActionButton.setImageResource(R.drawable.ic_baseline_thumb_up_24);
-                        GlobalConfig.likePage(pageId, tutorialId, folderId, authorId, isTutorialPage, true, new GlobalConfig.ActionCallback() {
+                        GlobalConfig.likePage(PageActivity.this,pageId, tutorialId, folderId, authorId, isTutorialPage, true, new GlobalConfig.ActionCallback() {
                             @Override
                             public void onSuccess() {
                                 likeActionButton.setEnabled(true);
@@ -717,6 +716,11 @@ ImageButton morePageActionButton;
         String pageTitle = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
         libraryId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
 
+        if(GlobalConfig.isPageLiked(this,pageId)){
+            likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_baseline_thumb_up_24,getTheme()));
+        }else{
+            likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
+        }
         //USE THIS URL TO DOWNLOAD PAGE'S COVER IMAGE
         String pageCoverImageDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
         String dateCreated =  documentSnapshot.get(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY)!=null?  documentSnapshot.getTimestamp(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY).toDate() +"" :"Undefined";

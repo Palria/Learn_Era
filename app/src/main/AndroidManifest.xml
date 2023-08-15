@@ -31,11 +31,6 @@
             android:name=".QuizActivity"
             android:theme="@style/Theme.LearnEra"
             android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <meta-data
@@ -46,10 +41,7 @@
             android:name=".CreateQuizActivity"
             android:exported="true"
             android:theme="@style/Theme.LearnEra" />
-        <activity
-            android:name=".CreateQuizActivity"
-            android:exported="true"
-            android:theme="@style/Theme.LearnEra" />
+       
         <activity
             android:name=".DeclineUserAccountVerificationActivity"
             android:exported="true"
@@ -196,7 +188,12 @@
         <activity
             android:name=".MainActivity"
             android:exported="false">
-
+    
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+        
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <meta-data

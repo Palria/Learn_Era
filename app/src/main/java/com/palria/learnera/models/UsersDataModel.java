@@ -9,6 +9,8 @@ import java.io.Serializable;
 public class UsersDataModel implements Serializable {
     /**The username of the user*/
     String userName;
+    /**The description of the user*/
+    String description;
     /**The user Id of the user*/
     String userId;
     /**
@@ -34,7 +36,6 @@ public class UsersDataModel implements Serializable {
     String userEmail;
     /**The user's country of origin*/
     String userCountryOfOrigin;
-
     /**The total number of this user's one star rating.
      * Each time a reader rates this user a one star, this variable is incremented
      * in the database.
@@ -76,6 +77,7 @@ public class UsersDataModel implements Serializable {
      * */
     public  UsersDataModel(
             String userName,
+            String description,
             String userId,
             String userProfileImageDownloadUrl,
             int totalNumberOfLibrariesCreated,
@@ -97,6 +99,7 @@ public class UsersDataModel implements Serializable {
     ){
 
         this.userName = userName;
+        this.description = description;
         this.userId = userId;
         this.userProfileImageDownloadUrl = userProfileImageDownloadUrl;
         this.totalNumberOfLibrariesCreated = totalNumberOfLibrariesCreated;
@@ -125,6 +128,14 @@ public class UsersDataModel implements Serializable {
 
     void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getUserDescription(){
+        return description;
+    }
+
+    void setUserDescription(String description) {
+        this.description = description;
     }
 
     public String getUserId(){

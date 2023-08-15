@@ -97,7 +97,7 @@
             </LinearLayout>
             <TextView
                 android:ellipsize="end"
-                android:maxLines="1"
+                android:maxLength="200"
                 android:id="@+id/description"
                 android:text="Learn Era User"
                 android:layout_width="wrap_content"

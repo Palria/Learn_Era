@@ -62,11 +62,38 @@
         android:background="@color/white"
         />
     
+    <LinearLayout
+        android:id="@+id/categoryLinearLayoutId"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:paddingHorizontal="5pt"
+        android:paddingVertical="5pt"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_border_gray_bg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/publishIndicatorSwitchId"
+        >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Category"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:drawableTint="@color/grayDark"
+            />
+        <Spinner
+            android:id="@+id/categorySelectorSpinnerId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            
+            />
+    </LinearLayout>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/publishIndicatorSwitchId"
+        app:layout_constraintTop_toBottomOf="@id/categoryLinearLayoutId"
         >
  <LinearLayout
         android:layout_width="match_parent"

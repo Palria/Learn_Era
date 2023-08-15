@@ -23,7 +23,7 @@ public class QuizDataModel implements Serializable {
     private long totalParticipants;
     private boolean isPublic;
     private boolean isClosed;
-    ArrayList<Integer> dateList;
+    ArrayList<Long> dateList;
     private ArrayList<String> participantsList;
     public QuizDataModel(){}
     public QuizDataModel(
@@ -40,7 +40,7 @@ public class QuizDataModel implements Serializable {
              long totalParticipants,
              boolean isPublic,
              boolean isClosed,
-             ArrayList<Integer> dateList,
+             ArrayList<Long> dateList,
              ArrayList<String> participantsList
             ) {
         this.quizId = quizId;
@@ -112,7 +112,7 @@ public class QuizDataModel implements Serializable {
         return isClosed;
     }
 
-    public ArrayList<Integer> getDateList() {
+    public ArrayList<Long> getDateList() {
         return dateList;
     }
 

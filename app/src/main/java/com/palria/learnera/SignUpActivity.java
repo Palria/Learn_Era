@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
@@ -14,6 +15,7 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -33,6 +35,7 @@ import com.palria.learnera.network.CountryNetworkApi;
 import com.palria.learnera.network.CountryResponseDataModel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import retrofit2.Call;
@@ -42,6 +45,8 @@ import retrofit2.Response;
 public class SignUpActivity extends AppCompatActivity {
 
     private String userDisplayName;
+    private String birthDate;
+    private String description;
     private String userCountryOfResidence;
     private String phoneNumber;
     private String email;
@@ -50,6 +55,8 @@ public class SignUpActivity extends AppCompatActivity {
     private String confirmPassword;
     private String genderType;
     private EditText userDisplayNameEditText;
+    private EditText birthDateInput;
+    private EditText descriptionInput;
     private EditText userCountryOfResidenceEditText;
     private EditText phoneNumberEditText;
     private EditText emailEditText;
@@ -65,13 +72,13 @@ public class SignUpActivity extends AppCompatActivity {
     private TextView login_link_view;
     private TextView forget_password_link;
     private TextView errorMessageTextView;
-
+    boolean isBirthDateSet = false;
     TextInputLayout passwordInputLayout;
     /**
      * This is a flag indicating when the sign up process finishes
      * */
     boolean isInProgress = false;
-
+    DatePickerDialog datePickerDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,11 +88,14 @@ public class SignUpActivity extends AppCompatActivity {
 
 
         loadCurrentVisitorCountry();
+        prepareDatePickerDialog();
 
         signUpActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                userDisplayName = userDisplayNameEditText.getText().toString();
+                userDisplayName = userDisplayNameEditText.getText()+"";
+                birthDate = birthDateInput.getText()+"";
+                description = descriptionInput.getText()+"";
                 //userCountryOfResidence = userCountryOfResidenceEditText.getText().toString();
                 phoneNumber = phoneNumberEditText.getText().toString();
                 email = emailEditText.getText().toString();
@@ -96,8 +106,17 @@ public class SignUpActivity extends AppCompatActivity {
                 Log.w("message", userDisplayName + " : " + email + " : " + genderType + " : " + userCountryOfResidence);
 
                 //validate confirm password
+                if(!isBirthDateSet){
+                    Toast.makeText(SignUpActivity.this, "Please set birth date", Toast.LENGTH_SHORT).show();
+                    errorMessageTextView.setText("Please set your birth date!");
+                    birthDateInput.setError("Please set your birth date!");
+                    errorMessageTextView.setVisibility(View.VISIBLE);
+
+                    birthDateInput.performClick();
+                    return;
+                }
                 if(!password.equals(confirmPassword)){
-                    Toast.makeText(SignUpActivity.this, password+"="+confirmPassword, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(SignUpActivity.this, password+"="+confirmPassword, Toast.LENGTH_SHORT).show();
                     errorMessageTextView.setText("Confirm password does not match the password!");
                     errorMessageTextView.setVisibility(View.VISIBLE);
                     return;
@@ -242,6 +261,12 @@ public class SignUpActivity extends AppCompatActivity {
 
             }
         });
+        birthDateInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                datePickerDialog.show();
+            }
+        });
 
         forget_password_link.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -305,6 +330,8 @@ public class SignUpActivity extends AppCompatActivity {
         DocumentReference userProfileDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(userId);
         HashMap<String,Object>userProfileDetails = new HashMap<>();
         userProfileDetails.put(GlobalConfig.USER_DISPLAY_NAME_KEY,userDisplayName);
+        userProfileDetails.put(GlobalConfig.USER_BIRTH_DATE_KEY,birthDate);
+        userProfileDetails.put(GlobalConfig.USER_DESCRIPTION_KEY,description);
         userProfileDetails.put(GlobalConfig.USER_COUNTRY_OF_RESIDENCE_KEY,userCountryOfResidence);
         userProfileDetails.put(GlobalConfig.USER_GENDER_TYPE_KEY,genderType);
         userProfileDetails.put(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY,phoneNumber);
@@ -368,6 +395,7 @@ public class SignUpActivity extends AppCompatActivity {
     /**Initializes the activity's views*/
     private void initUI(){
         userDisplayNameEditText = findViewById(R.id.nameInput);
+        descriptionInput = findViewById(R.id.descriptionInputId);
         phoneNumberEditText = (EditText) findViewById(R.id.phoneNumberViewId);
         emailEditText = (EditText) findViewById(R.id.emailInput);
         webLinkEditText = (EditText) findViewById(R.id.webLinkInputId);
@@ -397,6 +425,24 @@ public class SignUpActivity extends AppCompatActivity {
         }else{
             alertDialog.cancel();
         }
+    }
+    void prepareDatePickerDialog(){
+
+        Calendar dateCalendar = Calendar.getInstance();
+        final int YEAR = dateCalendar.get(Calendar.YEAR);
+        final int MONTH = dateCalendar.get(Calendar.MONTH);
+        final int DAY_OF_MONTH = dateCalendar.get(Calendar.DAY_OF_MONTH);
+
+        datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int YEAR, int MONTH, int DAY_OF_MONTH) {
+                MONTH += 1 ;
+                birthDateInput.setText(DAY_OF_MONTH  + "/" + MONTH + "/" + YEAR);
+                isBirthDateSet = true;
+            }
+        }, YEAR, MONTH, DAY_OF_MONTH);
+        datePickerDialog.setCancelable(false);
+
     }
 
     /**

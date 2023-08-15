@@ -102,7 +102,30 @@
                         android:layout_height="wrap_content"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
-
+    
+    
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="40dp"
+                    >
+        
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:hint="Date of Birth"
+                        android:inputType="textPersonName"
+                        android:maxLength="60"
+                        android:textSize="15sp"
+                        android:focusable="false"
+                        android:longClickable="false"
+                        android:id="@+id/birthDateInputId"
+                        android:drawableStart="@drawable/ic_baseline_access_time_filled_24"
+                        android:drawableTint="@color/black"
+                        android:gravity="start|top"
+                        android:layout_height="wrap_content"/>
+    
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
@@ -120,6 +143,7 @@
                         android:layout_height="wrap_content"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
+                
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_marginTop="10pt"
@@ -136,6 +160,7 @@
                         android:layout_height="wrap_content"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
+                
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_marginTop="10pt"
@@ -152,7 +177,6 @@
                         android:layout_height="wrap_content"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
-
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
@@ -191,7 +215,26 @@
                         android:layout_height="wrap_content"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
-
+    
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:counterEnabled="true"
+                    app:helperText="max 200 chars"
+                    android:layout_height="wrap_content">
+        
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:hint="Describe yourself"
+                        android:inputType="textMultiLine"
+                        android:textSize="15sp"
+                        android:id="@+id/descriptionInputId"
+                        android:gravity="start|top"
+                        android:layout_height="200dp"
+                        
+                        />
+    
+                </com.google.android.material.textfield.TextInputLayout>
 
 
                <LinearLayout

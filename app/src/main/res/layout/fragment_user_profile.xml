@@ -327,7 +327,7 @@
                             android:textStyle="bold"
                             android:fontFamily="sans-serif-condensed-medium"
                             android:textColor="@color/secondary_app_color"
-                            android:layout_marginBottom="8pt"
+                            android:layout_marginBottom="6pt"
                             android:layout_marginLeft="3dp"
                             />
                         
@@ -541,7 +541,34 @@
 
 
                         </LinearLayout>
-
+    
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="6pt"
+                            android:gravity="center"
+                            android:visibility="visible"
+                            >
+        
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_baseline_access_time_filled_24"
+                                app:tint="@color/grayDark" />
+        
+                            <TextView
+                                android:id="@+id/birthdateTextViewId"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5pt"
+                                android:maxLines="1"
+                                android:text="bore on 23 Jan 2002"
+                                android:textAlignment="textStart"
+                                android:textSize="8pt" />
+    
+    
+                        </LinearLayout>
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -565,6 +592,22 @@
                                 android:textAlignment="textStart"
                                 android:textSize="8pt" />
 
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="6pt"
+                            android:gravity="center">
+    
+                            <TextView
+                                android:ellipsize="end"
+                                android:maxLength="200"
+                                android:id="@+id/descriptionTextViewId"
+                                android:text="Learn Era User"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
 
                         </LinearLayout>
 

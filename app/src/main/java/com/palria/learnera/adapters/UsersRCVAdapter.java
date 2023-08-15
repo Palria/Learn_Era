@@ -68,12 +68,12 @@ public class UsersRCVAdapter extends RecyclerView.Adapter<UsersRCVAdapter.ViewHo
 
             holder.userName.setText(userDataModels.getUserName());
             holder.dateCreated.setText(userDataModels.getDateRegistered());
-//            holder.description.setText(userDataModels.getDescription());
-            if(userDataModels.isAnAuthor()){
-                holder.description.setText("Author");
-            }else{
-                holder.description.setText("User");
-            }
+            holder.description.setText(userDataModels.getUserDescription());
+//            if(userDataModels.isAnAuthor()){
+//                holder.description.setText("Author");
+//            }else{
+//                holder.description.setText("User");
+//            }
             if(userDataModels.getUserId().equals(GlobalConfig.getCurrentUserId())){
                 holder.followActionTextView.setVisibility(View.GONE);
             }

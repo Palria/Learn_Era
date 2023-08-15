@@ -92,10 +92,6 @@
                 android:layout_height="wrap_content">
             </androidx.cardview.widget.CardView>
 
-
-
-
-
             <androidx.cardview.widget.CardView
                 app:cardCornerRadius="6pt"
                 android:background="@drawable/rounded_white_bg"
@@ -367,6 +363,16 @@
                 android:layout_height="wrap_content">
     
     
+                <TextView
+                    android:paddingVertical="2pt"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:paddingHorizontal="8pt"
+                    android:text="Libraries"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
                 <LinearLayout
                     android:layout_marginTop="10pt"
                     android:orientation="horizontal"
@@ -398,14 +404,56 @@
                 </LinearLayout>
                 <TextView
                     android:paddingVertical="5pt"
-                    android:textSize="9pt"
+                    android:textSize="10sp"
                     android:drawablePadding="2pt"
                     android:drawableTint="@color/teal_700"
-                    android:drawableRight="@drawable/ic_baseline_arrow_forward_24"
+                    android:drawableRight="@drawable/ic_baseline_keyboard_arrow_right_24"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed-medium"
                     android:textColor="@color/teal_700"
                     android:id="@+id/seeAllLibraryTextViewId"
                     android:paddingHorizontal="8pt"
                     android:text="See all Library"
+                    android:layout_gravity="end"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:paddingVertical="2pt"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:paddingHorizontal="8pt"
+                    android:text="Open quiz"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <LinearLayout
+                    android:layout_marginTop="10pt"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+    
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/quizItemContainer"
+                    android:layout_marginTop="5pt"
+                    tools:listitem="@layout/home_single_library_item_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+           
+                </LinearLayout>
+                <TextView
+                    android:paddingVertical="5pt"
+                    android:textSize="10sp"
+                    android:drawablePadding="2pt"
+                    android:drawableTint="@color/teal_700"
+                    android:drawableRight="@drawable/ic_baseline_keyboard_arrow_right_24"
+                    android:text="See open quiz"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:textColor="@color/teal_700"
+                    android:id="@+id/seeAllQuizTextViewId"
+                    android:paddingHorizontal="8pt"
                     android:layout_gravity="end"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -459,11 +507,13 @@
                 </LinearLayout>
                 <TextView
                     android:paddingVertical="5pt"
-                    android:textSize="9pt"
+                    android:textSize="10sp"
                     android:textColor="@color/teal_700"
                     android:drawablePadding="1pt"
                     android:drawableTint="@color/teal_700"
-                    android:drawableRight="@drawable/ic_baseline_arrow_forward_24"
+                    android:drawableRight="@drawable/ic_baseline_keyboard_arrow_right_24"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed-medium"
                     android:id="@+id/seeAllAuthorTextViewId"
                     android:paddingHorizontal="8pt"
                     android:text="See all Authors"
@@ -480,6 +530,16 @@
                     android:layout_height="wrap_content"/>
     
     
+                <TextView
+                    android:paddingVertical="2pt"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:paddingHorizontal="8pt"
+                    android:text="Tutorials"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/popularTutorialsContainer"
                     android:layout_width="match_parent"
@@ -488,12 +548,13 @@
                     android:layout_height="wrap_content"/>
                 <TextView
                     android:paddingVertical="5pt"
-                    android:textSize="9pt"
-
+                    android:textSize="10sp"
                     android:textColor="@color/teal_700"
                     android:drawablePadding="1pt"
                     android:drawableTint="@color/teal_700"
-                    android:drawableRight="@drawable/ic_baseline_arrow_forward_24"
+                    android:drawableRight="@drawable/ic_baseline_keyboard_arrow_right_24"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed-medium"
                     android:id="@+id/seeAllTutorialTextViewId"
                     android:paddingHorizontal="8pt"
                     android:text="See all Tutorials"

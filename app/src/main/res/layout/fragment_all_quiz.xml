@@ -16,8 +16,7 @@
         >
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginTop="2pt"
-        android:id="@+id/usersRecyclerListViewId"
-        tools:listitem="@layout/single_rating_layout_item"
+        android:id="@+id/quizRecyclerListViewId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <View

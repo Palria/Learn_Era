@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,6 +24,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -47,18 +49,21 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class EditCurrentUserProfileActivity extends AppCompatActivity {
 
 
     private String userDisplayName;
+    private String description;
     private String userCountryOfResidence;
     private String contactEmail;
     private String contactPhoneNumber;
     private String webLink;
     private String genderType;
     private EditText userDisplayNameEditText;
+    private EditText descriptionInput;
     private EditText contactEmailEditText;
     private EditText webLinkInput;
     private EditText genderTypeEditText;
@@ -72,6 +77,9 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
     TextView display_email;
     RoundedImageView profile_image_view;
 
+    boolean isBirthDateSet = false;
+    private String birthDate;
+    private EditText birthDateInput;
 
     boolean isProfilePhotoChanged;
     boolean isProfilePhotoIncluded;
@@ -97,6 +105,7 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> openGalleryLauncher;
     ActivityResultLauncher<Intent> openCameraLauncher;
     AlertDialog alertDialog;
+    DatePickerDialog datePickerDialog;
 
 
     @Override
@@ -107,9 +116,11 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
         toggleProgress(true);
    initUserProfileValuesBeforeEdition(new ProfileValueInitListener() {
        @Override
-       public void onSuccess(String userDisplayName, String userCountryOfResidence, String contactEmail,String webLink, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, String profilePhotoStorageReference, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
+       public void onSuccess(String userDisplayName,String description,String birthDate, String userCountryOfResidence, String contactEmail,String webLink, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, String profilePhotoStorageReference, boolean isUserBlocked, boolean isUserProfilePhotoIncluded) {
 
            userDisplayNameEditText.setText(userDisplayName);
+           descriptionInput.setText(description);
+           birthDateInput.setText(birthDate);
            contactEmailEditText.setText(contactEmail);
            webLinkInput.setText(webLink);
            contactPhoneNumberEditText.setText(contactPhoneNumber);
@@ -164,7 +175,13 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
 
        }
    });
-
+        prepareDatePickerDialog();
+        birthDateInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                datePickerDialog.show();
+            }
+        });
         openGalleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
 
             @Override
@@ -223,16 +240,20 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
         editProfileActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                toggleProgress(true);
-                userDisplayName = userDisplayNameEditText.getText().toString();
-                userCountryOfResidence = countrySpinner.getSelectedItem().toString();
-                genderType = genderTypeSpinner.getSelectedItem().toString();
-                contactEmail = contactEmailEditText.getText().toString();
-                webLink = webLinkInput.getText().toString();
-                contactPhoneNumber = contactPhoneNumberEditText.getText().toString();
+                userDisplayName = userDisplayNameEditText.getText()+"";
+                description = descriptionInput.getText()+"";
+                birthDate = birthDateInput.getText()+"";
+                userCountryOfResidence = countrySpinner.getSelectedItem()+"";
+                genderType = genderTypeSpinner.getSelectedItem()+"";
+                contactEmail = contactEmailEditText.getText()+"";
+                webLink = webLinkInput.getText()+"";
+                contactPhoneNumber = contactPhoneNumberEditText.getText()+"";
 
+                if(isBirthDateSet){
                 if(!userDisplayName.isEmpty()){
-                if(isProfilePhotoIncluded){
+                    toggleProgress(true);
+
+                    if(isProfilePhotoIncluded){
                     if(isProfilePhotoChanged){
                        uploadUserProfilePhoto(new ProfilePhotoUploadListener() {
                            @Override
@@ -372,6 +393,11 @@ public class EditCurrentUserProfileActivity extends AppCompatActivity {
                 }else{
                     Toast.makeText(getApplicationContext(), "Please enter your user name", Toast.LENGTH_SHORT).show();
                 }
+            }else{
+                    Toast.makeText(getApplicationContext(), "Please set your date of birth", Toast.LENGTH_SHORT).show();
+
+                    birthDateInput.performClick();
+                }
 
             }
         });
@@ -427,6 +453,8 @@ private void initUI(){
     * */
 
     userDisplayNameEditText = findViewById(R.id.nameInput);
+    descriptionInput = findViewById(R.id.descriptionInputId);
+    birthDateInput = findViewById(R.id.birthDateInputId);
     contactEmailEditText = findViewById(R.id.emailInput);
     webLinkInput = findViewById(R.id.webLinkInputId);
     contactPhoneNumberEditText = findViewById(R.id.contactInput);
@@ -581,6 +609,8 @@ private void initUI(){
 
         HashMap<String,Object>userProfileDetails = new HashMap<>();
         userProfileDetails.put(GlobalConfig.USER_DISPLAY_NAME_KEY,userDisplayName);
+        userProfileDetails.put(GlobalConfig.USER_DESCRIPTION_KEY,description);
+        userProfileDetails.put(GlobalConfig.USER_BIRTH_DATE_KEY,birthDate);
         userProfileDetails.put(GlobalConfig.USER_ID_KEY,GlobalConfig.getCurrentUserId());
         userProfileDetails.put(GlobalConfig.USER_COUNTRY_OF_RESIDENCE_KEY,userCountryOfResidence);
         userProfileDetails.put(GlobalConfig.USER_GENDER_TYPE_KEY,genderType);
@@ -638,6 +668,11 @@ private void initUI(){
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                         String userDisplayName =""+ documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                        String description =""+ documentSnapshot.get(GlobalConfig.USER_DESCRIPTION_KEY);
+                        String birthDate =""+ documentSnapshot.get(GlobalConfig.USER_BIRTH_DATE_KEY);
+                        if(documentSnapshot.get(GlobalConfig.USER_BIRTH_DATE_KEY) != null){
+                            isBirthDateSet = true;
+                        }
                         String userCountryOfResidence =""+ documentSnapshot.get(GlobalConfig.USER_COUNTRY_OF_RESIDENCE_KEY);
                         String contactEmail =""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_EMAIL_ADDRESS_KEY);
                         String contactPhoneNumber =""+ documentSnapshot.get(GlobalConfig.USER_CONTACT_PHONE_NUMBER_KEY);
@@ -656,12 +691,31 @@ private void initUI(){
 
                         }
 
-                        profileValueInitListener.onSuccess( userDisplayName, userCountryOfResidence, contactEmail,webLink, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl,  profilePhotoStorageReference, isUserBlocked, isUserProfilePhotoIncluded);
+                        profileValueInitListener.onSuccess( userDisplayName,description,birthDate, userCountryOfResidence, contactEmail,webLink, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl,  profilePhotoStorageReference, isUserBlocked, isUserProfilePhotoIncluded);
 
                     }
                 });
     }
 
+
+    void prepareDatePickerDialog(){
+
+        Calendar dateCalendar = Calendar.getInstance();
+        final int YEAR = dateCalendar.get(Calendar.YEAR);
+        final int MONTH = dateCalendar.get(Calendar.MONTH);
+        final int DAY_OF_MONTH = dateCalendar.get(Calendar.DAY_OF_MONTH);
+
+        datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int YEAR, int MONTH, int DAY_OF_MONTH) {
+                MONTH += 1 ;
+                birthDateInput.setText(DAY_OF_MONTH  + "/" + MONTH + "/" + YEAR);
+                isBirthDateSet = true;
+            }
+        }, YEAR, MONTH, DAY_OF_MONTH);
+        datePickerDialog.setCancelable(false);
+
+    }
 
     /**
      * Initializes the gender spinner for selection
@@ -714,7 +768,7 @@ private void initUI(){
         void onFailed(String errorMessage);
     }
     interface ProfileValueInitListener{
-        void onSuccess(String userDisplayName,String userCountryOfResidence,String contactEmail,String webLink,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,String profilePhotoStorageReference,boolean isUserBlocked,boolean isUserProfilePhotoIncluded);
+        void onSuccess(String userDisplayName,String description,String birthDate,String userCountryOfResidence,String contactEmail,String webLink,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,String profilePhotoStorageReference,boolean isUserBlocked,boolean isUserProfilePhotoIncluded);
         void onFailed(String errorMessage);
     }
 
