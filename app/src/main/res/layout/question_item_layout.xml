@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingHorizontal="5pt"
+    android:layout_marginTop="2pt"
+    android:paddingVertical="3pt"
+    android:clickable="true"
+    android:layout_marginHorizontal="5pt"
+    android:id="@+id/parentItem"
+    android:layout_height="wrap_content">
+    
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible">
+        
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:layout_width="20pt"
+            android:id="@+id/askerProfilePhotoId"
+            app:riv_corner_radius="4pt"
+            app:riv_oval="false"
+            android:layout_gravity="start"
+            android:scaleType="centerCrop"
+            android:src="@drawable/default_profile"
+            android:layout_height="20pt"
+            tools:ignore="MissingClass" />
+        
+        <LinearLayout
+            android:paddingLeft="8pt"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            >
+            
+            
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <!--    -->
+                <!--                <androidx.constraintlayout.widget.ConstraintLayout-->
+                <!--                    android:orientation="horizontal"-->
+                <!--                    android:layout_width="0dp"-->
+                <!--                    android:layout_weight="1"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:paddingEnd="15dp"-->
+                <!--                    >-->
+                
+                <TextView
+                    android:textStyle="bold"
+                    android:textSize="8pt"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:id="@+id/posterNameTextViewId"
+                    android:text="..."
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLength="30"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+                
+                <ImageView
+                    android:id="@+id/verificationFlagImageViewId"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/ic_baseline_stars_24"
+                    android:layout_gravity="top"
+                    android:visibility="invisible"
+                    app:layout_constraintStart_toEndOf="@id/title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/secondary_app_color" />
+                
+                
+                
+                
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    />
+                
+                <ImageButton
+                    android:id="@+id/moreActionButtonId"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/ic_baseline_more_vert_24"
+                    android:backgroundTint="@color/black"
+                    android:layout_gravity="top"
+                    />
+            
+            </LinearLayout>
+            <TextView
+                android:id="@+id/questionBodyTextViewId"
+                android:text="I like this content, it's absolutely teachable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            
+<!--            -->
+<!--            <TextView-->
+<!--                android:textSize="6pt"-->
+<!--                android:textStyle="italic|bold"-->
+<!--                android:id="@+id/dateCreatedTextViewId"-->
+<!--                android:text="moments ago"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                />-->
+        
+        </LinearLayout>
+    
+    </LinearLayout>
+    
+    
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <TextView
+            android:layout_marginStart="28pt"
+            android:layout_marginTop="1pt"
+            android:id="@+id/ansCountTextViewId"
+            android:text="0 ans"
+            android:textColor="@color/secondary_app_color"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+        
+        <View
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        
+        <LinearLayout
+            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            
+            <ImageView
+                android:layout_marginRight="2pt"
+                android:id="@+id/viewCountId"
+                app:tint="@color/darkIcon"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_baseline_remove_red_eye_24"
+                android:layout_width="10pt"
+                android:layout_height="10pt"/>
+            
+            <TextView
+                android:id="@+id/viewCountTextViewId"
+                android:text="0"
+                android:textStyle="bold"
+                android:layout_marginLeft="2pt"
+                android:layout_marginEnd="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        
+        <LinearLayout
+            
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            >
+            
+            <ImageView
+                android:layout_marginRight="2pt"
+                android:id="@+id/dateAskedImageViewId"
+                app:tint="@color/darkIcon"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_baseline_access_time_filled_24"
+                android:layout_width="10pt"
+                android:layout_height="10pt"/>
+            
+            <TextView
+                android:id="@+id/dateAskedTextViewId"
+                android:text="0"
+                android:textStyle="bold"
+                android:layout_marginLeft="2pt"
+                android:layout_marginEnd="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    
+    </LinearLayout>
+
+</LinearLayout>

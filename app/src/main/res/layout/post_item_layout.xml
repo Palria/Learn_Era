@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/ripple_background"
+    android:padding="1dp"
+    android:layout_margin="3dp"
+    android:backgroundTint="@color/gray"
+    >
+    
+    <LinearLayout
+        android:id="@+id/productLinearLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_round_background"
+        android:backgroundTint="@color/gray"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+        <TextView
+            android:id="@+id/updateTitleTextViewId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:gravity="center_horizontal"
+            android:textColor="@color/black"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:text="For Cake Bakery"
+            android:maxLines="3"
+            />
+        
+        <ImageView
+            android:id="@+id/updateImageViewId"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@color/black"
+            android:scaleType="centerCrop"
+            android:layout_marginTop="10dp"
+            />
+        
+        <TextView
+            android:id="@+id/datePostedTextViewId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:textColor="@color/black"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:drawableStart="@drawable/ic_baseline_access_time_24"
+            android:drawableTint="@color/black"
+            android:textSize="9sp"
+            android:text="moments ago"
+            android:maxLines="1"
+            />
+        <TextView
+            android:id="@+id/viewCountTextViewId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-28sp"
+            android:layout_marginHorizontal="10dp"
+            android:textColor="@color/black"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:layout_gravity="end"
+            android:drawableLeft="@drawable/ic_baseline_filled_view_eye_24"
+            android:drawableTint="@color/black"
+            android:textSize="9sp"
+            android:text="0"
+            android:maxLines="1"
+            />
+        <TextView
+            android:id="@+id/descriptionTextViewId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textColor="@color/black"
+            android:fontFamily="sans-serif-condensed"
+            android:textStyle="bold"
+            android:text="..."
+            android:maxLines="15"
+            android:ellipsize="end"
+            />
+    
+    </LinearLayout>
+    
+    <ImageButton
+        android:id="@+id/removeCatalogCoverPhotoImageButtonId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_outline_cancel_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/red_dark"
+        android:backgroundTint="@color/transparent"
+        android:visibility="gone"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
