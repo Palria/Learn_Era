@@ -422,7 +422,7 @@ public class UserProfileFragment extends Fragment {
                 currentWebsiteLinkView.setText(Html.fromHtml("Website <b>"+webLink+"</b> "));
                 currentPhoneNumberView.setText(Html.fromHtml("Contact Phone <b>"+contactPhoneNumber+"</b> "));
                 currentDisplayNameView.setText(userDisplayName);
-                descriptionTextView.setText(Html.fromHtml("Info <b>"+description+"</b> "));
+                descriptionTextView.setText(Html.fromHtml(""+description+" "));
                 currentCountryOfResidence.setText(Html.fromHtml("From <b>"+userCountryOfResidence+"</b> "));
                 birthdateTextView.setText(Html.fromHtml("Birth Date <b>"+birthdate+"</b> "));
                 joined_dateTextView.setText(Html.fromHtml("Joined <b>"+joined_date+"</b> "));

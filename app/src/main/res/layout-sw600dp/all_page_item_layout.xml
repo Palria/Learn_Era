@@ -8,6 +8,7 @@
     android:clickable="true"
     android:layout_marginHorizontal="5pt"
     android:background="@drawable/rounded_border_gray_bg"
+    android:backgroundTint="@color/white"
     android:layout_width="match_parent"
     android:id="@+id/parentItem"
 
