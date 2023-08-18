@@ -365,7 +365,8 @@
     
                 <TextView
                     android:paddingVertical="2pt"
-                    android:textSize="16sp"
+                    android:textSize="10pt"
+                    android:layout_marginTop="7pt"
                     android:textColor="@color/black"
                     android:paddingHorizontal="8pt"
                     android:text="Libraries"
@@ -374,7 +375,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <LinearLayout
-                    android:layout_marginTop="10pt"
+                    android:layout_marginTop="0pt"
                     android:orientation="horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
@@ -404,7 +405,7 @@
                 </LinearLayout>
                 <TextView
                     android:paddingVertical="5pt"
-                    android:textSize="10sp"
+                    android:textSize="7pt"
                     android:drawablePadding="2pt"
                     android:drawableTint="@color/teal_700"
                     android:drawableRight="@drawable/ic_baseline_keyboard_arrow_right_24"
@@ -419,17 +420,18 @@
                     android:layout_height="wrap_content"/>
                 <TextView
                     android:paddingVertical="2pt"
-                    android:textSize="16sp"
+                    android:textSize="10pt"
+                    android:layout_marginTop="5pt"
                     android:textColor="@color/black"
                     android:paddingHorizontal="8pt"
-                    android:text="Open quiz"
+                    android:text="Open quizes"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-condensed-medium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
                 <LinearLayout
-                    android:layout_marginTop="10pt"
+                    android:layout_marginTop="0pt"
                     android:orientation="horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
@@ -444,7 +446,7 @@
                 </LinearLayout>
                 <TextView
                     android:paddingVertical="5pt"
-                    android:textSize="10sp"
+                    android:textSize="7pt"
                     android:drawablePadding="2pt"
                     android:drawableTint="@color/teal_700"
                     android:drawableRight="@drawable/ic_baseline_keyboard_arrow_right_24"
@@ -465,7 +467,8 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:textSize="9pt"
+
+                        android:textSize="10pt"
                         android:textColor="@color/black"
                         android:textStyle="bold"
                         android:id="@+id/popularAuthor"
@@ -475,7 +478,7 @@
                         android:layout_height="wrap_content"/>
     
                     <LinearLayout
-                        android:layout_marginTop="10pt"
+                        android:layout_marginTop="0pt"
                         android:orientation="horizontal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
@@ -507,7 +510,7 @@
                 </LinearLayout>
                 <TextView
                     android:paddingVertical="5pt"
-                    android:textSize="10sp"
+                    android:textSize="7pt"
                     android:textColor="@color/teal_700"
                     android:drawablePadding="1pt"
                     android:drawableTint="@color/teal_700"
@@ -531,8 +534,9 @@
     
     
                 <TextView
+                    android:layout_marginTop="5pt"
                     android:paddingVertical="2pt"
-                    android:textSize="16sp"
+                    android:textSize="10pt"
                     android:textColor="@color/black"
                     android:paddingHorizontal="8pt"
                     android:text="Tutorials"
@@ -548,7 +552,8 @@
                     android:layout_height="wrap_content"/>
                 <TextView
                     android:paddingVertical="5pt"
-                    android:textSize="10sp"
+                    android:textSize="7pt"
+
                     android:textColor="@color/teal_700"
                     android:drawablePadding="1pt"
                     android:drawableTint="@color/teal_700"
