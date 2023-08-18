@@ -15,6 +15,7 @@
 
     <com.facebook.shimmer.ShimmerFrameLayout
         app:shimmer_auto_start="true"
+        android:visibility="gone"
         android:id="@+id/shimmerLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -246,10 +247,11 @@
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
+
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
+        android:visibility="visible"
         >
 
         <LinearLayout
@@ -317,19 +319,7 @@
                         android:layout_marginTop="-32pt"
                         android:orientation="horizontal">
     
-                        <TextView
-                            android:id="@+id/followActionTextViewId"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="9pt"
-                            android:text="Follow"
-                            android:layout_gravity="center_vertical"
-                            android:textStyle="bold"
-                            android:fontFamily="sans-serif-condensed-medium"
-                            android:textColor="@color/secondary_app_color"
-                            android:layout_marginBottom="6pt"
-                            android:layout_marginLeft="3dp"
-                            />
+
                         
                     <ImageView
 
@@ -390,6 +380,21 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="2pt">
+
+                            <TextView
+                                android:ellipsize="end"
+                                android:maxLength="200"
+                                android:id="@+id/descriptionTextViewId"
+                                android:text="Learn Era User"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content">
 
                             <Button
@@ -398,33 +403,40 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="6pt"
                                 android:layout_weight="1"
+                                android:layout_marginRight="2pt"
                                 android:background="@drawable/default_auth_btn"
                                 android:text="View Stats" />
 
                             <TextView
-                                android:id="@+id/logButton"
+                                android:id="@+id/followActionTextViewId"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginHorizontal="4pt"
+                                android:layout_marginRight="2pt"
                                 android:layout_marginTop="6pt"
                                 android:layout_weight="1"
                                 android:background="@drawable/default_outlined_button"
                                 android:foreground="@android:color/transparent"
                                 android:paddingHorizontal="5pt"
                                 android:paddingVertical="6pt"
-                                android:text="Activity Log"
+                                android:text="Follow"
                                 android:textAlignment="center"
                                 android:textColor="@color/teal_700"
                                 android:textStyle="bold"
+                                />
+
+                            <TextView
+                                android:id="@+id/logButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:visibility="invisible"
                                 />
 
                             <ImageButton
                                 android:id="@+id/profileMoreIcon"
-                                android:layout_width="7pt"
+                                android:layout_width="20pt"
                                 android:layout_height="22pt"
                                 android:layout_marginTop="6pt"
-                                android:layout_weight="1"
+
                                 android:background="@drawable/default_auth_btn"
                                 android:drawableEnd="@drawable/ic_baseline_more_vert_24"
                                 android:drawableTint="@color/white"
@@ -554,7 +566,7 @@
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:src="@drawable/ic_baseline_access_time_filled_24"
+                                android:src="@drawable/baseline_cake_24"
                                 app:tint="@color/grayDark" />
         
                             <TextView
@@ -594,22 +606,7 @@
 
 
                         </LinearLayout>
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="6pt"
-                            android:gravity="center">
-    
-                            <TextView
-                                android:ellipsize="end"
-                                android:maxLength="200"
-                                android:id="@+id/descriptionTextViewId"
-                                android:text="Learn Era User"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"/>
 
-                        </LinearLayout>
 
                     </LinearLayout>
 

@@ -198,8 +198,8 @@ if(getArguments()!= null){
 
                             String discussionId = GlobalConfig.getRandomString(80);
                             GlobalConfig.createSnackBar(getContext(),discussButton, "Adding discussion: "+body, Snackbar.LENGTH_INDEFINITE);
-
-                            GlobalConfig.discuss(new PageDiscussionDataModel(discussionId,GlobalConfig.getCurrentUserId(),body,"",pageId,authorId,"",tutorialId,folderId,isTutorialPage,false,false,false,false,"",0L,0L,new ArrayList(),new ArrayList()),new GlobalConfig.ActionCallback(){
+				PageDiscussionDataModel pd = new PageDiscussionDataModel(discussionId,GlobalConfig.getCurrentUserId(),body,"",pageId,authorId,"",tutorialId,folderId,isTutorialPage,false,false,false,false,"",0L,0L,new ArrayList(),new ArrayList());
+                            GlobalConfig.discuss(pd,new GlobalConfig.ActionCallback(){
                                 @Override
                                 public void onFailed(String errorMessage){
                                     Toast.makeText(getContext(), "failed", Toast.LENGTH_SHORT).show();
@@ -211,6 +211,8 @@ if(getArguments()!= null){
                                     GlobalConfig.createSnackBar(getContext(),discussButton, "Thanks discussion added: "+body,Snackbar.LENGTH_SHORT);
 //                                    int currentDiscussionCount = Integer.parseInt((discussionCountTextView.getText()+""));
 //                                    discussionCountTextView.setText((currentDiscussionCount+1)+"");
+					pageDiscussionDataModels.add(pd);
+					adapter.notifyDataSetChanged();
 
                                 }
                             });

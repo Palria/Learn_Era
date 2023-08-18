@@ -346,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         }
                     }
                 }, 0)
-                .addOptionItem("Create Quiz", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
+                .addOptionItem("Create Quiz", R.drawable.baseline_quiz_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (GlobalConfig.isUserLoggedIn()) {

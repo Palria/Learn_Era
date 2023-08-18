@@ -7,7 +7,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="7dp"
-        app:cardBackgroundColor="@color/secondary_app_color"
         android:id="@+id/objectiveQuestionViewId"
         android:layout_marginHorizontal="5pt"
         app:cardCornerRadius="3pt">
@@ -19,7 +18,6 @@
             android:paddingVertical="5pt"
             android:layout_height="match_parent"
             android:layout_margin="3dp"
-            android:background="@color/white"
             >
             <LinearLayout
                 android:orientation="horizontal"
@@ -46,6 +44,7 @@
             </LinearLayout>
     
             <LinearLayout
+android:layout_marginBottom="5pt"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:paddingHorizontal="5pt"
@@ -56,6 +55,8 @@
          >
          
             <TextView
+                android:drawablePadding="8pt"
+                android:layout_marginRight="5pt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Select time limit in seconds"
