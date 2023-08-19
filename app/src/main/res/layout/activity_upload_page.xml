@@ -18,8 +18,7 @@
         android:orientation="horizontal"
         android:background="@color/teal_700"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        >
+        app:layout_constraintTop_toTopOf="parent">
         
         
         <EditText
@@ -128,13 +127,14 @@
         android:layout_height="wrap_content"
         android:text="Make public"
         android:textStyle="bold"
+        android:paddingHorizontal="5pt"
         android:textColor="@color/black"
+        android:background="@color/gray"
         android:fontFamily="sans-serif-condensed-medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:ignore="UseSwitchCompatOrMaterialXml"
         android:checked="true"
         android:paddingEnd="200dp"
-        android:background="@color/white"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

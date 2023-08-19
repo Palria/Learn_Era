@@ -191,6 +191,7 @@ FolderDataModel intentFolderDataModel;
                                     .addFolderVisibilitySwitch(switchView)
                                     .addInputField(new BottomSheetFormBuilderWidget.EditTextInput(TutorialFolderActivity.this)
                                             .setHint(folderNameView.getText()+"")
+                                            .setText(folderName)
                                             .autoFocus())
                                     .setOnSubmit(new BottomSheetFormBuilderWidget.OnSubmitHandler() {
                                         @Override

@@ -387,7 +387,8 @@ public class CreateQuizActivity extends AppCompatActivity {
         builder.setTitle("Exit");
         builder.setMessage("Click exit button to exit the screen");
         builder.setCancelable(true);
-        builder.setIcon(R.drawable.ic_baseline_error_outline_24);
+        builder.setIcon(R.drawable.baseline_error_outline_red_24);
+
         builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

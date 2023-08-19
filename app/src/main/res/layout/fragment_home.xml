@@ -12,9 +12,7 @@
         android:layout_below="@+id/bg"
        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="30dp"
-        
-        >
+        android:paddingBottom="30dp">
 
         
         <LinearLayout
@@ -94,7 +92,7 @@
 
             <androidx.cardview.widget.CardView
                 app:cardCornerRadius="6pt"
-                android:background="@drawable/rounded_white_bg"
+                app:cardElevation="2pt"
                 android:layout_marginHorizontal="5pt"
                 android:layout_width="match_parent"
                 android:layout_height="60dp">
@@ -124,6 +122,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         app:tabMode="scrollable"
+                        android:background="@null"
                         app:tabTextAppearance="@style/MyCustomTextAppearance"
                         app:tabIndicator="@drawable/ic_baseline_minimize_24"
                         app:tabIndicatorFullWidth="false"

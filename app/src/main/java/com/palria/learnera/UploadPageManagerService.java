@@ -6,11 +6,17 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ContentUris;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -19,6 +25,9 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.FutureTarget;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -37,8 +46,16 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 public class UploadPageManagerService extends Service implements OnPageUploadListener {
     public UploadPageManagerService() {
@@ -59,6 +76,10 @@ public class UploadPageManagerService extends Service implements OnPageUploadLis
     static HashMap<String, Boolean> isImageIncludedHashMap = new HashMap<>();
     static HashMap<String, Boolean> isPageImagesPartitionsUploaded = new HashMap<>();
     static HashMap<String, Boolean> isPageUploadedHashMap = new HashMap<>();
+
+    String coverPhotoDownloadUrl = "";
+    String coverTempUrl = "";
+    boolean isCreateNewPage=false;
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
@@ -85,6 +106,7 @@ public class UploadPageManagerService extends Service implements OnPageUploadLis
         }
 
 if(intent != null) {
+    coverTempUrl = intent.getStringExtra("coverTempUrl");
     String pageId = intent.getStringExtra(GlobalConfig.PAGE_ID_KEY);
     int pageNumber = intent.getIntExtra(GlobalConfig.PAGE_NUMBER_KEY, 0);
     String libraryId = intent.getStringExtra(GlobalConfig.LIBRARY_ID_KEY);
@@ -92,12 +114,12 @@ if(intent != null) {
     String folderId = intent.getStringExtra(GlobalConfig.FOLDER_ID_KEY);
     String pageTitle = intent.getStringExtra(GlobalConfig.PAGE_TITLE_KEY);
     String pageContent = intent.getStringExtra(GlobalConfig.PAGE_CONTENT_KEY);
-    String coverPhotoDownloadUrl = intent.getStringExtra(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
+    coverPhotoDownloadUrl = intent.getStringExtra(GlobalConfig.PAGE_COVER_PHOTO_DOWNLOAD_URL_KEY);
     ArrayList<String> imageListToUpload = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.PAGE_MEDIA_URL_LIST_KEY);
     ArrayList<String> retrievedActivePageMediaUrlArrayList = (ArrayList<String>) intent.getSerializableExtra(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY);
     boolean isPublic = intent.getBooleanExtra(GlobalConfig.IS_PUBLIC_KEY, true);
     boolean isTutorialPage = intent.getBooleanExtra(GlobalConfig.IS_TUTORIAL_PAGE_KEY, true);
-    boolean isCreateNewPage = intent.getBooleanExtra(GlobalConfig.IS_CREATE_NEW_PAGE_KEY, true);
+     isCreateNewPage = intent.getBooleanExtra(GlobalConfig.IS_CREATE_NEW_PAGE_KEY, true);
     boolean isPageCoverPhotoChanged = intent.getBooleanExtra(GlobalConfig.IS_PAGE_COVER_PHOTO_CHANGED_KEY, true);
     UploadPageManagerService.this.onNewPage(isPublic, pageId, folderId, tutorialId, libraryId, pageNumber, isTutorialPage, isCreateNewPage, coverPhotoDownloadUrl, isPageCoverPhotoChanged, pageTitle, retrievedActivePageMediaUrlArrayList, pageContent, imageListToUpload);
 
@@ -584,6 +606,8 @@ HashMap<String,String> coverPhotoDownloadUrlMap = new HashMap<>();
 HashMap<String,ArrayList<String>> activePageMediaUrlArrayListMap = new HashMap<>();
 HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new HashMap<>();
 
+private String coverUrl = "";
+
 //ends
 
     private void startUploadService(boolean isPublic, String libraryId, String tutorialId, String folderId, String pageId,String pageTitle, String pageContent, ArrayList<String> imagesListToUpload,boolean isTutorialPage) {
@@ -597,6 +621,8 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
         final String[] postContentHtml = {pageContent};
         //first upload all the images
         String[] coverImageDownloadUrl = new String[1];
+
+        coverUrl =  imagesListToUpload.size()>0? imagesListToUpload.get(0):null;
 
         if(imagesListToUpload.size()==0){
             //upload page directly here no need to upload images
@@ -939,7 +965,15 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
         }
         notificationLayout.put(pageId,new RemoteViews(getPackageName(), R.layout.notification_layout));
         //set image cover icon here
-        notificationLayout.get(pageId).setImageViewResource(R.id.icon, R.drawable.placeholder);
+        if(coverUrl == null){
+
+            if(coverTempUrl != null){
+                notificationLayout.get(pageId).setImageViewUri(R.id.icon, Uri.parse(coverTempUrl));
+            }
+
+        }else {
+            notificationLayout.get(pageId).setImageViewUri(R.id.icon, Uri.parse(coverUrl));
+        }
         notificationLayout.get(pageId).setTextViewText(R.id.title, "\""+pageTitle+"\"" +( isCreateNewPageMap.get(pageId) ? " Page Uploading...":" Page Editing..."));
 
         if(numberOfMedia.get(pageId)>0) {
@@ -962,7 +996,7 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
                 .setCustomHeadsUpContentView(notificationLayout.get(pageId))
                 .setContentIntent(pendingIntent) //intent to start when click notification
                 .setOnlyAlertOnce(true) //only show once not when updating progress
-                .setStyle(new NotificationCompat.BigTextStyle().bigText("\""+pageTitle+"\"" +( isCreateNewPageMap.get(pageId) ? " Page Uploading...":" Page Editing...")))
+                .setStyle(new NotificationCompat.BigTextStyle().bigText("\""+pageTitle+"\"" +( isCreateNewPageMap.get(pageId) ? " Page Uploading...":" Page Updating...")))
                 .setOngoing(true) //set ongoing which is not cancelable by user
                 .setAutoCancel(false) //auto cancel false
         );
@@ -1018,10 +1052,19 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
         //customize notification
         String pageTitle1 = pageTitle.length()>20 ? pageTitle.substring(0,20) :pageTitle;
         RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_layout);
-        notificationLayout.setTextViewText(R.id.title, "\""+pageTitle1+"\"" +( isCreateNewPageMap.get(pageId) ? " Page Uploaded":" Page Edited"));
+        notificationLayout.setTextViewText(R.id.title, "\""+pageTitle1+"\"" +( isCreateNewPageMap.get(pageId) ? " Page Uploaded":" Page Updated"));
         notificationLayout.setProgressBar(R.id.progress_bar,100,100,false);
         notificationLayout.setTextViewText(R.id.percent, "100% completed");
-        notificationLayout.setImageViewResource(R.id.icon,R.drawable.placeholder);
+        if(coverUrl == null){
+
+           if(coverTempUrl != null){
+               notificationLayout.setImageViewUri(R.id.icon, Uri.parse(coverTempUrl));
+           }
+
+
+        }else {
+            notificationLayout.setImageViewUri(R.id.icon, Uri.parse(coverUrl));
+        }
 
 
         //intent where to redirect the user
@@ -1046,7 +1089,20 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(UploadPageManagerService.this);
         notificationManager.notify(notificationId, builder.build());
 
+        //delete if file exists notification icon remove after update page
+        if(coverTempUrl != null && !coverTempUrl.equals("")){
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getApplicationContext().getContentResolver().delete(Uri.parse(coverTempUrl), null, null);
+                }
+            },1000);
+        }
+
+
     }
+
+
 
 
     @Override
@@ -1123,9 +1179,11 @@ HashMap<String,ArrayList<String>> retrievedActivePageMediaUrlArrayListMap = new 
         }
     }
 
+
     interface ImageUploadInterface{
         public void onComplete(String localUrl, String downloadUrl, ArrayList<String> imagesListToUpload);
         public void onFailed(Throwable throwable);
     }
+
 
 }

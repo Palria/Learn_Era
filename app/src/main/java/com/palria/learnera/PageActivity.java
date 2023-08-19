@@ -154,7 +154,7 @@ ImageButton morePageActionButton;
                 leBottomSheetDialog.addOptionItem("Delete Page", R.drawable.ic_baseline_error_outline_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        leBottomSheetDialog.hide();
                         new AlertDialog.Builder(PageActivity.this)
                                 .setCancelable(true)
                                 .setTitle("Delete Your Page!")
@@ -165,13 +165,12 @@ ImageButton morePageActionButton;
                                         toggleProgress(true);
                                         Toast.makeText(getApplicationContext(), "Deleting", Toast.LENGTH_SHORT).show();
 
-                                        leBottomSheetDialog.hide();
+
                                         GlobalConfig.deletePage(libraryId, tutorialId,folderId,pageId,isTutorialPage, new GlobalConfig.ActionCallback() {
                                             @Override
                                             public void onSuccess() {
                                                 toggleProgress(false);
                                                 Toast.makeText(PageActivity.this, "Delete Page success", Toast.LENGTH_SHORT).show();
-
                                                 PageActivity.super.onBackPressed();
                                             }
 
@@ -330,6 +329,7 @@ ImageButton morePageActionButton;
                     if(fetchedPagesSnapshot.containsKey(pageNumber-1)) {
                         renderPage(fetchedPagesSnapshot.get(pageNumber-1));
                     }else{
+                        fetchPageData(false);
                         fetchPageData(false);
                     }
                 }
@@ -557,6 +557,7 @@ ImageButton morePageActionButton;
                              @Override
                              public void onSuccess(DocumentSnapshot documentSnapshot) {
                                  renderPage(documentSnapshot);
+                                 //relaod discussions here
                                  isInitialFetch = false;
 
                              }

@@ -130,7 +130,7 @@
                     android:id="@+id/tutorialsRecyclerListView"
                     android:layout_width="match_parent"
                     android:orientation="vertical"
-                    android:layout_marginTop="10pt"
+                    android:layout_marginVertical="10pt"
                     tools:listitem="@layout/single_tutorial_item_layout"
                     android:layout_height="wrap_content"/>
 

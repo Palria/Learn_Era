@@ -6,7 +6,7 @@
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="48dp"
+        android:layout_width="80dp"
         app:riv_corner_radius="5pt"
         android:scaleType="centerCrop"
         android:layout_height="60dp"
@@ -18,13 +18,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_toEndOf="@id/icon"
+        android:textColor="@color/black"
         android:text="Uploading Page..."
         android:textSize="16sp"
         android:textStyle="bold" />
 
     <ProgressBar
         android:layout_marginTop="4pt"
-        android:layout_marginLeft="60dp"
+        android:layout_marginLeft="90dp"
         style="?android:attr/progressBarStyleHorizontal"
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
@@ -54,6 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_below="@+id/progress_bar"
+        android:textColor="@color/grayDark"
         android:textAlignment="textEnd"
         android:text="0%"
         android:layout_marginLeft="50dp"

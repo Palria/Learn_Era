@@ -14,8 +14,8 @@
         <ProgressBar
             android:layout_width="20pt"
             android:layout_height="20pt"
-            android:indeterminateTint="@color/teal_700"
-            />
+            android:indeterminateTint="@color/teal_700" />
+
     </LinearLayout>
 
     <include layout="@layout/layout_no_data_found"

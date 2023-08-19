@@ -10,12 +10,11 @@
 
 <RelativeLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <com.facebook.shimmer.ShimmerFrameLayout
         app:shimmer_auto_start="true"
-        android:visibility="gone"
+        android:visibility="visible"
         android:id="@+id/shimmerLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -247,11 +246,10 @@
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
-
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
+        android:visibility="gone"
         >
 
         <LinearLayout
@@ -273,7 +271,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="vertical"
-                android:layout_marginTop="1pt"
+                android:layout_marginTop="4pt"
                 android:layout_height="match_parent">
 
                 <RelativeLayout
@@ -518,7 +516,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="5pt"
-                                android:maxLines="1"
+                                android:maxLines="2"
                                 android:autoLink="email"
                                 android:text="No email"
                                 android:textAlignment="textStart"
@@ -544,7 +542,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="5pt"
-                                android:maxLines="1"
+                                android:maxLines="2"
                                 android:ellipsize="end"
                                 android:autoLink="web"
                                 android:text="No website"
@@ -637,7 +635,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:textColor="@color/gray"
+                            android:textColor="@color/white"
                             android:text="Libraries"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
@@ -663,7 +661,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:textColor="@color/gray"
+                            android:textColor="@color/white"
 
                             android:text="Tutorials"
                             android:layout_width="wrap_content"
@@ -690,7 +688,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:textColor="@color/gray"
+                            android:textColor="@color/white"
                             android:text="Ratings"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
@@ -844,6 +842,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/tutorialsRcv"
                 android:layout_marginTop="5pt"
+                android:paddingBottom="5pt"
                 tools:listitem="@layout/single_tutorial_item_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

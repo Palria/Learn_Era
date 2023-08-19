@@ -196,6 +196,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
+                    android:tint="@color/teal_700"
                     android:background="@android:color/transparent"
                     android:src="@drawable/ic_baseline_edit_24"
                     />
