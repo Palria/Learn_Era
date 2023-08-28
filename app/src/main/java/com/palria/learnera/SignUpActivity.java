@@ -408,6 +408,7 @@ public class SignUpActivity extends AppCompatActivity {
         passwordInputLayout = findViewById(R.id.passwordInputLayout);
 
         genderTypeSpinner = findViewById(R.id.genderSpinner);
+        birthDateInput = findViewById(R.id.birthDateInputId);
         countrySpinner = findViewById(R.id.countrySpinner);
         //init progress.
         alertDialog = new AlertDialog.Builder(SignUpActivity.this)

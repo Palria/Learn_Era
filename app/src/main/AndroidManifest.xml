@@ -28,6 +28,26 @@
         android:theme="@style/Theme.App.Starting"
         android:windowSoftInputMode="adjustPan">
         <activity
+            android:name=".SingleQuestionActivity"
+            android:theme="@style/Theme.LearnEra"
+            android:exported="true" >
+        </activity>
+        <activity
+            android:name=".SinglePostActivity"
+            android:theme="@style/Theme.LearnEra"
+            android:exported="true" >
+        </activity>
+        <activity
+            android:name=".AskNewQuestionActivity"
+            android:theme="@style/Theme.LearnEra"
+            android:exported="true" >
+        </activity>
+        <activity
+            android:name=".AddNewPostActivity"
+            android:theme="@style/Theme.LearnEra"
+            android:exported="true" >
+        </activity>
+        <activity
             android:name=".QuizActivity"
             android:theme="@style/Theme.LearnEra"
             android:exported="true" >

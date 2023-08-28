@@ -36,7 +36,6 @@ public class BookmarksFragment extends Fragment {
     View noDataFound;
     TextView bookmarksCountView;
     String userId;
-
     public BookmarksFragment() {
         // Required empty public constructor
     }

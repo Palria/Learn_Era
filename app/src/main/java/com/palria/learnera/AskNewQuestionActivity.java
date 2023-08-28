@@ -595,5 +595,17 @@ if(isPhotoIncluded && isNewPhoto) {
     }
 
 
+//
+//c static final String TOTAL_NUMBER_OF_VIEWS_KEY = "TOTAL_NUMBER_OF_VIEWS";
 
+//    public static final String QUESTION_ID_KEY = "QUESTION_ID";
+//    public static final String QUESTION_DATA_MODEL_KEY = "QUESTION_DATA_MODEL";
+//    public static final String QUESTION_BODY_KEY = "QUESTION_BODY";
+//    public static final String QUESTION_PHOTO_DOWNLOAD_URL_KEY = "QUESTION_PHOTO_DOWNLOAD_URL";
+//    public static final String ALL_QUESTIONS_KEY = "ALL_QUESTIONS";
+//    public static final String IS_PHOTO_INCLUDED_KEY = "IS_PHOTO_INCLUDED";
+//    public static final String PHOTOS_KEY = "PHOTOS";
+//    public static final String QUESTION_SEARCH_ANY_MATCH_KEYWORD_KEY = "QUESTION_SEARCH_ANY_MATCH_KEYWORD";
+//    public static final String TOTAL_NUMBER_OF_ANSWER_KEY = "TOTAL_NUMBER_OF_ANSWER";
+//    publi
 }
