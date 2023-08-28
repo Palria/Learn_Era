@@ -743,7 +743,7 @@ if(authorId.equals(GlobalConfig.getCurrentUserId())) {
 //                        Intent i = new Intent(TutorialActivity.this, CreateNewTutorialPageActivity.class);
 //                        i.putExtra(GlobalConfig.TUTORIAL_ID_KEY,"some-id");
 //                        //creating new
-
+                    leBottomSheetDialog.hide();
                     Intent intent = new Intent(TutorialActivity.this, UploadPageActivity.class);
                     intent.putExtra(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
                     intent.putExtra(GlobalConfig.LIBRARY_ID_KEY, libraryId);

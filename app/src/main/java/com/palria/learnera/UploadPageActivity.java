@@ -21,6 +21,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.PersistableBundle;
 import android.provider.MediaStore;
@@ -97,8 +98,15 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -233,6 +241,8 @@ public class UploadPageActivity extends AppCompatActivity {
     ArrayList<String> localVideosUriList = new ArrayList<>();
 
     AlertDialog confirmExitDialog;
+
+    String coverTempUrl = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -923,6 +933,7 @@ public class UploadPageActivity extends AppCompatActivity {
         intent.putExtra(GlobalConfig.PAGE_MEDIA_URL_LIST_KEY,mediaFinalListToUpload);
         intent.putExtra(GlobalConfig.ACTIVE_PAGE_MEDIA_URL_LIST_KEY,retrievedActivePageMediaUrlArrayList);
         intent.putExtra(GlobalConfig.PAGE_NUMBER_KEY,pageNumber);
+        intent.putExtra("coverTempUrl",coverTempUrl);
         startService(intent);
 
         isForcedExit = true;
@@ -1608,6 +1619,43 @@ public class UploadPageActivity extends AppCompatActivity {
                             Glide.with(UploadPageActivity.this)
                                     .load(retrievedCoverPhotoDownloadUrl)
                                     .into(coverImageView);
+                            new Thread(() -> {
+                                Bitmap bm = null;
+                                try {
+                                    URL aURL = new URL(retrievedCoverPhotoDownloadUrl);
+                                    URLConnection conn = aURL.openConnection();
+                                    conn.connect();
+                                    InputStream is = conn.getInputStream();
+                                    BufferedInputStream bis = new BufferedInputStream(is);
+                                    bm = BitmapFactory.decodeStream(bis);
+                                    bis.close();
+                                    is.close();
+                                } catch (IOException e) {
+                                    Log.e("er", "Error getting bitmap", e);
+                                }
+                                Log.e("url",retrievedCoverPhotoDownloadUrl);
+                                if(bm!=null){
+                                    try {
+                                        String path = Environment.getExternalStorageDirectory().toString()+"/"+Environment.DIRECTORY_DCIM;
+
+                                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD_MR1) {
+                                            path= Environment.getExternalStorageDirectory().toString()+"/";
+                                        }
+                                        OutputStream fOut = null;
+                                        File file = new File(path, "temp_img"+".jpg"); // the File to save , append increasing numeric counter to prevent files from getting overwritten.
+                                        fOut = new FileOutputStream(file);
+                                        bm.compress(Bitmap.CompressFormat.JPEG, 85, fOut); // saving the Bitmap to a file compressed as a JPEG with 85% compression rate
+                                        fOut.flush(); // Not really required
+                                        fOut.close(); // do not forget to close the stream
+                                        coverTempUrl=MediaStore.Images.Media.insertImage(getContentResolver(),file.getAbsolutePath(),file.getName(),file.getName());
+
+                                    }catch (Exception e){
+                                        Log.e("error_media",e.getMessage());
+                                    e.printStackTrace();
+                                        //Toast.makeText(UploadPageActivity.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }).start();
 
                             //THIS IS THE PAGE CONTENT IN HTML FORMAT , USE IT AND RENDER TO READABLE TEXT
                             String html = ""+ documentSnapshot.get(GlobalConfig.PAGE_CONTENT_KEY);

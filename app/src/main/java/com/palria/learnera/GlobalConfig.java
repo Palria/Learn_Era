@@ -2017,18 +2017,7 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
                                     getFirebaseStorageInstance().getReferenceFromUrl(urlList.get(i)).delete();
                                 }catch(Exception e){}
                                 }
-
-                            GlobalConfig.updateActivityLog(ACTIVITY_LOG_USER_DELETE_TUTORIAL_PAGE_TYPE_KEY, getCurrentUserId(), libraryId, tutorialId, folderId, pageId, null,  new GlobalConfig.ActionCallback() {
-                                @Override
-                                public void onSuccess() {
-                                }
-
-                                @Override
-                                public void onFailed(String errorMessage) {
-
-                                }
-                            });
-
+                            actionCallback.onSuccess();
                         }
                     });
 

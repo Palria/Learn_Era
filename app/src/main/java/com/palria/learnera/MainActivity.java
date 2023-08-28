@@ -346,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         }
                     }
                 }, 0)
-                .addOptionItem("Create Quiz", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
+                .addOptionItem("Create Quiz", R.drawable.baseline_quiz_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (GlobalConfig.isUserLoggedIn()) {
@@ -410,35 +410,38 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 GlobalConfig.createPopUpMenu(MainActivity.this,R.menu.home_overflow_menu , currentUserProfile, new GlobalConfig.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClicked(MenuItem item) {
+                        /**
+                         *                         if(item.getItemId()== R.id.login_item){
+                         * //
+                         *                             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
+                         *                             builder.setTitle("Log out?")
+                         *                                     .setMessage("Are you sure you want to log out now?")
+                         *                                     .setCancelable(false)
+                         *                                     .setPositiveButton("Log out", new DialogInterface.OnClickListener() {
+                         *                                         @Override
+                         *                                         public void onClick(DialogInterface dialogInterface, int i) {
+                         *                                             FirebaseAuth.getInstance().signOut();
+                         *                                             GlobalConfig.setCurrentUserId(null);
+                         *                                             SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(),MODE_PRIVATE);
+                         *                                             SharedPreferences.Editor editor = sharedPreferences.edit();
+                         *                                             editor.clear().apply();
+                         *                                             Intent intent =new Intent(MainActivity.this, SignInActivity.class);
+                         *                                             startActivity(intent);
+                         *                                             MainActivity.super.onBackPressed();
+                         *                                         }
+                         *                                     })
+                         *                                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                         *                                         @Override
+                         *                                         public void onClick(DialogInterface dialogInterface, int i) {
+                         *                                             Toast.makeText(MainActivity.this, "cancel log out.", Toast.LENGTH_SHORT).show();
+                         *                                         }
+                         *                                     })
+                         *                                     .show();
+                         *                         }
+                         *                         else
+                         */
 
-                        if(item.getItemId()== R.id.login_item){
-//
-                            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
-                            builder.setTitle("Log out?")
-                                    .setMessage("Are you sure you want to log out now?")
-                                    .setCancelable(false)
-                                    .setPositiveButton("Log out", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            FirebaseAuth.getInstance().signOut();
-                                            GlobalConfig.setCurrentUserId(null);
-                                            SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(),MODE_PRIVATE);
-                                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                                            editor.clear().apply();
-                                            Intent intent =new Intent(MainActivity.this, SignInActivity.class);
-                                            startActivity(intent);
-                                            MainActivity.super.onBackPressed();
-                                        }
-                                    })
-                                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            Toast.makeText(MainActivity.this, "cancel log out.", Toast.LENGTH_SHORT).show();
-                                        }
-                                    })
-                                    .show();
-                        }
-                        else if(item.getItemId() == R.id.notification_item){
+                    if(item.getItemId() == R.id.notification_item){
 //                            Toast.makeText(MainActivity.this, "notification clicked.", Toast.LENGTH_SHORT).show();
                             Intent intent =new Intent(MainActivity.this, NotificationActivity.class);
                             startActivity(intent);

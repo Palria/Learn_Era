@@ -185,7 +185,7 @@
                     <com.makeramen.roundedimageview.RoundedImageView
                         app:riv_corner_radius="4pt"
                         android:id="@+id/pickImageActionButton"
-                        android:src="@drawable/dotted_bg"
+                        android:background="@drawable/dotted_bg"
                         android:layout_width="match_parent"
                         android:layout_height="45pt"/>
                     <TextView

@@ -2,20 +2,15 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:paddingHorizontal="5pt"
     android:layout_height="match_parent"
+    android:paddingBottom="30pt"
     tools:context=".AllUsersFragment">
     
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginTop="2pt"
+        android:paddingBottom="2pt"
         android:id="@+id/quizRecyclerListViewId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -23,6 +18,5 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         />
-    </LinearLayout>
-    </ScrollView>
+
 </FrameLayout>

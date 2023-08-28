@@ -189,7 +189,7 @@
                     android:layout_width="match_parent"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="40dp"
+                    android:layout_marginTop="10pt"
                     >
         
                     <com.google.android.material.textfield.TextInputEditText
@@ -199,6 +199,7 @@
                         android:maxLength="60"
                         android:textSize="15sp"
                         android:focusable="false"
+                        android:background="@drawable/default_input_bg"
                         android:longClickable="false"
                         android:id="@+id/birthDateInputId"
                         android:drawableStart="@drawable/ic_baseline_access_time_filled_24"
@@ -290,6 +291,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     app:counterEnabled="true"
                     app:helperText="max 200 chars"
+                    android:layout_marginTop="10pt"
                     android:layout_height="wrap_content">
         
                     <com.google.android.material.textfield.TextInputEditText

@@ -12,8 +12,8 @@
 
         <shape>
 
-<stroke android:color="@color/gray"
-    android:width="1sp"/>
+            <stroke android:color="@color/teal_700"
+                android:width="1sp"/>
             <corners android:radius="5pt"/>
         </shape>
     </item>
