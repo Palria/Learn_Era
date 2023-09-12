@@ -255,11 +255,13 @@ if(!GlobalConfig.getCurrentUserId().equals(authorId+"")){
                             long pageNumber  =  documentSnapshot.get(GlobalConfig.PAGE_NUMBER_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.PAGE_NUMBER_KEY): 0L;
                             long discussionCount  =  documentSnapshot.get(GlobalConfig.TOTAL_DISCUSSIONS_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_DISCUSSIONS_KEY): 0L;
                             long likeCount  =  documentSnapshot.get(GlobalConfig.TOTAL_LIKES_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_LIKES_KEY): 0L;
+                            ArrayList<String> discussionContributorsIdList  =  documentSnapshot.get(GlobalConfig.DISCUSSION_CONTRIBUTORS_ID_LIST_KEY)!=null ? (ArrayList)documentSnapshot.get(GlobalConfig.DISCUSSION_CONTRIBUTORS_ID_LIST_KEY): new ArrayList<String>();
+                            ArrayList<String> likersIdList  =  documentSnapshot.get(GlobalConfig.LIKERS_ID_LIST_KEY)!=null ? (ArrayList)documentSnapshot.get(GlobalConfig.LIKERS_ID_LIST_KEY): new ArrayList<String>();
                             String dateCreated  =  documentSnapshot.get(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY)!=null ? documentSnapshot.getTimestamp(GlobalConfig.PAGE_DATE_CREATED_TIME_STAMP_KEY).toDate()+"" : "Undefined";
                             if(dateCreated.length()>10){
                                 dateCreated = dateCreated.substring(0,10);
                             }
-                            fetchPageListener.onSuccess(new PageDataModel(pageTitle,"",coverPhotoDownloadUrl,authorId,pageId,tutorialId,folderId,dateCreated,totalViews,isTutorialPage,isPublic,(int)pageNumber,(int)discussionCount,(int)likeCount));
+                            fetchPageListener.onSuccess(new PageDataModel(pageTitle,"",coverPhotoDownloadUrl,authorId,pageId,tutorialId,folderId,dateCreated,totalViews,isTutorialPage,isPublic,(int)pageNumber,(int)discussionCount,(int)likeCount,discussionContributorsIdList,likersIdList));
                         }
                         if(queryDocumentSnapshots.isEmpty()){
                                 startPaginationTextView.setVisibility(View.GONE);

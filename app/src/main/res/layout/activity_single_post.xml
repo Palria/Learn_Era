@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".PostNewUpdateActivity"
+    tools:context=".SinglePostActivity"
     >
     
     
@@ -256,7 +256,7 @@
         android:layout_width="wrap_content"
         android:id="@+id/cameraFloatingButtonId"
         android:text="Photo"
-        app:icon="@drawable/ic_outline_camera_alt_24"
+        app:icon="@drawable/ic_baseline_photo_camera_24"
         android:layout_marginHorizontal="12pt"
         android:layout_marginVertical="5pt"
         app:layout_constraintRight_toRightOf="parent"

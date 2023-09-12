@@ -3,6 +3,7 @@ package com.palria.learnera.models;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class PageDataModel implements Serializable {
 
@@ -23,8 +24,10 @@ public class PageDataModel implements Serializable {
     private int pageNumber;
     private int discussionCount;
     private int likeCount;
+    private ArrayList<String> discussionContributorsIdList;
+    private ArrayList<String> likersIdList;
 
-    public PageDataModel(String title, String description, String coverDownloadUrl, String authorId, String pageId,String tutorialId,String folderId, String dateCreated,long totalViews,boolean isTutorialPage,boolean isPublic,int pageNumber,int discussionCount,int likeCount) {
+    public PageDataModel(String title, String description, String coverDownloadUrl, String authorId, String pageId,String tutorialId,String folderId, String dateCreated,long totalViews,boolean isTutorialPage,boolean isPublic,int pageNumber,int discussionCount,int likeCount, ArrayList<String> discussionContributorsIdList,ArrayList<String> likersIdList) {
         this.title = title;
         this.description = description;
         this.coverDownloadUrl = coverDownloadUrl;
@@ -40,6 +43,8 @@ public class PageDataModel implements Serializable {
         this.pageNumber = pageNumber;
         this.discussionCount = discussionCount;
         this.likeCount = likeCount;
+        this.discussionContributorsIdList = discussionContributorsIdList;
+        this.likersIdList = likersIdList;
     }
 
     public String getTitle() {
@@ -142,5 +147,13 @@ public class PageDataModel implements Serializable {
     }
     public int getLikeCount() {
         return likeCount;
+    }
+
+    public ArrayList<String> getLikersIdList() {
+        return likersIdList;
+    }
+
+    public ArrayList<String> getDiscussionContributorsIdList() {
+        return discussionContributorsIdList;
     }
 }

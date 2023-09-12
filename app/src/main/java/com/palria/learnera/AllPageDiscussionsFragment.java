@@ -375,8 +375,8 @@ if(!GlobalConfig.getCurrentUserId().equals(authorId+"")){
                             boolean isTutorialPage  =  documentSnapshot.get(GlobalConfig.IS_TUTORIAL_PAGE_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_TUTORIAL_PAGE_KEY): true;
                             boolean hasParentDiscussion  =  documentSnapshot.get(GlobalConfig.HAS_PARENT_DISCUSSION_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.HAS_PARENT_DISCUSSION_KEY): true;
                             boolean hasReplies  =  documentSnapshot.get(GlobalConfig.HAS_REPLIES_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.HAS_REPLIES_KEY): true;
-                            boolean isHiddenByAuthor  =  documentSnapshot.get(GlobalConfig.IS_HIDDEN_BY_AUTHOR_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_HIDDEN_BY_AUTHOR_KEY): true;
-                            boolean isHiddenByPoster  =  documentSnapshot.get(GlobalConfig.IS_HIDDEN_BY_POSTER_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_HIDDEN_BY_POSTER_KEY): true;
+                            boolean isHiddenByAuthor  =  documentSnapshot.get(GlobalConfig.IS_HIDDEN_BY_AUTHOR_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_HIDDEN_BY_AUTHOR_KEY): false;
+                            boolean isHiddenByPoster  =  documentSnapshot.get(GlobalConfig.IS_HIDDEN_BY_POSTER_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_HIDDEN_BY_POSTER_KEY): false;
                             long totalReplies  =  documentSnapshot.get(GlobalConfig.TOTAL_REPLIES_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_REPLIES_KEY): 0L;
                             long totalLikes  =  documentSnapshot.get(GlobalConfig.TOTAL_LIKES_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_LIKES_KEY): 0L;
 //                            long totalDisLikes  =  documentSnapshot.get(GlobalConfig.TOTAL_DISLIKES_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_DISLIKES_KEY): 0L;

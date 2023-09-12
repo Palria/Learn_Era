@@ -6,7 +6,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.CountDownTimer;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -26,6 +29,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
@@ -34,6 +38,7 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.VideoController;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -52,10 +57,16 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.palria.learnera.models.AnswerDataModel;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
+import com.palria.learnera.models.PageDataModel;
 import com.palria.learnera.models.PageDiscussionDataModel;
 import com.palria.learnera.models.WelcomeScreenItemModal;
+import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -147,6 +158,10 @@ public class GlobalConfig {
     public static final String CATEGORY_FRAGMENT_TYPE_KEY = "CATEGORY_FRAGMENT_TYPE";
     public static final String DISCUSSION_FRAGMENT_TYPE_KEY = "DISCUSSION_FRAGMENT_TYPE";
     public static final String QUIZ_FRAGMENT_TYPE_KEY = "QUIZ_FRAGMENT_TYPE";
+    public static final String ANSWER_FRAGMENT_TYPE_KEY = "ANSWER_FRAGMENT_TYPE";
+
+    public static final String OPEN_TYPE_ALL_QUESTIONS_KEY = "OPEN_TYPE_ALL_QUESTIONS";
+    public static final String OPEN_TYPE_KEY = "OPEN_TYPE_KEY";
 
     public static final String IS_AUTHOR_OPEN_TYPE_KEY = "IS_AUTHOR_OPEN_TYPE";
 
@@ -556,6 +571,7 @@ public class GlobalConfig {
     public static final String PARENT_DISCUSSION_ID_LIST_KEY = "PARENT_DISCUSSION_ID_LIST";
     public static final String LIKED_PAGES_KEY = "LIKED_PAGES";
     public static final String OTHER_PAGES_DISCUSSION_KEY = "OTHER_PAGES_DISCUSSION";
+    public static final String DISCUSSION_CONTRIBUTORS_ID_LIST_KEY = "DISCUSSION_CONTRIBUTORS_ID_LIST";
     public static final String DATE_CREATED_TIME_STAMP_KEY = "DATE_CREATED_TIME_STAMP";
     public static final String DATE_EDITED_TIME_STAMP_KEY = "DATE_EDITED_TIME_STAMP";
 
@@ -603,6 +619,27 @@ public class GlobalConfig {
     public static final String QUESTION_SEARCH_ANY_MATCH_KEYWORD_KEY = "QUESTION_SEARCH_ANY_MATCH_KEYWORD";
     public static final String TOTAL_NUMBER_OF_ANSWER_KEY = "TOTAL_NUMBER_OF_ANSWER";
     public static final String TOTAL_NUMBER_OF_VIEWS_KEY = "TOTAL_NUMBER_OF_VIEWS";
+
+    public static final String ALL_ANSWERS_KEY = "ALL_ANSWERS";
+    public static final String ANSWER_ID_KEY = "ANSWER_ID";
+    public static final String ANSWER_BODY_KEY = "ANSWER_BODY";
+    public static final String ANSWER_PHOTO_DOWNLOAD_URL_KEY = "ANSWER_PHOTO_DOWNLOAD_URL";
+    public static final String CONTRIBUTOR_ID_KEY = "CONTRIBUTOR_ID";
+    public static final String ANSWER_CONTRIBUTORS_LIST_KEY = "ANSWER_CONTRIBUTORS_LIST";
+    public static final String TOTAL_NUMBER_OF_ANSWER_CONTRIBUTED_KEY = "TOTAL_NUMBER_OF_ANSWER_CONTRIBUTED";
+    public static final String QUESTIONS_ANSWERED_LIST_KEY = "QUESTIONS_ANSWERED_LIST";
+    public static final String IS_FROM_QUESTION_CONTEXT_KEY = "IS_FROM_QUESTION_CONTEXT";
+    public static final String IS_VIEW_ALL_ANSWERS_FOR_SINGLE_QUESTION_KEY = "IS_VIEW_ALL_ANSWERS_FOR_SINGLE_QUESTION";
+    public static final String IS_VIEW_SINGLE_ANSWER_REPLY_KEY = "IS_VIEW_SINGLE_ANSWER_REPLY";
+    public static final String PARENT_ID_KEY = "PARENT_ID";
+    public static final String HAS_PARENT_KEY = "HAS_PARENT";
+    public static final String IS_ANSWER_KEY = "IS_ANSWER";
+    public static final String IS_HIDDEN_BY_CONTRIBUTOR_KEY = "IS_HIDDEN_BY_CONTRIBUTOR";
+    public static final String TOTAL_UP_VOTES_KEY = "TOTAL_UP_VOTES";
+    public static final String TOTAL_DOWN_VOTES_KEY = "TOTAL_DOWN_VOTES";
+    public static final String UP_VOTERS_ID_LIST_KEY = "UP_VOTERS_ID_LIST";
+    public static final String DOWN_VOTERS_ID_LIST_KEY = "DOWN_VOTERS_ID_LIST";
+    public static final String REPLY_CONTRIBUTORS_LIST_KEY = "REPLY_CONTRIBUTORS_LIST";
 
 
 
@@ -4081,11 +4118,13 @@ if(isUserLoggedIn()) {
             DocumentReference documentReference3 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(pageDiscussionDataModel.getTutorialId()).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageDiscussionDataModel.getPageId());
             HashMap<String, Object> discussionDetails3 = new HashMap<>();
             discussionDetails3.put(GlobalConfig.TOTAL_DISCUSSIONS_KEY, FieldValue.increment(1L));
+            discussionDetails3.put(GlobalConfig.DISCUSSION_CONTRIBUTORS_ID_LIST_KEY, FieldValue.arrayUnion(getCurrentUserId()));
             writeBatch.set(documentReference3, discussionDetails3, SetOptions.merge());
         }else{
             DocumentReference documentReference4 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(pageDiscussionDataModel.getTutorialId()).collection(GlobalConfig.ALL_FOLDERS_KEY).document(pageDiscussionDataModel.getFolderId()).collection(GlobalConfig.ALL_FOLDER_PAGES_KEY).document(pageDiscussionDataModel.getPageId());
             HashMap<String, Object> discussionDetails4 = new HashMap<>();
             discussionDetails4.put(GlobalConfig.TOTAL_DISCUSSIONS_KEY, FieldValue.increment(1L));
+            discussionDetails4.put(GlobalConfig.DISCUSSION_CONTRIBUTORS_ID_LIST_KEY, FieldValue.arrayUnion(getCurrentUserId()));
             writeBatch.set(documentReference4, discussionDetails4, SetOptions.merge());
         }
         }
@@ -4145,18 +4184,20 @@ if(isUserLoggedIn()) {
                     }
                 });
     }
-    public static void likePage(Context context,String pageId, String tutorialId,String folderId, String authorId, boolean isTutorialPage,boolean isIncreaseCount, ActionCallback actionCallback ) {
+
+
+    public static void likePage(Context context, PageDataModel pageDataModel, String pageId, String tutorialId, String folderId, String authorId, boolean isTutorialPage, boolean isIncreaseCount, ActionCallback actionCallback ) {
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
 
         DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId()).collection(GlobalConfig.LIKED_PAGES_KEY).document(pageId);
         if(isIncreaseCount){
-        HashMap<String, Object> discussionDetails1 = new HashMap<>();
-        discussionDetails1.put(GlobalConfig.IS_TUTORIAL_PAGE_KEY, isTutorialPage);
-        discussionDetails1.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
-        discussionDetails1.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
-        discussionDetails1.put(GlobalConfig.FOLDER_ID_KEY, folderId);
-        discussionDetails1.put(GlobalConfig.PAGE_ID_KEY, pageId);
-        writeBatch.set(documentReference1, discussionDetails1, SetOptions.merge());
+        HashMap<String, Object> pageDetails1 = new HashMap<>();
+            pageDetails1.put(GlobalConfig.IS_TUTORIAL_PAGE_KEY, isTutorialPage);
+            pageDetails1.put(GlobalConfig.AUTHOR_ID_KEY, authorId);
+            pageDetails1.put(GlobalConfig.TUTORIAL_ID_KEY, tutorialId);
+            pageDetails1.put(GlobalConfig.FOLDER_ID_KEY, folderId);
+            pageDetails1.put(GlobalConfig.PAGE_ID_KEY, pageId);
+            writeBatch.set(documentReference1, pageDetails1, SetOptions.merge());
     }else{
             writeBatch.delete(documentReference1);
         }
@@ -4165,8 +4206,12 @@ if(isUserLoggedIn()) {
             HashMap<String, Object> discussionDetails3 = new HashMap<>();
             if(isIncreaseCount){
                 discussionDetails3.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(1L));
+                discussionDetails3.put(GlobalConfig.LIKERS_ID_LIST_KEY, FieldValue.arrayUnion(getCurrentUserId()));
+
             }else{
                 discussionDetails3.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(-1L));
+                discussionDetails3.put(GlobalConfig.LIKERS_ID_LIST_KEY, FieldValue.arrayRemove(getCurrentUserId()));
+
             }
             writeBatch.set(documentReference3, discussionDetails3, SetOptions.merge());
         }else{
@@ -4174,8 +4219,10 @@ if(isUserLoggedIn()) {
             HashMap<String, Object> discussionDetails4 = new HashMap<>();
             if(isIncreaseCount){
                 discussionDetails4.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(1L));
+                discussionDetails4.put(GlobalConfig.LIKERS_ID_LIST_KEY, FieldValue.arrayUnion(getCurrentUserId()));
             }else{
                 discussionDetails4.put(GlobalConfig.TOTAL_LIKES_KEY, FieldValue.increment(-1L));
+                discussionDetails4.put(GlobalConfig.LIKERS_ID_LIST_KEY, FieldValue.arrayRemove(getCurrentUserId()));
             }
             writeBatch.set(documentReference4, discussionDetails4, SetOptions.merge());
         }
@@ -4201,6 +4248,15 @@ if(isUserLoggedIn()) {
                     public void onSuccess(Void unused) {
                         actionCallback.onSuccess();
                         recordLikedPage( context, pageId,isIncreaseCount);
+                        if(pageDataModel!=null) {
+                            if (isIncreaseCount) {
+                                if (!pageDataModel.getLikersIdList().contains(getCurrentUserId())) {
+                                    pageDataModel.getLikersIdList().add(getCurrentUserId());
+                                }
+                            } else {
+                                pageDataModel.getLikersIdList().remove(getCurrentUserId());
+                            }
+                        }
                     }
                 });
     }
@@ -4229,7 +4285,8 @@ if(isUserLoggedIn()) {
 
     }
 
-    public static void likePageDiscussion(Context context,String discussionId, String pageId, String tutorialId,String folderId, String authorId, boolean isTutorialPage,boolean isIncreaseCount, ActionCallback actionCallback ) {
+
+    public static void likePageDiscussion(Context context,PageDiscussionDataModel pageDiscussionDataModel,String discussionId, String pageId, String tutorialId,String folderId, String authorId, boolean isTutorialPage,boolean isIncreaseCount, ActionCallback actionCallback ) {
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
 
         DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId()).collection(GlobalConfig.LIKED_DISCUSSIONS_KEY).document(discussionId);
@@ -4241,6 +4298,7 @@ if(isUserLoggedIn()) {
         discussionDetails1.put(GlobalConfig.FOLDER_ID_KEY, folderId);
         discussionDetails1.put(GlobalConfig.PAGE_ID_KEY, pageId);
         discussionDetails1.put(GlobalConfig.DISCUSSION_ID_KEY, discussionId);
+        discussionDetails1.put(GlobalConfig.LIKERS_ID_LIST_KEY, FieldValue.arrayUnion(getCurrentUserId()));
         writeBatch.set(documentReference1, discussionDetails1, SetOptions.merge());
     }else{
             writeBatch.delete(documentReference1);
@@ -4276,13 +4334,17 @@ if(isUserLoggedIn()) {
                     @Override
                     public void onSuccess(Void unused) {
                         actionCallback.onSuccess();
-                        recordLikedPageDiscussion( context, discussionId,isIncreaseCount);
-
+//                        recordLikedPageDiscussion( context, discussionId,isIncreaseCount);
+                                                if(isIncreaseCount) {
+                                                    if (!pageDiscussionDataModel.getLikersIdList().contains(getCurrentUserId())) {
+                                                        pageDiscussionDataModel.getLikersIdList().add(getCurrentUserId());
+                                                    }
+                                                }else{
+                                                    pageDiscussionDataModel.getLikersIdList().remove(getCurrentUserId());
+                                                }
                     }
                 });
     }
-
-
     public static boolean isPageDiscussionLiked(Context context,String discussionId){
         SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName()+getCurrentUserId(), MODE_PRIVATE);
         String likedList = sharedPreferences.getString(GlobalConfig.LIKED_PAGE_DISCUSSION_LIST_KEY,"");
@@ -4800,6 +4862,346 @@ if(isUserLoggedIn()) {
     }
 
 
+    public static BottomSheetFormBuilderWidget getAnswerForm(Context context,String authorId,String questionId,String parentId,String answerId, boolean isEdition, boolean isAnswer, @Nullable AnswerDataModel answerDataModel, @NonNull AnswerCallback answerCallback){
+
+        boolean[] isPhotoIncluded = new boolean[1];
+
+        BottomSheetFormBuilderWidget  bottomSheetCatalogFormBuilderWidget =  new BottomSheetFormBuilderWidget(context);
+
+
+
+        LinearLayout imageLayout = new LinearLayout(context);
+        imageLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+        imageLayout.setLayoutDirection(LinearLayout.LAYOUT_DIRECTION_LTR);
+        imageLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+        ImageView answerImageView = new ImageView(context);
+        answerImageView.setLayoutParams(new LinearLayout.LayoutParams(0,200,1));
+        answerImageView.setImageResource(R.drawable.ic_baseline_photo_camera_24);
+        answerImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                GlobalConfig.createPopUpMenu(context, R.menu.pick_image_menu, answerImageView, new GlobalConfig.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClicked(MenuItem item) {
+                        if(item.getItemId() == R.id.galleryId){
+                            answerCallback.onImageGallerySelected(answerImageView);
+                        }
+                        else if(item.getItemId() == R.id.cameraId){
+                            answerCallback.onCameraSelected(answerImageView);
+                        }
+                        return true;
+                    }
+                });
+
+            }
+        });
+
+        ImageView removeImageView = new ImageView(context);
+        removeImageView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+        removeImageView.setImageResource(R.drawable.ic_outline_cancel_24);
+        removeImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                answerImageView.setImageResource(R.drawable.ic_baseline_photo_camera_24);
+                isPhotoIncluded[0] = false;
+            }
+        });
+        imageLayout.addView(answerImageView,0);
+        imageLayout.addView(removeImageView,1);
+
+        bottomSheetCatalogFormBuilderWidget.addView(imageLayout);
+        bottomSheetCatalogFormBuilderWidget.setTitle("Contribute your answer to the question")
+                .setPositiveTitle("Answer");
+
+        BottomSheetFormBuilderWidget.EditTextInput answerEditTextInput = new BottomSheetFormBuilderWidget.EditTextInput(context);
+        answerEditTextInput.setHint("Enter your answer");
+        bottomSheetCatalogFormBuilderWidget.addInputField(answerEditTextInput);
+
+        if(isEdition && answerDataModel!=null) {
+            answerId = answerDataModel.getAnswerId();
+            answerEditTextInput.setText(answerDataModel.getAnswer());
+            isPhotoIncluded[0] = answerDataModel.isPhotoIncluded();
+            if( isPhotoIncluded[0]){
+            Glide.with(context)
+                    .load(answerDataModel.getAnswerPhotoDownloadUrl())
+                    .centerCrop()
+                    .into(answerImageView);
+        }
+        }
+
+        final String finalAnswerId = answerId;
+        bottomSheetCatalogFormBuilderWidget.setOnSubmit(new BottomSheetFormBuilderWidget.OnSubmitHandler(){
+            @Override
+            public void onSubmit(String[] body) {
+                //super.onSubmit(body);
+
+//                if(answerImageView.getDrawable().equals(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_baseline_photo_camera_24,getTheme()))){
+//                    isPhotoIncluded[0] = false;
+//                }else{
+//                    isPhotoIncluded[0] = true;
+//                }
+//
+
+//                    if(isPhotoIncluded[0]){
+//
+//                    }else{
+////                    postAnswer(body[0]);
+//
+//                    }
+                if(body[0].isEmpty() && !isPhotoIncluded[0]){
+                    Toast.makeText(context, "Please enter an answer", Toast.LENGTH_SHORT).show();
+                }else {
+                    answerCallback.onStart(finalAnswerId);
+                    startPostAnswer(context, authorId, questionId,parentId, finalAnswerId, body[0], answerImageView, isPhotoIncluded[0], isEdition,isAnswer, new GlobalConfig.ActionCallback() {
+                        @Override
+                        public void onSuccess() {
+                            answerCallback.onSuccess(finalAnswerId);
+                        }
+
+                        @Override
+                        public void onFailed(String errorMessage) {
+                            answerCallback.onFailed(errorMessage);
+
+                        }
+                    });
+                }
+            }
+        });
+        bottomSheetCatalogFormBuilderWidget
+                .render();
+
+        return bottomSheetCatalogFormBuilderWidget;
+    }
+    private static void sendAnswerDetailsToDatabase(Context context,String authorId,String questionId,String answer,String parentId,String answerId,boolean isPhotoIncluded,String answerPhotoDownloadUrl,boolean isEdition,boolean isAnswer,@NonNull GlobalConfig.ActionCallback actionCallback) {
+            WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+            DocumentReference documentReference1 = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUESTIONS_KEY).document(questionId).collection(GlobalConfig.ALL_ANSWERS_KEY).document(answerId);
+            HashMap<String,Object> quizDetails = new HashMap<>();
+            quizDetails.put(GlobalConfig.QUESTION_ID_KEY,questionId);
+            quizDetails.put(GlobalConfig.ANSWER_ID_KEY,answerId);
+            quizDetails.put(GlobalConfig.PARENT_ID_KEY,parentId);
+            quizDetails.put(GlobalConfig.AUTHOR_ID_KEY,authorId);
+            quizDetails.put(GlobalConfig.CONTRIBUTOR_ID_KEY,GlobalConfig.getCurrentUserId());
+            quizDetails.put(GlobalConfig.ANSWER_BODY_KEY,answer);
+            quizDetails.put(GlobalConfig.ANSWER_PHOTO_DOWNLOAD_URL_KEY,answerPhotoDownloadUrl);
+            quizDetails.put(GlobalConfig.IS_PHOTO_INCLUDED_KEY,isPhotoIncluded);
+            quizDetails.put(GlobalConfig.IS_ANSWER_KEY,isAnswer);
+            if(isEdition){
+                quizDetails.put(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+
+            }else {
+                quizDetails.put(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+                quizDetails.put(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+            }
+            writeBatch.set(documentReference1,quizDetails, SetOptions.merge());
+
+            if (!isEdition) {
+                if (isAnswer) {
+                    //if it is answer then increment the number of answers to a question but if it's just a reply do otherwise
+                    DocumentReference questionReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUESTIONS_KEY).document(questionId);
+                    HashMap<String, Object> questionDetails = new HashMap<>();
+                    questionDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ANSWER_KEY, FieldValue.increment(1L));
+                    questionDetails.put(GlobalConfig.ANSWER_CONTRIBUTORS_LIST_KEY, FieldValue.arrayUnion(GlobalConfig.getCurrentUserId()));
+                    writeBatch.set(questionReference, questionDetails, SetOptions.merge());
+
+
+                    DocumentReference userReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
+                    HashMap<String, Object> userDetails = new HashMap<>();
+                    userDetails.put(GlobalConfig.TOTAL_NUMBER_OF_ANSWER_CONTRIBUTED_KEY, FieldValue.increment(1L));
+                    userDetails.put(GlobalConfig.QUESTIONS_ANSWERED_LIST_KEY, FieldValue.arrayUnion(questionId));
+                    writeBatch.set(userReference, userDetails, SetOptions.merge());
+
+                }else{
+                    DocumentReference answerReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUESTIONS_KEY).document(questionId).collection(GlobalConfig.ALL_ANSWERS_KEY).document(parentId);
+                    HashMap<String, Object> answernDetails = new HashMap<>();
+                    answernDetails.put(GlobalConfig.TOTAL_REPLIES_KEY, FieldValue.increment(1L));
+                    answernDetails.put(GlobalConfig.REPLY_CONTRIBUTORS_LIST_KEY, FieldValue.arrayUnion(GlobalConfig.getCurrentUserId()));
+                    writeBatch.set(answerReference, answernDetails, SetOptions.merge());
+
+                }
+
+                }
+
+
+            writeBatch.commit()
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            actionCallback.onFailed(e.getMessage());
+                        }
+                    })
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            actionCallback.onSuccess();
+                        }
+                    });
+
+    }
+    private static void startPostAnswer(Context context,String authorId,String questionId,String parentId,String answerId, String answer, ImageView answerPhoto, boolean isPhotoIncluded, boolean isEdition,boolean isAnswer,@NonNull GlobalConfig.ActionCallback actionCallback){
+
+        if(isPhotoIncluded || answerPhoto!=null) {
+            StorageReference answerPhotoStorageReference = GlobalConfig.getFirebaseStorageInstance().getReference().child(GlobalConfig.ALL_QUESTIONS_KEY + "/" + questionId + "/" + GlobalConfig.ALL_ANSWERS_KEY + "/" + answerId + "/" + GlobalConfig.PHOTOS_KEY + ".PNG");
+            answerPhoto.setDrawingCacheEnabled(true);
+            Bitmap coverPhotoBitmap = answerPhoto.getDrawingCache();
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            coverPhotoBitmap.compress(Bitmap.CompressFormat.PNG, 5, byteArrayOutputStream);
+            byte[] bytes = byteArrayOutputStream.toByteArray();
+            UploadTask coverPhotoUploadTask = answerPhotoStorageReference.putBytes(bytes);
+
+            coverPhotoUploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+//                    answerPhotoUploadListener.onFailed(e.getMessage());
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    coverPhotoUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                        @Override
+                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                            return answerPhotoStorageReference.getDownloadUrl();
+                        }
+                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            String answerPhotoDownloadUrl = String.valueOf(task.getResult());
+//                            answerPhotoUploadListener.onSuccess(answer, isPhotoIncluded, isEdition, answerPhotoDownloadUrl);
+
+                            sendAnswerDetailsToDatabase(context,authorId,questionId,answer,parentId, answerId, isPhotoIncluded, answerPhotoDownloadUrl, isEdition,isAnswer, new ActionCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    actionCallback.onSuccess();
+                                }
+
+                                @Override
+                                public void onFailed(String errorMessage) {
+                                    actionCallback.onFailed(errorMessage);
+
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }else{
+            sendAnswerDetailsToDatabase(context,authorId,questionId,answer,parentId, answerId, isPhotoIncluded, "", isEdition,isAnswer, new GlobalConfig.ActionCallback() {
+                @Override
+                public void onSuccess() {
+                    actionCallback.onSuccess();
+
+                }
+
+                @Override
+                public void onFailed(String errorMessage) {
+                    actionCallback.onFailed(errorMessage);
+
+                }
+            });
+        }
+
+    }
+
+    public static void deleteAnswer(String questionId,@Nullable String parentId,String answerId, String authorId,boolean isAnswer, ActionCallback actionCallback ){
+
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUESTIONS_KEY).document(questionId).collection(GlobalConfig.ALL_ANSWERS_KEY).document(answerId);
+        writeBatch.delete(documentReference1);
+
+
+        if(isAnswer) {
+            DocumentReference documentReference3 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUESTIONS_KEY).document(questionId);
+            HashMap<String, Object> answerDetails3 = new HashMap<>();
+            answerDetails3.put(GlobalConfig.TOTAL_NUMBER_OF_ANSWER_KEY, FieldValue.increment(-1L));
+            writeBatch.set(documentReference3, answerDetails3, SetOptions.merge());
+
+        }else{
+            DocumentReference documentReference4 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUESTIONS_KEY).document(questionId).collection(GlobalConfig.ALL_ANSWERS_KEY).document(parentId);
+            HashMap<String, Object> answerDetails4 = new HashMap<>();
+            answerDetails4.put(GlobalConfig.TOTAL_REPLIES_KEY, FieldValue.increment(-1L));
+            writeBatch.set(documentReference4, answerDetails4, SetOptions.merge());
+        }
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+
+    public static void voteAnswer(AnswerDataModel answerDataModel,boolean isUpVote, ActionCallback actionCallback){
+       //check if user has upVoted or downVoted, if so, then return;
+        if((isUpVote && answerDataModel.getUpVotersIdList().contains(getCurrentUserId())) || (!isUpVote && answerDataModel.getDownVotersIdList().contains(getCurrentUserId())))return;
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+
+            DocumentReference documentReference4 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUESTIONS_KEY).document(answerDataModel.getQuestionId()).collection(GlobalConfig.ALL_ANSWERS_KEY).document(answerDataModel.getAnswerId());
+            HashMap<String, Object> answerDetails4 = new HashMap<>();
+            if(isUpVote){
+            answerDetails4.put(GlobalConfig.TOTAL_UP_VOTES_KEY, FieldValue.increment(1L));
+            answerDetails4.put(GlobalConfig.UP_VOTERS_ID_LIST_KEY, FieldValue.arrayUnion(getCurrentUserId()));
+
+                if(answerDataModel.getDownVotersIdList().contains(getCurrentUserId())){
+                answerDetails4.put(GlobalConfig.TOTAL_DOWN_VOTES_KEY, FieldValue.increment(-1L));
+                answerDetails4.put(GlobalConfig.DOWN_VOTERS_ID_LIST_KEY, FieldValue.arrayRemove(getCurrentUserId()));
+            }
+            }else{
+                answerDetails4.put(GlobalConfig.TOTAL_DOWN_VOTES_KEY, FieldValue.increment(1L));
+                answerDetails4.put(GlobalConfig.DOWN_VOTERS_ID_LIST_KEY, FieldValue.arrayUnion(getCurrentUserId()));
+
+                if(answerDataModel.getUpVotersIdList().contains(getCurrentUserId())){
+                    answerDetails4.put(GlobalConfig.TOTAL_UP_VOTES_KEY, FieldValue.increment(-1L));
+                    answerDetails4.put(GlobalConfig.UP_VOTERS_ID_LIST_KEY, FieldValue.arrayRemove(getCurrentUserId()));
+                }
+            }
+            writeBatch.set(documentReference4, answerDetails4, SetOptions.merge());
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        //UPDATE THE VOTERS LIST IN THE DATA MODEL OF THE ANSWER
+                        if(isUpVote){
+                            answerDataModel.getUpVotersIdList().add(getCurrentUserId());
+                            answerDataModel.setTotalUpVotes(answerDataModel.getTotalUpVotes()+1);
+
+                            if(answerDataModel.getDownVotersIdList().contains(getCurrentUserId())){
+                                answerDataModel.getDownVotersIdList().remove(getCurrentUserId());
+                                answerDataModel.setTotalDownVotes(answerDataModel.getTotalDownVotes()-1);
+
+                            }
+                        }else{
+                            answerDataModel.getDownVotersIdList().add(getCurrentUserId());
+                            answerDataModel.setTotalDownVotes(answerDataModel.getTotalDownVotes()+1);
+
+                            if(answerDataModel.getUpVotersIdList().contains(getCurrentUserId())){
+                                answerDataModel.getUpVotersIdList().remove(getCurrentUserId());
+                                answerDataModel.setTotalUpVotes(answerDataModel.getTotalUpVotes()-1);
+
+                            }
+                        }
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+
+
     /*
         static HashMap<String,Double> getStarMap(int fiveStar,int fourStar, int threeStar, int twoStar, int oneStar){
         HashMap<String,Double> starHashMap = new HashMap<>();
@@ -4872,11 +5274,21 @@ if(isUserLoggedIn()) {
 
     }
 
-    public interface OnDocumentExistStatusCallback{
+    public interface OnDocumentExistStatusCallback {
 
         void onExist(DocumentSnapshot documentSnapshot);
         void onNotExist();
         void onFailed(@NonNull String errorMessage);
+
+    }
+    public interface AnswerCallback{
+
+        void onImageGallerySelected(ImageView imageView);
+        void onCameraSelected(ImageView imageView);
+        void onVideoGallery(View view);
+        void onStart(String answerId);
+        void onSuccess(String answerId);
+        void onFailed(String errorMessage);
 
     }
 

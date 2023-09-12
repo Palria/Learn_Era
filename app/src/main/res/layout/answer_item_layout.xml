@@ -15,12 +15,11 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="visible">
+        android:layout_height="wrap_content">
         
         <com.makeramen.roundedimageview.RoundedImageView
             android:layout_width="20pt"
-            android:id="@+id/discussionPosterProfilePhotoId"
+            android:id="@+id/contributorProfilePhotoId"
             app:riv_corner_radius="4pt"
             app:riv_oval="false"
             android:layout_gravity="start"
@@ -56,7 +55,7 @@
                     android:textSize="8pt"
                     android:maxLines="1"
                     android:ellipsize="end"
-                    android:id="@+id/posterNameTextViewId"
+                    android:id="@+id/contributorNameTextViewId"
                     android:text="..."
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -97,10 +96,17 @@
             
             </LinearLayout>
             <TextView
-                android:id="@+id/discussionDescriptionTextViewId"
-                android:text="I like this content, it's absolutely teachable"
+                android:id="@+id/answerTextViewId"
+                android:text="Yes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+            <ImageView
+                android:id="@+id/answerPhotoId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="15dp"
+                android:scaleType="centerCrop"
+                />
 
 
             <TextView
@@ -122,64 +128,6 @@
     </LinearLayout>
     
     
-    
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        >
-       
-
-        <Button
-            style="?attr/borderlessButtonStyle"
-            android:textSize="5pt"
-            android:id="@+id/likeAccountActionButtonId"
-            android:text="0"
-            android:textAlignment="textStart"
-            android:drawableLeft="@drawable/ic_baseline_thumb_up_24"
-            android:background="@color/transparent"
-            android:backgroundTint="@color/transparent"
-            android:layout_marginTop="1pt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
-            />
-
-     <Button
-            style="?attr/borderlessButtonStyle"
-            android:textSize="5pt"
-            android:id="@+id/disLikeAccountActionButtonId"
-            android:text="0"
-            android:drawablePadding="2pt"
-            android:textAlignment="textStart"
-            android:drawableLeft="@drawable/ic_baseline_thumb_down_24"
-            android:background="@color/transparent"
-            android:backgroundTint="@color/transparent"
-            android:layout_marginTop="1pt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
-            />
-
-     <Button
-            style="?attr/borderlessButtonStyle"
-            android:textSize="5pt"
-            android:id="@+id/replyAccountActionButtonId"
-            android:text="0"
-         android:drawablePadding="2pt"
-            android:textAlignment="textStart"
-            android:drawableTint="@color/black"
-            android:drawableLeft="@drawable/ic_baseline_message_24"
-            android:background="@color/transparent"
-            android:backgroundTint="@color/transparent"
-            android:layout_marginTop="1pt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
-            />
-
-    </LinearLayout>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -189,7 +137,7 @@
         <TextView
             android:layout_marginStart="28pt"
             android:layout_marginTop="1pt"
-            android:id="@+id/viewDiscussionsTextViewId"
+            android:id="@+id/viewReplyTextViewId"
             android:text="See replies"
             android:textColor="@color/secondary_app_color"
             android:textStyle="bold"
@@ -210,17 +158,42 @@
             android:orientation="horizontal"
             >
             
-            <ImageView
+            <ImageButton
                 android:layout_marginRight="2pt"
-                android:id="@+id/likeActionButtonId"
+                android:id="@+id/upVoteActionButtonId"
                 app:tint="@color/darkIcon"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_outline_thumb_up_24"
+                android:src="@drawable/ic_baseline_arrow_drop_up_24"
                 android:layout_width="10pt"
                 android:layout_height="10pt"/>
             
             <TextView
-                android:id="@+id/likeCountTextViewId"
+                android:id="@+id/upVoteCountTextViewId"
+                android:text="0"
+                android:textStyle="bold"
+                android:layout_marginLeft="2pt"
+                android:layout_marginEnd="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <LinearLayout
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            
+            <ImageButton
+                android:layout_marginRight="2pt"
+                android:id="@+id/downVoteActionButtonId"
+                app:tint="@color/darkIcon"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_baseline_arrow_drop_down_24"
+                android:layout_width="10pt"
+                android:layout_height="10pt"/>
+            
+            <TextView
+                android:id="@+id/downVoteCountTextViewId"
                 android:text="0"
                 android:textStyle="bold"
                 android:layout_marginLeft="2pt"
@@ -234,13 +207,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_gravity="center"
             android:gravity="center"
             >
             
             <ImageView
                 android:layout_marginRight="2pt"
-                android:id="@+id/discussActionButtonId"
+                android:id="@+id/replyActionButtonId"
                 app:tint="@color/darkIcon"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_baseline_message_24"
@@ -248,7 +220,7 @@
                 android:layout_height="10pt"/>
             
             <TextView
-                android:id="@+id/discussionCountTextViewId"
+                android:id="@+id/replyCountTextViewId"
                 android:text="0"
                 android:textStyle="bold"
                 android:layout_marginLeft="2pt"

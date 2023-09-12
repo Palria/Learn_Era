@@ -37,6 +37,7 @@ import org.checkerframework.common.subtyping.qual.Bottom;
 
 import java.util.ArrayList;
 
+
 public class BottomSheetFormBuilderWidget extends BottomSheetDialog {
 
     Context context;
@@ -165,6 +166,13 @@ public class BottomSheetFormBuilderWidget extends BottomSheetDialog {
         //add the item to linear layout
         formLayout.addView(switchView);
 //        inputLists.add(input);
+
+        return this;
+    }
+    public BottomSheetFormBuilderWidget addView(View view){
+
+        //add the item to linear layout
+        formLayout.addView(view);
 
         return this;
     }

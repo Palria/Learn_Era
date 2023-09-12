@@ -16,14 +16,17 @@
         android:icon="@drawable/icons8librarybuilding50"
         />
 
+    
+    
+    
 
 
 
 
     <item
         app:showAsAction="always"
-        android:id="@+id/tutorials_item"
-        android:title="Tutorials"
+        android:id="@+id/questionItemId"
+        android:title="Questions"
         android:icon="@drawable/icons8tutorial64"
         />
 
@@ -37,5 +40,6 @@
 
         android:id="@+id/placeholder"
         android:title=""
+        android:enabled="false"
         />
 </menu>

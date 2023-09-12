@@ -644,6 +644,7 @@ private String coverUrl = "";
                         super.onComplete(localUrl, downloadUrl,imagesListToUpload);
                         //replace the url when completed.
                         postContentHtml[0] = postContentHtml[0].replaceAll(localUrl, downloadUrl);
+                        new File(localUrl).delete();
                         //increment the number of successfully uploaded media from the Hashmap
                         numberOfMediaUploaded.put(pageId,numberOfMediaUploaded.get(pageId)+1);
 

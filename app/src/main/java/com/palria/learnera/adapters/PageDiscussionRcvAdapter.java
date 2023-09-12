@@ -70,7 +70,8 @@ public class PageDiscussionRcvAdapter extends RecyclerView.Adapter<PageDiscussio
     public void onBindViewHolder(@NonNull PageDiscussionRcvAdapter.ViewHolder holder, int position) {
         PageDiscussionDataModel pageDiscussionDataModel = pageDiscussionDataModels.get(position);
 
-        if (pageDiscussionDataModel.isHiddenByAuthor() || pageDiscussionDataModel.isHiddenByPoster() || (GlobalConfig.getCurrentUserId().equals(pageDiscussionDataModel.getDiscussionPosterId()+""))) {
+//        if (pageDiscussionDataModel.isHiddenByAuthor() || pageDiscussionDataModel.isHiddenByPoster() || (GlobalConfig.getCurrentUserId().equals(pageDiscussionDataModel.getDiscussionPosterId()+""))) {
+        if (true) {
 
             holder.dateCreatedTextView.setText(pageDiscussionDataModel.getDateCreated());
 
@@ -122,7 +123,8 @@ public class PageDiscussionRcvAdapter extends RecyclerView.Adapter<PageDiscussio
                 }
             });
             */
-            if(GlobalConfig.isPageDiscussionLiked(context,pageDiscussionDataModel.getDiscussionId())){
+//            if(GlobalConfig.isPageDiscussionLiked(context,pageDiscussionDataModel.getDiscussionId())){
+            if(pageDiscussionDataModel.getLikersIdList().contains(GlobalConfig.getCurrentUserId())){
                 holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_baseline_thumb_up_24,context.getTheme()));
             }else{
                 holder.likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
@@ -207,59 +209,63 @@ public class PageDiscussionRcvAdapter extends RecyclerView.Adapter<PageDiscussio
                     int currentLikesCount = Integer.parseInt((holder.likeCountTextView.getText()+""));
 
                     holder.likeActionButton.setEnabled(false);
-                    DocumentReference likedDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.LIKED_DISCUSSIONS_KEY).document(pageDiscussionDataModel.getDiscussionId());
-                    GlobalConfig.checkIfDocumentExists(likedDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
-                        @Override
-                        public void onExist(DocumentSnapshot documentSnapshot) {
+                    if(pageDiscussionDataModel.getLikersIdList().contains(GlobalConfig.getCurrentUserId())){
+                        if(!(holder.likeCountTextView.getText()+"").equals("0")) {
+                            holder.likeCountTextView.setText((currentLikesCount - 1) + "");
+                        }
 
-                            if(!(holder.likeCountTextView.getText()+"").equals("0")) {
-                                holder.likeCountTextView.setText((currentLikesCount - 1) + "");
+
+                        holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_outline_thumb_up_24,context.getTheme()));
+                        GlobalConfig.likePageDiscussion(context,pageDiscussionDataModel,pageDiscussionDataModel.getDiscussionId(), pageDiscussionDataModel.getPageId(), pageDiscussionDataModel.getTutorialId(), pageDiscussionDataModel.getFolderId(), pageDiscussionDataModel.getAuthorId(), isTutorialPage, false, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+                                holder.likeActionButton.setEnabled(true);
+
                             }
 
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                holder.likeActionButton.setEnabled(true);
 
-                            holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_outline_thumb_up_24,context.getTheme()));
-                            GlobalConfig.likePageDiscussion(context,pageDiscussionDataModel.getDiscussionId(), pageDiscussionDataModel.getPageId(), pageDiscussionDataModel.getTutorialId(), pageDiscussionDataModel.getFolderId(), pageDiscussionDataModel.getAuthorId(), isTutorialPage, false, new GlobalConfig.ActionCallback() {
-                                @Override
-                                public void onSuccess() {
-                                    holder.likeActionButton.setEnabled(true);
+                            }
+                        });
 
-                                }
+                    }else{
+                        holder.likeCountTextView.setText((currentLikesCount+1)+"");
+                        holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_baseline_thumb_up_24,context.getTheme()));
+                        GlobalConfig.likePageDiscussion(context,pageDiscussionDataModel,pageDiscussionDataModel.getDiscussionId(),pageDiscussionDataModel.getPageId(), pageDiscussionDataModel.getTutorialId(), pageDiscussionDataModel.getFolderId(), pageDiscussionDataModel.getAuthorId(), isTutorialPage, true, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+                                holder.likeActionButton.setEnabled(true);
 
-                                @Override
-                                public void onFailed(String errorMessage) {
-                                    holder.likeActionButton.setEnabled(true);
+                            }
 
-                                }
-                            });
+                            @Override
+                            public void onFailed(String errorMessage) {
+                                holder.likeActionButton.setEnabled(true);
 
-                        }
+                            }
+                        });
 
-                        @Override
-                        public void onNotExist() {
-                            holder.likeCountTextView.setText((currentLikesCount+1)+"");
-                            holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_baseline_thumb_up_24,context.getTheme()));
-                            GlobalConfig.likePageDiscussion(context,pageDiscussionDataModel.getDiscussionId(),pageDiscussionDataModel.getPageId(), pageDiscussionDataModel.getTutorialId(), pageDiscussionDataModel.getFolderId(), pageDiscussionDataModel.getAuthorId(), isTutorialPage, true, new GlobalConfig.ActionCallback() {
-                                @Override
-                                public void onSuccess() {
-                                    holder.likeActionButton.setEnabled(true);
-
-                                }
-
-                                @Override
-                                public void onFailed(String errorMessage) {
-                                    holder.likeActionButton.setEnabled(true);
-
-                                }
-                            });
-
-                        }
-
-                        @Override
-                        public void onFailed(@NonNull String errorMessage) {
-                            holder.likeActionButton.setEnabled(true);
-
-                        }
-                    });
+                    }
+//                    DocumentReference likedDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.LIKED_DISCUSSIONS_KEY).document(pageDiscussionDataModel.getDiscussionId());
+//                    GlobalConfig.checkIfDocumentExists(likedDocumentReference, new GlobalConfig.OnDocumentExistStatusCallback() {
+//                        @Override
+//                        public void onExist(DocumentSnapshot documentSnapshot) {
+//
+//
+//                        }
+//
+//                        @Override
+//                        public void onNotExist() {
+//                              }
+//
+//                        @Override
+//                        public void onFailed(@NonNull String errorMessage) {
+//                            holder.likeActionButton.setEnabled(true);
+//
+//                        }
+//                    });
 
 
 

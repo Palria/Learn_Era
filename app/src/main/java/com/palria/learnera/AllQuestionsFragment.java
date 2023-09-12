@@ -10,8 +10,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -33,12 +35,15 @@ public class AllQuestionsFragment extends Fragment {
 QuestionRcvAdapter questionRCVAdapter;
 ArrayList<QuestionDataModel> questionDataModels = new ArrayList<>();
 RecyclerView recyclerView;
-
+ShimmerFrameLayout questionShimmerLayout;
 
     boolean isFromSearchContext = false;
     String searchKeyword = "";
 
     public AllQuestionsFragment() {
+        // Required empty public constructor
+    }
+    public AllQuestionsFragment(BottomAppBar bottomAppBar) {
         // Required empty public constructor
     }
 
@@ -65,7 +70,8 @@ RecyclerView recyclerView;
 
                 questionDataModels.add(questionDataModel);
                 questionRCVAdapter.notifyItemChanged(questionDataModels.size());
-
+                questionShimmerLayout.setVisibility(View.GONE);
+                questionShimmerLayout.stopShimmer();
             }
 
             @Override
@@ -79,6 +85,7 @@ RecyclerView recyclerView;
 //
 private void initUI(View parentView){
         recyclerView = parentView.findViewById(R.id.questionsRecyclerViewId);
+    questionShimmerLayout = parentView.findViewById(R.id.questionShimmerLayoutId);
         questionRCVAdapter = new QuestionRcvAdapter(questionDataModels,getContext());
     LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
     recyclerView.setAdapter(questionRCVAdapter);
@@ -113,12 +120,12 @@ private void initUI(View parentView){
                             final String questionBody = ""+ documentSnapshot.get(GlobalConfig.QUESTION_BODY_KEY);
                             final String photoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.QUESTION_PHOTO_DOWNLOAD_URL_KEY);
                             final String authorId = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
-                             String dateAsked =  documentSnapshot.get(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY)!=null ?  documentSnapshot.getTimestamp(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY).toDate()+""  :"Moments ago";
+                             String dateAsked =  documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY)!=null ?  documentSnapshot.getTimestamp(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY).toDate()+""  :"Moments ago";
                             if(dateAsked.length()>10){
                                 dateAsked = dateAsked.substring(0,10);
                             }
                             final String finalDateAsked = dateAsked;
-                            final boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY) :false;
+                            final boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY) :true;
                             final boolean isClosed =  documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_CLOSED_KEY) :false;
                             final boolean isPhotoIncluded =  documentSnapshot.get(GlobalConfig.IS_PHOTO_INCLUDED_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_PHOTO_INCLUDED_KEY) :false;
                             long numOfAnswers = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_ANSWER_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_ANSWER_KEY) : 0L;

@@ -108,7 +108,7 @@ public class CommentRcvAdapter extends RecyclerView.Adapter<CommentRcvAdapter.Vi
                 }
             });
             */
-            if(GlobalConfig.isPageDiscussionLiked(context,pageDiscussionDataModel.getDiscussionId())){
+            if(GlobalConfig.isPageDiscussionLiked(context,pageDiscussionDataModel.getDiscussionId()) || pageDiscussionDataModel.getLikersIdList().contains(GlobalConfig.getCurrentUserId())){
                 holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_baseline_thumb_up_24,context.getTheme()));
             }else{
                 holder.likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
@@ -204,7 +204,7 @@ public class CommentRcvAdapter extends RecyclerView.Adapter<CommentRcvAdapter.Vi
 
 
                             holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_outline_thumb_up_24,context.getTheme()));
-                            GlobalConfig.likePageDiscussion(context,pageDiscussionDataModel.getDiscussionId(), pageDiscussionDataModel.getPageId(), pageDiscussionDataModel.getTutorialId(), pageDiscussionDataModel.getFolderId(), pageDiscussionDataModel.getAuthorId(), isTutorialPage, false, new GlobalConfig.ActionCallback() {
+                            GlobalConfig.likePageDiscussion(context,pageDiscussionDataModel,pageDiscussionDataModel.getDiscussionId(), pageDiscussionDataModel.getPageId(), pageDiscussionDataModel.getTutorialId(), pageDiscussionDataModel.getFolderId(), pageDiscussionDataModel.getAuthorId(), isTutorialPage, false, new GlobalConfig.ActionCallback() {
                                 @Override
                                 public void onSuccess() {
                                     holder.likeActionButton.setEnabled(true);
@@ -224,7 +224,7 @@ public class CommentRcvAdapter extends RecyclerView.Adapter<CommentRcvAdapter.Vi
                         public void onNotExist() {
                             holder.likeCountTextView.setText((currentLikesCount+1)+"");
                             holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_baseline_thumb_up_24,context.getTheme()));
-                            GlobalConfig.likePageDiscussion(context,pageDiscussionDataModel.getDiscussionId(),pageDiscussionDataModel.getPageId(), pageDiscussionDataModel.getTutorialId(), pageDiscussionDataModel.getFolderId(), pageDiscussionDataModel.getAuthorId(), isTutorialPage, true, new GlobalConfig.ActionCallback() {
+                            GlobalConfig.likePageDiscussion(context,pageDiscussionDataModel,pageDiscussionDataModel.getDiscussionId(),pageDiscussionDataModel.getPageId(), pageDiscussionDataModel.getTutorialId(), pageDiscussionDataModel.getFolderId(), pageDiscussionDataModel.getAuthorId(), isTutorialPage, true, new GlobalConfig.ActionCallback() {
                                 @Override
                                 public void onSuccess() {
                                     holder.likeActionButton.setEnabled(true);

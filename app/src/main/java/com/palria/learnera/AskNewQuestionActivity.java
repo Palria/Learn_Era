@@ -182,7 +182,6 @@ Spinner categorySelector;
                     errorMessageTextView.setVisibility(View.VISIBLE);
                     return;
                 }
-                toggleProgress(true);
                 showConfirmUploadDialog();
             }
         });
@@ -251,8 +250,7 @@ Spinner categorySelector;
     }
 
 
-    private void toggleProgress(boolean show)
-    {
+    private void toggleProgress(boolean show){
         if(show){
             alertDialog.show();
         }else{
@@ -289,7 +287,9 @@ Spinner categorySelector;
         builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-if(isPhotoIncluded && isNewPhoto) {
+                toggleProgress(true);
+                if(isPhotoIncluded && isNewPhoto) {
+
     uploadQuestionPhoto(new QuestionPhotoUploadListener() {
         @Override
         public void onSuccess(String downloadUrl) {
@@ -380,8 +380,8 @@ if(isPhotoIncluded && isNewPhoto) {
 
     private void askQuestion(QuestionListener questionListener) {
         if (question != null && !question.isEmpty()) {
-            isPublic = visibilityIndicatorSwitch.isSelected();
-            isClosed = closedIndicatorSwitch.isSelected();
+            isPublic = visibilityIndicatorSwitch.isChecked();
+            isClosed = closedIndicatorSwitch.isChecked();
         if(isPhotoDeleted){
             try {
                 GlobalConfig.getFirebaseStorageInstance().getReferenceFromUrl(questionPhotoDownloadUrl).delete();

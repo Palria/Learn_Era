@@ -74,14 +74,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     boolean isLibraryFragmentOpen = false;
     boolean isAllTutorialFragmentOpen = false;
     boolean isUserProfileFragmentOpen = false;
+    boolean isAllQuestionsFragmentOpen = false;
     FrameLayout homeFrameLayout;
     FrameLayout libraryFrameLayout;
     FrameLayout allTutorialFrameLayout;
+    FrameLayout allQuestionsFrameLayout;
     FrameLayout userProfileFrameLayout;
     OnConfigurationLoadCallback onConfigurationLoadCallback;
     FloatingActionButton fab;
     Button menu_search_button;
-
+    View loadingIndicator;
     //learn era bottom sheet dialog
     LEBottomSheetDialog leBottomSheetDialog;
     RoundedImageView currentUserProfile;
@@ -145,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
                 GlobalConfig.setCategoryList(allCategoryList,MainActivity.this);
                 bottomAppBar.setVisibility(View.VISIBLE);
+                loadingIndicator.setVisibility(View.GONE);
                 fab.setVisibility(View.VISIBLE);
                 bottomNavigationView.setOnNavigationItemSelectedListener(MainActivity.this);
                 bottomNavigationView.setSelectedItemId(R.id.home_item);
@@ -167,7 +170,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     fab.setVisibility(View.VISIBLE);
                     bottomNavigationView.setOnNavigationItemSelectedListener(MainActivity.this);
                     bottomNavigationView.setSelectedItemId(R.id.home_item);
-//                    Toast.makeText(MainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
+                    loadingIndicator.setVisibility(View.GONE);
+
+                    //                    Toast.makeText(MainActivity.this, "Error!", Toast.LENGTH_SHORT).show();
 
             }
         };
@@ -217,11 +222,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
      * to avoid null pointer exception.
      * */
     private void initUI() {
+        loadingIndicator = findViewById(R.id.loadingIndicatorId);
         bottomAppBar = findViewById(R.id.bottomAppBar);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         homeFrameLayout = findViewById(R.id.homeFragment);
         libraryFrameLayout = findViewById(R.id.libraryFragment);
         allTutorialFrameLayout = findViewById(R.id.allTutorialFragment);
+        allQuestionsFrameLayout = findViewById(R.id.allQuestionsFrameLayoutId);
         userProfileFrameLayout = findViewById(R.id.userProfileFragment);
         currentUserProfile = findViewById(R.id.currentUserProfile);
 
@@ -346,12 +353,22 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         }
                     }
                 }, 0)
-                .addOptionItem("Create Quiz", R.drawable.baseline_quiz_24, new View.OnClickListener() {
+               .addOptionItem("Create Quiz", R.drawable.baseline_quiz_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (GlobalConfig.isUserLoggedIn()) {
                             leBottomSheetDialog.hide();
                             Intent intent = new Intent(MainActivity.this, CreateQuizActivity.class);
+                            startActivity(intent);
+                        }
+                    }
+                }, 0)
+               .addOptionItem("Ask Question", R.drawable.baseline_quiz_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (GlobalConfig.isUserLoggedIn()) {
+                            leBottomSheetDialog.hide();
+                            Intent intent = new Intent(MainActivity.this, AskNewQuestionActivity.class);
                             startActivity(intent);
                         }
                     }
@@ -505,8 +522,9 @@ if(GlobalConfig.isUserLoggedIn()) {
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.tutorials_item:
-                if (isAllTutorialFragmentOpen) {
+            case R.id.questionItemId:
+
+               /* if (isAllTutorialFragmentOpen) {
                     //Just set the frame layout visibility
                     setFrameLayoutVisibility(allTutorialFrameLayout);
 
@@ -518,6 +536,22 @@ if(GlobalConfig.isUserLoggedIn()) {
                     bundle.putString(AllTutorialFragment.OPEN_TYPE_KEY, AllTutorialFragment.OPEN_TYPE_ALL_TUTORIAL);
                     allTutorialFragment.setArguments(bundle);
                     initFragment(allTutorialFragment, allTutorialFrameLayout);
+                }
+                return true;
+                */
+
+                if (isAllQuestionsFragmentOpen) {
+                    //Just set the frame layout visibility
+                    setFrameLayoutVisibility(allQuestionsFrameLayout);
+
+                } else {
+                    isAllQuestionsFragmentOpen = true;
+                    setFrameLayoutVisibility(allQuestionsFrameLayout);
+                    AllQuestionsFragment allQuestionsFragment = new AllQuestionsFragment(bottomAppBar);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(GlobalConfig.OPEN_TYPE_KEY, GlobalConfig.OPEN_TYPE_ALL_QUESTIONS_KEY);
+                    allQuestionsFragment.setArguments(bundle);
+                    initFragment(allQuestionsFragment, allQuestionsFrameLayout);
                 }
                 return true;
             case R.id.home_item:
@@ -590,6 +624,7 @@ if(GlobalConfig.isUserLoggedIn()) {
     private void setFrameLayoutVisibility(FrameLayout frameLayoutToSetVisible){
         homeFrameLayout.setVisibility(View.GONE);
         allTutorialFrameLayout.setVisibility(View.GONE);
+        allQuestionsFrameLayout.setVisibility(View.GONE);
         libraryFrameLayout.setVisibility(View.GONE);
         userProfileFrameLayout.setVisibility(View.GONE);
         frameLayoutToSetVisible.setVisibility(View.VISIBLE);

@@ -144,6 +144,19 @@ public class HostActivity extends AppCompatActivity {
                 materialToolbar.setTitle("Discussions");
                 initFragment(bundle, new AllPageDiscussionsFragment());
                 break;
+            case GlobalConfig.ANSWER_FRAGMENT_TYPE_KEY:
+                bundle = new Bundle();
+                bundle.putBoolean(GlobalConfig.IS_FROM_QUESTION_CONTEXT_KEY,getIntent().getBooleanExtra(GlobalConfig.IS_FROM_QUESTION_CONTEXT_KEY,false));
+                bundle.putBoolean(GlobalConfig.IS_VIEW_ALL_ANSWERS_FOR_SINGLE_QUESTION_KEY,getIntent().getBooleanExtra(GlobalConfig.IS_VIEW_ALL_ANSWERS_FOR_SINGLE_QUESTION_KEY,false));
+                bundle.putBoolean(GlobalConfig.IS_VIEW_SINGLE_ANSWER_REPLY_KEY,getIntent().getBooleanExtra(GlobalConfig.IS_VIEW_SINGLE_ANSWER_REPLY_KEY,false));
+                bundle.putString(GlobalConfig.AUTHOR_ID_KEY,getIntent().getStringExtra(GlobalConfig.AUTHOR_ID_KEY));
+                bundle.putString(GlobalConfig.TUTORIAL_ID_KEY,getIntent().getStringExtra(GlobalConfig.TUTORIAL_ID_KEY));
+                bundle.putString(GlobalConfig.ANSWER_ID_KEY,getIntent().getStringExtra(GlobalConfig.ANSWER_ID_KEY));
+                bundle.putString(GlobalConfig.QUESTION_ID_KEY,getIntent().getStringExtra(GlobalConfig.QUESTION_ID_KEY));
+
+                materialToolbar.setTitle("Replies");
+                initFragment(bundle, new AllAnswersFragment());
+                break;
             case GlobalConfig.QUIZ_FRAGMENT_TYPE_KEY:
                 bundle = new Bundle();
                 materialToolbar.setTitle("Join Ongoing Quiz");

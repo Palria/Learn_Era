@@ -5,148 +5,163 @@ import java.util.ArrayList;
 
 public class AnswerDataModel implements Serializable {
 
-    private String discussionId;
-    private String discussionPosterId;
-    private String description;
-    private String coverDownloadUrl;
-    private String pageId;
+    private String answerId;
+    private String questionId;
+    private String contributorId;
+    private String answer;
+    private String answerPhotoDownloadUrl;
     private String authorId;
-    private String parentDiscussionId;
-    private String tutorialId;
-    private String folderId;
-    private boolean  isTutorialPage;
-    private boolean  hasParentDiscussion;
+    private String  parentId;
+    private boolean  hasParent;
+    private boolean  isAnswer;
     private boolean  hasReplies;
+    private boolean  isPhotoIncluded;
     private boolean  isHiddenByAuthor;
-    private boolean  isHiddenByPoster;
+    private boolean  isHiddenByContributor;
     private String dateCreated;
     private long totalReplies;
-    private long totalLikes;
-//    private long totalDisLikes;
+    private long totalUpVotes;
+    private long totalDownVotes;
     private ArrayList repliersIdList;
-    private ArrayList likersIdList;
-//    private ArrayList disLikersIdList;
+    private ArrayList upVotersIdList;
+    private ArrayList downVotersIdList;
 
     public AnswerDataModel(
-             String discussionId,
-             String discussionPosterId,
-             String description,
-             String coverDownloadUrl,
-             String pageId,
+             String answerId,
+             String questionId,
+             String contributorId,
+             String answer,
+             String answerPhotoDownloadUrl,
              String authorId,
-             String parentDiscussionId,
-             String tutorialId,
-             String folderId,
-             boolean  isTutorialPage,
-             boolean  hasParentDiscussion,
+             String  parentId,
+             boolean  hasParent,
+             boolean  isAnswer,
              boolean  hasReplies,
+             boolean  isPhotoIncluded,
              boolean  isHiddenByAuthor,
-             boolean  isHiddenByPoster,
+             boolean  isHiddenByContributor,
              String dateCreated,
              long totalReplies,
-             long totalLikes,
-//             long totalDisLikes,
+             long totalUpVotes,
+             long totalDownVotes,
              ArrayList repliersIdList,
-             ArrayList likersIdList
-//             ArrayList disLikersIdList
+             ArrayList upVotersIdList,
+             ArrayList downVotersIdList
     ){
-        this.discussionId = discussionId;
-        this.discussionPosterId = discussionPosterId;
-        this.description = description;
-        this.coverDownloadUrl = coverDownloadUrl;
-        this.pageId = pageId;
+        this.answerId = answerId;
+        this.questionId = questionId;
+        this.contributorId = contributorId;
+        this.answer = answer;
+        this.answerPhotoDownloadUrl = answerPhotoDownloadUrl;
         this.authorId = authorId;
-        this.parentDiscussionId = parentDiscussionId;
-        this.tutorialId = tutorialId;
-        this.folderId = folderId;
-        this.isTutorialPage = isTutorialPage;
-        this.hasParentDiscussion = hasParentDiscussion;
-        this.hasReplies = hasReplies;
+        this.parentId = parentId;
+        this.hasParent = hasParent;
+        this.isPhotoIncluded = isPhotoIncluded;
         this.isHiddenByAuthor = isHiddenByAuthor;
-        this.isHiddenByPoster = isHiddenByPoster;
+        this.isHiddenByContributor = isHiddenByContributor;
+        this.isAnswer = isAnswer;
+        this.hasReplies = hasReplies;
+        this.dateCreated = dateCreated;
         this.totalReplies = totalReplies;
-        this.totalLikes = totalLikes;
-//        this.totalDisLikes = totalDisLikes;
+        this.totalUpVotes = totalUpVotes;
+        this.totalDownVotes = totalDownVotes;
         this.repliersIdList = repliersIdList;
-        this.likersIdList = likersIdList;
-//        this.disLikersIdList = disLikersIdList;
+        this.upVotersIdList = upVotersIdList;
+        this.downVotersIdList = downVotersIdList;
         this.dateCreated = dateCreated;
 
     }
 
-    public String getDiscussionId() {
-        return discussionId;
-    }
-    public String getDiscussionPosterId() {
-        return discussionPosterId;
+    public String getAnswerId() {
+        return answerId;
     }
 
-    public String getDescription() {
-        return description;
+    public String getQuestionId() {
+        return questionId;
     }
 
-    public String getCoverDownloadUrl() {
-        return coverDownloadUrl;
+    public String getContributorId() {
+        return contributorId;
     }
 
-    public String getPageId() {
-        return pageId;
+    public String getAnswer() {
+        return answer;
     }
+
+    public String getAnswerPhotoDownloadUrl() {
+        return answerPhotoDownloadUrl;
+    }
+
     public String getAuthorId() {
         return authorId;
     }
-    public String getParentDiscussionId() {
-        return parentDiscussionId;
+
+    public String getParentId() {
+        return parentId;
     }
 
-    public String getTutorialId() {
-        return tutorialId;
-    }
-    public String getFolderId() {
-        return folderId;
-    }
-    public String getDateCreated() {
-        return dateCreated;
-    }
-    public boolean isTutorialPage() {
-        return isTutorialPage;
+    public boolean hasParent() {
+        return hasParent;
     }
 
-    public boolean hasParentDiscussion() {
-        return hasParentDiscussion;
+    public boolean isAnswer() {
+        return isAnswer;
     }
+
     public boolean hasReplies() {
         return hasReplies;
     }
+
+    public boolean isPhotoIncluded() {
+        return isPhotoIncluded;
+    }
+
     public boolean isHiddenByAuthor() {
         return isHiddenByAuthor;
     }
 
-    public boolean isHiddenByPoster() {
-        return isHiddenByPoster ;
+    public boolean isHiddenByContributor() {
+        return isHiddenByContributor;
+    }
+
+    public String getDateCreated() {
+        return dateCreated;
     }
 
     public long getTotalReplies() {
         return totalReplies;
     }
 
-    public long getTotalLikes() {
-        return totalLikes;
+    public long getTotalUpVotes() {
+        return totalUpVotes;
     }
 
-//    public long getTotalDisLikes() {
-//        return totalDisLikes;
-//    }
+    public void setTotalUpVotes(long totalUpVotes) {
+        this.totalUpVotes = totalUpVotes;
+    }
 
-    public ArrayList getRepliersIdList() {
+    public long getTotalDownVotes() {
+        return totalDownVotes;
+    }
+
+    public void setTotalDownVotes(long totalDownVotes) {
+        this.totalDownVotes = totalDownVotes;
+    }
+
+    public ArrayList<String> getRepliersIdList() {
         return repliersIdList;
     }
 
-    public ArrayList getLikersIdList() {
-        return likersIdList;
+    public ArrayList<String> getUpVotersIdList() {
+        return upVotersIdList;
     }
+    public ArrayList<String> getDownVotersIdList() {
+        return downVotersIdList;
+    }
+    public void recordUpVotes(){
 
-//    public ArrayList getDisLikersIdList() {
-//        return disLikersIdList;
-//    }
+    }
+    public void recordDownVotes(){
+
+    }
 }

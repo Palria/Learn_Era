@@ -408,7 +408,7 @@ ImageButton morePageActionButton;
                     public void onExist(DocumentSnapshot documentSnapshot) {
                         likeCountTextView.setText((currentLikesCount-1)+"");
                         likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
-                        GlobalConfig.likePage(PageActivity.this,pageId, tutorialId, folderId, authorId, isTutorialPage, false, new GlobalConfig.ActionCallback() {
+                        GlobalConfig.likePage(PageActivity.this,null,pageId, tutorialId, folderId, authorId, isTutorialPage, false, new GlobalConfig.ActionCallback() {
                             @Override
                             public void onSuccess() {
                                 likeActionButton.setEnabled(true);
@@ -428,7 +428,7 @@ ImageButton morePageActionButton;
                     public void onNotExist() {
                         likeCountTextView.setText((currentLikesCount+1)+"");
                         likeActionButton.setImageResource(R.drawable.ic_baseline_thumb_up_24);
-                        GlobalConfig.likePage(PageActivity.this,pageId, tutorialId, folderId, authorId, isTutorialPage, true, new GlobalConfig.ActionCallback() {
+                        GlobalConfig.likePage(PageActivity.this,null,pageId, tutorialId, folderId, authorId, isTutorialPage, true, new GlobalConfig.ActionCallback() {
                             @Override
                             public void onSuccess() {
                                 likeActionButton.setEnabled(true);
@@ -717,7 +717,7 @@ ImageButton morePageActionButton;
         String pageTitle = ""+ documentSnapshot.get(GlobalConfig.PAGE_TITLE_KEY);
         libraryId = ""+ documentSnapshot.get(GlobalConfig.LIBRARY_ID_KEY);
 
-        if(GlobalConfig.isPageLiked(this,pageId)){
+    if(GlobalConfig.isPageLiked(this,pageId) ){
             likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_baseline_thumb_up_24,getTheme()));
         }else{
             likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);

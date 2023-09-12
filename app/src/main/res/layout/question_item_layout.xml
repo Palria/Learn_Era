@@ -4,11 +4,11 @@
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:paddingHorizontal="5pt"
+    android:paddingHorizontal="1dp"
     android:layout_marginTop="2pt"
-    android:paddingVertical="3pt"
     android:clickable="true"
-    android:layout_marginHorizontal="5pt"
+    android:layout_marginHorizontal="1dp"
+    android:background="@drawable/rounded_border_gray_bg"
     android:id="@+id/parentItem"
     android:layout_height="wrap_content">
     
@@ -27,10 +27,12 @@
             android:scaleType="centerCrop"
             android:src="@drawable/default_profile"
             android:layout_height="20pt"
-            tools:ignore="MissingClass" />
+            tools:ignore="MissingClass"
+            android:visibility="gone"
+            />
         
         <LinearLayout
-            android:paddingLeft="8pt"
+            android:paddingLeft="1pt"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,7 +43,9 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                >
                 <!--    -->
                 <!--                <androidx.constraintlayout.widget.ConstraintLayout-->
                 <!--                    android:orientation="horizontal"-->
@@ -57,7 +61,7 @@
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:id="@+id/posterNameTextViewId"
-                    android:text="..."
+                    android:text=""
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLength="30"
@@ -71,7 +75,7 @@
                     android:layout_height="10dp"
                     android:src="@drawable/ic_baseline_stars_24"
                     android:layout_gravity="top"
-                    android:visibility="invisible"
+                    android:visibility="gone"
                     app:layout_constraintStart_toEndOf="@id/title"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -98,7 +102,10 @@
             </LinearLayout>
             <TextView
                 android:id="@+id/questionBodyTextViewId"
-                android:text="I like this content, it's absolutely teachable"
+                android:text="What's your name?"
+                android:textColor="@color/black"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textStyle="bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             
@@ -123,21 +130,17 @@
         android:layout_height="wrap_content"
         >
         <TextView
-            android:layout_marginStart="28pt"
-            android:layout_marginTop="1pt"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="1pt"
             android:id="@+id/ansCountTextViewId"
             android:text="0 ans"
-            android:textColor="@color/secondary_app_color"
+            android:textSize="9sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-condensed-medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             />
         
-        <View
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
         
         <LinearLayout
             
@@ -150,17 +153,17 @@
                 android:layout_marginRight="2pt"
                 android:id="@+id/viewCountId"
                 app:tint="@color/darkIcon"
-                android:layout_gravity="center"
                 android:src="@drawable/ic_baseline_remove_red_eye_24"
-                android:layout_width="10pt"
-                android:layout_height="10pt"/>
+                android:layout_width="12dp"
+                android:layout_height="12dp"/>
             
             <TextView
                 android:id="@+id/viewCountTextViewId"
                 android:text="0"
                 android:textStyle="bold"
+                android:textSize="9sp"
                 android:layout_marginLeft="2pt"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
@@ -170,7 +173,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_gravity="center"
             android:gravity="center"
             >
             
@@ -180,13 +182,14 @@
                 app:tint="@color/darkIcon"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_baseline_access_time_filled_24"
-                android:layout_width="10pt"
-                android:layout_height="10pt"/>
+                android:layout_width="12dp"
+                android:layout_height="12dp"/>
             
             <TextView
                 android:id="@+id/dateAskedTextViewId"
-                android:text="0"
+                android:text="Moment ago"
                 android:textStyle="bold"
+                android:textSize="9sp"
                 android:layout_marginLeft="2pt"
                 android:layout_marginEnd="20dp"
                 android:layout_width="wrap_content"

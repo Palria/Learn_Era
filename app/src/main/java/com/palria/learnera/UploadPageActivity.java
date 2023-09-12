@@ -277,6 +277,7 @@ public class UploadPageActivity extends AppCompatActivity {
                             public void run() {
                                 try {
                                     bitmap1.compress(Bitmap.CompressFormat.PNG, 10, new ByteArrayOutputStream());
+                                    bitmap1.compress(Bitmap.CompressFormat.PNG, 50, new ByteArrayOutputStream());
                                     coverImageUrl = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmap1).toString();
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -349,6 +350,7 @@ public class UploadPageActivity extends AppCompatActivity {
                                     String imageUriString = "";
                                 try {
                                     bitmap.compress(Bitmap.CompressFormat.PNG, 10, new ByteArrayOutputStream());
+                                    bitmap.compress(Bitmap.CompressFormat.PNG, 50, new ByteArrayOutputStream());
                                     imageUriString = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmap).toString();
                                     final String finalImageUriString = imageUriString;
                                     runOnUiThread(new Runnable() {
@@ -449,6 +451,7 @@ public class UploadPageActivity extends AppCompatActivity {
                                 Intent data = result.getData();
                                 Bitmap bitmapFromCamera = (Bitmap) data.getExtras().get("data");
                                 bitmapFromCamera.compress(Bitmap.CompressFormat.PNG, 10, new ByteArrayOutputStream());
+                                bitmapFromCamera.compress(Bitmap.CompressFormat.PNG, 50, new ByteArrayOutputStream());
 
                                 if (bitmapFromCamera != null) {
                                     String imageUriString = GlobalHelpers.getImageUri(UploadPageActivity.this, bitmapFromCamera).toString();

@@ -273,7 +273,7 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
                                         holder.likeCountTextView.setText((currentLikesCount - 1) + "");
                                     }
                                     holder.likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
-                                    GlobalConfig.likePage(context,pageDataModel.getPageId(), pageDataModel.getTutorialId(), pageDataModel.getFolderId(), pageDataModel.getAuthorId(), isTutorialPage, false, new GlobalConfig.ActionCallback() {
+                                    GlobalConfig.likePage(context,pageDataModel,pageDataModel.getPageId(), pageDataModel.getTutorialId(), pageDataModel.getFolderId(), pageDataModel.getAuthorId(), isTutorialPage, false, new GlobalConfig.ActionCallback() {
                                         @Override
                                         public void onSuccess() {
                                             holder.likeActionButton.setEnabled(true);
@@ -293,7 +293,7 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
                                 public void onNotExist() {
                                     holder.likeCountTextView.setText((currentLikesCount+1)+"");
                                     holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_baseline_thumb_up_24,context.getTheme()));
-                                    GlobalConfig.likePage(context,pageDataModel.getPageId(), pageDataModel.getTutorialId(), pageDataModel.getFolderId(), pageDataModel.getAuthorId(), isTutorialPage, true, new GlobalConfig.ActionCallback() {
+                                    GlobalConfig.likePage(context,pageDataModel,pageDataModel.getPageId(), pageDataModel.getTutorialId(), pageDataModel.getFolderId(), pageDataModel.getAuthorId(), isTutorialPage, true, new GlobalConfig.ActionCallback() {
                                         @Override
                                         public void onSuccess() {
                                             holder.likeActionButton.setEnabled(true);

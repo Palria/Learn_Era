@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".PostNewUpdateActivity"
+    tools:context=".SingleQuestionActivity"
     >
     
     
@@ -16,8 +16,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/home_top"
-        android:paddingBottom="40dp"
+        android:background="@color/secondary_app_color"
+        android:paddingBottom="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
@@ -29,7 +29,7 @@
             app:layout_constraintTop_toTopOf="parent"
             >
             <ImageButton
-                android:id="@+id/backButton"
+                android:id="@+id/backButtonId"
                 android:layout_marginLeft="5pt"
                 android:layout_marginTop="1pt"
                 android:background="@drawable/baseline_arrow_back_24"
@@ -44,7 +44,7 @@
                 android:id="@+id/productDisplayNameTextViewId"
                 android:layout_marginLeft="5pt"
                 android:layout_marginTop="1pt"
-                android:text="New update"
+                android:text="Question"
                 android:maxLines="4"
                 android:ellipsize="end"
                 android:layout_gravity="center"
@@ -66,31 +66,11 @@
                 android:layout_marginTop="1pt"
                 android:layout_marginHorizontal="10dp"
                 android:background="@drawable/ripple_background"
-                android:src="@drawable/ic_baseline_more_vert_24" />
-        </LinearLayout>
-        
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintStart_toEndOf="@id/backButton"
-            app:layout_constraintTop_toTopOf="parent"
-            >
-            <TextView
-                android:id="@+id/introTextViewId"
-                android:layout_marginLeft="5pt"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="5pt"
-                android:textColor="@color/white"
-                android:text="Enter information illustrating the event update"
-                android:ellipsize="end"
-                android:textAlignment="center"
-                android:textStyle="bold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:src="@drawable/ic_baseline_more_vert_24"
+                android:visibility="gone"
                 />
         </LinearLayout>
+        
     </LinearLayout>
     
     <LinearLayout
@@ -100,9 +80,149 @@
         android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/titleId"
-        android:layout_marginTop="-30dp"
         >
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible">
         
+            <com.makeramen.roundedimageview.RoundedImageView
+                android:layout_width="20pt"
+                android:id="@+id/askerProfilePhotoId"
+                app:riv_corner_radius="4pt"
+                app:riv_oval="false"
+                android:layout_gravity="start"
+                android:scaleType="centerCrop"
+                android:src="@drawable/default_profile"
+                android:layout_height="20pt"
+                tools:ignore="MissingClass" />
+        
+            <LinearLayout
+                android:paddingLeft="8pt"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                >
+            
+            
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                  
+                    <TextView
+                        android:textStyle="bold"
+                        android:textSize="8pt"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:id="@+id/posterNameTextViewId"
+                        android:text="..."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLength="30"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        />
+                
+                    <ImageView
+                        android:id="@+id/verificationFlagImageViewId"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:src="@drawable/ic_baseline_stars_24"
+                        android:layout_gravity="top"
+                        android:visibility="invisible"
+                        app:layout_constraintStart_toEndOf="@id/title"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@color/secondary_app_color" />
+                
+                
+                
+                
+                
+            
+                </LinearLayout>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    >
+                    <TextView
+                        android:layout_marginStart="28pt"
+                        android:layout_marginTop="1pt"
+                        android:id="@+id/ansCountTextViewId"
+                        android:text="0 ans"
+                        android:textColor="@color/secondary_app_color"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-condensed-medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        />
+        
+                    <LinearLayout
+            
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_weight="1"
+                        >
+            
+                        <ImageView
+                            android:layout_marginRight="2pt"
+                            android:id="@+id/viewCountId"
+                            app:tint="@color/darkIcon"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_baseline_remove_red_eye_24"
+                            android:layout_width="10pt"
+                            android:layout_height="10pt"/>
+            
+                        <TextView
+                            android:id="@+id/viewCountTextViewId"
+                            android:text="0"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="2pt"
+                            android:layout_marginEnd="20dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+        
+                    <LinearLayout
+            
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_weight="1"
+                        >
+            
+                        <ImageView
+                            android:layout_marginRight="2pt"
+                            android:id="@+id/dateAskedImageViewId"
+                            app:tint="@color/darkIcon"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_baseline_access_time_filled_24"
+                            android:layout_width="10pt"
+                            android:layout_height="10pt"/>
+            
+                        <TextView
+                            android:id="@+id/dateAskedTextViewId"
+                            android:text="0"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="2pt"
+                            android:layout_marginEnd="20dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+    
+                </LinearLayout>
+
+            </LinearLayout>
+    
+        </LinearLayout>
+    
         <androidx.cardview.widget.CardView
             android:id="@+id/auth_card"
             android:layout_marginHorizontal="4pt"
@@ -116,106 +236,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:scrollbars="none"
                 >
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     >
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:visibility="gone"
-                        >
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Chose category: "
-                            android:layout_margin="5dp"
-                            android:orientation="horizontal"
-                            />
-                        
-                        <Spinner
-                            android:id="@+id/categorySpinnerId"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_margin="5dp"
-                            
-                            />
-                    
-                    </LinearLayout>
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/mediaCardViewId"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-                        
-                        <HorizontalScrollView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="20dp">
-                            
-                            <LinearLayout
-                                android:id="@+id/containerLinearLayoutId"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal" >
-                                
-                                <!--<ImageView
-                                    android:layout_width="120dp"
-                                    android:layout_height="120dp"
-                                    android:layout_margin="10dp"
-                                    android:padding="10dp"
-                                    android:scaleType="centerCrop"
-                                    android:src="@drawable/agg_logo"
-                                    android:layout_gravity="center_horizontal"
-                                    android:background="@drawable/ripple_background"
-                                    android:backgroundTint="@color/teal_200"
-                                    app:layout_constraintStart_toEndOf="@id/backButton"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    />
-        
-                                <ImageView
-                                    android:layout_width="120dp"
-                                    android:layout_height="120dp"
-                                    android:layout_margin="10dp"
-                                    android:padding="10dp"
-                                    android:scaleType="centerCrop"
-                                    android:src="@drawable/agg_logo"
-                                    android:layout_gravity="center_horizontal"
-                                    android:background="@drawable/ripple_background"
-                                    android:backgroundTint="@color/teal_200"
-                                    app:layout_constraintStart_toEndOf="@id/backButton"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    />-->
-                            </LinearLayout>
-                        
-                        
-                        </HorizontalScrollView>
-                    
-                    </androidx.cardview.widget.CardView>
-                    
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_marginBottom="20dp"
-                        android:layout_height="wrap_content">
-                        
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
-                            android:hint="Post title"
-                            android:inputType="textPersonName"
-                            android:textSize="16sp"
-                            android:id="@+id/postTitleEditTextId"
-                            android:background="@drawable/default_input_bg"
-                            android:layout_height="wrap_content"/>
-                    
-                    </com.google.android.material.textfield.TextInputLayout>
-                    
                     
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
@@ -224,76 +250,59 @@
                         
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
-                            android:minHeight="100dp"
                             android:gravity="start|top"
-                            android:hint="Post information"
-                            android:inputType="textMultiLine"
+                            android:padding="2dp"
+                            android:editable="false"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
                             android:textSize="16sp"
-                            android:id="@+id/postDescriptionEditTextId"
-                            android:background="@drawable/default_input_bg"
+                            android:id="@+id/questionBodyTextViewId"
                             android:layout_height="wrap_content"/>
                     
                     </com.google.android.material.textfield.TextInputLayout>
     
-    
-                    <Button
-                        android:id="@+id/postNewActionButtonId"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="5dp"
-                        android:layout_marginHorizontal="20dp"
-                        android:backgroundTint="@color/teal_200"
-                        android:text="Post"
-                        android:paddingVertical="4pt"
+                    <ImageView
+                        android:id="@+id/questionPhotoImageViewId"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:maxHeight="300dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:visibility="gone"
+                        />
+    
+                    <FrameLayout
+                        android:id="@+id/answersFrameLayoutId"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingTop="20dp"
+                        android:paddingBottom="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        >
+    
+    
+                    </FrameLayout>
                     
                 </LinearLayout>
             </ScrollView>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
     
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
-        android:id="@+id/cameraFloatingButtonId"
-        android:text="Photo"
-        app:icon="@drawable/ic_outline_camera_alt_24"
+        android:id="@+id/addAnswerFloatingButtonId"
+        android:src="@drawable/ic_baseline_post_add_24"
         android:layout_marginHorizontal="12pt"
-        android:layout_marginVertical="5pt"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/descLinearLayoutId"
+        android:layout_marginVertical="15pt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="130dp"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         app:iconTint="@color/white"
         />
     
     
-    <LinearLayout
-        android:id="@+id/descLinearLayoutId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/home_bottom"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        >
-        
-        <TextView
-            android:id="@+id/descTextViewId"
-            android:layout_marginLeft="5pt"
-            android:layout_marginTop="5pt"
-            android:text="Update your customers about an event"
-            android:maxLines="4"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
-        
-    
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
