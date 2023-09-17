@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.palria.learnera.GlobalConfig;
+import com.palria.learnera.QuizActivity;
 import com.palria.learnera.R;
 import com.palria.learnera.TutorialFolderActivity;
 import com.palria.learnera.models.FolderDataModel;
@@ -120,11 +121,12 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
                 @Override
                 public void onClick(View view) {
 
-                    //go to quiz activity
-//                    Intent intent = new Intent(context, ViewQuizActivity.class);
-//                    intent.putExtra(GlobalConfig.QUIZ_ID_KEY, quizDataModel.getQuizId());
-
-//                    context.startActivity(intent);
+//                    go to quiz activity
+                    Intent intent = new Intent(context, QuizActivity.class);
+                    intent.putExtra(GlobalConfig.QUIZ_ID_KEY, quizDataModel.getQuizId());
+                    intent.putExtra(GlobalConfig.AUTHOR_ID_KEY, quizDataModel.getAuthorId());
+                    intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY, quizDataModel);
+                    context.startActivity(intent);
                 }
             });
         } else {

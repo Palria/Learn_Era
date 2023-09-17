@@ -2,56 +2,27 @@ package com.palria.learnera.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.WriteBatch;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.GlobalConfig;
-import com.palria.learnera.PageActivity;
 import com.palria.learnera.R;
 import com.palria.learnera.SingleQuestionActivity;
-import com.palria.learnera.models.PageDataModel;
-import com.palria.learnera.models.PageDiscussionDataModel;
 import com.palria.learnera.models.QuestionDataModel;
-import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
-
-
-
-
-
-
-
 
 
 public class QuestionRcvAdapter extends RecyclerView.Adapter<QuestionRcvAdapter.ViewHolder> {
@@ -66,21 +37,22 @@ public class QuestionRcvAdapter extends RecyclerView.Adapter<QuestionRcvAdapter.
 
     @NonNull
     @Override
-    public QuestionRcvAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View listItem= layoutInflater.inflate(R.layout.question_item_layout, parent, false);
-        QuestionRcvAdapter.ViewHolder viewHolder = new QuestionRcvAdapter.ViewHolder(listItem);
+        ViewHolder viewHolder = new ViewHolder(listItem);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull QuestionRcvAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         QuestionDataModel questionDataModel = questionDataModels.get(position);
 
         if (questionDataModel.isPublic() || (GlobalConfig.getCurrentUserId().equals(questionDataModel.getAuthorId()+""))) {
 
             holder.dateAskedTextView.setText(questionDataModel.getDateAsked()+"");
-
+/*
+            //avoid fetching the name of the user who asked the question to reduce cost of query
             GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY)
                     .document(questionDataModel.getAuthorId())
                     .get()
@@ -95,12 +67,13 @@ public class QuestionRcvAdapter extends RecyclerView.Adapter<QuestionRcvAdapter.
                                 Glide.with(context)
                                         .load(userProfilePhotoDownloadUrl)
                                         .centerCrop()
-                                        .placeholder(R.drawable.placeholder)
+                                        .placeholder(R.drawable.default_profile)
                                         .into(holder.askerProfilePhoto);
                             } catch (Exception ignored) {
                             }
                         }
                     });
+*/
 
             holder.questionBodyTextView.setText(questionDataModel.getQuestionBody());
             holder.ansCountTextView.setText(questionDataModel.getNumOfAnswers() + " Ans");

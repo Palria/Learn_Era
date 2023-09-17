@@ -213,7 +213,7 @@ public class CreateQuizActivity extends AppCompatActivity {
             });
         }else {
             addTheoryQuestion(containerLinearLayout.getChildCount(),"30","");
-            addObjectiveQuestion(containerLinearLayout.getChildCount(),"30","","","","", "");
+            addObjectiveQuestion(containerLinearLayout.getChildCount(),"30","","","","","");
         }
         initCategorySpinner(categorySelector);
         prepareDatePickerDialog();

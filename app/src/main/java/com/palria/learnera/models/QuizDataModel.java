@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.palria.learnera.GlobalConfig;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -21,8 +22,10 @@ public class QuizDataModel implements Serializable {
     private long totalQuestions;
     private long totalTimeLimit;
     private long totalParticipants;
+    private long totalViews;
     private boolean isPublic;
     private boolean isClosed;
+    ArrayList<ArrayList> questionList;
     ArrayList<Long> dateList;
     private ArrayList<String> participantsList;
     public QuizDataModel(){}
@@ -38,8 +41,10 @@ public class QuizDataModel implements Serializable {
              long totalQuestions,
              long totalTimeLimit,
              long totalParticipants,
+             long totalViews,
              boolean isPublic,
              boolean isClosed,
+             ArrayList<ArrayList> questionList,
              ArrayList<Long> dateList,
              ArrayList<String> participantsList
             ) {
@@ -54,8 +59,10 @@ public class QuizDataModel implements Serializable {
         this.totalQuestions = totalQuestions;
         this.totalTimeLimit = totalTimeLimit;
         this.totalParticipants = totalParticipants;
+        this.totalViews = totalViews;
         this.isPublic = isPublic;
         this.isClosed = isClosed;
+        this.questionList = questionList;
         this.dateList = dateList;
         this.participantsList = participantsList;
     }
@@ -104,12 +111,20 @@ public class QuizDataModel implements Serializable {
         return totalParticipants;
     }
 
+    public long getTotalViews() {
+        return totalViews;
+    }
+
     public boolean isPublic() {
         return isPublic;
     }
 
     public boolean isClosed() {
         return isClosed;
+    }
+
+    public ArrayList<ArrayList> getQuestionList() {
+        return questionList;
     }
 
     public ArrayList<Long> getDateList() {

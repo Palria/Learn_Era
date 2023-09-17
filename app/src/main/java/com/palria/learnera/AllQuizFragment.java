@@ -111,8 +111,15 @@ private void initUI(View parentView){
                             long totalQuestions =  documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUESTIONS_KEY) : 0L;
                             long totalTimeLimit =  documentSnapshot.get(GlobalConfig.TOTAL_TIME_LIMIT_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_TIME_LIMIT_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_TIME_LIMIT_KEY) : 0L;
                             long totalParticipants =  documentSnapshot.get(GlobalConfig.TOTAL_PARTICIPANTS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_PARTICIPANTS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_PARTICIPANTS_KEY) : 0L;
+                            long totalViews =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) : 0L;
                             boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) != null && documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY) : true;
                             boolean isClosed =  documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) != null && documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_CLOSED_KEY) : false;
+                            ArrayList<ArrayList> questionList = new ArrayList();
+                            for(int i=0;i<totalQuestions;i++) {
+                                ArrayList questionList1 = documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-" + i) != null && documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-"+ i) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-"+ i) : new ArrayList();
+                                questionList.add(questionList1);
+                            }
+
                             ArrayList dateList =  documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) : new ArrayList();
                             ArrayList participantsList =  documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) : new ArrayList();
                             String dateCreated = documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY).toDate() : "Moment ago";
@@ -135,8 +142,10 @@ private void initUI(View parentView){
                                     totalQuestions,
                                     totalTimeLimit,
                                     totalParticipants,
+                                    totalViews,
                                     isPublic,
                                     isClosed,
+                                    questionList,
                                     dateList,
                                     participantsList
                             ));

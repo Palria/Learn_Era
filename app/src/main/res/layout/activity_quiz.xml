@@ -16,48 +16,257 @@
         app:titleTextColor="@color/white"
         android:theme="@style/ToolbarColoredBackArrow"
         android:background="@color/teal_700"
-        android:layout_height="?attr/actionBarSize"/>
-
-    <LinearLayout
-
-        android:id="@+id/bg"
-        android:paddingVertical="5pt"
-        android:layout_below="@+id/topBar"
-        android:paddingHorizontal="5pt"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="25pt">
-        <ImageView
-            android:layout_marginRight="5pt"
-            android:layout_gravity="center"
-            android:src="@drawable/baseline_logo_dev_24"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:layout_gravity="center"
-            android:text="Nirbytes Company Ltd."
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-
-            />
-    </LinearLayout>
-
-
+        android:layout_height="wrap_content"/>
+    
     <ScrollView
-        android:layout_marginTop="-5pt"
-        android:layout_below="@+id/bg"
+        android:layout_below="@id/topBar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            >
+        
+        <LinearLayout
+        android:id="@+id/quizInfoId"
+        android:paddingLeft="2pt"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/secondary_app_color"
+        android:visibility="visible"
+        >
+    
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible">
+        
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:layout_width="20pt"
+            android:id="@+id/posterProfilePhotoId"
+            app:riv_corner_radius="4pt"
+            app:riv_oval="false"
+            android:layout_gravity="start"
+            android:scaleType="centerCrop"
+            android:src="@drawable/default_profile"
+            android:layout_height="20pt"
+            tools:ignore="MissingClass" />
+       
+            
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                
+                <TextView
+                    android:textStyle="bold"
+                    android:textSize="8pt"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:id="@+id/posterNameTextViewId"
+                    android:text="Nirbytes Inc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLength="30"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+                
+                <ImageView
+                    android:id="@+id/verificationFlagImageViewId"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/ic_baseline_stars_24"
+                    android:layout_gravity="top"
+                    android:visibility="visible"
+                    app:layout_constraintStart_toEndOf="@id/title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/light_blue_600" />
+            
+            
+                
+            </LinearLayout>
+    </LinearLayout>
+        <TextView
+            android:id="@+id/maxTimeTextViewId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Time 35s/60s"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:gravity="center"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:textColor="@color/black"
+            android:background="@drawable/ripple_background"
+            android:layout_marginLeft="2pt"
+            android:layout_margin="2dp"/>
+    
+        <LinearLayout
+        
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="2pt"
+                >
+    
+    
+    
+                <TextView
+                android:id="@+id/activeStatusTextViewId"
+                android:text="Active"
+                android:textColor="@android:color/holo_green_dark"
+                android:layout_marginLeft="2pt"
+                android:layout_marginStart="20dp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    />
+    
+                <TextView
+                    android:id="@+id/joinQuizActionTextViewId"
+                    android:paddingHorizontal="5dp"
+                    android:text="Join"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:background="@drawable/ripple_background"
+                    android:backgroundTint="@color/light_blue_600"
+                    android:layout_marginLeft="2pt"
+                    android:layout_marginEnd="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    />
+    
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="end"
+                >
+    
+                
+                <LinearLayout
+                    
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+                    
+                    <ImageView
+                        android:layout_marginRight="2pt"
+                        android:id="@+id/participantCountId"
+                        app:tint="@color/darkIcon"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_baseline_group_24"
+                        android:layout_width="10pt"
+                        android:layout_height="10pt"/>
+                    
+                    <TextView
+                        android:id="@+id/participantCountTextViewId"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+                 <LinearLayout
+                    
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+                    
+                    <ImageView
+                        android:layout_marginRight="2pt"
+                        android:id="@+id/viewCountId"
+                        app:tint="@color/darkIcon"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_baseline_remove_red_eye_24"
+                        android:layout_width="10pt"
+                        android:layout_height="10pt"/>
+                    
+                    <TextView
+                        android:id="@+id/viewCountTextViewId"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+                
+                <LinearLayout
+                    
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+                    
+                    <ImageView
+                        android:layout_marginRight="2pt"
+                        android:id="@+id/dateAskedImageViewId"
+                        app:tint="@color/darkIcon"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_baseline_access_time_filled_24"
+                        android:layout_width="10pt"
+                        android:layout_height="10pt"/>
+                    
+                    <TextView
+                        android:id="@+id/dateAskedTextViewId"
+                        android:text="0"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="2pt"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+            
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_marginBottom="7pt"
+                    android:text="Questions"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+        
+                <TextView
+                    android:id="@+id/questionCountTextViewId"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="7pt"
+                    android:text="3/88"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    
+
 
             <LinearLayout
                 android:background="@drawable/rounded_white_bg"
                 android:layout_width="match_parent"
                 android:orientation="vertical"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                >
 
                 <LinearLayout
                     android:orientation="vertical"
@@ -66,25 +275,6 @@
                     android:paddingVertical="15pt"
                     android:layout_height="match_parent">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:orientation="horizontal"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:textStyle="bold"
-                            android:layout_marginBottom="7pt"
-                            android:text="Questions"
-                            android:layout_weight="1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-
-                        <TextView
-                            android:textStyle="bold"
-                            android:layout_marginBottom="7pt"
-                            android:text="3/88"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-                    </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:orientation="horizontal"
@@ -255,11 +445,27 @@
 
 
             </LinearLayout>
-
-
+    
+        <LinearLayout
+            android:id="@+id/containerLinearLayoutId"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
         </LinearLayout>
     </ScrollView>
-
-
+    
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:id="@+id/submitActionButtonId"
+        android:layout_marginHorizontal="10pt"
+        android:layout_marginVertical="40pt"
+        android:tint="@color/teal_700"
+        android:backgroundTint="@color/teal_700"
+        android:src="@drawable/baseline_check_circle_outline_24"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        />
 
 </RelativeLayout>
