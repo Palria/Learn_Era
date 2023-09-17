@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:paddingHorizontal="1dp"
+    android:paddingHorizontal="4pt"
     android:layout_marginTop="2pt"
     android:clickable="true"
-    android:layout_marginHorizontal="1dp"
+    android:paddingVertical="7pt"
     android:background="@drawable/rounded_border_gray_bg"
     android:id="@+id/parentItem"
     android:layout_height="wrap_content">
@@ -101,11 +101,16 @@
             
             </LinearLayout>
             <TextView
+                android:layout_width="wrap_content"
+                android:maxLines="1"
+                android:text="Nirbytes"
+                android:ellipsize="end"
+                android:layout_height="wrap_content"/>
+            <TextView
                 android:id="@+id/questionBodyTextViewId"
                 android:text="What's your name?"
-                android:textColor="@color/black"
-                android:fontFamily="sans-serif-condensed-medium"
                 android:textStyle="bold"
+                android:textSize="8pt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             
@@ -126,6 +131,7 @@
     
     <LinearLayout
         android:orientation="horizontal"
+        android:layout_marginTop="3pt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
@@ -134,8 +140,11 @@
             android:layout_marginStart="1pt"
             android:id="@+id/ansCountTextViewId"
             android:text="0 ans"
-            android:textSize="9sp"
+            android:textSize="13sp"
+            android:paddingHorizontal="3pt"
+            android:textColor="@color/white"
             android:textStyle="bold"
+            android:background="@color/teal_700"
             android:fontFamily="sans-serif-condensed-medium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -143,7 +152,8 @@
         
         
         <LinearLayout
-            
+            android:layout_gravity="center"
+            android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -152,16 +162,17 @@
             <ImageView
                 android:layout_marginRight="2pt"
                 android:id="@+id/viewCountId"
-                app:tint="@color/darkIcon"
+                app:tint="@color/grayDark"
+
                 android:src="@drawable/ic_baseline_remove_red_eye_24"
-                android:layout_width="12dp"
-                android:layout_height="12dp"/>
+                android:layout_width="17dp"
+                android:layout_height="17dp"/>
             
             <TextView
                 android:id="@+id/viewCountTextViewId"
                 android:text="0"
                 android:textStyle="bold"
-                android:textSize="9sp"
+                android:textSize="13sp"
                 android:layout_marginLeft="2pt"
                 android:layout_marginEnd="5dp"
                 android:layout_width="wrap_content"
@@ -169,27 +180,21 @@
         </LinearLayout>
         
         <LinearLayout
-            
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center"
-            >
-            
-            <ImageView
-                android:layout_marginRight="2pt"
-                android:id="@+id/dateAskedImageViewId"
-                app:tint="@color/darkIcon"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_baseline_access_time_filled_24"
-                android:layout_width="12dp"
-                android:layout_height="12dp"/>
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
             
             <TextView
                 android:id="@+id/dateAskedTextViewId"
                 android:text="Moment ago"
-                android:textStyle="bold"
-                android:textSize="9sp"
+                android:textStyle="bold|italic"
+                android:textSize="11sp"
                 android:layout_marginLeft="2pt"
                 android:layout_marginEnd="20dp"
                 android:layout_width="wrap_content"
