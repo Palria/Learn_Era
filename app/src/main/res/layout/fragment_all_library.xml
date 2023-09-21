@@ -61,10 +61,6 @@
                 android:layout_height="wrap_content">
             </androidx.cardview.widget.CardView>
 
-
-
-
-
             <androidx.cardview.widget.CardView
                 app:cardCornerRadius="6pt"
                 android:id="@+id/searchCardViewId"
@@ -562,6 +558,10 @@
     
 
         </LinearLayout>
+
+
+
+
     </androidx.core.widget.NestedScrollView>
 
 

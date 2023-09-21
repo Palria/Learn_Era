@@ -7,37 +7,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AskNewQuestionActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        app:title="Post new Question"
+        app:titleTextColor="@color/white"
+        app:navigationIconTint="@color/white"
+        app:navigationIcon="@drawable/baseline_arrow_back_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:theme="@style/ToolbarColoredBackArrow"
+        android:background="@color/teal_700"
+        android:layout_height="?attr/actionBarSize"/>
     
     
     <RelativeLayout
+        android:layout_marginTop="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        
+
         
         <RelativeLayout
             android:background="@drawable/auth_bg_top"
             android:layout_width="match_parent"
             android:layout_height="150dp">
             
-            <TextView
-                android:id="@+id/headerTextViewId"
-                android:textSize="8pt"
-                android:textStyle="bold"
-                android:layout_marginTop="10pt"
-                android:layout_marginStart="10dp"
-                android:text="Ask Your Question"
-                android:textColor="@color/white"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-            
-            
             <LinearLayout
                 android:paddingHorizontal="10pt"
-                android:layout_marginBottom="60dp"
-                android:layout_below="@id/headerTextViewId"
+                android:layout_marginBottom="0dp"
                 android:layout_width="match_parent"
-                android:gravity="center"
+                android:gravity="start"
                 android:layout_height="wrap_content"
                 >
                 
@@ -49,13 +50,15 @@
                         android:textSize="8pt"
                         android:textStyle="bold"
                         android:textColor="@color/white"
-                        android:text="Have question,"
+                        android:text="Have question?"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                     <TextView
+                        android:layout_marginTop="4pt"
                         android:textSize="6pt"
                         android:textStyle="normal"
-                        android:text="Ask the Learn Era community and wait for their answers. You will be notified as soon as your question receives answer"
+                        android:textColor="@color/gray"
+                        android:text="Ask the Learn Era community and wait for their answers. You will be notified as soon as your question receives answer."
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
@@ -88,6 +91,7 @@
         android:layout_height="wrap_content">
         
         <androidx.cardview.widget.CardView
+            android:layout_marginBottom="4pt"
             android:id="@+id/auth_card"
             android:layout_marginHorizontal="5pt"
             android:layout_width="match_parent"
@@ -117,9 +121,9 @@
                     tools:ignore="UseSwitchCompatOrMaterialXml"
                     android:checked="true"
                     android:paddingHorizontal="20dp"
-                    android:background="@color/white"
                     />
                 <Switch
+                    android:layout_marginTop="5pt"
                     android:id="@+id/closedIndicatorSwitchId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -132,25 +136,30 @@
                     tools:ignore="UseSwitchCompatOrMaterialXml"
                     android:checked="false"
                     android:paddingHorizontal="20dp"
-                    android:background="@color/white"
+
                     />
     
                 <LinearLayout
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="5pt"
                     android:id="@+id/categoryLinearLayoutId"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:paddingHorizontal="5pt"
                     android:paddingVertical="5pt"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/rounded_border_gray_bg"
+                    android:background="@drawable/default_input_bg"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/publishIndicatorSwitchId"
                     >
         
                     <TextView
+
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Select Category"
+                        android:text="Category"
+                        android:layout_weight="1"
                         android:textStyle="bold"
                         android:fontFamily="sans-serif-condensed-medium"
                         android:drawableTint="@color/grayDark"
@@ -165,6 +174,7 @@
                 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
+                    android:layout_marginTop="5pt"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_height="wrap_content"
                     app:counterEnabled="true"

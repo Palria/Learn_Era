@@ -40,6 +40,7 @@
         <activity
             android:name=".AskNewQuestionActivity"
             android:theme="@style/Theme.LearnEra"
+            android:parentActivityName=".MainActivity"
             android:exported="true" >
         </activity>
         <activity
