@@ -65,9 +65,14 @@ import com.palria.learnera.models.PageDataModel;
 import com.palria.learnera.models.PageDiscussionDataModel;
 import com.palria.learnera.models.WelcomeScreenItemModal;
 import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
+import com.paypal.android.sdk.payments.PayPalConfiguration;
+import com.paypal.android.sdk.payments.PayPalPayment;
+import com.paypal.android.sdk.payments.PayPalService;
+import com.paypal.android.sdk.payments.PaymentActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,7 +87,9 @@ import java.util.Random;
 //load user profile once from here
 //RULE ADD NUMBER OFF BOOK-MARKS
 public class GlobalConfig {
-
+    /** paypal client id */
+    public static final String paypalClientId = "AQ6WR0is4xW9bAnhYSoG52PkfKDUDD2VTZiAEbp3gSc4kZ01xFli50nq9_NXBT2FOvMsKJJvf3r631Da";
+    public static final int PAYPAL_PAYMENT_REQUEST_CODE = 12451012;
     private static String CURRENT_USER_ID;
     private static String CURRENT_USER_TOKEN_ID = "EMPTY";
     static OnCurrentUserProfileFetchListener onCurrentUserProfileFetchListener;
@@ -1252,6 +1259,20 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
         arrayList.add("Zimbabwe");
 
         return arrayList;
+    }
+
+    public static Intent getPaypalIntent(Context context, String amount){
+        PayPalConfiguration payPalConfiguration = new PayPalConfiguration().environment(PayPalConfiguration.ENVIRONMENT_SANDBOX)
+                .clientId(GlobalConfig.paypalClientId);
+
+        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "USD", "Learn Era",PayPalPayment.PAYMENT_INTENT_SALE);
+
+        Intent intent = new Intent(context, PaymentActivity.class);
+        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, payPalConfiguration);
+        intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payPalPayment);
+
+        return intent;
+
     }
 
    public static  Snackbar createSnackBar(Context context , View view,String text,int lengthPeriod){

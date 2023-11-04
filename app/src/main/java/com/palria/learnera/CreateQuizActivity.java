@@ -1,11 +1,13 @@
 package com.palria.learnera;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -34,6 +37,12 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
+import com.paypal.android.sdk.payments.PaymentActivity;
+import com.paypal.android.sdk.payments.PaymentConfirmActivity;
+import com.paypal.android.sdk.payments.PaymentConfirmation;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -137,7 +146,9 @@ public class CreateQuizActivity extends AppCompatActivity {
         saveQuizActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 showQuizCompletionConfirmationDialog();
+
             }
         });
         quizDateInput.setOnClickListener(new View.OnClickListener() {
@@ -364,13 +375,18 @@ public class CreateQuizActivity extends AppCompatActivity {
         AlertDialog confirmationDialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Confirm your action");
-        builder.setMessage("You are about to save your quiz, please confirm if you are ready");
+        builder.setMessage("You are about to save your quiz, please confirm if you are ready, you need to deposit 1$ to create quiz.");
         builder.setCancelable(true);
         builder.setIcon(R.drawable.ic_baseline_error_outline_24);
         builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-             processAndSaveQuiz();
+
+                //processAndSaveQuiz();
+                //redirect to payment for quiz deposit
+                Intent intent1 = GlobalConfig.getPaypalIntent(CreateQuizActivity.this, "1");
+                CreateQuizActivity.this.startActivityForResult(intent1, GlobalConfig.PAYPAL_PAYMENT_REQUEST_CODE);
+                //PROCESS IF PAID OR NOT IN ACTIVITY RESULT
             }
         })
                 .setNegativeButton("Edit more", null);
@@ -402,6 +418,7 @@ public class CreateQuizActivity extends AppCompatActivity {
     }
 
     private void processAndSaveQuiz() {
+
         if (isCategorySelected) {
             toggleProgress(true);
             category = categorySelector.getSelectedItem() + "";
@@ -548,4 +565,30 @@ void prepareTimePickerDialog(){
     }, HOUR, MINUTE, true);
     timePickerDialog.setCancelable(false);
 }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == GlobalConfig.PAYPAL_PAYMENT_REQUEST_CODE){
+            if(resultCode == RESULT_OK) {
+                PaymentConfirmation paymentConfirmation = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
+                if (paymentConfirmation != null) {
+                    String paymentDetails = paymentConfirmation.toJSONObject().toString();
+                    try {
+                        JSONObject jsonObject = new JSONObject(paymentDetails);
+                        Log.w(paymentDetails, "createQuizActivity");
+                        // payment done now save the quiz...
+                        //processAndSaveQuiz();
+                    } catch (JSONException e) {
+                        Toast.makeText(this, "" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }else if(resultCode == Activity.RESULT_CANCELED){
+                Toast.makeText(this, "Payment cancelled! please try again.", Toast.LENGTH_SHORT).show();
+            }else if(resultCode==PaymentActivity.RESULT_EXTRAS_INVALID){
+                Toast.makeText(this, "Invalid payment request.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }
+
