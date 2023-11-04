@@ -213,7 +213,7 @@ editor.insertVideo = function(url, alt) {
  let id = getYouTubeID(url);
 if(id && id.length){
 
-html = `<iframe allowfullscreen width="100%" height="240px" src="https://www.youtube.com/embed/${id}" frameborder="0"></iframe>
+html = `<iframe allow="fullscreen" width="100%" height="240px" src="https://www.youtube.com/embed/${id}" frameborder="0"></iframe>
 <p> &nbsp;</p> <p> &nbsp;</p>`;
 
 }else{

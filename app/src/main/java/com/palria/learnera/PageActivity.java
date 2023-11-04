@@ -519,6 +519,7 @@ ImageButton morePageActionButton;
         }
     }
     void fetchPageData(boolean isNext){
+
      
 //                toggleProgress(true);
                 showShimmer();

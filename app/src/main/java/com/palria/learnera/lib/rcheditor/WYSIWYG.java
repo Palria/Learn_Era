@@ -1,20 +1,24 @@
 package com.palria.learnera.lib.rcheditor;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
@@ -43,6 +47,8 @@ import org.jetbrains.annotations.Nullable;
         d2 = {"Lcom/palria/learnera/lib/rcheditor/WYSIWYG;", "Landroid/webkit/WebView;", "context", "Landroid/content/Context;", "(Landroid/content/Context;)V", "attrs", "Landroid/util/AttributeSet;", "(Landroid/content/Context;Landroid/util/AttributeSet;)V", "defStyleAttr", "", "(Landroid/content/Context;Landroid/util/AttributeSet;I)V", "contents", "", "html", "getHtml", "()Ljava/lang/String;", "setHtml", "(Ljava/lang/String;)V", "isReady", "", "mContents", "mDecorationStateListener", "Lcom/palria/learnera/lib/rcheditor/WYSIWYG$OnDecorationStateListener;", "mLoadListener", "Lcom/palria/learnera/lib/rcheditor/WYSIWYG$AfterInitialLoadListener;", "mTextChangeListener", "Lcom/palria/learnera/lib/rcheditor/WYSIWYG$OnTextChangeListener;", "applyAttributes", "", "callback", "text", "clearFocusEditor", "convertHexColorString", "color", "createWebviewClient", "Lcom/palria/learnera/lib/rcheditor/WYSIWYG$EditorWebViewClient;", "exec", "trigger", "focusEditor", "insertImage", "url", "alt", "insertLatex", "latexEquation", "insertLink", "href", "title", "insertTodo", "load", "loadCSS", "cssFile", "redo", "removeFormat", "setAlignCenter", "setAlignJustifyFull", "setAlignLeft", "setAlignRight", "setBackground", "background", "Landroid/graphics/drawable/Drawable;", "setBackgroundColor", "setBackgroundResource", "resid", "setBlockquote", "setBold", "setBullets", "setCode", "setEditorBackgroundColor", "setEditorFontColor", "setEditorFontSize", "px", "setEditorHeight", "setEditorWidth", "setFontSize", "fontSize", "setFontType", "font", "setHeading", "heading", "setIndent", "setInputEnabled", "inputEnabled", "setItalic", "setNumbers", "setOnDecorationChangeListener", "listener", "setOnInitialLoadListener", "setOnTextChangeListener", "setOutdent", "setPadding", "left", "top", "right", "bottom", "setPaddingRelative", "start", "end", "setPlaceholder", "placeholder", "setStrikeThrough", "setSubscript", "setSuperscript", "setTextBackgroundColor", "setTextColor", "setUnderline", "stateCheck", "undo", "AfterInitialLoadListener", "Companion", "EditorWebViewClient", "OnDecorationStateListener", "OnTextChangeListener", "Type", "Learn_Era.app.main"}
 )
 public final class WYSIWYG extends WebView {
+
+    Context context;
     private boolean isReady;
     private String mContents;
     private OnTextChangeListener mTextChangeListener;
@@ -498,11 +504,14 @@ public final class WYSIWYG extends WebView {
         WebSettings var10000 = this.getSettings();
         Intrinsics.checkNotNullExpressionValue(var10000, "settings");
         var10000.setJavaScriptEnabled(true);
-        this.setWebChromeClient(new WebChromeClient());
+        var10000.setAllowFileAccess(true);
+        var10000.setAppCacheEnabled(true);
+        this.setWebChromeClient(new MyChrome());
         this.setWebViewClient((WebViewClient)this.createWebviewClient());
         this.loadUrl("file:///android_asset/editor.html");
         this.applyAttributes(context, attrs);
         this.toggleThemeMode();
+
     }
 
     public WYSIWYG(@NotNull Context context) {
@@ -629,7 +638,53 @@ public final class WYSIWYG extends WebView {
 
         public EditorWebViewClient() {
         }
+
+
     }
+
+    private class MyChrome extends WebChromeClient {
+        private View mCustomView;
+        private WebChromeClient.CustomViewCallback mCustomViewCallback;
+        protected FrameLayout mFullscreenContainer;
+        private int mOriginalOrientation;
+        private int mOriginalSystemUiVisibility;
+
+        MyChrome() {}
+
+        public Bitmap getDefaultVideoPoster()
+        {
+            if (mCustomView == null) {
+                return null;
+            }
+            return BitmapFactory.decodeResource(context.getApplicationContext().getResources(), 2130837573);
+        }
+
+        public void onHideCustomView()
+        {
+            ((FrameLayout)((Activity) getContext()).getWindow().getDecorView()).removeView(this.mCustomView);
+            this.mCustomView = null;
+            ((Activity) getContext()).getWindow().getDecorView().setSystemUiVisibility(this.mOriginalSystemUiVisibility);
+            ((Activity) getContext()).setRequestedOrientation(this.mOriginalOrientation);
+            this.mCustomViewCallback.onCustomViewHidden();
+            this.mCustomViewCallback = null;
+        }
+
+        public void onShowCustomView(View paramView, WebChromeClient.CustomViewCallback paramCustomViewCallback)
+        {
+            if (this.mCustomView != null)
+            {
+                onHideCustomView();
+                return;
+            }
+            this.mCustomView = paramView;
+            this.mOriginalSystemUiVisibility = ((Activity) getContext()).getWindow().getDecorView().getSystemUiVisibility();
+            this.mOriginalOrientation = ((Activity) getContext()).getRequestedOrientation();
+            this.mCustomViewCallback = paramCustomViewCallback;
+            ((FrameLayout)((Activity) getContext()).getWindow().getDecorView()).addView(this.mCustomView, new FrameLayout.LayoutParams(-1, -1));
+            ((Activity) getContext()).getWindow().getDecorView().setSystemUiVisibility(3846 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        }
+    }
+
 
     @Metadata(
             mv = {1, 8, 0},
