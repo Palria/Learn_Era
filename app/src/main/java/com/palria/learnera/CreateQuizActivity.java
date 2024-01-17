@@ -73,12 +73,12 @@ public class CreateQuizActivity extends AppCompatActivity {
     DatePickerDialog datePickerDialog;
     TimePickerDialog timePickerDialog;
 
-    int quizDay = 1;
-    int quizMonth = 2;
-    int quizYear = 2023;
-    int quizHour = 12;
-    int quizMinute = 30;
-    ArrayList<Integer> quizDateList = new ArrayList<>();
+    long quizDay = 1;
+    long quizMonth = 2;
+    long quizYear = 2023;
+    long quizHour = 12;
+    long quizMinute = 30;
+    ArrayList<Long> quizDateList = new ArrayList<>();
 //    String[] timeLimits = {"5","10","15","20","25","30","35","40","45","50","55","60"};
     ArrayList<String> timeLimits = new ArrayList<>();
     Spinner categorySelector;
@@ -167,7 +167,7 @@ public class CreateQuizActivity extends AppCompatActivity {
                     String quizTitle = ""+documentSnapshot.get(GlobalConfig.QUIZ_TITLE_KEY);
                     boolean isPublic = documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null?documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY):true;
                     long totalQuestions = documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY)!=null?documentSnapshot.getLong(GlobalConfig.TOTAL_QUESTIONS_KEY):0L;
-                    ArrayList<Integer> quizDateList1 = documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY)!=null? (ArrayList<Integer>) documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY):new ArrayList<>();
+                    ArrayList<Long> quizDateList1 = documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY)!=null? (ArrayList<Long>) documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY):new ArrayList<>();
                     String quizFeeDescription = ""+documentSnapshot.get(GlobalConfig.QUIZ_FEE_DESCRIPTION_KEY);
                     String quizRewardDescription = ""+documentSnapshot.get(GlobalConfig.QUIZ_REWARD_DESCRIPTION_KEY);
 
@@ -184,10 +184,10 @@ public class CreateQuizActivity extends AppCompatActivity {
                     if(quizDateList1 !=null) {
                         if (quizDateList1.size() == 5) {
                             quizYear = quizDateList1.get(0);
-                            quizMonth = quizDateList1.get(0);
-                            quizDay = quizDateList1.get(0);
-                            quizHour = quizDateList1.get(0);
-                            quizMinute = quizDateList1.get(0);
+                            quizMonth = quizDateList1.get(1);
+                            quizDay = quizDateList1.get(2);
+                            quizHour = quizDateList1.get(3);
+                            quizMinute = quizDateList1.get(4);
                             quizDateInput.setText(quizDay + "/" + quizMonth + "/" + quizYear + " " + quizHour + ":" + quizMinute);
                         }
                     }
@@ -375,21 +375,20 @@ public class CreateQuizActivity extends AppCompatActivity {
         AlertDialog confirmationDialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Confirm your action");
-        builder.setMessage("You are about to save your quiz, please confirm if you are ready, you need to deposit 1$ to create quiz.");
+        builder.setMessage("You are about to save your quiz, you need to deposit 1$ to create quiz, please confirm if you are ready. ");
         builder.setCancelable(true);
         builder.setIcon(R.drawable.ic_baseline_error_outline_24);
         builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                //processAndSaveQuiz();
-                //redirect to payment for quiz deposit
-                Intent intent1 = GlobalConfig.getPaypalIntent(CreateQuizActivity.this, "1");
-                CreateQuizActivity.this.startActivityForResult(intent1, GlobalConfig.PAYPAL_PAYMENT_REQUEST_CODE);
+                processAndSaveQuiz();
+                // todo redirect to payment for quiz deposit for test
+//                Intent intent1 = GlobalConfig.getPaypalIntent(CreateQuizActivity.this, "1");
+//                CreateQuizActivity.this.startActivityForResult(intent1, GlobalConfig.PAYPAL_PAYMENT_REQUEST_CODE);
                 //PROCESS IF PAID OR NOT IN ACTIVITY RESULT
             }
-        })
-                .setNegativeButton("Edit more", null);
+        }).setNegativeButton("Edit more", null);
         confirmationDialog = builder.create();
         confirmationDialog.show();
 

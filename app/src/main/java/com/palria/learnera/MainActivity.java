@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     FrameLayout userProfileFrameLayout;
     OnConfigurationLoadCallback onConfigurationLoadCallback;
     FloatingActionButton fab;
+    Button notificationMenuButton;
     Button menu_search_button;
     View loadingIndicator;
     //learn era bottom sheet dialog
@@ -195,6 +196,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
                 }
             });
+        notificationMenuButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent =new Intent(MainActivity.this, NotificationActivity.class);
+                    startActivity(intent);
+                }
+            });
         menu_search_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -234,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 
         fab = findViewById(R.id.fab);
+        notificationMenuButton = findViewById(R.id.notificationMenuButtonId);
         menu_search_button = findViewById(R.id.menu_search_button);
 
         bottomNavigationView.setBackground(null);
@@ -458,12 +467,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                          *                         else
                          */
 
-                    if(item.getItemId() == R.id.notification_item){
-//                            Toast.makeText(MainActivity.this, "notification clicked.", Toast.LENGTH_SHORT).show();
-                            Intent intent =new Intent(MainActivity.this, NotificationActivity.class);
-                            startActivity(intent);
-                        }
-                        else if(item.getItemId() == R.id.settings_item){
+//                    if(item.getItemId() == R.id.notification_item){
+////                            Toast.makeText(MainActivity.this, "notification clicked.", Toast.LENGTH_SHORT).show();
+//                            Intent intent =new Intent(MainActivity.this, NotificationActivity.class);
+//                            startActivity(intent);
+//                        }
+                         if(item.getItemId() == R.id.settings_item){
                          //settings activity starts here 
 //                            Toast.makeText(MainActivity.this, "Setting clicked", Toast.LENGTH_SHORT).show();
                             Intent intent =new Intent(MainActivity.this, SettingsActivity.class);
@@ -766,6 +775,7 @@ if(GlobalConfig.isUserLoggedIn()) {
         startActivity(intent);
         super.onBackPressed();
 //         MainActivity.this.finish();
+        GlobalConfig.newlyJoinedQuizList.clear();
 
 }
 

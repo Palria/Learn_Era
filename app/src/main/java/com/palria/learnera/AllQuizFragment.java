@@ -130,6 +130,16 @@ private void initUI(View parentView){
                             if (dateEdited.length() > 10) {
                                 dateEdited = dateEdited.substring(0, 10);
                             }
+                            String timeAnswerSubmitted = documentSnapshot.get(GlobalConfig.ANSWER_SUBMITTED_TIME_STAMP_KEY)!=null? documentSnapshot.getTimestamp(GlobalConfig.ANSWER_SUBMITTED_TIME_STAMP_KEY).toDate()+"" :"Undefined";
+                            boolean isAnswerSaved = documentSnapshot.get(GlobalConfig.IS_ANSWER_SUBMITTED_KEY)!=null? documentSnapshot.getBoolean(GlobalConfig.IS_ANSWER_SUBMITTED_KEY) :false;
+
+                            ArrayList<ArrayList<String>> authorSavedAnswersList = new ArrayList<>();
+                            for(int i=0; i<questionList.size(); i++) {
+                                //list of participant answer
+                                ArrayList<String> answerItem = documentSnapshot.get(GlobalConfig.ANSWER_LIST_KEY + "-" + i) != null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.ANSWER_LIST_KEY + "-" + i) : new ArrayList<>();
+                                authorSavedAnswersList.add(answerItem);
+
+                            }
                             quizFetchListener.onSuccess(new QuizDataModel(
                                     quizId,
                                     authorId,
@@ -147,7 +157,10 @@ private void initUI(View parentView){
                                     isClosed,
                                     questionList,
                                     dateList,
-                                    participantsList
+                                    participantsList,
+                                    isAnswerSaved,
+                                    timeAnswerSubmitted,
+                                    authorSavedAnswersList
                             ));
 
 

@@ -32,6 +32,17 @@
             android:layout_gravity="center"
             android:elevation="0sp"
             android:gravity="center"
+            android:id="@+id/notificationMenuButtonId"
+            android:foreground="@drawable/baseline_notifications_24"
+            android:layout_width="13pt"
+            android:foregroundTint="@color/white"
+            android:layout_height="13pt"
+            android:layout_marginEnd="10dp"/>
+
+        <Button
+            android:layout_gravity="center"
+            android:elevation="0sp"
+            android:gravity="center"
             android:id="@+id/menu_search_button"
             android:foreground="@drawable/ic_baseline_search_24"
             android:layout_width="13pt"
@@ -41,7 +52,7 @@
         <com.makeramen.roundedimageview.RoundedImageView
             android:layout_width="15pt"
             android:id="@+id/currentUserProfile"
-            android:src="@drawable/default_profile"
+            android:src="@drawable/ic_baseline_more_vert_24"
             app:riv_oval="true"
             android:background="?attr/selectableItemBackground"
             android:layout_gravity="center"

@@ -13,11 +13,20 @@
         app:title="Quiz Title"
         app:navigationIconTint="@color/white"
         app:navigationIcon="@drawable/baseline_arrow_back_24"
+        app:menu="@menu/quiz_action_menu"
         app:titleTextColor="@color/white"
         android:theme="@style/ToolbarColoredBackArrow"
         android:background="@color/teal_700"
-        android:layout_height="wrap_content"/>
-    
+        android:layout_height="wrap_content"
+        />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+    </LinearLayout>
     <ScrollView
         android:layout_below="@id/topBar"
         android:layout_width="match_parent"
@@ -67,7 +76,7 @@
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:id="@+id/posterNameTextViewId"
-                    android:text="Nirbytes Inc"
+                    android:text="..."
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLength="30"
@@ -81,11 +90,12 @@
                     android:layout_height="10dp"
                     android:src="@drawable/ic_baseline_stars_24"
                     android:layout_gravity="top"
-                    android:visibility="visible"
+                    android:visibility="invisible"
                     app:layout_constraintStart_toEndOf="@id/title"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/light_blue_600" />
+                    app:tint="@color/light_blue_600"
+                    />
             
             
                 
@@ -225,7 +235,7 @@
                         android:layout_height="10pt"/>
                     
                     <TextView
-                        android:id="@+id/dateAskedTextViewId"
+                        android:id="@+id/datePostedTextViewId"
                         android:text="0"
                         android:textStyle="bold"
                         android:layout_marginLeft="2pt"
@@ -257,9 +267,17 @@
             </LinearLayout>
 
         </LinearLayout>
-    
 
-
+            <TextView
+                android:id="@+id/descriptionTextViewId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:layout_marginBottom="5pt"
+                android:text="QUIZ"
+                android:background="@drawable/ripple_background"
+                />
+<!--
             <LinearLayout
                 android:background="@drawable/rounded_white_bg"
                 android:layout_width="match_parent"
@@ -445,14 +463,36 @@
 
 
             </LinearLayout>
-    
+    -->
         <LinearLayout
             android:id="@+id/containerLinearLayoutId"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />
+
+            <TextView
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:layout_marginBottom="5pt"
+                android:text="Participants"
+                android:background="@color/secondary_app_color"
+                android:textSize="10pt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/participantRecyclerViewId"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
         </LinearLayout>
+
     </ScrollView>
     
     <com.google.android.material.floatingactionbutton.FloatingActionButton

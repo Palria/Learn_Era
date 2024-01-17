@@ -28,6 +28,9 @@ public class QuizDataModel implements Serializable {
     ArrayList<ArrayList> questionList;
     ArrayList<Long> dateList;
     private ArrayList<String> participantsList;
+    private boolean isAnswerSaved;
+    private String timeAnswerSubmitted;
+    private ArrayList<ArrayList<String>> authorSavedAnswersList = new ArrayList<>();
     public QuizDataModel(){}
     public QuizDataModel(
              String quizId,
@@ -46,7 +49,10 @@ public class QuizDataModel implements Serializable {
              boolean isClosed,
              ArrayList<ArrayList> questionList,
              ArrayList<Long> dateList,
-             ArrayList<String> participantsList
+             ArrayList<String> participantsList,
+             boolean isAnswerSaved,
+             String timeAnswerSubmitted,
+             ArrayList<ArrayList<String>> authorSavedAnswersList
             ) {
         this.quizId = quizId;
         this.authorId = authorId;
@@ -65,6 +71,9 @@ public class QuizDataModel implements Serializable {
         this.questionList = questionList;
         this.dateList = dateList;
         this.participantsList = participantsList;
+        this.isAnswerSaved = isAnswerSaved;
+        this.timeAnswerSubmitted = timeAnswerSubmitted;
+        this.authorSavedAnswersList = authorSavedAnswersList;
     }
 
     public String getQuizId() {
@@ -133,5 +142,21 @@ public class QuizDataModel implements Serializable {
 
     public ArrayList<String> getParticipantsList() {
         return participantsList;
+    }
+
+    public void setParticipantsList(ArrayList<String> participantsList) {
+        this.participantsList = participantsList;
+    }
+
+    public boolean isAnswerSaved() {
+        return isAnswerSaved;
+    }
+
+    public String getTimeAnswerSubmitted() {
+        return timeAnswerSubmitted;
+    }
+
+    public ArrayList<ArrayList<String>> getAuthorSavedAnswersList() {
+        return authorSavedAnswersList;
     }
 }

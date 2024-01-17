@@ -6,11 +6,11 @@
 
 
 
-    <item
-        android:icon="@drawable/ic_baseline_home_24"
-        android:id="@+id/notification_item"
-        android:title="Notifications"
-        />
+<!--    <item-->
+<!--        android:icon="@drawable/ic_baseline_home_24"-->
+<!--        android:id="@+id/notification_item"-->
+<!--        android:title="Notifications"-->
+<!--        />-->
 
     <item
         android:icon="@drawable/ic_baseline_home_24"

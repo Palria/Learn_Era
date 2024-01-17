@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginEnd="5dp"
+    android:background="@drawable/ripple_background"
+    >
+
+    <LinearLayout
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10pt"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/questionTextViewId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:text="What is your name?"
+            android:textSize="10pt"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="10pt"/>
+        <TextView
+            android:id="@+id/answerTextViewId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:text="My name is..."
+            android:textSize="10sp"
+            android:textStyle="italic"
+            android:layout_marginBottom="10pt"/>
+
+    </LinearLayout>
+    <TextView
+        android:textStyle="bold"
+        android:textSize="8pt"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:id="@+id/statusViewId"
+        android:text="Status: Failed"
+        android:paddingHorizontal="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_marginTop="4pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <RadioButton
+        android:textColor="@color/success_green"
+        android:id="@+id/passedButtonId"
+        android:drawableTint="@color/success_green"
+        android:button="@null"
+        android:drawableStart="@drawable/ic_baseline_success_circle_outline_24"
+        android:layout_marginBottom="4pt"
+        android:layout_marginEnd="20dp"
+        android:layout_width="100dp"
+        android:layout_height="20pt"
+        android:paddingHorizontal="5pt"
+        android:background="@drawable/quiz_option_drawable"
+        android:drawablePadding="5pt"
+        android:text="Correct"
+        />
+
+    <RadioButton
+        android:drawablePadding="5pt"
+        android:textColor="@color/error_red"
+        android:id="@+id/failedButtonId"
+        android:drawableTint="@color/error_red"
+        android:button="@null"
+        android:paddingHorizontal="5pt"
+        android:drawableStart="@drawable/ic_outline_cancel_24"
+        android:layout_width="100dp"
+        android:layout_height="20pt"
+        android:layout_marginBottom="4pt"
+        android:background="@drawable/quiz_option_drawable"
+        android:text="Wrong"
+        />
+    </RadioGroup>
+</LinearLayout>

@@ -820,10 +820,16 @@ for(int i=0; i<categories.size(); i++) {
                                 ArrayList questionList1 = documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY +"-"+ i) != null && documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-"+ i) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-"+ i) : new ArrayList();
                                 questionList.add(questionList1);
                             }
+                            ArrayList<ArrayList<String>> authorSavedAnswersList = new ArrayList<>();
+                            for(int i=0; i<questionList.size(); i++) {
+                                //list of participant answer
+                                ArrayList<String> answerItem = documentSnapshot.get(GlobalConfig.ANSWER_LIST_KEY + "-" + i) != null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.ANSWER_LIST_KEY + "-" + i) : new ArrayList<>();
+                                authorSavedAnswersList.add(answerItem);
 
+                            }
                             ArrayList dateList =  documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) : new ArrayList();
                             ArrayList participantsList =  documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) : new ArrayList();
-                            String dateCreated = documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY).toDate() : "Moment ago";
+                            String dateCreated = documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY).toDate() : "Moment ago";
                             if (dateCreated.length() > 10) {
                                 dateCreated = dateCreated.substring(0, 10);
                             }
@@ -831,26 +837,31 @@ for(int i=0; i<categories.size(); i++) {
                             if (dateEdited.length() > 10) {
                                 dateEdited = dateEdited.substring(0, 10);
                             }
-                                quizFetchListener.onSuccess(new QuizDataModel(
-                                         quizId,
-                                         authorId,
-                                         quizTitle,
-                                         quizDescription,
-                                         quizFeeDescription,
-                                         quizRewardDescription,
-                                         dateCreated,
-                                         dateEdited,
-                              totalQuestions,
-                              totalTimeLimit,
-                              totalParticipants,
-                                        totalViews,
-                              isPublic,
-                              isClosed,
-                             questionList,
-                             dateList,
-                            participantsList
-            ));
+                            String timeAnswerSubmitted = documentSnapshot.get(GlobalConfig.ANSWER_SUBMITTED_TIME_STAMP_KEY)!=null? documentSnapshot.getTimestamp(GlobalConfig.ANSWER_SUBMITTED_TIME_STAMP_KEY).toDate()+"" :"Undefined";
+                            boolean isAnswerSaved = documentSnapshot.get(GlobalConfig.IS_ANSWER_SUBMITTED_KEY)!=null? documentSnapshot.getBoolean(GlobalConfig.IS_ANSWER_SUBMITTED_KEY) :false;
 
+                                quizFetchListener.onSuccess(new QuizDataModel(
+                                        quizId,
+                                        authorId,
+                                        quizTitle,
+                                        quizDescription,
+                                        quizFeeDescription,
+                                        quizRewardDescription,
+                                        dateCreated,
+                                        dateEdited,
+                                        totalQuestions,
+                                        totalTimeLimit,
+                                        totalParticipants,
+                                        totalViews,
+                                        isPublic,
+                                        isClosed,
+                                        questionList,
+                                        dateList,
+                                        participantsList,
+                                        isAnswerSaved,
+                                        timeAnswerSubmitted,
+                                        authorSavedAnswersList
+            ));
 
                         }
                         toggleContentsVisibility(true);

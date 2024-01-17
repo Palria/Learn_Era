@@ -91,7 +91,7 @@ public class TutorialReviewsFragment extends Fragment {
                 .collection(GlobalConfig.ALL_USERS_KEY)
                 .document(userId)
                 .collection(GlobalConfig.OTHER_REVIEWS_KEY)
-//                .whereEqualTo(GlobalConfig.IS_TUTORIAL_REVIEW_KEY,true)
+                .whereEqualTo(GlobalConfig.IS_TUTORIAL_REVIEW_KEY,true)
                 .get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override

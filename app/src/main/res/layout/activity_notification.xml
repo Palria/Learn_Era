@@ -45,10 +45,41 @@
             android:textSize="20sp"
             android:textStyle="bold" />
     </LinearLayout>
-    
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/notificationRecyclerViewId"
+
+
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayoutId"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:tabMode="scrollable"
+        app:tabIndicatorColor="@color/teal_700"
+        android:tooltipText="s"
+        app:tabSelectedTextColor="@color/teal_700"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchLinearLayoutId"
+        />
+
+
+
+
+
+
+    <FrameLayout
+        android:id="@+id/personalisedViewerFrameLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayoutId"
+        />
+
+    <FrameLayout
+        android:id="@+id/learneraNotesFrameLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabLayoutId"
+        android:visibility="invisible"
         />
 </LinearLayout>

@@ -15,19 +15,20 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.palria.learnera.GlobalConfig;
 import com.palria.learnera.R;
-import com.palria.learnera.models.NotificationDataModel;
+import com.palria.learnera.models.LearnEraNotificationDataModel;
+import com.palria.learnera.models.LearnEraNotificationDataModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.ViewHolder> {
+public class LearnEraNotificationAdapter extends RecyclerView.Adapter<LearnEraNotificationAdapter.ViewHolder> {
 
-    ArrayList<NotificationDataModel> notificationDataModelArrayList;
+    ArrayList<LearnEraNotificationDataModel> notificationDataModelArrayList;
     Context context;
 
 
-    public NotificationAdapter(Context context, ArrayList<NotificationDataModel> notificationDataModelArrayList) {
+    public LearnEraNotificationAdapter(Context context, ArrayList<LearnEraNotificationDataModel> notificationDataModelArrayList) {
         this.notificationDataModelArrayList = notificationDataModelArrayList;
         this.context = context;
     }
@@ -43,7 +44,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        NotificationDataModel notificationDataModel = notificationDataModelArrayList.get(position);
+        LearnEraNotificationDataModel notificationDataModel = notificationDataModelArrayList.get(position);
 
             holder.notificationTitleTextView.setText(notificationDataModel.getTitle());
             holder.dateNotifiedTextView.setText(notificationDataModel.getDateNotified());
@@ -87,7 +88,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         }
     }
 
-    void markAsSeen(NotificationDataModel notificationDataModel ){
+    void markAsSeen(LearnEraNotificationDataModel notificationDataModel ){
         WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
 
         DocumentReference notifyDocumentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.PLATFORM_NOTIFICATIONS_KEY).document(notificationDataModel.getNotificationId());

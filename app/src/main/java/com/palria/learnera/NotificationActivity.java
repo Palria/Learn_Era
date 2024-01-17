@@ -2,28 +2,40 @@ package com.palria.learnera;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.palria.learnera.adapters.NotificationAdapter;
-import com.palria.learnera.models.NotificationDataModel;
+import com.palria.learnera.adapters.LearnEraNotificationAdapter;
+import com.palria.learnera.adapters.LearnEraNotificationAdapter;
+import com.palria.learnera.models.LearnEraNotificationDataModel;
 
 import java.util.ArrayList;
 
 public class NotificationActivity extends AppCompatActivity {
     RecyclerView notificationRecyclerView;
-    NotificationAdapter notificationAdapter;
-    ArrayList<NotificationDataModel> notificationDataModelArrayList = new ArrayList<>();
+    LearnEraNotificationAdapter notificationAdapter;
+    ArrayList<LearnEraNotificationDataModel> notificationDataModelArrayList = new ArrayList<>();
     ImageButton backButton;
+    TabLayout tabLayout;
+    FrameLayout personalisedViewerFrameLayout;
+    FrameLayout learneraNotesFrameLayout;
+
+
+    //boolean fragment open stats
+    boolean ispersonalisedViewerFrameLayoutOpened=false;
+    boolean islearneraNotesFrameLayoutOpened=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,49 +48,92 @@ public class NotificationActivity extends AppCompatActivity {
                 NotificationActivity.super.onBackPressed();
             }
         });
+        createTabLayout();
 
-        initRecyclerView();
-        getNotifications();
     }
 
     void initUI(){
         notificationRecyclerView = findViewById(R.id.notificationRecyclerViewId);
         backButton = findViewById(R.id.backButton);
+        tabLayout = findViewById(R.id.tabLayoutId);
+        personalisedViewerFrameLayout = findViewById(R.id.personalisedViewerFrameLayoutId);
+        learneraNotesFrameLayout = findViewById(R.id.learneraNotesFrameLayoutId);
 
     }
 
-    void initRecyclerView(){
-        notificationAdapter = new NotificationAdapter(this,notificationDataModelArrayList);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false);
-        notificationRecyclerView.setLayoutManager(linearLayoutManager);
-        notificationRecyclerView.setAdapter(notificationAdapter);
-    }
-
-    void getNotifications(){
-        GlobalConfig.getFirebaseFirestoreInstance()
-                .collection(GlobalConfig.PLATFORM_NOTIFICATIONS_KEY)
-                .get().addOnFailureListener(new OnFailureListener() {
+    public void createTabLayout() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onFailure(@NonNull Exception e) {
-
-            }
-        }).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                    String notificationId = documentSnapshot.getId();
-                    String title = ""+ documentSnapshot.get(GlobalConfig.NOTIFICATION_TITLE_KEY);
-                    String message = ""+ documentSnapshot.get(GlobalConfig.NOTIFICATION_MESSAGE_KEY);
-                    ArrayList<String> notificationViewers =  documentSnapshot.get(GlobalConfig.NOTIFICATION_VIEWERS_LIST_KEY)!=null? (ArrayList<String>) documentSnapshot.get(GlobalConfig.NOTIFICATION_VIEWERS_LIST_KEY): new ArrayList<>();
-                    String dateNotified =  documentSnapshot.get(GlobalConfig.DATE_NOTIFIED_TIME_STAMP_KEY)!=null? documentSnapshot.getTimestamp(GlobalConfig.DATE_NOTIFIED_TIME_STAMP_KEY).toDate()+"": "Undefined";
-                    if(dateNotified.length()>10){
-                        dateNotified = dateNotified.substring(0,10);
+            public void onTabSelected(TabLayout.Tab tab) {
+                String tabTitle=tab.getText().toString().trim().toUpperCase();
+                if(tabTitle.equalsIgnoreCase("PERSONALIZED")) {
+                    if(ispersonalisedViewerFrameLayoutOpened){
+                        //Just set the frame layout visibility
+                        setFrameLayoutVisibility(personalisedViewerFrameLayout);
+                    }else {
+                        ispersonalisedViewerFrameLayoutOpened =true;
+                        setFrameLayoutVisibility(personalisedViewerFrameLayout);
+                        AllPersonalizedNotificationsFragment allPersonalizedNotificationsFragment = new AllPersonalizedNotificationsFragment();
+                        Bundle bundle = new Bundle();
+                        allPersonalizedNotificationsFragment.setArguments(bundle);
+                        initFragment(allPersonalizedNotificationsFragment, personalisedViewerFrameLayout);
                     }
-                    notificationDataModelArrayList.add(new NotificationDataModel( notificationId, title, message, dateNotified,notificationViewers));
-                    notificationAdapter.notifyItemChanged(notificationDataModelArrayList.size());
+                }
+                else if(tabTitle.equalsIgnoreCase("LEARN ERA")){
+                    if(islearneraNotesFrameLayoutOpened){
+                        //Just set the frame layout visibility
+                        setFrameLayoutVisibility(learneraNotesFrameLayout);
+                    }else {
+                        islearneraNotesFrameLayoutOpened =true;
+                        setFrameLayoutVisibility(learneraNotesFrameLayout);
+
+                        AllLearnEraNotificationsFragment allLearnEraNotificationsFragment = new AllLearnEraNotificationsFragment();
+                        Bundle bundle = new Bundle();
+                        allLearnEraNotificationsFragment.setArguments(bundle);
+                        initFragment(allLearnEraNotificationsFragment, learneraNotesFrameLayout);
+                    }
+
 
                 }
             }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
         });
+
+
+
+        TabLayout.Tab personalisedTabItem = tabLayout.newTab();
+        personalisedTabItem.setText("Personalized");
+        tabLayout.addTab(personalisedTabItem, 0,true);
+
+        TabLayout.Tab learnEraTabItem = tabLayout.newTab();
+        learnEraTabItem.setText("Learn Era");
+        tabLayout.addTab(learnEraTabItem, 1);
+
     }
+
+
+    private void initFragment(Fragment fragment, FrameLayout frameLayout){
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(frameLayout.getId(), fragment)
+                .commit();
+
+
+    }
+
+    private void setFrameLayoutVisibility(FrameLayout frameLayoutToSetVisible){
+        personalisedViewerFrameLayout.setVisibility(View.GONE);
+        learneraNotesFrameLayout.setVisibility(View.GONE);
+        frameLayoutToSetVisible.setVisibility(View.VISIBLE);
+    }
+
 }

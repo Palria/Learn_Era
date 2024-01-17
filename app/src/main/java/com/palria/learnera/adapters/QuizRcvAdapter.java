@@ -126,6 +126,7 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
                     intent.putExtra(GlobalConfig.QUIZ_ID_KEY, quizDataModel.getQuizId());
                     intent.putExtra(GlobalConfig.AUTHOR_ID_KEY, quizDataModel.getAuthorId());
                     intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY, quizDataModel);
+                    intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,false);
                     context.startActivity(intent);
                 }
             });

@@ -9,14 +9,14 @@
         android:layout_width="match_parent"
         android:orientation="vertical"
         android:layout_height="match_parent">
-        
+
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:paddingHorizontal="10pt"
             android:paddingVertical="15pt"
             android:layout_height="match_parent">
-            
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
@@ -29,7 +29,7 @@
                     android:layout_weight="1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-                
+
                 <TextView
                     android:textColor="@color/grayDark"
                     android:textStyle="bold"
@@ -52,7 +52,7 @@
                     android:layout_weight="1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-                
+
                 <TextView
                     android:id="@+id/maxTimeTextViewId"
                     android:textColor="@color/success_green"
@@ -63,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
-            
+
             <androidx.cardview.widget.CardView
                 android:elevation="@dimen/cardview_default_elevation"
                 android:layout_marginTop="10pt"
@@ -72,7 +72,7 @@
                 app:cardBackgroundColor="@color/gray"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                
+
                 <LinearLayout
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="10pt"
@@ -84,33 +84,77 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="What is your name?"
+                        android:text="What is your option?"
                         android:textSize="10pt"
                         android:textStyle="bold"
                         android:layout_marginBottom="10pt"/>
-                    
+
                 </LinearLayout>
-            
+
             </androidx.cardview.widget.CardView>
-    
-    
-            <com.google.android.material.textfield.TextInputLayout
+            <RadioGroup
+                android:id="@+id/radioGroup"
+                android:layout_marginTop="4pt"
                 android:layout_width="match_parent"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_height="wrap_content">
-        
-                <com.google.android.material.textfield.TextInputEditText
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <RadioButton
+                    android:textColor="@color/white"
+                    android:id="@+id/radioOption1"
+                    android:drawableTint="@color/white"
+                    android:button="@null"
+                    android:drawableStart="@drawable/baseline_radio_button_checked_24"
+                    android:layout_marginBottom="4pt"
                     android:layout_width="match_parent"
-                    android:hint="My answer is..."
-                    android:longClickable="false"
-                    android:inputType="textMultiLine"
-                    android:textSize="15sp"
-                    android:id="@+id/answerInputId"
-                    android:gravity="start|top"
-                    android:layout_height="200dp"/>
-    
-            </com.google.android.material.textfield.TextInputLayout>
-    
+                    android:layout_height="30pt"
+                    android:paddingHorizontal="5pt"
+                    android:background="@drawable/quiz_option_drawable"
+                    android:checked="true"
+                    android:drawablePadding="5pt"
+                    android:text="Answer 1 "
+                    />
+                <RadioButton
+                    android:drawablePadding="5pt"
+                    android:textColor="@color/white"
+                    android:id="@+id/radioOption2"
+                    android:button="@null"
+                    android:paddingHorizontal="5pt"
+                    android:drawableStart="@drawable/baseline_radio_button_checked_24"
+                    android:layout_width="match_parent"
+                    android:layout_height="30pt"
+                    android:layout_marginBottom="4pt"
+                    android:background="@drawable/quiz_option_drawable"
+                    android:text="Answer 2"
+                    />
+                <RadioButton
+                    android:drawablePadding="5pt"
+                    android:textColor="@color/white"
+                    android:id="@+id/radioOption3"
+                    android:button="@null"
+                    android:paddingHorizontal="5pt"
+                    android:drawableStart="@drawable/baseline_radio_button_checked_24"
+                    android:layout_width="match_parent"
+                    android:layout_height="30pt"
+                    android:layout_marginBottom="4pt"
+                    android:background="@drawable/quiz_option_drawable"
+                    android:text="Answer 3"
+                    />
+                <RadioButton
+                    android:drawablePadding="5pt"
+                    android:textColor="@color/white"
+                    android:id="@+id/radioOption4"
+                    android:button="@null"
+                    android:paddingHorizontal="5pt"
+                    android:drawableStart="@drawable/baseline_radio_button_checked_24"
+                    android:layout_width="match_parent"
+                    android:layout_height="30pt"
+                    android:layout_marginBottom="4pt"
+                    android:background="@drawable/quiz_option_drawable"
+                    android:text="Answer 4"
+                    />
+            </RadioGroup>
+
+
             <LinearLayout
                 android:layout_marginTop="15pt"
                 android:paddingHorizontal="5pt"
@@ -118,8 +162,8 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                
-                
+
+
                 <Button
                     android:background="@drawable/default_auth_btn"
                     android:id="@+id/previousButtonId"
@@ -128,15 +172,15 @@
                     android:paddingVertical="2pt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-                
-                
+
+
                 <View
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     />
-                
-              
+
+
                 <Button
                     android:background="@drawable/default_auth_btn"
                     android:id="@+id/nextButtonId"
@@ -146,9 +190,9 @@
                     android:paddingVertical="2pt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-                
+
             </LinearLayout>
-    
+
             <Button
                 android:background="@drawable/default_auth_btn"
                 android:layout_marginLeft="3pt"
@@ -161,14 +205,14 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 />
-            
+
         </LinearLayout>
-    
-    
+
+
     </LinearLayout>
-    
-    
-    
+
+
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
