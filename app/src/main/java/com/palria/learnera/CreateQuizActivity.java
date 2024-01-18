@@ -418,8 +418,14 @@ public class CreateQuizActivity extends AppCompatActivity {
 
     private void processAndSaveQuiz() {
 
-        if (isCategorySelected) {
-            toggleProgress(true);
+        if ((quizTitleInput.getText()+"").isEmpty()){
+            quizTitleInput.performClick();
+            quizTitleInput.requestFocus();
+            Toast.makeText(this, "Please enter quiz title", Toast.LENGTH_SHORT).show();
+        return;
+        }
+        if (isCategorySelected){
+        if (!(quizDateInput.getText()+"").isEmpty()){
             category = categorySelector.getSelectedItem() + "";
             ArrayList<ArrayList<String>> questionList = new ArrayList<>();
             int totalTimeLimit = 0;
@@ -446,7 +452,16 @@ public class CreateQuizActivity extends AppCompatActivity {
                     theoryQuestionList.add(3, question.getText() + "");
 
                     questionList.add(i, theoryQuestionList);
-                } else if (questionView.getId() == R.id.objectiveQuestionViewId) {
+
+                    if("".equals((question.getText()+"").trim())){
+                        question.performClick();
+                        question.requestFocus();
+                        Toast.makeText(CreateQuizActivity.this, "Error: Fill all the Theory questions' field", Toast.LENGTH_LONG).show();
+                        questionList.clear();
+                        return;
+                    }
+                }
+                else if (questionView.getId() == R.id.objectiveQuestionViewId) {
 //                        Toast.makeText(CreateQuizActivity.this, "objective", Toast.LENGTH_SHORT).show();
                     ArrayList<String> objectiveQuestionList = new ArrayList<>();
 
@@ -474,6 +489,38 @@ public class CreateQuizActivity extends AppCompatActivity {
 
 
                     questionList.add(i, objectiveQuestionList);
+
+                    if("".equals((question.getText()+"").trim())){
+                        Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
+                        question.performClick();
+                        question.requestFocus();
+                        questionList.clear();
+                        return;
+                    }else if("".equals((option1.getText() + "").trim())){
+                        Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
+                        option1.performClick();
+                        option1.requestFocus();
+                        questionList.clear();
+                        return;
+                    }else if("".equals((option2.getText() + "").trim())){
+                        Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
+                        option2.performClick();
+                        option2.requestFocus();
+                        questionList.clear();
+                        return;
+                    }else if( "".equals((option3.getText() + "").trim())){
+                        Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
+                        option3.performClick();
+                        option3.requestFocus();
+                        questionList.clear();
+                        return;
+                    }else if("".equals((option4.getText() + "").trim())){
+                        Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
+                        option4.performClick();
+                        option4.requestFocus();
+                        questionList.clear();
+                        return;
+                    }
                 }
 
             }
@@ -493,7 +540,12 @@ public class CreateQuizActivity extends AppCompatActivity {
                     GlobalConfig.createSnackBar2(CreateQuizActivity.this, quizTitleInput, "Your quiz is successfully posted", "View", Snackbar.LENGTH_INDEFINITE, new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
+                            CreateQuizActivity.super.finish();
+                            Intent intent = new Intent(CreateQuizActivity.this, QuizActivity.class);
+                            intent.putExtra(GlobalConfig.QUIZ_ID_KEY,quizId);
+                            intent.putExtra(GlobalConfig.AUTHOR_ID_KEY, GlobalConfig.getCurrentUserId());
+                            intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,true);
+                            startActivity(intent);
                         }
                     });
                 }
@@ -513,6 +565,13 @@ public class CreateQuizActivity extends AppCompatActivity {
 
                 }
             });
+            toggleProgress(true);
+
+        }
+        else{
+            quizDateInput.performClick();
+            Toast.makeText(this, "Please select date of quiz", Toast.LENGTH_SHORT).show();
+        }
         }
         else{
           categorySelector.performClick();
