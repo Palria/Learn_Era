@@ -48,9 +48,11 @@
         >
     
     <LinearLayout
+        android:layout_marginBottom="30pt"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:visibility="visible">
         
         <com.makeramen.roundedimageview.RoundedImageView
@@ -66,11 +68,13 @@
        
             
             <LinearLayout
+                android:layout_marginStart="5pt"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 
                 <TextView
+                    android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="8pt"
                     android:maxLines="1"
@@ -88,195 +92,226 @@
                     android:id="@+id/verificationFlagImageViewId"
                     android:layout_width="10dp"
                     android:layout_height="10dp"
+
                     android:src="@drawable/ic_baseline_stars_24"
                     android:layout_gravity="top"
                     android:visibility="invisible"
                     app:layout_constraintStart_toEndOf="@id/title"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/light_blue_600"
+                    app:tint="@color/white"
                     />
             
             
                 
             </LinearLayout>
     </LinearLayout>
-        <TextView
-            android:id="@+id/maxTimeTextViewId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Time 35s/60s"
-            android:textStyle="bold"
-            android:textSize="25sp"
-            android:gravity="center"
-            android:fontFamily="sans-serif-condensed-medium"
-            android:textColor="@color/black"
-            android:background="@drawable/ripple_background"
-            android:layout_marginLeft="2pt"
-            android:layout_margin="2dp"/>
-    
-        <LinearLayout
-        
+
+        </LinearLayout>
+
+            <GridLayout
+                android:layout_marginTop="-21pt"
+                android:layout_marginHorizontal="5pt"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="2pt"
-                >
-    
-    
-    
-                <TextView
-                android:id="@+id/activeStatusTextViewId"
-                android:text="Active"
-                android:textColor="@android:color/holo_green_dark"
-                android:layout_marginLeft="2pt"
-                android:layout_marginStart="20dp"
+                android:columnCount="2"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_margin="2pt"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                   android:layout_columnWeight="1"
+                    app:contentPadding="5pt"
+                    >
+                    <LinearLayout
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_marginRight="2pt"
+                            android:id="@+id/participantCountId"
+                            app:tint="@color/darkIcon"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_baseline_group_24"
+                            android:layout_width="20pt"
+                            android:layout_height="20pt"/>
+
+                        <TextView
+                            android:id="@+id/participantCountTextViewId"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="2pt"
+                            android:layout_marginEnd="20dp"
+                            android:text="0"
+                            android:textSize="18pt"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:textAlignment="center"
+                            android:text="Participants"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="2pt"
+                    app:contentPadding="5pt"
+                    >
+
+                    <LinearLayout
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        >
+
+                        <ImageView
+                            android:layout_marginRight="2pt"
+                            android:id="@+id/viewCountId"
+                            app:tint="@color/darkIcon"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_baseline_remove_red_eye_24"
+                            android:layout_width="20pt"
+                            android:layout_height="20pt"/>
+
+                        <TextView
+                            android:id="@+id/viewCountTextViewId"
+                            android:text="0"
+                            android:textSize="18pt"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="2pt"
+                            android:layout_marginEnd="20dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:textAlignment="center"
+                            android:text="Views"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </GridLayout>
+
+            <TextView
+                android:id="@+id/joinQuizActionTextViewId"
+                android:paddingHorizontal="5pt"
+                android:text="Join Quiz"
+                android:layout_marginVertical="5pt"
                 android:textStyle="bold"
-                android:fontFamily="sans-serif-condensed-medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-            
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    />
-    
-                <TextView
-                    android:id="@+id/joinQuizActionTextViewId"
-                    android:paddingHorizontal="5dp"
-                    android:text="Join"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:background="@drawable/ripple_background"
-                    android:backgroundTint="@color/light_blue_600"
-                    android:layout_marginLeft="2pt"
-                    android:layout_marginEnd="20dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    />
-    
-            </LinearLayout>
-            <LinearLayout
-                android:orientation="horizontal"
+                android:textColor="@color/teal_700"
+                android:background="@drawable/outlined_white_bg_button"
+                android:layout_marginHorizontal="5pt"
+                android:paddingVertical="5pt"
+                android:textAlignment="center"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:gravity="end"
-                >
-    
-                
-                <LinearLayout
-                    
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-                    
-                    <ImageView
-                        android:layout_marginRight="2pt"
-                        android:id="@+id/participantCountId"
-                        app:tint="@color/darkIcon"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_baseline_group_24"
-                        android:layout_width="10pt"
-                        android:layout_height="10pt"/>
-                    
-                    <TextView
-                        android:id="@+id/participantCountTextViewId"
-                        android:text="0"
-                        android:textStyle="bold"
-                        android:layout_marginLeft="2pt"
-                        android:layout_marginEnd="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-                 <LinearLayout
-                    
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-                    
-                    <ImageView
-                        android:layout_marginRight="2pt"
-                        android:id="@+id/viewCountId"
-                        app:tint="@color/darkIcon"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_baseline_remove_red_eye_24"
-                        android:layout_width="10pt"
-                        android:layout_height="10pt"/>
-                    
-                    <TextView
-                        android:id="@+id/viewCountTextViewId"
-                        android:text="0"
-                        android:textStyle="bold"
-                        android:layout_marginLeft="2pt"
-                        android:layout_marginEnd="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-                
-                <LinearLayout
-                    
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-                    
-                    <ImageView
-                        android:layout_marginRight="2pt"
-                        android:id="@+id/dateAskedImageViewId"
-                        app:tint="@color/darkIcon"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_baseline_access_time_filled_24"
-                        android:layout_width="10pt"
-                        android:layout_height="10pt"/>
-                    
-                    <TextView
-                        android:id="@+id/datePostedTextViewId"
-                        android:text="0"
-                        android:textStyle="bold"
-                        android:layout_marginLeft="2pt"
-                        android:layout_marginEnd="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </LinearLayout>
-            
-            </LinearLayout>
+                tools:ignore="RtlCompat" />
+
             <LinearLayout
+                android:paddingHorizontal="5pt"
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
                 android:layout_height="wrap_content">
                 <TextView
                     android:textStyle="bold"
-                    android:layout_marginBottom="7pt"
                     android:text="Questions"
                     android:layout_weight="1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-        
+
                 <TextView
                     android:id="@+id/questionCountTextViewId"
                     android:textStyle="bold"
-                    android:layout_marginBottom="7pt"
                     android:text="3/88"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
 
-        </LinearLayout>
+            <LinearLayout
+                android:paddingHorizontal="5pt"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                >
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    >
+
+                    <TextView
+                        android:text="Posted : "
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/datePostedTextViewId"
+                        android:text="0"
+                        android:layout_marginStart="2pt"
+                        android:layout_marginEnd="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+            </LinearLayout>
 
             <TextView
+                android:textColor="@color/grayDark"
+                android:layout_marginVertical="4pt"
+                android:paddingHorizontal="5pt"
                 android:id="@+id/descriptionTextViewId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:layout_marginBottom="5pt"
                 android:text="QUIZ"
-                android:background="@drawable/ripple_background"
                 />
+
+            <LinearLayout
+                android:gravity="center"
+                android:paddingHorizontal="5pt"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_weight="1"
+
+                    android:id="@+id/maxTimeTextViewId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Time 35s/60s"
+                    android:textStyle="bold"
+                    android:textSize="10pt"
+                    android:layout_marginBottom="5pt"
+                    android:layout_marginTop="3pt"
+                    android:gravity="start"
+                    android:fontFamily="sans-serif-condensed-medium" />
+
+
+                <TextView
+                    android:id="@+id/activeStatusTextViewId"
+                    android:text="Active"
+                    android:textColor="@android:color/holo_green_dark"
+                    android:layout_marginLeft="2pt"
+                    android:layout_marginStart="20dp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+
+            </LinearLayout>
+
 <!--
             <LinearLayout
                 android:background="@drawable/rounded_white_bg"
@@ -472,6 +507,8 @@
             />
 
             <TextView
+                android:paddingVertical="4pt"
+                android:paddingHorizontal="5pt"
                 android:textStyle="bold"
                 android:textColor="@color/white"
                 android:fontFamily="sans-serif-condensed-medium"

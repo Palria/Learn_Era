@@ -43,7 +43,7 @@
             />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_marginTop="10pt"
+            android:layout_marginVertical="10pt"
             android:id="@+id/ratingsRecyclerListView"
             tools:listitem="@layout/single_rating_layout_item"
             android:layout_width="match_parent"
