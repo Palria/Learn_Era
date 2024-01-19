@@ -2,6 +2,7 @@ package com.palria.learnera.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.GlobalConfig;
+import com.palria.learnera.GlobalHelpers;
 import com.palria.learnera.QuizActivity;
 import com.palria.learnera.R;
 import com.palria.learnera.TutorialFolderActivity;
@@ -73,8 +75,9 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
         QuizParticipantDatamodel quizParticipantDataModel = quizParticipantDataModels.get(position);
 
 
-            holder.timeSubmittedView.setText("Date answered: "+ quizParticipantDataModel.getTimeSubmitted());
-            if(quizParticipantDataModel.isAuthor()) {
+            holder.timeSubmittedView.setText("Answered: "+ GlobalHelpers.getTimeString(quizParticipantDataModel.getTimeSubmitted()));
+        //holder.timeSubmittedView.setText(quizParticipantDataModel.getTimeSubmitted());
+        if(quizParticipantDataModel.isAuthor()) {
                 holder.participantName.setText("Author's answer");
                 holder.positionView.setVisibility(View.GONE);
             }

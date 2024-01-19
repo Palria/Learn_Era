@@ -1032,6 +1032,7 @@ if(timeRemainMap.get(activePosition) == 0) {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         quizParticipantRCVAdapter = new QuizParticipantRCVAdapter(quizParticipantDatamodels,this,quizDataModel.getAuthorSavedAnswersList(),quizId,quizDataModel,authorId);
+        participantRecyclerView.setHasFixedSize(false);
         participantRecyclerView.setAdapter(quizParticipantRCVAdapter);
         participantRecyclerView.setLayoutManager(linearLayoutManager);
 

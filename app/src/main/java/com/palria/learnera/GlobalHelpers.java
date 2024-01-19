@@ -7,7 +7,9 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.format.DateUtils;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,11 +21,16 @@ import androidx.core.content.ContextCompat;
 import com.google.android.gms.common.util.IOUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -191,6 +198,38 @@ public class GlobalHelpers {
        }else{
            return Uri.parse(path);
        }
+    }
+
+
+    public static String getTimeString(String time) {
+        Log.e(time,"TIME");
+
+        if(StringUtils.isEmpty(time)) return "";
+        time = time.substring(4);
+        String result = "n/a";
+
+        try {
+            // Define the format of your Firebase date string
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat firebaseDateFormat = new SimpleDateFormat("MMM dd HH:mm:ss 'GMT+05:45' yyyy");
+
+            // Parse the date string to get a Date object
+            Date firebaseDate = firebaseDateFormat.parse(time);
+
+            // Get the time difference in milliseconds
+            long timeDifference = System.currentTimeMillis() - firebaseDate.getTime();
+
+            // Convert the time difference to an "ago" format
+            CharSequence agoString = DateUtils.getRelativeTimeSpanString(
+                    firebaseDate.getTime(),
+                    System.currentTimeMillis(),
+                    DateUtils.FORMAT_UTC
+            );
+
+            result= agoString.toString();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 }

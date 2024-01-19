@@ -27,7 +27,7 @@
         >
 
     </LinearLayout>
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_below="@id/topBar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -513,7 +513,7 @@
                 android:textColor="@color/white"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:layout_marginBottom="5pt"
-                android:text="Participants"
+                android:text="@string/participants"
                 android:background="@color/secondary_app_color"
                 android:textSize="10pt"
                 android:layout_width="match_parent"
@@ -524,13 +524,14 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/participantRecyclerViewId"
                 android:orientation="vertical"
+                tools:listitem="@layout/quiz_participant_item_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
     
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
