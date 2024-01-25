@@ -28,6 +28,21 @@
         android:theme="@style/Theme.App.Starting"
         android:windowSoftInputMode="adjustPan">
         <activity
+            android:name=".EarnCoinActivity"
+            android:theme="@style/Theme.LearnEra"
+            android:exported="true" >
+        </activity>
+        <activity
+            android:name=".UserWalletActivity"
+            android:theme="@style/Theme.LearnEra"
+            android:exported="true" >
+        </activity>
+        <activity
+            android:name=".JoinQuizActivity"
+            android:theme="@style/Theme.LearnEra"
+            android:exported="true" >
+        </activity>
+        <activity
             android:name=".SingleQuestionActivity"
             android:theme="@style/Theme.LearnEra"
             android:exported="true" >

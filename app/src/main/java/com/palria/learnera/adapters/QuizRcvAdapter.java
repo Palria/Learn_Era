@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.palria.learnera.GlobalConfig;
+import com.palria.learnera.JoinQuizActivity;
 import com.palria.learnera.QuizActivity;
 import com.palria.learnera.R;
 import com.palria.learnera.TutorialFolderActivity;
@@ -66,9 +68,21 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
             holder.descriptionView.setText(""+quizDataModel.getQuizDescription());
             holder.timeLimitTimeView.setText("Time Limit "+quizDataModel.getTotalTimeLimit()+"s");
             holder.questionsCountTimeView.setText("Questions "+quizDataModel.getTotalQuestions());
-            holder.feeView.setText("Fee "+quizDataModel.getQuizFeeDescription());
-            holder.rewardView.setText("Reward "+quizDataModel.getQuizRewardDescription());
+            holder.feeView.setText("Fee "+quizDataModel.getTotalQuizFeeCoins());
+            holder.rewardView.setText("Reward "+quizDataModel.getTotalQuizRewardCoins());
             holder.participantsCountView.setText(""+quizDataModel.getTotalParticipants() + "");
+            holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    //navigate to JoinQuizActivity
+                    Intent intent = new Intent(context, JoinQuizActivity.class);
+                    intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY, quizDataModel);
+                    context.startActivity(intent);
+
+//                    joinQuiz(quizDataModel);
+                }
+            });
             if(quizDataModel.isClosed()){
                 holder.isClosedView.setText("Closed");
                 holder.isClosedView.setBackgroundColor(context.getResources().getColor(R.color.error_red,context.getTheme()));
@@ -84,16 +98,98 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
                 holder.isClosedView.setBackgroundColor(context.getResources().getColor(R.color.success_green,context.getTheme()));
             }
             holder.startTimeView.setText("Time Undefined");
+            holder.endTimeView.setText("Time Undefined");
 
-            ArrayList<Long> quizDateList1 = quizDataModel.getDateList();
-            if(quizDateList1.size() == 5) {
-                long quizYear = quizDateList1.get(0);
-                long quizMonth = quizDateList1.get(1);
-                long quizDay = quizDateList1.get(2);
-                long quizHour = quizDateList1.get(3);
-                long quizMinute = quizDateList1.get(4);
-                holder.startTimeView.setText("Time "+quizDay + "/" + quizMonth + "/" + quizYear + " " + quizHour + ":" + quizMinute);
+            ArrayList<Long> quizStartDateList1 = quizDataModel.getStartDateList();
+            if(quizStartDateList1.size() == 5) {
+                long quizStartYear = quizStartDateList1.get(0);
+                long quizStartMonth = quizStartDateList1.get(1);
+                long quizStartDay = quizStartDateList1.get(2);
+                long quizStartHour = quizStartDateList1.get(3);
+                long quizStartMinute = quizStartDateList1.get(4);
+                holder.startTimeView.setText("Start Time "+quizStartDay + "/" + quizStartMonth + "/" + quizStartYear + " " + quizStartHour + ":" + quizStartMinute);
+
+                if(GlobalConfig.isQuizStarted(quizStartYear,quizStartMonth,quizStartDay,quizStartHour,quizStartMinute)) {
+                    holder.joinQuizActionTextView.setText("Started");
+                    holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+
+                            //navigate to QuizActivity
+                            Intent intent = new Intent(context, QuizActivity.class);
+                            intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY,quizDataModel);
+                            intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,quizDataModel.getAuthorId());
+                            intent.putExtra(GlobalConfig.QUIZ_ID_KEY,quizDataModel.getQuizId());
+                            intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,false);
+                            context.startActivity(intent);
+
+                        }
+                    });
+
+                }
             }
+
+
+            ArrayList<Long> quizEndDateList1 = quizDataModel.getEndDateList();
+            if(quizEndDateList1.size() == 5) {
+                long quizEndYear = quizEndDateList1.get(0);
+                long quizEndMonth = quizEndDateList1.get(1);
+                long quizEndDay = quizEndDateList1.get(2);
+                long quizEndHour = quizEndDateList1.get(3);
+                long quizEndMinute = quizEndDateList1.get(4);
+
+                if(GlobalConfig.isQuizExpired(quizEndYear,quizEndMonth,quizEndDay,quizEndHour,quizEndMinute)) {
+                    holder.joinQuizActionTextView.setText("Closed");
+                    holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+
+                            //navigate to QuizActivity
+                            Intent intent = new Intent(context, QuizActivity.class);
+                            intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY,quizDataModel);
+                            intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,quizDataModel.getAuthorId());
+                            intent.putExtra(GlobalConfig.QUIZ_ID_KEY,quizDataModel.getQuizId());
+                            intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,false);
+                            context.startActivity(intent);
+
+                        }
+                    });
+
+                    if(!quizDataModel.isClosed()){
+                        GlobalConfig.markQuizAsClosed(context, quizDataModel.getQuizId(), new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
+                                holder.joinQuizActionTextView.setText("Closed");
+                                holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+
+                                        //navigate to QuizActivity
+                                        Intent intent = new Intent(context, QuizActivity.class);
+                                        intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY,quizDataModel);
+                                        intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,quizDataModel.getAuthorId());
+                                        intent.putExtra(GlobalConfig.QUIZ_ID_KEY,quizDataModel.getQuizId());
+                                        intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,false);
+                                        context.startActivity(intent);
+
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+
+                            }
+                        });
+                    }
+
+                }
+                holder.endTimeView.setText("End Time "+quizEndDay + "/" + quizEndMonth + "/" + quizEndYear + " " + quizEndHour + ":" + quizEndMinute);
+            }
+
 
             GlobalConfig.getFirebaseFirestoreInstance()
                     .collection(GlobalConfig.ALL_USERS_KEY)
@@ -105,29 +201,56 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
 
                             String userDisplayName = "" + documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
                             holder.authorNameTextView.setText(userDisplayName);
+
+                            boolean isVerified = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) != null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) : false;
+                            if (isVerified) {
+//                                holder.verificationFlagImageView.setVisibility(View.VISIBLE);
+                            } else {
+//                                holder.verificationFlagImageView.setVisibility(View.INVISIBLE);
+
+                            }
                         }
                     });
 
+                if(quizDataModel.isClosed()) {
+                    holder.joinQuizActionTextView.setText("Closed");
+                    holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
 
-            holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
 
-                    //implement method to join quiz
-                    joinQuiz(quizDataModel);
+                            //navigate to QuizActivity
+                            Intent intent = new Intent(context, QuizActivity.class);
+                            intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY, quizDataModel);
+                            intent.putExtra(GlobalConfig.AUTHOR_ID_KEY, quizDataModel.getAuthorId());
+                            intent.putExtra(GlobalConfig.QUIZ_ID_KEY, quizDataModel.getQuizId());
+                            intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY, false);
+                            context.startActivity(intent);
+
+                        }
+                    });
                 }
-            });
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
-//                    go to quiz activity
+
+                    //navigate to QuizActivity
                     Intent intent = new Intent(context, QuizActivity.class);
-                    intent.putExtra(GlobalConfig.QUIZ_ID_KEY, quizDataModel.getQuizId());
-                    intent.putExtra(GlobalConfig.AUTHOR_ID_KEY, quizDataModel.getAuthorId());
-                    intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY, quizDataModel);
+                    intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY,quizDataModel);
+                    intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,quizDataModel.getAuthorId());
+                    intent.putExtra(GlobalConfig.QUIZ_ID_KEY,quizDataModel.getQuizId());
                     intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,false);
                     context.startActivity(intent);
+
+                }
+            });
+            holder.authorNameTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    context.startActivity(GlobalConfig.getHostActivityIntent(context,null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY,quizDataModel.getAuthorId()));
+
                 }
             });
         } else {
@@ -158,6 +281,7 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
         public TextView dateCreated;
         public TextView participantsCountView;
         public TextView startTimeView;
+        public TextView endTimeView;
         public TextView timeLimitTimeView;
         public TextView questionsCountTimeView;
         public TextView descriptionView;
@@ -167,6 +291,7 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
         public TextView joinQuizActionTextView;
         public TextView authorNameTextView;
         public ImageButton menuButton;
+//        public ImageView verificationFlagImageView;
 
 
         public ViewHolder(View itemView) {
@@ -179,8 +304,10 @@ if(!isFromHome){
 }
             this.quizTitleView =  itemView.findViewById(R.id.quizTitleTextViewId);
 //            this.dateCreated = (TextView) itemView.findViewById(R.id.dateCreated);
+//            this.verificationFlagImageView =  itemView.findViewById(R.id.verificationFlagImageViewId);
             this.participantsCountView = (TextView) itemView.findViewById(R.id.participantCountViewId);
             this.startTimeView = (TextView) itemView.findViewById(R.id.startingTimeTextViewId);
+            this.endTimeView = (TextView) itemView.findViewById(R.id.endingTimeTextViewId);
             this.timeLimitTimeView = (TextView) itemView.findViewById(R.id.timeLimitTextViewId);
             this.questionsCountTimeView = (TextView) itemView.findViewById(R.id.questionCountTextViewId);
             this.descriptionView = (TextView) itemView.findViewById(R.id.descriptionTextViewId);

@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
       }
         if(GlobalConfig.isNightMode(MainActivity.this)){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }else{
+        }else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
         setContentView(R.layout.activity_main);

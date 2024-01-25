@@ -35,6 +35,7 @@ import com.google.firebase.firestore.WriteBatch;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.GlobalConfig;
 import com.palria.learnera.PageActivity;
+import com.palria.learnera.QuizActivity;
 import com.palria.learnera.R;
 import com.palria.learnera.models.PageDataModel;
 import com.palria.learnera.models.PageDiscussionDataModel;
@@ -93,8 +94,32 @@ public class PageDiscussionRcvAdapter extends RecyclerView.Adapter<PageDiscussio
                                         .into(holder.discussionPosterProfilePhoto);
                             } catch (Exception ignored) {
                             }
+
+                            boolean isVerified = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) != null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) : false;
+                            if (isVerified) {
+                                holder.verificationFlagImageView.setVisibility(View.VISIBLE);
+                            } else {
+                                holder.verificationFlagImageView.setVisibility(View.INVISIBLE);
+
+                            }
                         }
                     });
+
+            holder.posterNameTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    context.startActivity(GlobalConfig.getHostActivityIntent(context,null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY, pageDiscussionDataModel.getDiscussionPosterId()));
+
+                }
+            });
+            holder.discussionPosterProfilePhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    context.startActivity(GlobalConfig.getHostActivityIntent(context,null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY,pageDiscussionDataModel.getDiscussionPosterId()));
+
+                }
+            });
+
 
             holder.discussionDescriptionTextView.setText(pageDiscussionDataModel.getDescription());
             holder.discussionCountTextView.setText(pageDiscussionDataModel.getTotalReplies() + "");

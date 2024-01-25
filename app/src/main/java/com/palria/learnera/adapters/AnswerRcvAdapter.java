@@ -78,10 +78,34 @@ public class AnswerRcvAdapter extends RecyclerView.Adapter<AnswerRcvAdapter.View
                                         .into(holder.contributorProfilePhoto);
                             } catch (Exception ignored) {
                             }
+
+                            boolean isVerified = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) != null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) : false;
+                            if (isVerified) {
+                                holder.verificationFlagImageView.setVisibility(View.VISIBLE);
+                            } else {
+                                holder.verificationFlagImageView.setVisibility(View.INVISIBLE);
+
+                            }
                         }
                     });
 
-            holder.answerTextView.setText(answerDataModel.getAnswer());
+        holder.contributorNameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(GlobalConfig.getHostActivityIntent(context,null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY,answerDataModel.getContributorId()));
+
+            }
+        });
+        holder.contributorProfilePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(GlobalConfig.getHostActivityIntent(context,null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY, answerDataModel.getContributorId()));
+
+            }
+        });
+
+
+        holder.answerTextView.setText(answerDataModel.getAnswer());
             if(answerDataModel.isPhotoIncluded()){
 
                 Glide.with(context)

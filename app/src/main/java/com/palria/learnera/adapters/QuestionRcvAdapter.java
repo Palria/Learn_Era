@@ -71,6 +71,14 @@ public class QuestionRcvAdapter extends RecyclerView.Adapter<QuestionRcvAdapter.
                                         .into(holder.askerProfilePhoto);
                             } catch (Exception ignored) {
                             }
+
+                                boolean isVerified = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) != null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) : false;
+                                if (isVerified) {
+                                    holder.verificationFlagImageView.setVisibility(View.VISIBLE);
+                                } else {
+                                    holder.verificationFlagImageView.setVisibility(View.INVISIBLE);
+
+                                }
                         }
                     });
 */

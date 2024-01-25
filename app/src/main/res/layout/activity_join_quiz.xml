@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".JoinQuizActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        app:navigationIconTint="@color/white"
+        android:layout_width="match_parent"
+        app:titleTextColor="@color/white"
+        app:title="Join Quiz"
+        android:theme="@style/ToolbarColoredBackArrow"
+        android:background="@color/secondary_app_color"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_height="?attr/actionBarSize"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:id="@+id/quizTitleLayoutPreviewId"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="3pt"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:boxBackgroundColor="@color/purple_500"
+
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:textColor="@color/white"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:textStyle="bold"
+            android:textColorHint="@color/white"
+            android:inputType="textPersonName"
+            android:maxLength="60"
+            android:textSize="15sp"
+            android:id="@+id/quizTitlePreviewId"
+            android:gravity="center"
+            android:enabled="false"
+            android:layout_height="wrap_content"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/quizTitleLayoutPreviewId"
+        app:layout_constraintStart_toStartOf="parent"
+        >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <LinearLayout
+            android:paddingHorizontal="5pt"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:id="@+id/startTimeLayoutId"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="1pt"
+                app:layout_constraintTop_toBottomOf="@id/tipId"
+                app:layout_constraintStart_toStartOf="parent"
+
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:textStyle="bold"
+                    android:inputType="textPersonName"
+                    android:textSize="12sp"
+                    android:id="@+id/startTimeTextViewId"
+                    android:hint="Start time"
+                    android:text="Undefined"
+                    android:enabled="false"
+                    android:gravity="start|top"
+                    android:layout_height="wrap_content"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:id="@+id/endTimeLayoutId"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="1pt"
+                app:layout_constraintTop_toBottomOf="@id/tipId"
+                app:layout_constraintStart_toStartOf="parent"
+
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:textStyle="bold"
+                    android:inputType="textPersonName"
+                    android:textSize="12sp"
+                    android:id="@+id/endTimeTextViewId"
+                    android:hint="End time"
+                    android:text="Undefined"
+                    android:enabled="false"
+                    android:gravity="start|top"
+                    android:layout_height="wrap_content"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <GridLayout
+            android:layout_marginHorizontal="5pt"
+            android:layout_width="match_parent"
+            android:columnCount="2"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content">
+
+            <androidx.cardview.widget.CardView
+                android:layout_margin="2pt"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_columnWeight="1"
+                app:contentPadding="5pt"
+                android:layout_rowWeight="1"
+                app:cardBackgroundColor="@color/error_red"
+                >
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:textAlignment="center"
+                        android:text="Participation Fee"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:textAllCaps="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <ImageView
+                        android:layout_marginRight="1pt"
+                        android:id="@+id/feeIconId"
+                        app:tint="@color/darkIcon"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_baseline_attach_money_24"
+                        android:layout_width="15pt"
+                        android:layout_height="13pt"/>
+
+                    <TextView
+                        android:id="@+id/regFeeValueTextViewId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="2dp"
+                        android:text="0 COINS"
+                        android:textColor="@color/gold"
+                        android:textSize="10pt"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                    <TextView
+                        android:textAlignment="center"
+                        android:text="Charged from your wallet"
+                        android:textStyle="bold"
+                        android:textSize="10sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:layout_margin="2pt"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_columnWeight="1"
+                app:contentPadding="5pt"
+                android:layout_rowWeight="1"
+                app:cardBackgroundColor="@color/success_green"
+                >
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:textAlignment="center"
+                        android:text="Winner's Reward"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:textAllCaps="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <ImageView
+                        android:layout_marginRight="2pt"
+                        android:id="@+id/rewardIconId"
+                        app:tint="@color/darkIcon"
+                        android:layout_gravity="center"
+                        android:src="@drawable/baseline_cake_24"
+                        android:layout_width="15pt"
+                        android:layout_height="13pt"/>
+
+                    <TextView
+                        android:id="@+id/rewardValueTextViewId"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="2pt"
+                        android:layout_marginEnd="2dp"
+                        android:textColor="@color/gold"
+                        android:text="0 COINS"
+                        android:textSize="10pt"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                    <TextView
+                        android:textAlignment="center"
+                        android:text="rewarded to your wallet"
+                        android:textStyle="bold"
+                        android:textSize="9sp"
+                        android:textColor="@color/black"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </GridLayout>
+
+
+    <TextView
+        android:textColor="@color/grayDark"
+        android:layout_marginVertical="4pt"
+        android:paddingHorizontal="5pt"
+        android:id="@+id/quizDescriptionTextViewId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-condensed-medium"
+        android:layout_marginBottom="5pt"
+        android:text="QUIZ"
+        app:layout_constraintTop_toBottomOf="@id/quizTitleLayoutPreviewId"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:textColor="@color/white"
+        android:fontFamily="sans-serif-condensed-medium"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:id="@+id/tipId"
+        android:text="Quiz Tips"
+        android:gravity="start|top"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:padding="10dp"
+        android:background="@color/secondary_app_color"
+        app:layout_constraintTop_toBottomOf="@id/quizDescriptionTextViewId"
+        />
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:id="@+id/quizTipLayoutId"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="1pt"
+        app:layout_constraintTop_toBottomOf="@id/tipId"
+        app:layout_constraintStart_toStartOf="parent"
+
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:textColor="@color/grayDark"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:textStyle="bold"
+            android:inputType="textPersonName"
+            android:textSize="12sp"
+            android:id="@+id/quizTipsTextViewId"
+            android:text="@string/quiz_details_tip"
+            android:enabled="false"
+            android:gravity="start|top"
+            android:layout_height="wrap_content"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/joinQuizActionTextViewId"
+        android:layout_width="match_parent"
+        android:textColor="@color/white"
+        android:text="Join Quiz"
+        android:background="@color/secondary_app_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_margin="10dp"
+        app:cornerRadius="30dp"
+        android:layout_height="wrap_content"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

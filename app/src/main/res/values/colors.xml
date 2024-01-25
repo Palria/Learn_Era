@@ -18,6 +18,7 @@
     <color name="success_green">#4BB543</color>
     <color name="error_red">#ff3333</color>
     <color name="color_warning">#ffcc00</color>
+    <color name="gold">#EAA504</color>
     <color name="light_dark">#353535</color>
     <color name="darkIcon">#333333</color>
     <color name="transparent">#00000000</color>

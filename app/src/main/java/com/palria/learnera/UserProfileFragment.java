@@ -37,6 +37,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.adapters.HomeBooksRecyclerListViewAdapter;
@@ -87,6 +88,7 @@ public class UserProfileFragment extends Fragment {
     TextView logButton;
     TextView verificationFlagTextView;
     TextView followActionTextView;
+    TextView walletTextView;
     ImageView bookmarkedIcon, ratedIcon;
     //learn era bottom sheet dialog
     LEBottomSheetDialog leBottomSheetDialog;
@@ -221,6 +223,15 @@ public class UserProfileFragment extends Fragment {
                 public void onClick(View view) {
 
                     Intent i = new Intent(getContext(), EditCurrentUserProfileActivity.class);
+                    startActivity(i);
+
+                }
+            });
+            walletTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Intent i = new Intent(getContext(), UserWalletActivity.class);
                     startActivity(i);
 
                 }
@@ -523,6 +534,7 @@ public class UserProfileFragment extends Fragment {
             ratedIcon = parentView.findViewById(R.id.ratedIcon);
             bookmarkedIcon = parentView.findViewById(R.id.bookmarkedIcon);
             followActionTextView = parentView.findViewById(R.id.followActionTextViewId);
+            walletTextView = parentView.findViewById(R.id.walletTextViewId);
 
             noLibraryFoundView = parentView.findViewById(R.id.noLibraryFoundView);
             noTutorialFoundView = parentView.findViewById(R.id.noTutorialsFoundView);
@@ -1167,6 +1179,7 @@ public class UserProfileFragment extends Fragment {
                         long numOfTutorialCreated = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY):0L;
                         long numOfRatings = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY):0L;
 
+
                         boolean isAccountSubmittedForVerification = documentSnapshot.get(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY):false;
                         GlobalConfig.setIsAccountSubmittedForVerification(isAccountSubmittedForVerification);
 
@@ -1192,6 +1205,26 @@ public class UserProfileFragment extends Fragment {
 
                         }
 
+                        boolean isWalletCreated = documentSnapshot.get(GlobalConfig.IS_WALLET_CREATED_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_WALLET_CREATED_KEY):false;
+                        if(!isWalletCreated && (authorId+"").equals(GlobalConfig.getCurrentUserId())){
+
+                            //create the user wallet if he has not created yet
+                            WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+
+                            DocumentReference walletReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.USER_WALLET_KEY).document(GlobalConfig.USER_WALLET_KEY);
+                            HashMap<String,Object>walletDetails = new HashMap<>();
+                            walletDetails.put(GlobalConfig.WALLET_CREATED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+                            walletDetails.put(GlobalConfig.WITHDRAWABLE_COIN_BALANCE_KEY,0L);
+                            walletDetails.put(GlobalConfig.TOTAL_COINS_EARNED_KEY,0L);
+                            walletDetails.put(GlobalConfig.TOTAL_COIN_EQUITY_KEY,0L);
+                            walletDetails.put(GlobalConfig.QUIZ_EARNINGS_HISTORY_LIST_KEY,new ArrayList<>());
+                            walletDetails.put(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_EARNED_KEY,0L);
+                            walletDetails.put(GlobalConfig.COIN_WITHDRAWAL_HISTORY_LIST_KEY,new ArrayList<>());
+                            walletDetails.put(GlobalConfig.REFERAL_REWARD_HISTORY_LIST_KEY,new ArrayList<>());
+                            writeBatch.set(walletReference,walletDetails, SetOptions.merge());
+                            writeBatch.commit();
+                        }
+
                         boolean isUserAnAuthor = false;
                         boolean isUserBlocked = false;
                         boolean isUserProfilePhotoIncluded = false;
@@ -1209,6 +1242,8 @@ public class UserProfileFragment extends Fragment {
                         }
 
                         onUserProfileFetchListener.onSuccess( userDisplayName,description,birthdate, userCountryOfResidence, contactEmail,webLink, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl,joined_date,""+ numOfLibraryCreated,""+ numOfTutorialCreated,""+ numOfRatings, isUserBlocked, isUserProfilePhotoIncluded,isUserAnAuthor);
+
+
                         }
                 });
     }
@@ -1537,6 +1572,7 @@ libraryView.setOnClickListener(new View.OnClickListener() {
 
         if(authorId.equals(GlobalConfig.getCurrentUserId())){
             followActionTextView.setVisibility(View.GONE);
+            walletTextView.setVisibility(View.VISIBLE);
         }
         if(GlobalConfig.isFollowing(getContext(),authorId)){
             followActionTextView.setText("Following");

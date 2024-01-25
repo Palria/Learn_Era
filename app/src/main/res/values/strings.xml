@@ -27,6 +27,8 @@
     <string name="un_save">Unsave</string>
     <string name="what_the_use_of_the_substring_function_in_java_please_choose_the_option">What the use of the substring function in Java? please choose the option.</string>
     <string name="participants">Participants</string>
+    <string name="quiz_details_tip">These are the guides on how a quiz is joined and all about quiz</string>
+    <string name="earn_coin_desc">To earn a coin, you need to watch 1 video ads. 1 video ads = 1 coin. Coins gives you privilege to participate in quiz competitions. As per our terms, each quiz competetion costs 3 Coins(That is equivalent to 3 video ads watched. Once earned, the coins will be credited to your \'Coin Equity Balance\'. You can watch video ads ahead of time and earn as much coins as you intend</string>
 
 
 </resources>

@@ -106,9 +106,17 @@ private void initUI(View parentView){
                             String authorId = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
                             String quizTitle = ""+ documentSnapshot.get(GlobalConfig.QUIZ_TITLE_KEY);
                             String quizDescription = ""+ documentSnapshot.get(GlobalConfig.QUIZ_DESCRIPTION_KEY);
-                            String quizFeeDescription = ""+ documentSnapshot.get(GlobalConfig.QUIZ_FEE_DESCRIPTION_KEY);
-                            String quizRewardDescription = ""+ documentSnapshot.get(GlobalConfig.QUIZ_REWARD_DESCRIPTION_KEY);
+//                            String quizFeeDescription = ""+ documentSnapshot.get(GlobalConfig.QUIZ_FEE_DESCRIPTION_KEY);
+//                            String quizRewardDescription = ""+ documentSnapshot.get(GlobalConfig.QUIZ_REWARD_DESCRIPTION_KEY);
+                            long totalQuizFeeCoins =  documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY) : 0L;
+                            long totalQuizRewardCoins =  documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_KEY) : 0L;
+
                             long totalQuestions =  documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUESTIONS_KEY) : 0L;
+
+                            long totalQuizScore =  documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_SCORE_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUIZ_SCORE_KEY) : 0L;
+                            long totalTheoryQuestions =  documentSnapshot.get(GlobalConfig.TOTAL_THEORY_QUESTIONS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_THEORY_QUESTIONS_KEY) : 0L;
+                            long totalObjectiveQuestions =  documentSnapshot.get(GlobalConfig.TOTAL_OBJECTIVE_QUESTIONS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_OBJECTIVE_QUESTIONS_KEY) : 0L;
+
                             long totalTimeLimit =  documentSnapshot.get(GlobalConfig.TOTAL_TIME_LIMIT_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_TIME_LIMIT_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_TIME_LIMIT_KEY) : 0L;
                             long totalParticipants =  documentSnapshot.get(GlobalConfig.TOTAL_PARTICIPANTS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_PARTICIPANTS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_PARTICIPANTS_KEY) : 0L;
                             long totalViews =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) : 0L;
@@ -119,8 +127,10 @@ private void initUI(View parentView){
                                 ArrayList questionList1 = documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-" + i) != null && documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-"+ i) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-"+ i) : new ArrayList();
                                 questionList.add(questionList1);
                             }
+                            ArrayList<String> savedParticipantScoresList =  documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) : new ArrayList();
 
-                            ArrayList dateList =  documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) : new ArrayList();
+                            ArrayList startDateList =  documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) : new ArrayList();
+                            ArrayList endDateList =  documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) : new ArrayList();
                             ArrayList participantsList =  documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) : new ArrayList();
                             String dateCreated = documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY).toDate() : "Moment ago";
                             if (dateCreated.length() > 10) {
@@ -140,13 +150,15 @@ private void initUI(View parentView){
                                 authorSavedAnswersList.add(answerItem);
 
                             }
+                            boolean isQuizMarkedCompleted = documentSnapshot.get(GlobalConfig.IS_QUIZ_MARKED_COMPLETED_KEY)!=null? documentSnapshot.getBoolean(GlobalConfig.IS_QUIZ_MARKED_COMPLETED_KEY) :false;
+
                             quizFetchListener.onSuccess(new QuizDataModel(
                                     quizId,
                                     authorId,
                                     quizTitle,
                                     quizDescription,
-                                    quizFeeDescription,
-                                    quizRewardDescription,
+                                    (int)totalQuizFeeCoins,
+                                    (int)totalQuizRewardCoins,
                                     dateCreated,
                                     dateEdited,
                                     totalQuestions,
@@ -156,11 +168,17 @@ private void initUI(View parentView){
                                     isPublic,
                                     isClosed,
                                     questionList,
-                                    dateList,
+                                    startDateList,
+                                    endDateList,
                                     participantsList,
                                     isAnswerSaved,
+                                    isQuizMarkedCompleted,
                                     timeAnswerSubmitted,
-                                    authorSavedAnswersList
+                                    authorSavedAnswersList,
+                                    savedParticipantScoresList,
+                                    (int)totalQuizScore,
+                                    (int)totalTheoryQuestions,
+                                    (int)totalObjectiveQuestions
                             ));
 
 

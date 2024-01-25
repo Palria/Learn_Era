@@ -6,6 +6,8 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.HorizontalScrollView;
@@ -13,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,12 +26,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.palria.learnera.CreateQuizActivity;
 import com.palria.learnera.GlobalConfig;
 import com.palria.learnera.GlobalHelpers;
 import com.palria.learnera.QuizActivity;
@@ -38,7 +43,10 @@ import com.palria.learnera.models.FolderDataModel;
 import com.palria.learnera.models.QuizDataModel;
 import com.palria.learnera.models.QuizParticipantDatamodel;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticipantRCVAdapter.ViewHolder> {
@@ -50,14 +58,21 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
     QuizDataModel quizDataModel;
 //TODO: Let author post his own answer
     ArrayList<ArrayList<String>>authorAnswerList;
+    //stores the scores and ids of the participant locally and not from database
+    ArrayList<String> participantScoresList = new ArrayList<>();
+    //stores the ids scores and ids of the participant from database online
 
-    public QuizParticipantRCVAdapter(ArrayList<QuizParticipantDatamodel> quizParticipantDataModels, Context context, ArrayList<ArrayList<String>>authorAnswerList,String quizId,QuizDataModel quizDataModel,String authorId) {
+    MaterialButton markQuizAsCompletedActionTextView;
+    HashMap<String,Integer> totalScoresMap = new HashMap<>();
+//    boolean isQuizMarkedCompleted;
+    public QuizParticipantRCVAdapter(ArrayList<QuizParticipantDatamodel> quizParticipantDataModels, Context context, ArrayList<ArrayList<String>>authorAnswerList,String quizId,QuizDataModel quizDataModel,String authorId,MaterialButton markQuizAsCompletedActionTextView) {
         this.quizParticipantDataModels = quizParticipantDataModels;
         this.context = context;
         this.quizId = quizId;
         this.authorId = authorId;
         this.quizDataModel = quizDataModel;
         this.authorAnswerList = authorAnswerList;
+        this.markQuizAsCompletedActionTextView = markQuizAsCompletedActionTextView;
     }
 
     @NonNull
@@ -72,14 +87,25 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
+
         QuizParticipantDatamodel quizParticipantDataModel = quizParticipantDataModels.get(position);
+        totalScoresMap.put(quizParticipantDataModel.getParticipantId(), quizParticipantDataModel.getTotalScores());
+        participantScoresList.add(quizParticipantDataModel.getTotalScores()+"-ID-"+quizParticipantDataModel.getParticipantId());
+        boolean isEligibleToReward = false;
+        if(quizParticipantDataModel.isSubmitted()){
 
+//            holder.timeSubmittedView.setText("Answered : "+ GlobalHelpers.getTimeString(quizParticipantDataModel.getTimeSubmitted()));
+            holder.timeSubmittedView.setText("Date Answered : "+ quizParticipantDataModel.getTimeSubmitted());
 
-            holder.timeSubmittedView.setText("Answered: "+ GlobalHelpers.getTimeString(quizParticipantDataModel.getTimeSubmitted()));
-        //holder.timeSubmittedView.setText(quizParticipantDataModel.getTimeSubmitted());
-        if(quizParticipantDataModel.isAuthor()) {
+        }else{
+            holder.timeSubmittedView.setText("Date Answered : Not submitted");
+
+        }
+        if(quizParticipantDataModel.isAuthorAnswer()) {
                 holder.participantName.setText("Author's answer");
                 holder.positionView.setVisibility(View.GONE);
+                holder.awardNoticeTextView.setVisibility(View.GONE);
+                holder.claimAwardActionTextView.setVisibility(View.GONE);
             }
             else{
                 holder.saveResultButton.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +114,7 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
                         holder.saveResultButton.setEnabled(false);
                         holder.saveResultButton.setText("Saving result...");
 
-                        markTheAnswer(quizParticipantDataModel, new GlobalConfig.ActionCallback() {
+                        markTheAnswer(quizParticipantDataModel,totalScoresMap.get(quizParticipantDataModel.getParticipantId()), new GlobalConfig.ActionCallback() {
                             @Override
                             public void onSuccess() {
                                 holder.saveResultButton.setText("Saved");
@@ -104,6 +130,30 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
                         });
                     }
                 });
+            markQuizAsCompletedActionTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+
+                    markQuizAsCompletedActionTextView.setEnabled(false);
+                    markQuizAsCompletedActionTextView.setText("Completing...");
+                    markQuizAsCompleted(new GlobalConfig.ActionCallback() {
+                        @Override
+                        public void onSuccess() {
+                            markQuizAsCompletedActionTextView.setOnClickListener(null);
+                            markQuizAsCompletedActionTextView.setText("Completed");
+                            GlobalConfig.recentlyMarkedCompletedQuizList.add(quizId);
+                        }
+
+                        @Override
+                        public void onFailed(String errorMessage) {
+                            markQuizAsCompletedActionTextView.setEnabled(true);
+                            markQuizAsCompletedActionTextView.setText("Failed, Retry");
+
+                        }
+                    });
+                }
+            });
 
                 GlobalConfig.getFirebaseFirestoreInstance()
                         .collection(GlobalConfig.ALL_USERS_KEY)
@@ -137,11 +187,114 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
                             }
                         });
             }
+//checks if quiz is marked completed by author
+            if((quizDataModel.isQuizMarkedCompleted() || GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId)) && !quizParticipantDataModel.isAuthorAnswer()  && quizParticipantDataModel.isAnswerMarkedByAuthor()) {
 
-            if(quizParticipantDataModel.isSubmitted() || quizParticipantDataModel.isAuthor()) {
-                addAnswerView(quizParticipantDataModel, holder);
+                holder.positionView.setVisibility(View.VISIBLE);
+                markQuizAsCompletedActionTextView.setVisibility(View.GONE);
+
+
+                int resultPosition1 = 0;
+                for(int j=0; j<quizDataModel.getSavedParticipantScoresList().size(); j++){
+                    String scoreAndIDString = quizDataModel.getSavedParticipantScoresList().get(j);
+                    //check if the score is for this particular participant update positions in the arraylist
+                    if(scoreAndIDString.split("-ID-")[1].equals(quizParticipantDataModel.getParticipantId())) {
+                        String score = scoreAndIDString.split("-ID-")[0];
+                        resultPosition1 = j++;
+                        holder.positionView.setText("Position : " + resultPosition1 + "      Total score : "+score+"/"+quizDataModel.getTotalQuizScore());
+                        //check if position is less than 3
+                        if(resultPosition1<=3){
+                            isEligibleToReward = true;
+                        }
+                    }
+                }
+
+                //check if eligible to claim
+                if(isEligibleToReward && quizParticipantDataModel.getParticipantId().equals(GlobalConfig.getCurrentUserId()) && !quizParticipantDataModel.isAuthorAnswer()) {
+                    holder.awardNoticeTextView.setVisibility(View.VISIBLE);
+                    holder.claimAwardActionTextView.setVisibility(View.VISIBLE);
+
+                    if (!quizParticipantDataModel.isRewardClaimed()) {
+
+                        int finalResultPosition1 = resultPosition1;
+
+                        int[] numberOfCoins = new int[1];
+                        numberOfCoins[0] = 0;
+                        String positionDesc = "-";
+                        switch(finalResultPosition1){
+                            case 1:
+                                numberOfCoins[0]=3;
+                                positionDesc = "1st";
+                                break;
+                            case 2:
+                                numberOfCoins[0]=2;
+                                positionDesc = "2nd";
+                                break;
+                            case 3:
+                                numberOfCoins[0]=1;
+                                positionDesc = "3rd";
+                                break;
+                        }
+                        holder.awardNoticeTextView.setText("Claim award : "+numberOfCoins[0]+" Coins for winning "+positionDesc+" position");
+
+                        holder.claimAwardActionTextView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                holder.claimAwardActionTextView.setText("Receiving...");
+                                holder.claimAwardActionTextView.setEnabled(false);
+
+                                claimReward(numberOfCoins[0], "rewarded "+numberOfCoins+" for winning position "+finalResultPosition1+" in quiz", new GlobalConfig.ActionCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        holder.claimAwardActionTextView.setText("Received "+numberOfCoins[0]+" Coin");
+                                        holder.claimAwardActionTextView.setEnabled(false);
+                                    }
+
+                                    @Override
+                                    public void onFailed(String errorMessage) {
+                                        claimReward(numberOfCoins[0], "rewarded "+numberOfCoins+" for winning position "+finalResultPosition1+" in quiz", null);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    else {
+                        holder.claimAwardActionTextView.setText("Claimed");
+                        holder.claimAwardActionTextView.setEnabled(false);
+                    }
+                }
+                else{
+
+                    holder.awardNoticeTextView.setText("Try win either 1st, 2nd, or 3rd position to get rewarded");
+                    holder.claimAwardActionTextView.setText("Ineligible");
+                }
+
+            }
+            else{
+                holder.claimAwardActionTextView.setVisibility(View.GONE);
+                holder.awardNoticeTextView.setVisibility(View.GONE);
+                holder.positionView.setVisibility(View.GONE);
             }
 
+//            if(quizParticipantDataModel.isSubmitted() ) {
+//            if(quizParticipantDataModel.isAuthor() || quizParticipantDataModel.isAuthorAnswer()) {
+                addAnswerView(quizParticipantDataModel, holder);
+//            }
+//            }
+holder.participantName.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        context.startActivity(GlobalConfig.getHostActivityIntent(context,null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY,quizParticipantDataModel.getParticipantId()));
+
+    }
+});
+holder.participantIcon.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        context.startActivity(GlobalConfig.getHostActivityIntent(context,null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY,quizParticipantDataModel.getParticipantId()));
+
+    }
+});
     }
 
     @Override
@@ -151,6 +304,14 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
 
 
     void addAnswerView(QuizParticipantDatamodel quizParticipantDataModel,ViewHolder viewHolder){
+        //check if the current user is the same as the participant or if they are the creator.
+        if( !(GlobalConfig.getCurrentUserId().equals(quizParticipantDataModel.getParticipantId())) && !(GlobalConfig.getCurrentUserId().equals(authorId)) && !quizParticipantDataModel.isAuthorAnswer()){
+         return;
+        }
+        if(!quizParticipantDataModel.isSubmitted() && !(GlobalConfig.getCurrentUserId().equals(authorId))){
+            return;
+        }
+
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         for(int i=0; i<quizParticipantDataModel.getAnswerList().size(); i++) {
@@ -168,11 +329,49 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
                 TextView answerText = answerView.findViewById(R.id.answerTextViewId);
                 String answer = answerItem.get(1);
                 answerText.setText(answer);
-                //todo test and delete
-//                answerText.setText(answerItem.get(0)+answerItem.get(1)+answerItem.get(2));
-//                answerText.setText(question);
 
+                TextView scoresTextView = answerView.findViewById(R.id.scoresTextViewId);
+                if(answerItem.size()>=5){
+                    scoresTextView.setText("Score : " + answerItem.get(4));
+//                     totalScores += Integer.parseInt(answerItem.get(4));
 
+                }
+                Spinner scoresSpinner = answerView.findViewById(R.id.scoresSpinnerId);
+                Long[] scores = new Long[]{10L,9L,8L,7L,6L,5L,4L,3L,2L,1L,0L};
+                ArrayAdapter<Long> arrayAdapter = new ArrayAdapter<>(context,R.layout.support_simple_spinner_dropdown_item,scores);
+                scoresSpinner.setAdapter(arrayAdapter);
+                int[] recentlySelected = new int[1];
+                scoresSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                        if(answerItem.size()>=5) {
+                            answerItem.set(4, scoresSpinner.getSelectedItem() + "");
+                        }
+
+                        scoresTextView.setText("Score : "+scoresSpinner.getSelectedItem());
+                        int newScore = Integer.parseInt(scoresSpinner.getSelectedItem()+"");
+                        //first remoe the recently saved score to accommodate a new one
+                        totalScoresMap.put(quizParticipantDataModel.getParticipantId(), (totalScoresMap.get(quizParticipantDataModel.getParticipantId()))-recentlySelected[0]);
+
+                        totalScoresMap.put(quizParticipantDataModel.getParticipantId(), (totalScoresMap.get(quizParticipantDataModel.getParticipantId()) + newScore));
+
+                         recentlySelected[0] = newScore;
+
+                         for(int j=0; j<participantScoresList.size(); j++){
+                             String scoreAndIDString = participantScoresList.get(j);
+                             //check if the score is for this particluar participant and update positions in the arraylist
+                             if(scoreAndIDString.split("-ID-")[1].equals(quizParticipantDataModel.getParticipantId())){
+                                 participantScoresList.set(j,totalScoresMap.get(quizParticipantDataModel.getParticipantId())+"-ID-"+quizParticipantDataModel.getParticipantId());
+                             }
+                         }
+
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
 
                 RadioButton passedButton = answerView.findViewById(R.id.passedButtonId);
                 RadioButton failedButton = answerView.findViewById(R.id.failedButtonId);
@@ -183,10 +382,10 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         if (isChecked) {
                             //REMOVE SOME ELEMENTS BECAUSE THEY SERVE THE SAME PURPOSE
-                            answerItem.remove("UNMARKED");
-                            answerItem.remove("PASSED");
-                            answerItem.remove("FAILED");
-                            answerItem.add("PASSED");
+//                            answerItem.remove("UNMARKED");
+//                            answerItem.remove("PASSED");
+//                            answerItem.remove("FAILED");
+                            answerItem.set(3,"PASSED");
 
                             ArrayList<ArrayList<String>> answerList = quizParticipantDataModel.getAnswerList();
                             answerList.remove(finalI);
@@ -208,10 +407,10 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         if (isChecked) {
                             //REMOVE SOME ELEMENTS BECAUSE THEY SERVE THE SAME PURPOSE
-                            answerItem.remove("UNMARKED");
-                            answerItem.remove("PASSED");
-                            answerItem.remove("FAILED");
-                            answerItem.add("FAILED");
+//                            answerItem.remove("UNMARKED");
+//                            answerItem.remove("PASSED");
+//                            answerItem.remove("FAILED");
+                            answerItem.set(3,"FAILED");
 
 
                             ArrayList<ArrayList<String>> answerList = quizParticipantDataModel.getAnswerList();
@@ -236,15 +435,20 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
                     failedButton.setEnabled(true);
                     passedButton.setVisibility(View.VISIBLE);
                     failedButton.setVisibility(View.VISIBLE);
+                    scoresSpinner.setVisibility(View.VISIBLE);
                     statusView.setText("Status: UNMARKED");
                 } else if (status.equalsIgnoreCase("PASSED")) {
                     passedButton.setVisibility(View.INVISIBLE);
                     failedButton.setVisibility(View.INVISIBLE);
+                    scoresSpinner.setVisibility(View.INVISIBLE);
                     statusView.setText("Status: CORRECT");
+                    //add 1 score to the mark when the objective answer is correct
+//                    totalScores++;
 
                 } else if (status.equalsIgnoreCase("FAILED")) {
                     passedButton.setVisibility(View.INVISIBLE);
                     failedButton.setVisibility(View.INVISIBLE);
+                    scoresSpinner.setVisibility(View.INVISIBLE);
                     statusView.setText("Status: WRONG");
 
                 }
@@ -253,20 +457,24 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
                 if(authorId.equals(GlobalConfig.getCurrentUserId())){
                     passedButton.setVisibility(View.VISIBLE);
                     failedButton.setVisibility(View.VISIBLE);
+                    scoresSpinner.setVisibility(View.VISIBLE);
 
                     if (!status.equalsIgnoreCase("UNMARKED")) {
                         passedButton.setVisibility(View.INVISIBLE);
                         failedButton.setVisibility(View.INVISIBLE);
+                        scoresSpinner.setVisibility(View.INVISIBLE);
                     }
                 }else{
                     passedButton.setVisibility(View.INVISIBLE);
                     failedButton.setVisibility(View.INVISIBLE);
+                    scoresSpinner.setVisibility(View.INVISIBLE);
                 }
-                if(quizParticipantDataModel.isAuthor()){
+                if(quizParticipantDataModel.isAuthorAnswer()){
 
                     statusView.setVisibility(View.INVISIBLE);
                     passedButton.setVisibility(View.INVISIBLE);
                     failedButton.setVisibility(View.INVISIBLE);
+                    scoresSpinner.setVisibility(View.INVISIBLE);
                 }
             }
             else {
@@ -288,19 +496,28 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
 //                String status = answerItem.size() == 4 ? answerItem.get(2) : "Upgrade Error";
 //                checks if it is marked
                 String status = answerItem.size() == 4 ? answerItem.get(3) : "Upgrade Error";
-                if(!authorAnswerList.isEmpty() && authorAnswerList.get(i).size()>0){
-                    //Toast.makeText(context, "it's NOT empty", Toast.LENGTH_SHORT).show();
-                    //compares participant answer to the author own answer
-                    if (answerPosition == Integer.parseInt((authorAnswerList.get(i).get(1)).split("-")[0])) {
-                    status = "Status: CORRECT";
-                } else if (answerPosition != Integer.parseInt((authorAnswerList.get(i).get(1)).split("-")[0])) {
-                    status = "Status: WRONG";
+
+                ArrayList<String> realPositions = new ArrayList<>();
+                realPositions.addAll(Arrays.asList(new String[]{"1", "2", "3", "4"}));
+
+                    if (!authorAnswerList.isEmpty() && authorAnswerList.get(i).size() > 0) {
+                        //Toast.makeText(context, "it's NOT empty", Toast.LENGTH_SHORT).show();
+                        if(realPositions.contains((authorAnswerList.get(i).get(1)).split("-")[0])) {
+
+                        //compares participant answer to the author own answer
+                        if (answerPosition == Integer.parseInt((authorAnswerList.get(i).get(1)).split("-")[0])) {
+                            status = "Status: CORRECT";
+                            totalScoresMap.put(quizParticipantDataModel.getParticipantId(), (totalScoresMap.get(quizParticipantDataModel.getParticipantId()) + 1));
+
+                        } else if (answerPosition != Integer.parseInt((authorAnswerList.get(i).get(1)).split("-")[0])) {
+                            status = "Status: WRONG";
+                        }
+                    }
                 }
-            }
                 statusView.setText(status);
                 viewHolder.answersScrollView.addView(answerView);
 
-                if(quizParticipantDataModel.isAuthor()){
+                if(quizParticipantDataModel.isAuthorAnswer()){
                     statusView.setVisibility(View.INVISIBLE);
                 }
             }
@@ -313,12 +530,13 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
         }
 
     }
-    void markTheAnswer(QuizParticipantDatamodel quizParticipantDatamodel, GlobalConfig.ActionCallback actionCallback){
+    void markTheAnswer(QuizParticipantDatamodel quizParticipantDatamodel,int totalScores, GlobalConfig.ActionCallback actionCallback){
             WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
             DocumentReference participantReference1 = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId).collection(GlobalConfig.ALL_PARTICIPANTS_KEY).document(quizParticipantDatamodel.getParticipantId());
             HashMap<String, Object> participantDetails = new HashMap<>();
-//            participantDetails.put(GlobalConfig.IS_ANSWER_SUBMITTED_KEY, true);
-//            participantDetails.put(GlobalConfig.ANSWER_SUBMITTED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+            participantDetails.put(GlobalConfig.IS_ANSWER_MARKED_BY_AUTHOR_KEY, true);
+            participantDetails.put(GlobalConfig.DATE_MARKED_BY_AUTHOR_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+            participantDetails.put(GlobalConfig.TOTAL_SCORE_KEY, totalScoresMap.get(quizParticipantDatamodel.getParticipantId()));
 
             for (int position = 0; position < quizParticipantDatamodel.getAnswerList().size(); position++) {
                 participantDetails.put(GlobalConfig.ANSWER_LIST_KEY + "-" + position, quizParticipantDatamodel.getAnswerList().get(position));
@@ -354,6 +572,90 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
                         }
                     });
         }
+    void claimReward(int numberOfCoins,String earningDescription, GlobalConfig.ActionCallback actionCallback){
+
+            WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+            DocumentReference walletReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.USER_WALLET_KEY).document(GlobalConfig.USER_WALLET_KEY);
+            HashMap<String, Object> walletDetails = new HashMap<>();
+        walletDetails.put(GlobalConfig.WITHDRAWABLE_COIN_BALANCE_KEY,FieldValue.increment(numberOfCoins));
+        walletDetails.put(GlobalConfig.TOTAL_COINS_EARNED_KEY,FieldValue.increment(numberOfCoins));
+        walletDetails.put(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_EARNED_KEY,FieldValue.increment(numberOfCoins));
+        walletDetails.put(GlobalConfig.QUIZ_EARNINGS_HISTORY_LIST_KEY,FieldValue.arrayUnion("COIN-"+numberOfCoins+"-DESC-"+earningDescription+"-DATE-"+GlobalConfig.getDate()));
+
+
+            writeBatch.set(walletReference, walletDetails, SetOptions.merge());
+
+        DocumentReference rewardReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId).collection(GlobalConfig.ALL_PARTICIPANTS_KEY).document(GlobalConfig.getCurrentUserId());
+        HashMap<String, Object> rewardDetails = new HashMap<>();
+        rewardDetails.put(GlobalConfig.IS_REWARD_CLAIMED_KEY,true);
+        rewardDetails.put(GlobalConfig.TOTAL_COINS_EARNED_KEY, numberOfCoins);
+        writeBatch.set(rewardReference, rewardDetails, SetOptions.merge());
+
+
+        writeBatch.commit()
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            if(actionCallback!=null) {
+                                actionCallback.onFailed(e.getMessage());
+                            }
+                        }
+                    })
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            if(actionCallback!=null) {
+                                actionCallback.onSuccess();
+                            }else{
+                                claimReward(numberOfCoins, earningDescription,null);
+                        }
+                        }
+                    });
+        }
+    void markQuizAsCompleted(GlobalConfig.ActionCallback actionCallback){
+        participantScoresList.sort(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareToIgnoreCase(o2)*-1;
+            }
+        });
+
+        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+        DocumentReference walletReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId);
+        HashMap<String, Object> walletDetails = new HashMap<>();
+        walletDetails.put(GlobalConfig.IS_QUIZ_MARKED_COMPLETED_KEY,true);
+        walletDetails.put(GlobalConfig.DATE_QUIZ_MARKED_COMPLETED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+        walletDetails.put(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY,participantScoresList);
+
+        writeBatch.set(walletReference, walletDetails, SetOptions.merge());
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        if(actionCallback!=null) {
+                            actionCallback.onFailed(e.getMessage());
+                        }
+
+
+                        String notificationId = GlobalConfig.getRandomString(100);
+                         //carries the info about the quiz
+                        ArrayList<String> modelInfo = new ArrayList<>();
+                        modelInfo.add(quizId);
+
+                        //fires out the notification
+                        GlobalConfig.sendNotificationToUsers(GlobalConfig.NOTIFICATION_TYPE_QUIZ_COMPLETED_KEY,notificationId,quizDataModel.getParticipantsList(),modelInfo,quizDataModel.getQuizTitle(),"Author has marked your quiz as completed",null);
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        if(actionCallback!=null) {
+                            actionCallback.onSuccess();
+                        }
+                    }
+                });
+    }
 
     class ViewHolder extends RecyclerView.ViewHolder{
 
@@ -365,6 +667,8 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
         public TextView positionView;
         //indicates whether failed, passed or if already marked
         public TextView statusView;
+        public TextView awardNoticeTextView;
+        public TextView claimAwardActionTextView;
         public Button saveResultButton;
         public ImageButton menuButton;
 
@@ -379,6 +683,8 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
             this.answersScrollView =  itemView.findViewById(R.id.answersScrollViewId);
             this.timeSubmittedView =  itemView.findViewById(R.id.timeSubmittedViewId);
             this.positionView =  itemView.findViewById(R.id.positionViewId);
+            this.awardNoticeTextView =  itemView.findViewById(R.id.awardNoticeTextViewId);
+            this.claimAwardActionTextView =  itemView.findViewById(R.id.claimAwardActionTextViewId);
 
             this.saveResultButton =  itemView.findViewById(R.id.saveResultButtonId);
             this.menuButton =  itemView.findViewById(R.id.menuButtonId);

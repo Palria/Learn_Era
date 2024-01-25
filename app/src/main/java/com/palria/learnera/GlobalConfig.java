@@ -3,6 +3,7 @@ package com.palria.learnera;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,13 +32,19 @@ import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
 import com.google.android.gms.ads.VideoController;
 import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.nativead.NativeAdView;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -63,6 +70,7 @@ import com.palria.learnera.models.AnswerDataModel;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
 import com.palria.learnera.models.PageDataModel;
 import com.palria.learnera.models.PageDiscussionDataModel;
+import com.palria.learnera.models.QuizDataModel;
 import com.palria.learnera.models.WelcomeScreenItemModal;
 import com.palria.learnera.widgets.BottomSheetFormBuilderWidget;
 import com.paypal.android.sdk.payments.PayPalConfiguration;
@@ -71,6 +79,8 @@ import com.paypal.android.sdk.payments.PayPalService;
 import com.paypal.android.sdk.payments.PaymentActivity;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.ref.PhantomReference;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -99,6 +109,7 @@ public class GlobalConfig {
     private static ArrayList<String> BLOCKED_ITEM_LIST = new ArrayList<>();
     private static ArrayList<String> REPORTED_ITEM_LIST = new ArrayList<>();
     private static ArrayList<String> categoryList = new ArrayList<>();
+    public static ArrayList<String> recentlyMarkedCompletedQuizList = new ArrayList<>();
     public static ArrayList<String> newlyJoinedQuizList = new ArrayList<>();
     public static ArrayList<String> recentlydeletedQuizList = new ArrayList<>();
     public static ArrayList<String> authorRecentlySavedQuizAnswerIdList = new ArrayList<>();
@@ -565,6 +576,7 @@ public class GlobalConfig {
     public static final String PERSONALIZED_NOTIFICATIONS_KEY = "PERSONALIZED_NOTIFICATIONS";
     public static final String IS_SEEN_KEY = "IS_SEEN";
     public static final String NOTIFICATION_TYPE_QUIZ_KEY = "NOTIFICATION_TYPE_QUIZ";
+    public static final String NOTIFICATION_TYPE_QUIZ_COMPLETED_KEY = "NOTIFICATION_TYPE_QUIZ_COMPLETED";
 
 
     public static final String DISCUSSION_ID_KEY = "DISCUSSION_ID";
@@ -601,19 +613,34 @@ public class GlobalConfig {
     public static final String QUIZ_DESCRIPTION_KEY = "QUIZ_DESCRIPTION";
     public static final String QUIZ_TITLE_KEY = "QUIZ_TITLE";
     public static final String TOTAL_QUESTIONS_KEY = "TOTAL_QUESTIONS";
+    public static final String TOTAL_QUIZ_SCORE_KEY = "TOTAL_QUIZ_SCORE";
+    public static final String TOTAL_THEORY_QUESTIONS_KEY = "TOTAL_THEORY_QUESTIONS";
+    public static final String TOTAL_OBJECTIVE_QUESTIONS_KEY = "TOTAL_OBJECTIVE_QUESTIONS";
     public static final String TOTAL_TIME_LIMIT_KEY = "TOTAL_TIME_LIMIT";
     public static final String SINGLE_QUESTION_TIME_LIMIT_KEY = "SINGLE_QUESTION_TIME_LIMIT";
     public static final String TOTAL_QUIZ_KEY = "TOTAL_QUIZ";
     public static final String QUESTION_LIST_KEY = "QUESTION_LIST";
     public static final String ALL_QUIZ_KEY = "ALL_QUIZ";
     public static final String QUIZ_DATE_LIST_KEY = "QUIZ_DATE_LIST";
-    public static final String QUIZ_FEE_DESCRIPTION_KEY = "QUIZ_FEE_DESCRIPTION";
-    public static final String QUIZ_REWARD_DESCRIPTION_KEY = "QUIZ_REWARD_DESCRIPTION";
+//    public static final String QUIZ_FEE_DESCRIPTION_KEY = "QUIZ_FEE_DESCRIPTION";
+//    public static final String QUIZ_REWARD_DESCRIPTION_KEY = "QUIZ_REWARD_DESCRIPTION";
+
+    public static final String TOTAL_QUIZ_FEE_COINS_KEY = "TOTAL_QUIZ_FEE_COINS";
+    public static final String TOTAL_QUIZ_REWARD_COINS_KEY = "TOTAL_QUIZ_REWARD_COINS";
+
     public static final String QUIZ_DATA_MODEL_KEY = "QUIZ_DATA_MODEL";
     public static final String SUBMITTED_QUIZ_LIST_KEY = "SUBMITTED_QUIZ_LIST";
     public static final String VIEWED_QUIZ_LIST_KEY = "VIEWED_QUIZ_LIST";
     public static final String QUIZ_VIEWERS_LIST_KEY = "QUIZ_VIEWERS_LIST";
     public static final String TOTAL_NUMBER_OF_TIMES_QUIZ_VIEWED_KEY = "TOTAL_NUMBER_OF_TIMES_QUIZ_VIEWED";
+    public static final String TOTAL_SCORE_KEY = "TOTAL_SCORE";
+    public static final String DATE_CLOSED_TIME_STAMP_KEY = "DATE_CLOSED_TIME_STAMP";
+    public static final String IS_QUIZ_MARKED_COMPLETED_KEY = "IS_QUIZ_MARKED_COMPLETED";
+    public static final String DATE_QUIZ_MARKED_COMPLETED_TIME_STAMP_KEY = "DATE_QUIZ_MARKED_COMPLETED_TIME_STAMP";
+    public static final String PARTICIPANT_SCORES_LIST_KEY = "PARTICIPANT_SCORES_LIST";
+
+    public static final String QUIZ_START_DATE_LIST_KEY = "QUIZ_START_DATE_LIST";
+    public static final String QUIZ_END_DATE_LIST_KEY = "QUIZ_END_DATE_LIST";
 
     public static final String QUIZ_SEARCH_VERBATIM_KEYWORD_KEY = "QUIZ_SEARCH_VERBATIM_KEYWORD";
     public static final String QUIZ_SEARCH_ANY_MATCH_KEYWORD_KEY = "QUIZ_SEARCH_ANY_MATCH_KEYWORD";
@@ -630,6 +657,8 @@ public class GlobalConfig {
     public static final String ANSWER_SUBMITTED_TIME_STAMP_KEY = "ANSWER_SUBMITTED_TIME_STAMP";
     public static final String ANSWER_LIST_KEY = "ANSWER_LIST";
     public static final String IS_ANSWER_SUBMITTED_KEY = "IS_ANSWER_SUBMITTED";
+    public static final String IS_ANSWER_MARKED_BY_AUTHOR_KEY = "IS_ANSWER_MARKED_BY_AUTHOR";
+    public static final String DATE_MARKED_BY_AUTHOR_TIME_STAMP_KEY = "DATE_MARKED_BY_AUTHOR_TIME_STAMP";
     public static final String LAST_SUBMITTED_TIME_STAMP_KEY = "LAST_SUBMITTED_TIME_STAMP";
     public static final String PARTICIPANT_ID_KEY = "PARTICIPANT_ID";
 
@@ -670,10 +699,26 @@ public class GlobalConfig {
     public static final String REPLY_CONTRIBUTORS_LIST_KEY = "REPLY_CONTRIBUTORS_LIST";
 
 
+    public static final String WALLET_CREATED_TIME_STAMP_KEY = "WALLET_CREATED_TIME_STAMP";
+    public static final String IS_WALLET_CREATED_KEY = "IS_WALLET_CREATED";
+
+
 
 
     public static final String IS_THEORY_QUESTION_KEY = "IS_THEORY_QUESTION";
     public static final String IS_OBJECTIVE_QUESTION_KEY = "IS_OBJECTIVE_QUESTION";
+
+    public static final String USER_WALLET_KEY = "USER_WALLET";
+    public static final String WITHDRAWABLE_COIN_BALANCE_KEY = "WITHDRAWABLE_COIN_BALANCE";
+    public static final String TOTAL_COINS_EARNED_KEY = "TOTAL_COINS_EARNED";
+    public static final String TOTAL_QUIZ_REWARD_COINS_EARNED_KEY = "TOTAL_QUIZ_REWARD_COINS_EARNED";
+    public static final String QUIZ_EARNINGS_HISTORY_LIST_KEY = "QUIZ_EARNINGS_HISTORY_LIST";
+    public static final String TOTAL_COIN_EQUITY_KEY = "TOTAL_COIN_EQUITY";
+    public static final String COIN_WITHDRAWAL_HISTORY_LIST_KEY = "COIN_WITHDRAWAL_HISTORY_LIST";
+    public static final String REFERAL_REWARD_HISTORY_LIST_KEY = "REFERAL_REWARD_HISTORY_LIST";
+    public static final String IS_REWARD_CLAIMED_KEY = "IS_REWARD_CLAIMED";
+
+    public static final String IS_LOAD_IMMEDIATELY_KEY = "IS_LOAD_IMMEDIATELY";
 
     private static FirebaseFirestore firebaseFirestoreInstance;
     private static FirebaseStorage firebaseStorageInstance;
@@ -747,7 +792,6 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
      * @return {@link String} which will be used for some operations
      * */
     static String getCurrentUserTokenId(){
-
        return GlobalConfig.CURRENT_USER_TOKEN_ID;
     }
 
@@ -969,7 +1013,7 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
  * @return  {@link boolean}
  * */
     @SuppressLint("MissingPermission")
-    static boolean isConnectedOnline(Context context) {
+   public static boolean isConnectedOnline(Context context) {
 
 
 
@@ -2432,14 +2476,40 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
         return formattedDate;
     }
 
+    public static boolean isQuizExpired(long endYear, long endMonth,long endDay, long endHour,long endMinute){
+
+
+            if(getEventYear()>=endYear &&getEventMonth()>=endMonth &&getEventDay()>=endDay &&getEventHour(true)>=endHour &&getEventMinute()>endMinute){
+                return true;
+            }
+
+
+            return false;
+    }
+
+    public static boolean isQuizStarted(long startYear, long startMonth,long startDay, long startHour,long startMinute){
+
+
+            if(getEventYear()>=startYear &&getEventMonth()>=startMonth &&getEventDay()>=startDay &&getEventHour(true)>=startHour &&getEventMinute()>=startMinute){
+                return true;
+            }
+
+
+            return false;
+    }
+
       static  public int getEventSeconds(){
         return  Integer.parseInt(new SimpleDateFormat("ss", Locale.US).format(new Date()));
         }
       static  public int getEventMinute(){
             return  Integer.parseInt(new SimpleDateFormat("mm", Locale.US).format(new Date()));
         }
-      static  public int getEventHour(){
-          return  Integer.parseInt(new SimpleDateFormat("HH", Locale.US).format(new Date()));
+      static  public int getEventHour(boolean is24Hour){
+            if(is24Hour) {
+                return Integer.parseInt(new SimpleDateFormat("HH", Locale.US).format(new Date()));
+            }else{
+                return Integer.parseInt(new SimpleDateFormat("hh", Locale.US).format(new Date()));
+            }
 
         }
       static  public int getEventDay(){
@@ -2502,7 +2572,7 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
             activityLogDetails.put(ACTION_DOER_ID_KEY,getCurrentUserId());
             activityLogDetails.put(EVENT_SECONDS_KEY,(long)getEventSeconds());
             activityLogDetails.put(EVENT_MINUTE_KEY,(long)getEventMinute());
-            activityLogDetails.put(EVENT_HOUR_KEY,(long)getEventHour());
+            activityLogDetails.put(EVENT_HOUR_KEY,(long)getEventHour(true));
             activityLogDetails.put(EVENT_DAY_KEY,(long)getEventDay());
             activityLogDetails.put(EVENT_WEEK_KEY,(long)getEventWeekOfYear());
             activityLogDetails.put(EVENT_MONTH_KEY,(long)getEventMonth());
@@ -4728,7 +4798,66 @@ if(isUserLoggedIn()) {
         return adView;
     }
 
-    public static void createQuiz(Context context, String quizId, String quizTitle,String category, int totalQuestions, int totalTimeLimit, String quizDescription, String quizFeeDescription, String quizRewardDescription, ArrayList<ArrayList<String>> questionArrayList, ArrayList<Long> quizDateList, boolean isEdition, boolean isPublic, ActionCallback actionCallback){
+    public static void loadVideoAd(Context context,String adId, RewardedAdLoadCallback rewardedAdLoadCallback){
+    AdRequest adRequest = new AdRequest.Builder().build();
+    RewardedAd.load(context, adId, adRequest, new RewardedAdLoadCallback() {
+        @Override
+        public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+            rewardedAdLoadCallback.onAdFailedToLoad(loadAdError);
+        }
+        @Override
+        public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
+            super.onAdLoaded(rewardedAd);
+            rewardedAdLoadCallback.onAdLoaded(rewardedAd);
+
+        }
+    });
+    }
+    public static void showVideoAd(Context context, Activity activity, @NonNull RewardedAd rewardedAd, FullScreenContentCallback fullScreenContentCallback, OnUserEarnedRewardListener onUserEarnedRewardListener ){
+        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdClicked() {
+                super.onAdClicked();
+                fullScreenContentCallback.onAdClicked();
+            }
+
+            @Override
+            public void onAdDismissedFullScreenContent() {
+                super.onAdDismissedFullScreenContent();
+                fullScreenContentCallback.onAdDismissedFullScreenContent();
+
+            }
+
+            @Override
+            public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                super.onAdFailedToShowFullScreenContent(adError);
+                fullScreenContentCallback.onAdFailedToShowFullScreenContent(adError);
+            }
+
+            @Override
+            public void onAdImpression() {
+                super.onAdImpression();
+                fullScreenContentCallback.onAdImpression();
+            }
+
+            @Override
+            public void onAdShowedFullScreenContent() {
+                super.onAdShowedFullScreenContent();
+                fullScreenContentCallback.onAdShowedFullScreenContent();
+            }
+
+        });
+
+        if(rewardedAd!=null){
+            rewardedAd.show(activity, new OnUserEarnedRewardListener() {
+                @Override
+                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                    onUserEarnedRewardListener.onUserEarnedReward(rewardItem);
+                }
+            });
+        }
+    }
+    public static void createQuiz(Context context, String quizId, String quizTitle,String category, int totalQuestions,long totalQuizScore,long totalTheoryQuestions,long totalObjectiveQuestions, int totalTimeLimit, String quizDescription, int totalQuizFeeCoins, int totalQuizRewardCoins, ArrayList<ArrayList<String>> questionArrayList, ArrayList<Long> quizDateList, boolean isEdition, boolean isPublic, ActionCallback actionCallback){
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
         DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId);
         HashMap<String,Object> quizDetails = new HashMap<>();
@@ -4738,13 +4867,16 @@ if(isUserLoggedIn()) {
         quizDetails.put(GlobalConfig.QUIZ_TITLE_KEY,quizTitle);
         quizDetails.put(GlobalConfig.CATEGORY_KEY,category);
         quizDetails.put(GlobalConfig.TOTAL_QUESTIONS_KEY,totalQuestions);
+        quizDetails.put(GlobalConfig.TOTAL_QUIZ_SCORE_KEY,totalQuizScore);
+        quizDetails.put(GlobalConfig.TOTAL_THEORY_QUESTIONS_KEY,totalTheoryQuestions);
+        quizDetails.put(GlobalConfig.TOTAL_OBJECTIVE_QUESTIONS_KEY,totalObjectiveQuestions);
         //add extra 30 seconds in case of delay in network connectivity
         quizDetails.put(GlobalConfig.TOTAL_TIME_LIMIT_KEY,totalTimeLimit+30);
 //      quizDetails.put(GlobalConfig.SINGLE_QUESTION_TIME_LIMIT_KEY,singleQuestionTimeLimit);
         quizDetails.put(GlobalConfig.IS_PUBLIC_KEY,isPublic);
         quizDetails.put(GlobalConfig.IS_CLOSED_KEY,false);
-        quizDetails.put(GlobalConfig.QUIZ_FEE_DESCRIPTION_KEY,quizFeeDescription);
-        quizDetails.put(GlobalConfig.QUIZ_REWARD_DESCRIPTION_KEY,quizRewardDescription);
+        quizDetails.put(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY,totalQuizFeeCoins);
+        quizDetails.put(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_KEY,totalQuizRewardCoins);
         quizDetails.put(GlobalConfig.QUIZ_DATE_LIST_KEY,quizDateList);
         if(isEdition){
             quizDetails.put(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
@@ -4808,17 +4940,18 @@ if(isUserLoggedIn()) {
                     }
                 });
     }
-    public static void joinQuiz(Context context, String quizId, ActionCallback actionCallback){
+    public static void joinQuiz(Context context, QuizDataModel quizDataModel, ActionCallback actionCallback){
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
-        DocumentReference participantReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId).collection(GlobalConfig.ALL_PARTICIPANTS_KEY).document(getCurrentUserId());
+        DocumentReference participantReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizDataModel.getQuizId()).collection(GlobalConfig.ALL_PARTICIPANTS_KEY).document(getCurrentUserId());
         HashMap<String,Object> participantDetails = new HashMap<>();
-        participantDetails.put(GlobalConfig.QUIZ_ID_KEY,quizId);
+        participantDetails.put(GlobalConfig.QUIZ_ID_KEY,quizDataModel.getQuizId());
         participantDetails.put(GlobalConfig.PARTICIPANT_ID_KEY,getCurrentUserId());
         participantDetails.put(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
         participantDetails.put(GlobalConfig.IS_ANSWER_SUBMITTED_KEY,false);
+        participantDetails.put(GlobalConfig.IS_ANSWER_MARKED_BY_AUTHOR_KEY,false);
         writeBatch.set(participantReference1,participantDetails,SetOptions.merge());
 
-        DocumentReference quizReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId);
+        DocumentReference quizReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizDataModel.getQuizId());
         HashMap<String,Object> quizDetails = new HashMap<>();
         quizDetails.put(GlobalConfig.TOTAL_PARTICIPANTS_KEY, FieldValue.increment(1L));
         quizDetails.put(GlobalConfig.PARTICIPANTS_LIST_KEY, FieldValue.arrayUnion(getCurrentUserId()));
@@ -4828,8 +4961,15 @@ if(isUserLoggedIn()) {
         DocumentReference userReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId());
         HashMap<String,Object> userDetails = new HashMap<>();
         userDetails.put(GlobalConfig.TOTAL_QUIZ_JOINED_KEY, FieldValue.increment(1L));
-        userDetails.put(GlobalConfig.QUIZ_JOINED_LIST_KEY, FieldValue.arrayUnion(quizId));
+        userDetails.put(GlobalConfig.QUIZ_JOINED_LIST_KEY, FieldValue.arrayUnion(quizDataModel.getQuizId()));
         writeBatch.set(userReference,userDetails,SetOptions.merge());
+
+//Deduct coin fee from wallet
+        DocumentReference walletReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId()).collection(GlobalConfig.USER_WALLET_KEY).document(GlobalConfig.USER_WALLET_KEY);
+        HashMap<String,Object> walletDetails = new HashMap<>();
+        walletDetails.put(GlobalConfig.TOTAL_COIN_EQUITY_KEY, FieldValue.increment(-quizDataModel.getTotalQuizFeeCoins()));
+        walletDetails.put(GlobalConfig.QUIZ_EARNINGS_HISTORY_LIST_KEY,FieldValue.arrayUnion("COIN-"+quizDataModel.getTotalQuizFeeCoins()+"-DESC-was deducted from your wallet for joining quiz"+"-DATE-"+GlobalConfig.getDate()));
+        writeBatch.set(walletReference,walletDetails,SetOptions.merge());
 
 
         writeBatch.commit()
@@ -4843,6 +4983,8 @@ if(isUserLoggedIn()) {
                     @Override
                     public void onSuccess(Void unused) {
                         actionCallback.onSuccess();
+                        GlobalConfig.newlyJoinedQuizList.add(quizDataModel.getQuizId());
+
                     }
                 });
     }
@@ -4873,6 +5015,7 @@ if(isUserLoggedIn()) {
         DocumentReference participantReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId).collection(GlobalConfig.ALL_PARTICIPANTS_KEY).document(getCurrentUserId());
         HashMap<String,Object> participantDetails = new HashMap<>();
         participantDetails.put(GlobalConfig.IS_ANSWER_SUBMITTED_KEY,true);
+        participantDetails.put(GlobalConfig.TOTAL_SCORE_KEY,0L);
         participantDetails.put(GlobalConfig.ANSWER_SUBMITTED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
         for(int position=0; position<answerList.size();position++) {
             participantDetails.put(GlobalConfig.ANSWER_LIST_KEY + "-" + position, answerList.get(position));
@@ -4905,6 +5048,32 @@ if(isUserLoggedIn()) {
         for(int position=0; position<answerList.size();position++) {
             participantDetails.put(GlobalConfig.ANSWER_LIST_KEY + "-" + position, answerList.get(position));
         }
+        writeBatch.set(participantReference1,participantDetails,SetOptions.merge());
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                           recordSubmittedQuiz(context,quizId);
+
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+    public static void markQuizAsClosed(Context context, String quizId, ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference participantReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId);
+        HashMap<String,Object> participantDetails = new HashMap<>();
+        participantDetails.put(GlobalConfig.IS_CLOSED_KEY,true);
+        participantDetails.put(GlobalConfig.DATE_CLOSED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+
         writeBatch.set(participantReference1,participantDetails,SetOptions.merge());
 
 
@@ -5456,6 +5625,18 @@ if(isUserLoggedIn()) {
         return;
 
     }
+
+    public static void addCoinsToWallet(){
+
+    }
+    public static void deductCoinsFromWallet(){
+
+    }
+
+    public static void withdrawCoinsFromWallet(){
+
+    }
+
 
      //
     //INTERFACES

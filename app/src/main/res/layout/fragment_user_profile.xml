@@ -612,6 +612,24 @@
                 </RelativeLayout>
 
                 <TextView
+                    android:id="@+id/walletTextViewId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="2pt"
+                    android:layout_marginTop="6pt"
+                    android:layout_weight="1"
+                    android:background="@drawable/default_outlined_button"
+                    android:foreground="@android:color/transparent"
+                    android:paddingHorizontal="5pt"
+                    android:paddingVertical="6pt"
+                    android:text="Wallet"
+                    android:textAlignment="center"
+                    android:textColor="@color/teal_700"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    />
+
+                <TextView
                     android:layout_marginTop="11pt"
                     android:background="@color/gray"
                     android:layout_width="match_parent"

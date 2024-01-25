@@ -7,6 +7,7 @@ import com.palria.learnera.GlobalConfig;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class QuizDataModel implements Serializable {
@@ -15,8 +16,8 @@ public class QuizDataModel implements Serializable {
     private String authorId;
     private String quizTitle;
     private String quizDescription;
-    private String quizFeeDescription;
-    private String quizRewardDescription;
+    private int totalQuizFeeCoins;
+    private int totalQuizRewardCoins;
     private String dateCreated;
     private String dateEdited;
     private long totalQuestions;
@@ -26,10 +27,17 @@ public class QuizDataModel implements Serializable {
     private boolean isPublic;
     private boolean isClosed;
     ArrayList<ArrayList> questionList;
-    ArrayList<Long> dateList;
+    ArrayList<Long> startDateList;
+    ArrayList<Long> endDateList;
     private ArrayList<String> participantsList;
+    //WETHER AUTHOR'S ANSWER IS SAVED
     private boolean isAnswerSaved;
+    private boolean isQuizMarkedCompleted;
     private String timeAnswerSubmitted;
+    ArrayList<String> savedParticipantScoresList;
+    private int totalQuizScore;
+    private int totalTheory;
+    private int totalObjective;
     private ArrayList<ArrayList<String>> authorSavedAnswersList = new ArrayList<>();
     public QuizDataModel(){}
     public QuizDataModel(
@@ -37,8 +45,8 @@ public class QuizDataModel implements Serializable {
              String authorId,
              String quizTitle,
              String quizDescription,
-             String quizFeeDescription,
-             String quizRewardDescription,
+             int totalQuizFeeCoins,
+             int totalQuizRewardCoins,
              String dateCreated,
              String dateEdited,
              long totalQuestions,
@@ -48,18 +56,24 @@ public class QuizDataModel implements Serializable {
              boolean isPublic,
              boolean isClosed,
              ArrayList<ArrayList> questionList,
-             ArrayList<Long> dateList,
+             ArrayList<Long> startDateList,
+             ArrayList<Long> endDateList,
              ArrayList<String> participantsList,
              boolean isAnswerSaved,
+             boolean isQuizMarkedCompleted,
              String timeAnswerSubmitted,
-             ArrayList<ArrayList<String>> authorSavedAnswersList
-            ) {
+             ArrayList<ArrayList<String>> authorSavedAnswersList,
+             ArrayList<String> savedParticipantScoresList,
+             int totalQuizScore,
+             int totalTheory,
+             int totalObjective
+    ) {
         this.quizId = quizId;
         this.authorId = authorId;
         this.quizTitle = quizTitle;
         this.quizDescription = quizDescription;
-        this.quizFeeDescription = quizFeeDescription;
-        this.quizRewardDescription = quizRewardDescription;
+        this.totalQuizFeeCoins = totalQuizFeeCoins;
+        this.totalQuizRewardCoins = totalQuizRewardCoins;
         this.dateCreated = dateCreated;
         this.dateEdited = dateEdited;
         this.totalQuestions = totalQuestions;
@@ -69,11 +83,17 @@ public class QuizDataModel implements Serializable {
         this.isPublic = isPublic;
         this.isClosed = isClosed;
         this.questionList = questionList;
-        this.dateList = dateList;
+        this.startDateList = startDateList;
+        this.endDateList = endDateList;
         this.participantsList = participantsList;
         this.isAnswerSaved = isAnswerSaved;
+        this.isQuizMarkedCompleted = isQuizMarkedCompleted;
         this.timeAnswerSubmitted = timeAnswerSubmitted;
         this.authorSavedAnswersList = authorSavedAnswersList;
+        this.savedParticipantScoresList = savedParticipantScoresList;
+        this.totalQuizScore = totalQuizScore;
+        this.totalTheory = totalTheory;
+        this.totalObjective = totalObjective;
     }
 
     public String getQuizId() {
@@ -92,12 +112,12 @@ public class QuizDataModel implements Serializable {
         return quizDescription;
     }
 
-    public String getQuizFeeDescription() {
-        return quizFeeDescription;
+    public int getTotalQuizFeeCoins() {
+        return totalQuizFeeCoins;
     }
 
-    public String getQuizRewardDescription() {
-        return quizRewardDescription;
+    public int getTotalQuizRewardCoins() {
+        return totalQuizRewardCoins;
     }
 
     public String getDateCreated() {
@@ -136,8 +156,11 @@ public class QuizDataModel implements Serializable {
         return questionList;
     }
 
-    public ArrayList<Long> getDateList() {
-        return dateList;
+    public ArrayList<Long> getStartDateList() {
+        return startDateList;
+    }
+    public ArrayList<Long> getEndDateList() {
+        return endDateList;
     }
 
     public ArrayList<String> getParticipantsList() {
@@ -151,6 +174,9 @@ public class QuizDataModel implements Serializable {
     public boolean isAnswerSaved() {
         return isAnswerSaved;
     }
+    public boolean isQuizMarkedCompleted() {
+        return isQuizMarkedCompleted;
+    }
 
     public String getTimeAnswerSubmitted() {
         return timeAnswerSubmitted;
@@ -158,5 +184,25 @@ public class QuizDataModel implements Serializable {
 
     public ArrayList<ArrayList<String>> getAuthorSavedAnswersList() {
         return authorSavedAnswersList;
+    }
+
+    public ArrayList<String> getSavedParticipantScoresList() {
+        savedParticipantScoresList.sort(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareToIgnoreCase(o2)*-1;
+            }
+        });
+        return savedParticipantScoresList;
+    }
+
+    public int getTotalQuizScore() {
+        return totalQuizScore;
+    }
+    public int getTotalTheory() {
+        return totalTheory;
+    }
+    public int getTotalObjective() {
+        return totalObjective;
     }
 }

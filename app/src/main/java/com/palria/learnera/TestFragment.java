@@ -75,7 +75,7 @@ initUI(parentView);
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(getContext(),SignUpActivity.class));
-                Toast.makeText(getContext(), "year: "+GlobalConfig.getEventYear()+"  month: "+GlobalConfig.getEventMonth()+"  minute: "+GlobalConfig.getEventSeconds()+"  minute: "+GlobalConfig.getEventMinute()+"  hour: "+GlobalConfig.getEventHour()+"  day: "+GlobalConfig.getEventDay()+"  week: "+GlobalConfig.getEventWeekOfYear() , Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "year: "+GlobalConfig.getEventYear()+"  month: "+GlobalConfig.getEventMonth()+"  minute: "+GlobalConfig.getEventSeconds()+"  minute: "+GlobalConfig.getEventMinute()+"  hour: "+GlobalConfig.getEventHour(true)+"  day: "+GlobalConfig.getEventDay()+"  week: "+GlobalConfig.getEventWeekOfYear() , Toast.LENGTH_LONG).show();
             }
         });
         return parentView;

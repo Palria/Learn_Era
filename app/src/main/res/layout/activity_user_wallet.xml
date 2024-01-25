@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/purple_500"
+    tools:context=".UserWalletActivity">
+
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        app:navigationIconTint="@color/white"
+        android:layout_width="match_parent"
+        app:titleTextColor="@color/white"
+        app:title="Your Wallet"
+        android:theme="@style/ToolbarColoredBackArrow"
+        android:background="@color/secondary_app_color"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_height="?attr/actionBarSize"/>
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constraintTop_toBottomOf="@id/topBar"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        >
+    <androidx.cardview.widget.CardView
+        android:layout_margin="2pt"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_columnWeight="1"
+        app:contentPadding="5pt"
+        app:cardBackgroundColor="@color/error_red"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:textAlignment="center"
+                android:text="Available Equity"
+                android:textStyle="bold"
+                android:textSize="10pt"
+                android:textAllCaps="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_marginRight="2pt"
+                    android:id="@+id/feeIconId"
+                    app:tint="@color/darkIcon"
+                    android:layout_gravity="center"
+                    android:src="@drawable/baseline_cake_24"
+                    android:layout_width="20pt"
+                    android:layout_height="20pt"/>
+
+                <TextView
+                    android:id="@+id/availableCoinEquityTextViewId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="2pt"
+                    android:layout_marginEnd="20dp"
+                    android:text="0.0 COINS"
+                    android:textSize="18pt"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/getMoreCoinActionTextViewId"
+                android:paddingHorizontal="5pt"
+                android:text="Get more coin"
+                android:layout_marginVertical="1pt"
+                android:textStyle="bold"
+                android:textColor="@color/teal_700"
+                android:background="@drawable/outlined_white_bg_button"
+                android:layout_marginHorizontal="5pt"
+                android:paddingVertical="5pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+    <androidx.cardview.widget.CardView
+        android:layout_margin="2pt"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        app:contentPadding="5pt"
+        app:cardBackgroundColor="@color/success_green"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:textAlignment="center"
+                android:text="WITHDRAWABLE BALANCE"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:textSize="10pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_marginRight="2pt"
+                    android:id="@+id/rewardIconId"
+                    app:tint="@color/darkIcon"
+                    android:src="@drawable/baseline_cake_24"
+                    android:layout_gravity="center"
+                    android:layout_width="20pt"
+                    android:layout_height="20pt"
+                    />
+
+                <TextView
+                    android:id="@+id/withdrawableCoinsTextViewId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="2pt"
+                    android:layout_marginEnd="20dp"
+                    android:text="0.0 COINS"
+                    android:textSize="18pt"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:paddingHorizontal="5pt"
+                android:paddingVertical="2pt"
+                android:text="Withdrawal Limit: $5"
+                android:textStyle="bold"
+                android:textSize="9sp"
+                android:textColor="@color/error_red"
+                android:background="@drawable/outlined_white_bg_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:id="@+id/quizTipLayoutId"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="1pt"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:textColor="@color/white"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:textStyle="bold"
+                    android:inputType="textMultiLine"
+                    android:textSize="12sp"
+                    android:id="@+id/quizTipsTextViewId"
+                    android:text="This balance can be withdrawn to your local bank account.
+                    \n To withdraw, click Withdraw button to process your request.
+                    \n You must have also saved your account details through Settings screen.
+                    \n Sources of earnings: -Participation in Quiz, -Winning in Quiz, -Creating contents regularly, and more to come"
+                    android:enabled="false"
+                    android:gravity="start|top"
+                    android:layout_height="match_parent"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/withdrawActionTextViewId"
+                android:paddingHorizontal="5pt"
+                android:text="Withdraw"
+                android:layout_marginVertical="1pt"
+                android:textStyle="bold"
+                android:textColor="@color/teal_700"
+                android:background="@drawable/outlined_white_bg_button"
+                android:layout_marginHorizontal="5pt"
+                android:paddingVertical="5pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                />
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:textColor="@color/white"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:id="@+id/tipId"
+            android:text="History"
+            android:gravity="start|top"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:padding="10dp"
+            android:background="@color/secondary_app_color"
+            />
+
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayoutId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:tabMode="scrollable"
+            app:tabIndicatorColor="@color/teal_700"
+            android:tooltipText="s"
+            app:tabTextColor="@color/white"
+            app:tabSelectedTextColor="@color/teal_700"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/searchLinearLayoutId"
+            />
+
+
+
+
+
+        <LinearLayout
+        android:id="@+id/quizEarningsHistoryLinearLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="visible"
+        >
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/withdrawalsHistoryLinearLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        >
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/referralRewardLinearLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        >
+    </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

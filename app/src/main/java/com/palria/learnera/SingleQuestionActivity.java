@@ -67,6 +67,7 @@ public class SingleQuestionActivity extends AppCompatActivity {
     TextView viewCountTextView;
     TextView dateAskedTextView;
     TextView askerNameTextView;
+    ImageView verificationFlagImageView;
     ImageButton backButton;
     ImageView askerPhoto;
     FloatingActionButton answerQuestionActionButton;
@@ -116,11 +117,28 @@ public class SingleQuestionActivity extends AppCompatActivity {
         viewCountTextView = findViewById(R.id.viewCountTextViewId);
         dateAskedTextView = findViewById(R.id.dateAskedTextViewId);
         askerNameTextView = findViewById(R.id.posterNameTextViewId);
+        verificationFlagImageView = findViewById(R.id.verificationFlagImageViewId);
         askerPhoto = findViewById(R.id.askerProfilePhotoId);
         alertDialog = new AlertDialog.Builder(SingleQuestionActivity.this)
                 .setCancelable(false)
                 .setView(getLayoutInflater().inflate(R.layout.default_loading_layout,null))
                 .create();
+
+
+        askerNameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(GlobalConfig.getHostActivityIntent(SingleQuestionActivity.this,null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY,questionDataModel.getAuthorId()));
+
+            }
+        });
+       askerPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               startActivity(GlobalConfig.getHostActivityIntent(SingleQuestionActivity.this,null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY, questionDataModel.getAuthorId()));
+
+            }
+        });
 
     }
 
@@ -173,6 +191,14 @@ public class SingleQuestionActivity extends AppCompatActivity {
                                     .placeholder(R.drawable.default_profile)
                                     .into(askerPhoto);
                         } catch (Exception ignored) {
+                        }
+
+                        boolean isVerified = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) != null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) : false;
+                        if (isVerified) {
+                           verificationFlagImageView.setVisibility(View.VISIBLE);
+                        } else {
+                           verificationFlagImageView.setVisibility(View.INVISIBLE);
+
                         }
                     }
                 });

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EarnCoinActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        app:navigationIconTint="@color/white"
+        android:layout_width="match_parent"
+        app:titleTextColor="@color/white"
+        app:title="Earn coins"
+        android:theme="@style/ToolbarColoredBackArrow"
+        android:background="@color/secondary_app_color"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_height="?attr/actionBarSize"/>
+
+<!--    <TextView-->
+<!--        android:id="@+id/numberOfCoinsTextViewId"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text=""-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/topBar"-->
+<!--        />-->
+
+
+    <TextView
+        android:id="@+id/statusTextViewId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="100dp"
+        android:layout_marginHorizontal="30dp"
+        android:text="Coins got you covered"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="25sp"
+        android:gravity="center_horizontal"
+        android:backgroundTint="@color/secondary_app_color"
+        android:background="@drawable/rounded_border_gray_bg"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:layout_width="match_parent"
+        android:textColor="@color/grayDark"
+        android:fontFamily="sans-serif-condensed-medium"
+        android:textStyle="bold"
+        android:inputType="textMultiLine"
+        android:textSize="12sp"
+        android:id="@+id/quizTipsTextViewId"
+        android:text="@string/earn_coin_desc"
+        android:enabled="false"
+        android:gravity="start|top"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/watchAndEarnActionTextViewId"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/watchAndEarnActionTextViewId"
+        android:layout_width="match_parent"
+        android:textColor="@color/white"
+        android:text="Watch and Earn"
+        android:background="@color/secondary_app_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_margin="10dp"
+        app:cornerRadius="30dp"
+        android:layout_height="wrap_content"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

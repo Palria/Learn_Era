@@ -33,13 +33,17 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 import com.palria.learnera.adapters.QuizParticipantRCVAdapter;
 import com.palria.learnera.models.QuestionDataModel;
 import com.palria.learnera.models.QuizDataModel;
@@ -57,7 +61,7 @@ public class QuizActivity extends AppCompatActivity {
     Toolbar toolbar;
     String authorId;
     String quizId;
-    TextView maxTimeTextView;
+//    TextView maxTimeTextView;
     TextView joinActionTextView;
     TextView statusTextView;
     TextView participantCountTextView;
@@ -81,6 +85,10 @@ public class QuizActivity extends AppCompatActivity {
     int activePosition = -1;
     TextView activeQuestionTimeRemainTextView ;
     TextView activeQuestionTextView ;
+    TextView regFeeTextView;
+    TextView rewardTextView;
+    TextView startTimeTextView;
+    TextView endTimeTextView;
     View activeAnswerInput;
     RadioButton activeAnswerRadioOption1;
     RadioButton activeAnswerRadioOption2;
@@ -91,12 +99,23 @@ public class QuizActivity extends AppCompatActivity {
     boolean isJoined = false;
     boolean isAuthor = false;
     boolean isLoadFromOnline = false;
-
+    MaterialButton markQuizAsCompletedActionTextView;
     RecyclerView participantRecyclerView;
     QuizParticipantRCVAdapter quizParticipantRCVAdapter;
     ArrayList<QuizParticipantDatamodel> quizParticipantDatamodels = new ArrayList<>();
 
+    long startYear = 0L;
+    long startMonth = 0L;
+    long startDay = 0L;
+    long startHour = 0L;
+    long startMinute = 0L;
 
+    long endYear = 0L;
+    long endMonth = 0L;
+    long endDay = 0L;
+    long endHour = 0L;
+    long endMinute = 0L;
+    boolean isStarted;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -198,7 +217,7 @@ public class QuizActivity extends AppCompatActivity {
 
         backButton = findViewById(R.id.backButtonId);
         toolbar = findViewById(R.id.topBar);
-        maxTimeTextView = findViewById(R.id.maxTimeTextViewId);
+//        maxTimeTextView = findViewById(R.id.maxTimeTextViewId);
         joinActionTextView = findViewById(R.id.joinQuizActionTextViewId);
         statusTextView = findViewById(R.id.activeStatusTextViewId);
         participantCountTextView = findViewById(R.id.participantCountTextViewId);
@@ -212,6 +231,12 @@ public class QuizActivity extends AppCompatActivity {
         containerLinearLayout = findViewById(R.id.containerLinearLayoutId);
         submitActionButton = findViewById(R.id.submitActionButtonId);
         participantRecyclerView = findViewById(R.id.participantRecyclerViewId);
+        startTimeTextView=findViewById(R.id.startTimeTextViewId);
+        endTimeTextView=findViewById(R.id.endTimeTextViewId);
+        markQuizAsCompletedActionTextView=findViewById(R.id.markQuizAsCompletedActionTextViewId);
+
+        regFeeTextView=findViewById(R.id.regFeeValueTextViewId);
+        rewardTextView=findViewById(R.id.rewardValueTextViewId);
 
         alertDialog = new AlertDialog.Builder(QuizActivity.this)
                 .setCancelable(false)
@@ -354,17 +379,20 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onTick(long l) {
 
-                //count down time for the quiz
-                timeRemain = timeRemain-1;
-                maxTimeTextView.setText("Time "+timeRemain+"s/"+totalTimeLimit+"s");
-                if(timeRemain == 5){
-                    maxTimeTextView.setTextColor(ResourcesCompat.getColor(getResources(),R.color.white,getTheme()));
-                }
-                if(timeRemain == 0 && !isSubmitted && !isAuthor){
-                    processAndSubmitAnswer();
-                }
+                //count down time for the quiz. may not be needeed anymore
+//                timeRemain = timeRemain-1;
+//                maxTimeTextView.setText("Time "+timeRemain+"s/"+totalTimeLimit+"s");
+//                if(timeRemain == 5){
+//                    maxTimeTextView.setTextColor(ResourcesCompat.getColor(getResources(),R.color.white,getTheme()));
+//                }
+//                if(timeRemain == 0 && !isSubmitted && !isAuthor){
+//                    processAndSubmitAnswer();
+//                }
                 //count down time for updating single question
-        for(int i=0; i<viewedPositions.size();i++){
+                if (quizDataModel.isClosed()  || GlobalConfig.isQuizExpired(endYear,endMonth,endDay,endHour,endMinute)) {
+                    submitActionButton.setVisibility(View.GONE);
+                }
+                    for(int i=0; i<viewedPositions.size();i++){
             if(timeRemainMap.get(i) != 0) {
                 timeRemainMap.put(i, (timeRemainMap.get(i) - 1));
             }
@@ -390,6 +418,18 @@ if(timeRemainMap.get(activePosition) == 0) {
         activeQuestionTimeRemainTextView.setTextColor(ResourcesCompat.getColor(getResources(),R.color.error_red,getTheme()));
     }
 }
+                if(!isStarted && GlobalConfig.isQuizStarted(startYear,startMonth,startDay,startHour,startMinute)) {
+                    displayQuestion(0);
+                    renderParticipantInfo();
+                    if (!isSubmitted) {
+//                    check if he has submitted, so if he has not submitted then start countdowntimer
+                        updateQuizCountDownTimer();
+                        submitActionButton.setVisibility(View.VISIBLE);
+
+                    } else {
+                        submitActionButton.setVisibility(View.GONE);
+                    }
+                }
             }
 
             @Override
@@ -406,6 +446,32 @@ if(timeRemainMap.get(activePosition) == 0) {
         this.quizDataModel = quizDataModel;
         toolbar.setTitle(quizDataModel.getQuizTitle());
         descriptionTextView.setText(quizDataModel.getQuizDescription());
+        regFeeTextView.setText(quizDataModel.getTotalQuizFeeCoins()+" COINS");
+        rewardTextView.setText(quizDataModel.getTotalQuizRewardCoins()+" COINS");
+
+        ArrayList<Long> startTime = quizDataModel.getStartDateList();
+        if(startTime.size()>=5) {
+            startDay = startTime.get(2);
+           startMonth = startTime.get(1) ;
+            startYear = startTime.get(0) ;
+           startHour = startTime.get(3);
+            startMinute = startTime.get(4);
+
+        }
+
+        startTimeTextView.setText(startYear + "/" + startMonth + "/" +startYear + " :" + startHour + ":" + startMinute);
+ ArrayList<Long> endTime = quizDataModel.getEndDateList();
+        if(startTime.size()>=5) {
+            endDay = endTime.get(2);
+            endMonth = endTime.get(1) ;
+            endYear = endTime.get(0) ;
+            endHour = endTime.get(3);
+            endMinute = endTime.get(4);
+
+        }
+        endTimeTextView.setText(endYear + "/" + endMonth + "/" +endYear + " :" + endHour + ":" + endMinute);
+
+
         if(isAuthor){
             joinActionTextView.setText("You are the author");
         }else {
@@ -414,14 +480,23 @@ if(timeRemainMap.get(activePosition) == 0) {
                 isJoined = true;
             } else {
                 joinActionTextView.setText("Join");
-                if (quizDataModel.isClosed()) {
+                if (quizDataModel.isClosed()  || GlobalConfig.isQuizExpired(endYear,endMonth,endDay,endHour,endMinute)) {
                     joinActionTextView.setEnabled(false);
+                    submitActionButton.setVisibility(View.GONE);
                     statusTextView.setText("Closed");
                 } else {
                     joinActionTextView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            joinQuiz();
+                            //navigate to JoinQuizActivity
+                            Intent intent = new Intent(QuizActivity.this, JoinQuizActivity.class);
+                            intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY, quizDataModel);
+                            startActivity(intent);
+
+                            QuizActivity.super.onBackPressed();
+
+//                            joinQuiz();
+
                         }
                     });
                 }
@@ -429,14 +504,14 @@ if(timeRemainMap.get(activePosition) == 0) {
             }
         }
 
-        if(quizDataModel.isClosed()){
+        if(quizDataModel.isClosed() || GlobalConfig.isQuizExpired(endYear,endMonth,endDay,endHour,endMinute)){
             statusTextView.setText("Closed");
         }
          isSubmitted = GlobalConfig.isQuizSubmitted(QuizActivity.this,quizId);
         totalTimeLimit = quizDataModel.getTotalTimeLimit();
         timeRemain = totalTimeLimit;
 
-        maxTimeTextView.setText("Time "+timeRemain+"s/"+totalTimeLimit+"s");
+//        maxTimeTextView.setText("Time "+timeRemain+"s/"+totalTimeLimit+"s");
 //        CountDownTimer countDownTimer = new CountDownTimer(quizDataModel.getTotalTimeLimit()*1000,1000) {
 //            @Override
 //            public void onTick(long l) {
@@ -453,6 +528,10 @@ if(timeRemainMap.get(activePosition) == 0) {
 //                processAndSubmitAnswer();
 //            }
 //        }.start();
+
+     if(quizDataModel.getAuthorId().equals(GlobalConfig.getCurrentUserId()) && (!quizDataModel.isQuizMarkedCompleted() ||  !GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId))) {
+         markQuizAsCompletedActionTextView.setVisibility(View.VISIBLE);
+     }
 
         participantCountTextView.setText(quizDataModel.getTotalParticipants()+"");
         viewCountTextView.setText(quizDataModel.getTotalViews()+"");
@@ -472,6 +551,8 @@ if(timeRemainMap.get(activePosition) == 0) {
             answerItem.add(questionList.size()>=4?questionList.get(3)+"":"Unknown error");
             //flags the answer as unmarked
             answerItem.add("UNMARKED");
+            //stores the score of the answer
+            answerItem.add("0");
             answersList.add(answerItem);
 
             //init time remain
@@ -502,9 +583,12 @@ if(timeRemainMap.get(activePosition) == 0) {
                 submitActionButton.setVisibility(View.GONE);
             }
         }
-    }
+
+
+        }
 
     private void displayQuestion(int questionNumber){
+        isStarted = true;
         ArrayList questionItem = (ArrayList) questionList.get(questionNumber);
 
         if( (questionItem.get(0)+"").equals(GlobalConfig.IS_THEORY_QUESTION_KEY)){
@@ -559,6 +643,7 @@ if(timeRemainMap.get(activePosition) == 0) {
                 answerItem.add(answer);
                 answerItem.add(questionTextView.getText()+"");
                 answerItem.add("UNMARKED");
+                answerItem.add("0");
 
             }
         });
@@ -670,6 +755,7 @@ if(timeRemainMap.get(activePosition) == 0) {
                     answerItem.add("1-"+radioOption1.getText());
                     answerItem.add(questionTextView.getText()+"");
                     answerItem.add("UNMARKED");
+                    answerItem.add("0");
 
                 }
             }
@@ -686,6 +772,7 @@ if(timeRemainMap.get(activePosition) == 0) {
                     answerItem.add("2-"+radioOption2.getText());
                     answerItem.add(questionTextView.getText()+"");
                     answerItem.add("UNMARKED");
+                    answerItem.add("0");
 
                 }
             }
@@ -702,6 +789,7 @@ if(timeRemainMap.get(activePosition) == 0) {
                     answerItem.add("3-"+radioOption3.getText());
                     answerItem.add(questionTextView.getText()+"");
                     answerItem.add("UNMARKED");
+                    answerItem.add("0");
 
                 }
             }
@@ -718,6 +806,7 @@ if(timeRemainMap.get(activePosition) == 0) {
                     answerItem.add("4-"+radioOption4.getText());
                     answerItem.add(questionTextView.getText()+"");
                     answerItem.add("UNMARKED");
+                    answerItem.add("0");
 
                 }
             }
@@ -737,6 +826,7 @@ if(timeRemainMap.get(activePosition) == 0) {
                 answerItem.add("1-"+radioOption1.getText());
                 answerItem.add(questionTextView.getText()+"");
                 answerItem.add("UNMARKED");
+                answerItem.add("0");
 
         }
 
@@ -827,7 +917,7 @@ if(timeRemainMap.get(activePosition) == 0) {
         joinActionTextView.setOnClickListener(v->{
 
         });
-        GlobalConfig.joinQuiz(QuizActivity.this, quizId, new GlobalConfig.ActionCallback() {
+        GlobalConfig.joinQuiz(QuizActivity.this, quizDataModel, new GlobalConfig.ActionCallback() {
             @Override
             public void onSuccess() {
                 //set the onclicklistener to do nothing after it had succeeded
@@ -890,6 +980,7 @@ if(timeRemainMap.get(activePosition) == 0) {
                         String userDisplayName = "" + documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
                         posterNameTextView.setText(userDisplayName);
 
+
                         boolean isVerified = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY)!=null?documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY):false;
                         if(isVerified){
                             verificationFlagImageView.setVisibility(View.VISIBLE);
@@ -899,6 +990,22 @@ if(timeRemainMap.get(activePosition) == 0) {
                         }
                     }
                 });
+
+        posterNameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(GlobalConfig.getHostActivityIntent(QuizActivity.this,null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY,quizDataModel.getAuthorId()));
+
+            }
+        });
+        posterPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(GlobalConfig.getHostActivityIntent(QuizActivity.this,null,GlobalConfig.USER_PROFILE_FRAGMENT_TYPE_KEY,quizDataModel.getAuthorId()));
+
+            }
+        });
+
 
     }
     void getParticipants(){
@@ -941,8 +1048,11 @@ if(timeRemainMap.get(activePosition) == 0) {
 
                     }
                     String timeSubmitted = documentSnapshot.get(GlobalConfig.ANSWER_SUBMITTED_TIME_STAMP_KEY)!=null? documentSnapshot.getTimestamp(GlobalConfig.ANSWER_SUBMITTED_TIME_STAMP_KEY).toDate()+"" :"Undefined";
+                    long totalScores = documentSnapshot.get(GlobalConfig.TOTAL_SCORE_KEY)!=null? documentSnapshot.getLong(GlobalConfig.TOTAL_SCORE_KEY) :0L;
+                    boolean isRewardClaimed = documentSnapshot.get(GlobalConfig.IS_REWARD_CLAIMED_KEY)!=null? documentSnapshot.getBoolean(GlobalConfig.IS_REWARD_CLAIMED_KEY) :false;
+                    boolean isAnswerMarkedByAuthor = documentSnapshot.get(GlobalConfig.IS_ANSWER_MARKED_BY_AUTHOR_KEY)!=null? documentSnapshot.getBoolean(GlobalConfig.IS_ANSWER_MARKED_BY_AUTHOR_KEY) :false;
 
-                    QuizParticipantDatamodel quizParticipantDatamodel = new QuizParticipantDatamodel(false,participantId,dateJoined,isSubmitted,timeSubmitted,answerList);
+                    QuizParticipantDatamodel quizParticipantDatamodel = new QuizParticipantDatamodel(false,participantId,dateJoined,isSubmitted,timeSubmitted,(int)totalScores,isRewardClaimed,answerList,isAnswerMarkedByAuthor);
                     quizParticipantDatamodels.add(quizParticipantDatamodel);
                     quizParticipantRCVAdapter.notifyItemChanged(quizParticipantDatamodels.size());
                 }
@@ -965,9 +1075,18 @@ if(timeRemainMap.get(activePosition) == 0) {
                     String authorId = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
                     String quizTitle = ""+ documentSnapshot.get(GlobalConfig.QUIZ_TITLE_KEY);
                     String quizDescription = ""+ documentSnapshot.get(GlobalConfig.QUIZ_DESCRIPTION_KEY);
-                    String quizFeeDescription = ""+ documentSnapshot.get(GlobalConfig.QUIZ_FEE_DESCRIPTION_KEY);
-                    String quizRewardDescription = ""+ documentSnapshot.get(GlobalConfig.QUIZ_REWARD_DESCRIPTION_KEY);
-                    long totalQuestions =  documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUESTIONS_KEY) : 0L;
+//                    String quizFeeDescription = ""+ documentSnapshot.get(GlobalConfig.QUIZ_FEE_DESCRIPTION_KEY);
+//                    String quizRewardDescription = ""+ documentSnapshot.get(GlobalConfig.QUIZ_REWARD_DESCRIPTION_KEY);
+                long totalQuizFeeCoins =  documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY) : 0L;
+                long totalQuizRewardCoins =  documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_KEY) : 0L;
+
+
+                long totalQuestions =  documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUESTIONS_KEY) : 0L;
+
+                    long totalQuizScore =  documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_SCORE_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUIZ_SCORE_KEY) : 0L;
+                    long totalTheoryQuestions =  documentSnapshot.get(GlobalConfig.TOTAL_THEORY_QUESTIONS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_THEORY_QUESTIONS_KEY) : 0L;
+                    long totalObjectiveQuestions =  documentSnapshot.get(GlobalConfig.TOTAL_OBJECTIVE_QUESTIONS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_OBJECTIVE_QUESTIONS_KEY) : 0L;
+
                     long totalTimeLimit =  documentSnapshot.get(GlobalConfig.TOTAL_TIME_LIMIT_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_TIME_LIMIT_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_TIME_LIMIT_KEY) : 0L;
                     long totalParticipants =  documentSnapshot.get(GlobalConfig.TOTAL_PARTICIPANTS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_PARTICIPANTS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_PARTICIPANTS_KEY) : 0L;
                     long totalViews =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) : 0L;
@@ -979,7 +1098,10 @@ if(timeRemainMap.get(activePosition) == 0) {
                         questionList.add(questionList1);
                     }
 
-                    ArrayList dateList =  documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) : new ArrayList();
+                    ArrayList<String> savedParticipantScoresList =  documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) : new ArrayList();
+
+                    ArrayList startDateList =  documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) : new ArrayList();
+                    ArrayList endDateList =  documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) : new ArrayList();
                     ArrayList participantsList =  documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) : new ArrayList();
                     String dateCreated = documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY).toDate() : "Moment ago";
                     if (dateCreated.length() > 10) {
@@ -999,13 +1121,15 @@ if(timeRemainMap.get(activePosition) == 0) {
                         authorSavedAnswersList.add(answerItem);
 
                     }
-                   renderQuiz(new QuizDataModel(
+                boolean isQuizMarkedCompleted = documentSnapshot.get(GlobalConfig.IS_QUIZ_MARKED_COMPLETED_KEY)!=null? documentSnapshot.getBoolean(GlobalConfig.IS_QUIZ_MARKED_COMPLETED_KEY) :false;
+
+                renderQuiz(new QuizDataModel(
                             quizId,
                             authorId,
                             quizTitle,
                             quizDescription,
-                            quizFeeDescription,
-                            quizRewardDescription,
+                        (int)totalQuizFeeCoins,
+                        (int)totalQuizRewardCoins,
                             dateCreated,
                             dateEdited,
                             totalQuestions,
@@ -1015,11 +1139,17 @@ if(timeRemainMap.get(activePosition) == 0) {
                             isPublic,
                             isClosed,
                             questionList,
-                            dateList,
+                            startDateList,
+                            endDateList,
                             participantsList,
                             isAnswerSaved,
-                            timeAnswerSubmitted,
-                            authorSavedAnswersList
+                        isQuizMarkedCompleted,
+                        timeAnswerSubmitted,
+                            authorSavedAnswersList,
+                        savedParticipantScoresList,
+                        (int)totalQuizScore,
+                        (int)totalTheoryQuestions,
+                        (int)totalObjectiveQuestions
                     ));
 
 
@@ -1031,20 +1161,23 @@ if(timeRemainMap.get(activePosition) == 0) {
     void renderParticipantInfo(){
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
-        quizParticipantRCVAdapter = new QuizParticipantRCVAdapter(quizParticipantDatamodels,this,quizDataModel.getAuthorSavedAnswersList(),quizId,quizDataModel,authorId);
+        quizParticipantRCVAdapter = new QuizParticipantRCVAdapter(quizParticipantDatamodels,this,quizDataModel.getAuthorSavedAnswersList(),quizId,quizDataModel,authorId,markQuizAsCompletedActionTextView);
         participantRecyclerView.setHasFixedSize(false);
         participantRecyclerView.setAdapter(quizParticipantRCVAdapter);
         participantRecyclerView.setLayoutManager(linearLayoutManager);
 
         renderAuthorAnswer();
         getParticipants();
+
     }
     void renderAuthorAnswer(){
-        QuizParticipantDatamodel quizParticipantDatamodel = new QuizParticipantDatamodel(true,authorId,"Undefined", !quizDataModel.isAnswerSaved() ?GlobalConfig.authorRecentlySavedQuizAnswerIdList.contains(quizId):true, quizDataModel.getTimeAnswerSubmitted(), !GlobalConfig.authorRecentlySavedQuizAnswerIdList.contains(quizId)?quizDataModel.getAuthorSavedAnswersList():GlobalConfig.authorRecentlySavedAnswersListMap.get(quizId));
+        QuizParticipantDatamodel quizParticipantDatamodel = new QuizParticipantDatamodel(true,authorId,"Undefined", !quizDataModel.isAnswerSaved() ?GlobalConfig.authorRecentlySavedQuizAnswerIdList.contains(quizId):true, quizDataModel.getTimeAnswerSubmitted(),0,false, !GlobalConfig.authorRecentlySavedQuizAnswerIdList.contains(quizId)?quizDataModel.getAuthorSavedAnswersList():GlobalConfig.authorRecentlySavedAnswersListMap.get(quizId),false);
         quizParticipantDatamodels.add(quizParticipantDatamodel);
         quizParticipantRCVAdapter.notifyItemChanged(quizParticipantDatamodels.size());
 
     }
+
+
     interface CountDownCallback{
         void onCount();
     }

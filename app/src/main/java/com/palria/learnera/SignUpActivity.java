@@ -343,6 +343,7 @@ public class SignUpActivity extends AppCompatActivity {
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_EDITED_KEY,GlobalConfig.getDate());
         userProfileDetails.put(GlobalConfig.USER_PROFILE_DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
         userProfileDetails.put(GlobalConfig.USER_TOKEN_ID_KEY,GlobalConfig.getCurrentUserTokenId());
+        userProfileDetails.put(GlobalConfig.IS_WALLET_CREATED_KEY,true);
 
         for(String searchKeyword: GlobalConfig.generateSearchVerbatimKeyWords(userDisplayName)) {
             userProfileDetails.put(GlobalConfig.USER_SEARCH_VERBATIM_KEYWORD_KEY, FieldValue.arrayUnion(searchKeyword));
@@ -354,12 +355,18 @@ public class SignUpActivity extends AppCompatActivity {
 
         writeBatch.set(userProfileDocumentReference,userProfileDetails, SetOptions.merge());
 
-//
-//        DocumentReference userDocumentReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
-//        HashMap<String,Object>userDetails = new HashMap<>();
-//        userDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_KEY,GlobalConfig.getDate());
-//        userDetails.put(GlobalConfig.USER_PROFILE_DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-//        writeBatch.set(userDocumentReference,userDetails, SetOptions.merge());
+
+        DocumentReference walletReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(userId).collection(GlobalConfig.USER_WALLET_KEY).document(GlobalConfig.USER_WALLET_KEY);
+        HashMap<String,Object>walletDetails = new HashMap<>();
+        walletDetails.put(GlobalConfig.WALLET_CREATED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+        walletDetails.put(GlobalConfig.WITHDRAWABLE_COIN_BALANCE_KEY,0L);
+        walletDetails.put(GlobalConfig.TOTAL_COINS_EARNED_KEY,0L);
+        walletDetails.put(GlobalConfig.TOTAL_COIN_EQUITY_KEY,0L);
+        walletDetails.put(GlobalConfig.QUIZ_EARNINGS_HISTORY_LIST_KEY,new ArrayList<>());
+        walletDetails.put(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_EARNED_KEY,0L);
+        walletDetails.put(GlobalConfig.COIN_WITHDRAWAL_HISTORY_LIST_KEY,new ArrayList<>());
+        walletDetails.put(GlobalConfig.REFERAL_REWARD_HISTORY_LIST_KEY,new ArrayList<>());
+        writeBatch.set(walletReference,walletDetails, SetOptions.merge());
 
         writeBatch.commit()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

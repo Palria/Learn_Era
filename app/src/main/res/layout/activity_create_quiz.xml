@@ -85,7 +85,6 @@
             android:id="@+id/categorySelectorSpinnerId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            
             />
     </LinearLayout>
     <ScrollView
@@ -119,31 +118,61 @@
              android:layout_height="wrap_content"/>
     
      </com.google.android.material.textfield.TextInputLayout>
+
      <com.google.android.material.textfield.TextInputLayout
          android:layout_width="match_parent"
          style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
          android:layout_height="wrap_content"
          android:layout_marginHorizontal="5pt"
+         app:helperText="Set start date"
          >
         
          <com.google.android.material.textfield.TextInputEditText
              android:layout_width="match_parent"
-             android:hint="Set date"
+             android:hint="Set start date"
              android:inputType="textPersonName"
              android:maxLength="60"
              android:textSize="15sp"
              android:drawablePadding="4pt"
              android:focusable="false"
              android:longClickable="false"
-             android:id="@+id/quizDateInputId"
+             android:id="@+id/quizStartDateInputId"
+             android:drawableStart="@drawable/ic_baseline_access_time_filled_24"
+             android:drawableTint="@color/black"
+             android:gravity="start|top"
+             android:layout_height="wrap_content"
+
+             />
+    
+     </com.google.android.material.textfield.TextInputLayout>
+    
+
+     <com.google.android.material.textfield.TextInputLayout
+         android:layout_width="match_parent"
+         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+         android:layout_height="wrap_content"
+         android:layout_marginHorizontal="5pt"
+         app:helperText="Set end date"
+         >
+
+         <com.google.android.material.textfield.TextInputEditText
+             android:layout_width="match_parent"
+             android:hint="Set end date"
+             android:inputType="textPersonName"
+             android:maxLength="60"
+             android:textSize="15sp"
+             android:drawablePadding="4pt"
+             android:focusable="false"
+             android:longClickable="false"
+             android:id="@+id/quizEndDateInputId"
              android:drawableStart="@drawable/ic_baseline_access_time_filled_24"
              android:drawableTint="@color/black"
              android:gravity="start|top"
              android:layout_height="wrap_content"/>
-    
+
      </com.google.android.material.textfield.TextInputLayout>
-    
-    
+
+
      <LinearLayout
          android:layout_marginVertical="5pt"
         android:layout_width="match_parent"
@@ -157,17 +186,17 @@ android:layout_marginHorizontal="4pt"
              android:layout_width="match_parent"
              style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
              app:counterEnabled="true"
-             app:helperText="max 30 chars"
+             app:helperText="max 99 coins"
              android:layout_weight="1"
              android:layout_marginHorizontal="5dp"
              android:layout_height="wrap_content">
         
              <com.google.android.material.textfield.TextInputEditText
                  android:layout_width="match_parent"
-                 android:hint="Describe fee"
-                 android:inputType="textPersonName"
+                 android:hint="Describe fee: Enter number of coins"
+                 android:inputType="number"
                  android:textSize="15sp"
-                 android:maxLength="30"
+                 android:maxLength="2"
                  android:id="@+id/quizFeeInputId"
                  android:gravity="start|top"
                  android:layout_height="wrap_content"/>
@@ -178,17 +207,17 @@ android:layout_marginHorizontal="4pt"
              android:layout_width="match_parent"
              style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
              app:counterEnabled="true"
-             app:helperText="max 30 chars"
+             app:helperText="max 99 coins"
              android:layout_weight="1"
              android:layout_marginHorizontal="5dp"
              android:layout_height="wrap_content">
         
              <com.google.android.material.textfield.TextInputEditText
                  android:layout_width="match_parent"
-                 android:hint="Describe reward"
-                 android:inputType="textPersonName"
+                 android:hint="Describe reward: Enter number of coins"
+                 android:inputType="number"
                  android:textSize="15sp"
-                 android:maxLength="30"
+                 android:maxLength="2"
                  android:id="@+id/quizRewardInputId"
                  android:gravity="start|top"
                  android:layout_height="wrap_content"/>

@@ -44,9 +44,16 @@ import com.paypal.android.sdk.payments.PaymentConfirmation;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class CreateQuizActivity extends AppCompatActivity {
     Intent intent;
@@ -62,28 +69,46 @@ public class CreateQuizActivity extends AppCompatActivity {
     ImageButton menuButton;
     boolean isQuizEdition = false;
     boolean isPublish = true;
-    boolean isDateSet = true;
+    boolean isStartDateSet = true;
+    boolean isEndDateSet = true;
 
     TextInputEditText quizTitleInput;
     TextInputEditText quizDescriptionInput;
     TextInputEditText quizFeeDescriptionInput;
     TextInputEditText quizRewardDescriptionInput;
-    TextInputEditText quizDateInput;
+    TextInputEditText quizStartDateInput;
+    TextInputEditText quizEndDateInput;
     AlertDialog  alertDialog;
-    DatePickerDialog datePickerDialog;
-    TimePickerDialog timePickerDialog;
+    DatePickerDialog startDatePickerDialog;
+    DatePickerDialog endDatePickerDialog;
+    TimePickerDialog startTimePickerDialog;
+    TimePickerDialog endTimePickerDialog;
 
-    long quizDay = 1;
-    long quizMonth = 2;
-    long quizYear = 2023;
-    long quizHour = 12;
-    long quizMinute = 30;
-    ArrayList<Long> quizDateList = new ArrayList<>();
+    long quizStartDay = 1;
+    long quizStartMonth = 2;
+    long quizStartYear = 2023;
+    long quizStartHour = 12;
+    long quizStartMinute = 30;
+    ArrayList<Long> quizStartDateList = new ArrayList<>();
+
+    long quizEndDay = 1;
+    long quizEndMonth = 2;
+    long quizEndYear = 2023;
+    long quizEndHour = 12;
+    long quizEndMinute = 30;
+    ArrayList<Long> quizEndDateList = new ArrayList<>();
+
 //    String[] timeLimits = {"5","10","15","20","25","30","35","40","45","50","55","60"};
     ArrayList<String> timeLimits = new ArrayList<>();
     Spinner categorySelector;
     String category;
     boolean isCategorySelected = false;
+
+
+    long totalQuizScore = 0L;
+    long totalTheoryQuestions = 0L;
+    long totalObjectiveQuestions = 0L;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,10 +176,16 @@ public class CreateQuizActivity extends AppCompatActivity {
 
             }
         });
-        quizDateInput.setOnClickListener(new View.OnClickListener() {
+        quizStartDateInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                datePickerDialog.show();
+                startDatePickerDialog.show();
+            }
+        });
+        quizEndDateInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                endDatePickerDialog.show();
             }
         });
         if(isQuizEdition){
@@ -167,28 +198,45 @@ public class CreateQuizActivity extends AppCompatActivity {
                     String quizTitle = ""+documentSnapshot.get(GlobalConfig.QUIZ_TITLE_KEY);
                     boolean isPublic = documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null?documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY):true;
                     long totalQuestions = documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY)!=null?documentSnapshot.getLong(GlobalConfig.TOTAL_QUESTIONS_KEY):0L;
-                    ArrayList<Long> quizDateList1 = documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY)!=null? (ArrayList<Long>) documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY):new ArrayList<>();
-                    String quizFeeDescription = ""+documentSnapshot.get(GlobalConfig.QUIZ_FEE_DESCRIPTION_KEY);
-                    String quizRewardDescription = ""+documentSnapshot.get(GlobalConfig.QUIZ_REWARD_DESCRIPTION_KEY);
+                    ArrayList<Long> quizStartDateList1 = documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY)!=null? (ArrayList<Long>) documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY):new ArrayList<>();
+                    ArrayList<Long> quizEndDateList1 = documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY)!=null? (ArrayList<Long>) documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY):new ArrayList<>();
+//                    String quizFeeDescription = ""+documentSnapshot.get(GlobalConfig.QUIZ_FEE_DESCRIPTION_KEY);
+//                    String quizRewardDescription = ""+documentSnapshot.get(GlobalConfig.QUIZ_REWARD_DESCRIPTION_KEY);
+                    long totalQuizFeeCoins =  documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY) : 0L;
+                    long totalQuizRewardCoins =  documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_KEY) : 0L;
 
                     quizDescriptionInput.setText(quizDescription);
                     quizTitleInput.setText(quizTitle);
-                    quizFeeDescriptionInput.setText(quizFeeDescription);
-                    quizRewardDescriptionInput.setText(quizRewardDescription);
-                    quizDateList = quizDateList1;
+                    quizFeeDescriptionInput.setText(totalQuizFeeCoins+"");
+                    quizRewardDescriptionInput.setText(totalQuizRewardCoins+"");
+                    quizStartDateList = quizStartDateList1;
+                    quizEndDateList = quizEndDateList1;
 
-                    isDateSet = true;
+                    isStartDateSet = true;
+                    isEndDateSet = true;
                     publishIndicatorSwitch.setChecked(isPublic);
 
-                    //set date
-                    if(quizDateList1 !=null) {
-                        if (quizDateList1.size() == 5) {
-                            quizYear = quizDateList1.get(0);
-                            quizMonth = quizDateList1.get(1);
-                            quizDay = quizDateList1.get(2);
-                            quizHour = quizDateList1.get(3);
-                            quizMinute = quizDateList1.get(4);
-                            quizDateInput.setText(quizDay + "/" + quizMonth + "/" + quizYear + " " + quizHour + ":" + quizMinute);
+                    //set start date
+                    if(quizStartDateList1 !=null) {
+                        if (quizStartDateList1.size() == 5) {
+                            quizStartYear = quizStartDateList1.get(0);
+                            quizStartMonth = quizStartDateList1.get(1);
+                            quizStartDay = quizStartDateList1.get(2);
+                            quizStartHour = quizStartDateList1.get(3);
+                            quizStartMinute = quizStartDateList1.get(4);
+                            quizStartDateInput.setText(quizStartDay + "/" + quizStartMonth + "/" + quizStartYear + " " + quizStartHour + ":" + quizStartMinute);
+                        }
+                    }
+
+                    //set start date
+                    if(quizEndDateList1 !=null) {
+                        if (quizEndDateList1.size() == 5) {
+                            quizEndYear = quizEndDateList1.get(0);
+                            quizEndMonth = quizEndDateList1.get(1);
+                            quizEndDay = quizEndDateList1.get(2);
+                            quizEndHour = quizEndDateList1.get(3);
+                            quizEndMinute = quizEndDateList1.get(4);
+                            quizEndDateInput.setText(quizEndDay + "/" + quizEndMonth + "/" + quizEndYear + " " + quizEndHour + ":" + quizEndMinute);
                         }
                     }
 
@@ -227,8 +275,10 @@ public class CreateQuizActivity extends AppCompatActivity {
             addObjectiveQuestion(containerLinearLayout.getChildCount(),"30","","","","","");
         }
         initCategorySpinner(categorySelector);
-        prepareDatePickerDialog();
-        prepareTimePickerDialog();
+        prepareStartDatePickerDialog();
+        prepareEndDatePickerDialog();
+        prepareStartTimePickerDialog();
+        prepareEndTimePickerDialog();
     }
 
     @Override
@@ -244,7 +294,8 @@ public class CreateQuizActivity extends AppCompatActivity {
 
         quizTitleInput = findViewById(R.id.quizTitleInput1Id);
         categorySelector = findViewById(R.id.categorySelectorSpinnerId);
-        quizDateInput = findViewById(R.id.quizDateInputId);
+        quizStartDateInput = findViewById(R.id.quizStartDateInputId);
+        quizEndDateInput = findViewById(R.id.quizEndDateInputId);
         quizDescriptionInput = findViewById(R.id.quizDescriptionInput1Id);
         quizFeeDescriptionInput = findViewById(R.id.quizFeeInputId);
         quizRewardDescriptionInput = findViewById(R.id.quizRewardInputId);
@@ -425,152 +476,163 @@ public class CreateQuizActivity extends AppCompatActivity {
         return;
         }
         if (isCategorySelected){
-        if (!(quizDateInput.getText()+"").isEmpty()){
-            category = categorySelector.getSelectedItem() + "";
-            ArrayList<ArrayList<String>> questionList = new ArrayList<>();
-            int totalTimeLimit = 0;
-            for (int i = 0; i < containerLinearLayout.getChildCount(); i++) {
-                View questionView = containerLinearLayout.getChildAt(i);
+        if (!(quizStartDateInput.getText()+"").isEmpty()) {
+            if (!(quizEndDateInput.getText() + "").isEmpty()) {
+                category = categorySelector.getSelectedItem() + "";
+                ArrayList<ArrayList<String>> questionList = new ArrayList<>();
+                int totalTimeLimit = 0;
+                for (int i = 0; i < containerLinearLayout.getChildCount(); i++) {
+                    View questionView = containerLinearLayout.getChildAt(i);
 
-                Spinner timeSelector1 = questionView.findViewById(R.id.timeSelectorSpinnerId);
-                totalTimeLimit = totalTimeLimit + (Integer.parseInt(timeSelector1.getSelectedItem() + ""));
+                    Spinner timeSelector1 = questionView.findViewById(R.id.timeSelectorSpinnerId);
+                    totalTimeLimit = totalTimeLimit + (Integer.parseInt(timeSelector1.getSelectedItem() + ""));
 
-                ArrayList<String> theoryQuestionList = new ArrayList<>();
+                    ArrayList<String> theoryQuestionList = new ArrayList<>();
 
-                if (questionView.getId() == R.id.theoryQuestionViewId) {
+                    if (questionView.getId() == R.id.theoryQuestionViewId) {
+                        //this is theory question
+                        totalTheoryQuestions++;
 //                        Toast.makeText(CreateQuizActivity.this, "theory", Toast.LENGTH_SHORT).show();
-                    TextInputEditText question = questionView.findViewById(R.id.questionInput1Id);
-                    Spinner timeSelector = questionView.findViewById(R.id.timeSelectorSpinnerId);
+                        TextInputEditText question = questionView.findViewById(R.id.questionInput1Id);
+                        Spinner timeSelector = questionView.findViewById(R.id.timeSelectorSpinnerId);
 
-                    //Indicates that this is an objective question
-                    theoryQuestionList.add(0, GlobalConfig.IS_THEORY_QUESTION_KEY);
-                    //stores the position of this question
-                    theoryQuestionList.add(1, i + "");
-                    //stores the time limit of this particular question
-                    theoryQuestionList.add(2, timeSelector.getSelectedItem() + "");
-                    //This stores the question
-                    theoryQuestionList.add(3, question.getText() + "");
+                        //Indicates that this is an objective question
+                        theoryQuestionList.add(0, GlobalConfig.IS_THEORY_QUESTION_KEY);
+                        //stores the position of this question
+                        theoryQuestionList.add(1, i + "");
+                        //stores the time limit of this particular question
+                        theoryQuestionList.add(2, timeSelector.getSelectedItem() + "");
+                        //This stores the question
+                        theoryQuestionList.add(3, question.getText() + "");
 
-                    questionList.add(i, theoryQuestionList);
+                        questionList.add(i, theoryQuestionList);
 
-                    if("".equals((question.getText()+"").trim())){
-                        question.performClick();
-                        question.requestFocus();
-                        Toast.makeText(CreateQuizActivity.this, "Error: Fill all the Theory questions' field", Toast.LENGTH_LONG).show();
-                        questionList.clear();
-                        return;
+                        if ("".equals((question.getText() + "").trim())) {
+                            question.performClick();
+                            question.requestFocus();
+                            Toast.makeText(CreateQuizActivity.this, "Error: Fill all the Theory questions' field", Toast.LENGTH_LONG).show();
+                            questionList.clear();
+                            return;
+                        }
                     }
-                }
-                else if (questionView.getId() == R.id.objectiveQuestionViewId) {
+                    else if (questionView.getId() == R.id.objectiveQuestionViewId) {
+                        //this is objective question
+                        totalObjectiveQuestions++;
 //                        Toast.makeText(CreateQuizActivity.this, "objective", Toast.LENGTH_SHORT).show();
-                    ArrayList<String> objectiveQuestionList = new ArrayList<>();
+                        ArrayList<String> objectiveQuestionList = new ArrayList<>();
 
-                    TextInputEditText question = questionView.findViewById(R.id.questionInput1Id);
+                        TextInputEditText question = questionView.findViewById(R.id.questionInput1Id);
 
-                    TextInputEditText option1 = questionView.findViewById(R.id.answerInput1Id);
-                    TextInputEditText option2 = questionView.findViewById(R.id.answerInput2Id);
-                    TextInputEditText option3 = questionView.findViewById(R.id.answerInput3Id);
-                    TextInputEditText option4 = questionView.findViewById(R.id.answerInput4Id);
+                        TextInputEditText option1 = questionView.findViewById(R.id.answerInput1Id);
+                        TextInputEditText option2 = questionView.findViewById(R.id.answerInput2Id);
+                        TextInputEditText option3 = questionView.findViewById(R.id.answerInput3Id);
+                        TextInputEditText option4 = questionView.findViewById(R.id.answerInput4Id);
 
-                    Spinner timeSelector = questionView.findViewById(R.id.timeSelectorSpinnerId);
-                    //Indicates that this is an objective question
-                    objectiveQuestionList.add(0, GlobalConfig.IS_OBJECTIVE_QUESTION_KEY);
-                    //stores the position of this question
-                    objectiveQuestionList.add(1, i + "");
-                    //stores the time limit of this particular question
-                    objectiveQuestionList.add(2, timeSelector.getSelectedItem() + "");
-                    //This stores the question
-                    objectiveQuestionList.add(3, question.getText() + "");
-                    //These are the answer options to the question
-                    objectiveQuestionList.add(4, option1.getText() + "");
-                    objectiveQuestionList.add(5, option2.getText() + "");
-                    objectiveQuestionList.add(6, option3.getText() + "");
-                    objectiveQuestionList.add(7, option4.getText() + "");
+                        Spinner timeSelector = questionView.findViewById(R.id.timeSelectorSpinnerId);
+                        //Indicates that this is an objective question
+                        objectiveQuestionList.add(0, GlobalConfig.IS_OBJECTIVE_QUESTION_KEY);
+                        //stores the position of this question
+                        objectiveQuestionList.add(1, i + "");
+                        //stores the time limit of this particular question
+                        objectiveQuestionList.add(2, timeSelector.getSelectedItem() + "");
+                        //This stores the question
+                        objectiveQuestionList.add(3, question.getText() + "");
+                        //These are the answer options to the question
+                        objectiveQuestionList.add(4, option1.getText() + "");
+                        objectiveQuestionList.add(5, option2.getText() + "");
+                        objectiveQuestionList.add(6, option3.getText() + "");
+                        objectiveQuestionList.add(7, option4.getText() + "");
 
 
-                    questionList.add(i, objectiveQuestionList);
+                        questionList.add(i, objectiveQuestionList);
 
-                    if("".equals((question.getText()+"").trim())){
-                        Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
-                        question.performClick();
-                        question.requestFocus();
-                        questionList.clear();
-                        return;
-                    }else if("".equals((option1.getText() + "").trim())){
-                        Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
-                        option1.performClick();
-                        option1.requestFocus();
-                        questionList.clear();
-                        return;
-                    }else if("".equals((option2.getText() + "").trim())){
-                        Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
-                        option2.performClick();
-                        option2.requestFocus();
-                        questionList.clear();
-                        return;
-                    }else if( "".equals((option3.getText() + "").trim())){
-                        Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
-                        option3.performClick();
-                        option3.requestFocus();
-                        questionList.clear();
-                        return;
-                    }else if("".equals((option4.getText() + "").trim())){
-                        Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
-                        option4.performClick();
-                        option4.requestFocus();
-                        questionList.clear();
-                        return;
+                        if ("".equals((question.getText() + "").trim())) {
+                            Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
+                            question.performClick();
+                            question.requestFocus();
+                            questionList.clear();
+                            return;
+                        } else if ("".equals((option1.getText() + "").trim())) {
+                            Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
+                            option1.performClick();
+                            option1.requestFocus();
+                            questionList.clear();
+                            return;
+                        } else if ("".equals((option2.getText() + "").trim())) {
+                            Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
+                            option2.performClick();
+                            option2.requestFocus();
+                            questionList.clear();
+                            return;
+                        } else if ("".equals((option3.getText() + "").trim())) {
+                            Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
+                            option3.performClick();
+                            option3.requestFocus();
+                            questionList.clear();
+                            return;
+                        } else if ("".equals((option4.getText() + "").trim())) {
+                            Toast.makeText(CreateQuizActivity.this, "Error: Fill all the objective questions and  option's field", Toast.LENGTH_LONG).show();
+                            option4.performClick();
+                            option4.requestFocus();
+                            questionList.clear();
+                            return;
+                        }
                     }
-                }
 
+                }
+                //calculate the total quiz score
+                totalQuizScore = (totalTheoryQuestions*10) + (totalObjectiveQuestions*1);
+
+                String quizTitle = quizTitleInput.getText() + "";
+                String quizDescription = quizDescriptionInput.getText() + "";
+                int totalQuizFeeCoins = Integer.parseInt((quizFeeDescriptionInput.getText() + "").isEmpty()? quizFeeDescriptionInput.getText() + "":"0");
+                int totalQuizRewardCoins = Integer.parseInt((quizRewardDescriptionInput.getText() + "").isEmpty()?quizRewardDescriptionInput.getText() + "":"0");
+                int totalQuestions = questionList.size();
+                int finalTotalTimeLimit = totalTimeLimit;
+
+                GlobalConfig.createQuiz(CreateQuizActivity.this, quizId, quizTitle, category, totalQuestions,totalQuizScore,totalTheoryQuestions,totalObjectiveQuestions, totalTimeLimit, quizDescription, totalQuizFeeCoins, totalQuizRewardCoins, questionList, quizStartDateList, isQuizEdition, isPublish, new GlobalConfig.ActionCallback() {
+                    @Override
+                    public void onSuccess() {
+                        toggleProgress(false);
+
+                        GlobalConfig.createSnackBar2(CreateQuizActivity.this, quizTitleInput, "Your quiz is successfully posted", "View", Snackbar.LENGTH_INDEFINITE, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                CreateQuizActivity.super.finish();
+                                Intent intent = new Intent(CreateQuizActivity.this, QuizActivity.class);
+                                intent.putExtra(GlobalConfig.QUIZ_ID_KEY, quizId);
+                                intent.putExtra(GlobalConfig.AUTHOR_ID_KEY, GlobalConfig.getCurrentUserId());
+                                intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY, true);
+                                startActivity(intent);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailed(String errorMessage) {
+
+                        toggleProgress(false);
+
+                        GlobalConfig.createSnackBar2(CreateQuizActivity.this, quizTitleInput, "Failed", "Retry", Snackbar.LENGTH_INDEFINITE, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                processAndSaveQuiz();
+
+                            }
+                        });
+
+                    }
+                });
+                toggleProgress(true);
+
+            } else {
+                quizEndDateInput.performClick();
+                Toast.makeText(this, "Please select end date of quiz", Toast.LENGTH_SHORT).show();
             }
-
-            String quizTitle = quizTitleInput.getText() + "";
-            String quizDescription = quizDescriptionInput.getText() + "";
-            String quizFeeDescription = quizFeeDescriptionInput.getText() + "";
-            String quizRewardDescription = quizRewardDescriptionInput.getText() + "";
-            int totalQuestions = questionList.size();
-            int finalTotalTimeLimit = totalTimeLimit;
-
-            GlobalConfig.createQuiz(CreateQuizActivity.this, quizId, quizTitle, category, totalQuestions, totalTimeLimit, quizDescription, quizFeeDescription, quizRewardDescription, questionList, quizDateList, isQuizEdition, isPublish, new GlobalConfig.ActionCallback() {
-                @Override
-                public void onSuccess() {
-                    toggleProgress(false);
-
-                    GlobalConfig.createSnackBar2(CreateQuizActivity.this, quizTitleInput, "Your quiz is successfully posted", "View", Snackbar.LENGTH_INDEFINITE, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            CreateQuizActivity.super.finish();
-                            Intent intent = new Intent(CreateQuizActivity.this, QuizActivity.class);
-                            intent.putExtra(GlobalConfig.QUIZ_ID_KEY,quizId);
-                            intent.putExtra(GlobalConfig.AUTHOR_ID_KEY, GlobalConfig.getCurrentUserId());
-                            intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,true);
-                            startActivity(intent);
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailed(String errorMessage) {
-
-                    toggleProgress(false);
-
-                    GlobalConfig.createSnackBar2(CreateQuizActivity.this, quizTitleInput, "Failed", "Retry", Snackbar.LENGTH_INDEFINITE, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            processAndSaveQuiz();
-
-                        }
-                    });
-
-                }
-            });
-            toggleProgress(true);
-
         }
         else{
-            quizDateInput.performClick();
-            Toast.makeText(this, "Please select date of quiz", Toast.LENGTH_SHORT).show();
+            quizStartDateInput.performClick();
+            Toast.makeText(this, "Please select start date of quiz", Toast.LENGTH_SHORT).show();
         }
         }
         else{
@@ -578,50 +640,114 @@ public class CreateQuizActivity extends AppCompatActivity {
             Toast.makeText(this, "Please select category", Toast.LENGTH_SHORT).show();
         }
     }
-    void prepareDatePickerDialog(){
+    void prepareStartDatePickerDialog(){
 
         Calendar dateCalendar = Calendar.getInstance();
         final int YEAR = dateCalendar.get(Calendar.YEAR);
         final int MONTH = dateCalendar.get(Calendar.MONTH);
         final int DAY_OF_MONTH = dateCalendar.get(Calendar.DAY_OF_MONTH);
 
-        datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+        startDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int YEAR, int MONTH, int DAY_OF_MONTH) {
                 MONTH += 1 ;
-                  quizDay = DAY_OF_MONTH;
-                  quizMonth = MONTH;
-                  quizYear = YEAR;
+                  quizStartDay = DAY_OF_MONTH;
+                  quizStartMonth = MONTH;
+                  quizStartYear = YEAR;
 
-                timePickerDialog.show();
+                startTimePickerDialog.show();
             }
         }, YEAR, MONTH, DAY_OF_MONTH);
-        datePickerDialog.setCancelable(false);
+        startDatePickerDialog.setCancelable(false);
 
     }
-void prepareTimePickerDialog(){
+    void prepareEndDatePickerDialog(){
+
+        Calendar dateCalendar = Calendar.getInstance();
+        final int YEAR = dateCalendar.get(Calendar.YEAR);
+        final int MONTH = dateCalendar.get(Calendar.MONTH);
+        final int DAY_OF_MONTH = dateCalendar.get(Calendar.DAY_OF_MONTH);
+
+        endDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int YEAR, int MONTH, int DAY_OF_MONTH) {
+                MONTH += 1 ;
+                  quizEndDay = DAY_OF_MONTH;
+                  quizEndMonth = MONTH;
+                  quizEndYear = YEAR;
+
+                endTimePickerDialog.show();
+            }
+        }, YEAR, MONTH, DAY_OF_MONTH);
+        endDatePickerDialog.setCancelable(false);
+
+    }
+void prepareStartTimePickerDialog(){
 
     Calendar dateCalendar = Calendar.getInstance();
     final int HOUR = dateCalendar.get(Calendar.HOUR_OF_DAY);
     final int MINUTE = dateCalendar.get(Calendar.MINUTE);
     final int SECOND = dateCalendar.get(Calendar.SECOND);
+    final int AM_PM = dateCalendar.get(Calendar.AM_PM);
 
-    timePickerDialog = new TimePickerDialog(CreateQuizActivity.this, new TimePickerDialog.OnTimeSetListener() {
+//    final int timeFormat = dateCalendar.get(Calendar.SECOND);
+//    final int timeFormat = LocalTime.now().get(Calendar.SECOND);
+
+    startTimePickerDialog = new TimePickerDialog(CreateQuizActivity.this, new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker timePicker, int i, int i1) {
-            quizHour = i;
-            quizMinute = i1;
-            quizDateInput.setText(quizDay  + "/" + quizMonth + "/" + quizYear+" "+i+":"+i1);
-            quizDateList.clear();
-            quizDateList.add(quizYear);
-            quizDateList.add(quizMonth);
-            quizDateList.add(quizDay);
-            quizDateList.add(quizHour);
-            quizDateList.add(quizMinute);
-            isDateSet = true;
+            quizStartHour = i;
+            quizStartMinute = i1;
+            quizStartDateInput.setText(quizStartDay  + "/" + quizStartMonth + "/" + quizStartYear+" "+i+":"+i1);
+            quizStartDateList.clear();
+            quizStartDateList.add(quizStartYear);
+            quizStartDateList.add(quizStartMonth);
+            quizStartDateList.add(quizStartDay);
+            if(AM_PM == Calendar.PM) {
+                quizStartDateList.add(quizStartHour +12);
+                Toast.makeText(getApplicationContext(), quizStartHour +12+" PM", Toast.LENGTH_SHORT).show();
+            }else{
+                quizStartDateList.add(quizStartHour);
+                Toast.makeText(getApplicationContext(), quizStartHour +" AM", Toast.LENGTH_SHORT).show();
+
+            }
+            quizStartDateList.add(quizStartMinute);
+//            quizStartDateList.add(timeFormat);
+            isStartDateSet = true;
+        }
+    }, HOUR, MINUTE, false);
+    startTimePickerDialog.setCancelable(false);
+}
+
+void prepareEndTimePickerDialog(){
+
+    Calendar dateCalendar = Calendar.getInstance();
+    final int HOUR = dateCalendar.get(Calendar.HOUR_OF_DAY);
+    final int MINUTE = dateCalendar.get(Calendar.MINUTE);
+    final int SECOND = dateCalendar.get(Calendar.SECOND);
+    final int AM_PM = dateCalendar.get(Calendar.AM_PM);
+
+    endTimePickerDialog = new TimePickerDialog(CreateQuizActivity.this, new TimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker timePicker, int i, int i1) {
+            quizEndHour = i;
+            quizEndMinute = i1;
+            quizEndDateInput.setText(quizEndDay  + "/" + quizEndMonth + "/" + quizEndYear+" "+i+":"+i1);
+            quizEndDateList.clear();
+            quizEndDateList.add(quizEndYear);
+            quizEndDateList.add(quizEndMonth);
+            quizEndDateList.add(quizEndDay);
+            if(AM_PM == Calendar.PM) {
+                quizEndDateList.add(quizEndHour +12);
+            }else{
+                quizEndDateList.add(quizEndHour);
+
+            }
+            quizEndDateList.add(quizEndMinute);
+            isEndDateSet = true;
         }
     }, HOUR, MINUTE, true);
-    timePickerDialog.setCancelable(false);
+    endTimePickerDialog.setCancelable(false);
 }
 
     @Override

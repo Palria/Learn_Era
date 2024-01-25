@@ -43,13 +43,13 @@
                     android:layout_width="wrap_content"
                     android:textColor="@color/black"
                     android:fontFamily="sans-serif-condensed-medium"
-                    android:text="Java For Newbies Quiz"
+                    android:text="Saugat-Henry Quiz"
                     android:layout_height="wrap_content"/>
 
                 <LinearLayout
                     android:gravity="start"
                     android:layout_gravity="center_vertical"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
                     <TextView
                         android:textColor="@color/grayDark"
@@ -108,7 +108,7 @@
                         <TextView
                             android:id="@+id/participantCountViewId"
                             android:layout_marginStart="1pt"
-                            android:text="23"
+                            android:text="0"
                             android:fontFamily="sans-serif-condensed-medium"
                             android:textStyle="normal"
                             android:textColor="@color/grayDark"
@@ -162,7 +162,23 @@
             android:layout_marginTop="10dp"
             android:ellipsize="end"
             android:layout_marginEnd="20dp"
-            android:text="Time 23/8/2023 12:30PM"
+            android:text="Starting Time 23/8/2023 12:30PM"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:textStyle="bold|italic"
+            android:textSize="11sp"
+            android:textColor="@color/white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+
+            />
+
+        <TextView
+            android:id="@+id/endingTimeTextViewId"
+            android:layout_marginTop="10dp"
+            android:ellipsize="end"
+            android:layout_marginEnd="20dp"
+            android:text="Ending Time 23/8/2023 12:30PM"
             android:fontFamily="sans-serif-condensed-medium"
             android:textStyle="bold|italic"
             android:textSize="11sp"

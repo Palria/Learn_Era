@@ -95,6 +95,44 @@
         android:layout_height="wrap_content"
         />
 
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginHorizontal="2pt"
+    >
+    <TextView
+        android:id="@+id/awardNoticeTextViewId"
+        android:paddingHorizontal="2pt"
+        android:text="Claim award : 2Coins : for winning 3rd position"
+        android:textStyle="bold"
+        android:textSize="9sp"
+        android:textColor="@color/teal_700"
+        android:background="@drawable/outlined_white_bg_button"
+        android:paddingVertical="5pt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:id="@+id/claimAwardActionTextViewId"
+        android:paddingHorizontal="5pt"
+        android:text="Claim"
+        android:textSize="10sp"
+        android:layout_marginVertical="1pt"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/success_green"
+        android:background="@drawable/outlined_white_bg_button"
+        android:layout_marginHorizontal="2pt"
+        android:paddingVertical="5pt"
+        android:layout_width="wrap_content"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        />
+</LinearLayout>
+
 </LinearLayout>
 
 
@@ -133,7 +171,7 @@
         />
 
     <HorizontalScrollView
-        android:visibility="gone"
+        android:visibility="visible"
         android:id="@+id/answersHorizontalScrollViewId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
