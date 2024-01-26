@@ -76,7 +76,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select Category"
+            android:text="Select Category: "
             android:textStyle="bold"
             android:fontFamily="sans-serif-condensed-medium"
             android:drawableTint="@color/grayDark"
@@ -105,6 +105,7 @@
          app:counterEnabled="true"
          app:helperText="max 60 chars"
          android:layout_marginHorizontal="5pt"
+         android:layout_marginVertical="5pt"
          >
         
          <com.google.android.material.textfield.TextInputEditText
@@ -124,6 +125,7 @@
          style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
          android:layout_height="wrap_content"
          android:layout_marginHorizontal="5pt"
+         android:layout_marginVertical="5pt"
          app:helperText="Set start date"
          >
         
@@ -152,6 +154,7 @@
          style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
          android:layout_height="wrap_content"
          android:layout_marginHorizontal="5pt"
+         android:layout_marginVertical="5pt"
          app:helperText="Set end date"
          >
 
@@ -176,7 +179,7 @@
      <LinearLayout
          android:layout_marginVertical="5pt"
         android:layout_width="match_parent"
-android:layout_marginHorizontal="4pt"
+        android:layout_marginHorizontal="4pt"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
          >

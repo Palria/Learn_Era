@@ -582,7 +582,6 @@ holder.participantIcon.setOnClickListener(new View.OnClickListener() {
         walletDetails.put(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_EARNED_KEY,FieldValue.increment(numberOfCoins));
         walletDetails.put(GlobalConfig.QUIZ_EARNINGS_HISTORY_LIST_KEY,FieldValue.arrayUnion("COIN-"+numberOfCoins+"-DESC-"+earningDescription+"-DATE-"+GlobalConfig.getDate()));
 
-
             writeBatch.set(walletReference, walletDetails, SetOptions.merge());
 
         DocumentReference rewardReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId).collection(GlobalConfig.ALL_PARTICIPANTS_KEY).document(GlobalConfig.getCurrentUserId());

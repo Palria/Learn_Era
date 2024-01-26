@@ -198,8 +198,10 @@ public class CreateQuizActivity extends AppCompatActivity {
                     String quizTitle = ""+documentSnapshot.get(GlobalConfig.QUIZ_TITLE_KEY);
                     boolean isPublic = documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY)!=null?documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY):true;
                     long totalQuestions = documentSnapshot.get(GlobalConfig.TOTAL_QUESTIONS_KEY)!=null?documentSnapshot.getLong(GlobalConfig.TOTAL_QUESTIONS_KEY):0L;
+
                     ArrayList<Long> quizStartDateList1 = documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY)!=null? (ArrayList<Long>) documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY):new ArrayList<>();
                     ArrayList<Long> quizEndDateList1 = documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY)!=null? (ArrayList<Long>) documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY):new ArrayList<>();
+
 //                    String quizFeeDescription = ""+documentSnapshot.get(GlobalConfig.QUIZ_FEE_DESCRIPTION_KEY);
 //                    String quizRewardDescription = ""+documentSnapshot.get(GlobalConfig.QUIZ_REWARD_DESCRIPTION_KEY);
                     long totalQuizFeeCoins =  documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY) : 0L;
@@ -228,7 +230,7 @@ public class CreateQuizActivity extends AppCompatActivity {
                         }
                     }
 
-                    //set start date
+                    //set end date
                     if(quizEndDateList1 !=null) {
                         if (quizEndDateList1.size() == 5) {
                             quizEndYear = quizEndDateList1.get(0);
@@ -426,7 +428,7 @@ public class CreateQuizActivity extends AppCompatActivity {
         AlertDialog confirmationDialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Confirm your action");
-        builder.setMessage("You are about to save your quiz, you need to deposit 1$ to create quiz, please confirm if you are ready. ");
+        builder.setMessage("You are about to save your quiz, please confirm if you are ready. ");
         builder.setCancelable(true);
         builder.setIcon(R.drawable.ic_baseline_error_outline_24);
         builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
@@ -585,12 +587,12 @@ public class CreateQuizActivity extends AppCompatActivity {
 
                 String quizTitle = quizTitleInput.getText() + "";
                 String quizDescription = quizDescriptionInput.getText() + "";
-                int totalQuizFeeCoins = Integer.parseInt((quizFeeDescriptionInput.getText() + "").isEmpty()? quizFeeDescriptionInput.getText() + "":"0");
-                int totalQuizRewardCoins = Integer.parseInt((quizRewardDescriptionInput.getText() + "").isEmpty()?quizRewardDescriptionInput.getText() + "":"0");
+                int totalQuizFeeCoins = Integer.parseInt(!(quizFeeDescriptionInput.getText() + "").isEmpty()? quizFeeDescriptionInput.getText() + "":"0");
+                int totalQuizRewardCoins = Integer.parseInt(!(quizRewardDescriptionInput.getText() + "").isEmpty()?quizRewardDescriptionInput.getText() + "":"0");
                 int totalQuestions = questionList.size();
                 int finalTotalTimeLimit = totalTimeLimit;
 
-                GlobalConfig.createQuiz(CreateQuizActivity.this, quizId, quizTitle, category, totalQuestions,totalQuizScore,totalTheoryQuestions,totalObjectiveQuestions, totalTimeLimit, quizDescription, totalQuizFeeCoins, totalQuizRewardCoins, questionList, quizStartDateList, isQuizEdition, isPublish, new GlobalConfig.ActionCallback() {
+                GlobalConfig.createQuiz(CreateQuizActivity.this, quizId, quizTitle, category, totalQuestions,totalQuizScore,totalTheoryQuestions,totalObjectiveQuestions, totalTimeLimit, quizDescription, totalQuizFeeCoins, totalQuizRewardCoins, questionList, quizStartDateList, quizEndDateList, isQuizEdition, isPublish, new GlobalConfig.ActionCallback() {
                     @Override
                     public void onSuccess() {
                         toggleProgress(false);
@@ -703,12 +705,12 @@ void prepareStartTimePickerDialog(){
             quizStartDateList.add(quizStartYear);
             quizStartDateList.add(quizStartMonth);
             quizStartDateList.add(quizStartDay);
-            if(AM_PM == Calendar.PM) {
+            if(AM_PM == Calendar.AM) {
                 quizStartDateList.add(quizStartHour +12);
-                Toast.makeText(getApplicationContext(), quizStartHour +12+" PM", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), quizStartHour +12+" AM", Toast.LENGTH_SHORT).show();
             }else{
                 quizStartDateList.add(quizStartHour);
-                Toast.makeText(getApplicationContext(), quizStartHour +" AM", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), quizStartHour +" PM", Toast.LENGTH_SHORT).show();
 
             }
             quizStartDateList.add(quizStartMinute);
@@ -737,7 +739,7 @@ void prepareEndTimePickerDialog(){
             quizEndDateList.add(quizEndYear);
             quizEndDateList.add(quizEndMonth);
             quizEndDateList.add(quizEndDay);
-            if(AM_PM == Calendar.PM) {
+            if(AM_PM == Calendar.AM) {
                 quizEndDateList.add(quizEndHour +12);
             }else{
                 quizEndDateList.add(quizEndHour);
@@ -746,7 +748,7 @@ void prepareEndTimePickerDialog(){
             quizEndDateList.add(quizEndMinute);
             isEndDateSet = true;
         }
-    }, HOUR, MINUTE, true);
+    }, HOUR, MINUTE, false);
     endTimePickerDialog.setCancelable(false);
 }
 

@@ -30,8 +30,16 @@ import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
+
+import java.util.HashMap;
 
 public class EarnCoinActivity extends AppCompatActivity {
     MaterialToolbar materialToolbar;
@@ -115,6 +123,8 @@ if(isLoadImmediately){
                 Toast.makeText(getApplicationContext(), "Reward earned: "+rewardItem.getAmount(), Toast.LENGTH_SHORT).show();
                 statusTextView.setText("1-Coin earned;");
                 watchAndEarnActionTextView.setText("Earn more coin");
+                //Deposit the coins to his wallet
+                depositCoin();
                 //Let new activity be opened to avoid crashing due to some unfavourable configurations in admob ads
                 watchAndEarnActionTextView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -189,6 +199,32 @@ if(isLoadImmediately){
             }
         });
 
+    }
+    void depositCoin(){
+
+        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+        DocumentReference walletReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.USER_WALLET_KEY).document(GlobalConfig.USER_WALLET_KEY);
+        HashMap<String, Object> walletDetails = new HashMap<>();
+        walletDetails.put(GlobalConfig.TOTAL_COINS_EARNED_KEY,FieldValue.increment(1L));
+        walletDetails.put(GlobalConfig.TOTAL_COIN_EQUITY_KEY,FieldValue.increment(1L));
+        walletDetails.put(GlobalConfig.QUIZ_EARNINGS_HISTORY_LIST_KEY,FieldValue.arrayUnion("COIN-"+1+"-DESC-"+"You earned 1 coin for watching ads"+"-DATE-"+GlobalConfig.getDate()));
+
+        writeBatch.set(walletReference, walletDetails, SetOptions.merge());
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                       depositCoin();
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+
+                    }
+                });
     }
 
 

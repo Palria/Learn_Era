@@ -101,14 +101,14 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
             holder.endTimeView.setText("Time Undefined");
 
             ArrayList<Long> quizStartDateList1 = quizDataModel.getStartDateList();
-            if(quizStartDateList1.size() == 5) {
+            if(quizStartDateList1.size() >= 5) {
                 long quizStartYear = quizStartDateList1.get(0);
                 long quizStartMonth = quizStartDateList1.get(1);
                 long quizStartDay = quizStartDateList1.get(2);
                 long quizStartHour = quizStartDateList1.get(3);
                 long quizStartMinute = quizStartDateList1.get(4);
-                holder.startTimeView.setText("Start Time "+quizStartDay + "/" + quizStartMonth + "/" + quizStartYear + " " + quizStartHour + ":" + quizStartMinute);
-
+                holder.startTimeView.setText("Start Time "+quizStartDay + "/" + quizStartMonth + "/" + quizStartYear + " " + quizStartHour + " : " + quizStartMinute);
+//checks if quiz has started
                 if(GlobalConfig.isQuizStarted(quizStartYear,quizStartMonth,quizStartDay,quizStartHour,quizStartMinute)) {
                     holder.joinQuizActionTextView.setText("Started");
                     holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
@@ -132,13 +132,13 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
 
 
             ArrayList<Long> quizEndDateList1 = quizDataModel.getEndDateList();
-            if(quizEndDateList1.size() == 5) {
+            if(quizEndDateList1.size() >= 5) {
                 long quizEndYear = quizEndDateList1.get(0);
                 long quizEndMonth = quizEndDateList1.get(1);
                 long quizEndDay = quizEndDateList1.get(2);
                 long quizEndHour = quizEndDateList1.get(3);
                 long quizEndMinute = quizEndDateList1.get(4);
-
+//checks if the quiz is expired.
                 if(GlobalConfig.isQuizExpired(quizEndYear,quizEndMonth,quizEndDay,quizEndHour,quizEndMinute)) {
                     holder.joinQuizActionTextView.setText("Closed");
                     holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
@@ -156,8 +156,9 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
 
                         }
                     });
-
                     if(!quizDataModel.isClosed()){
+                        //mark the quiz as closed if it has expired
+
                         GlobalConfig.markQuizAsClosed(context, quizDataModel.getQuizId(), new GlobalConfig.ActionCallback() {
                             @Override
                             public void onSuccess() {
@@ -185,11 +186,30 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
                             }
                         });
                     }
-
                 }
-                holder.endTimeView.setText("End Time "+quizEndDay + "/" + quizEndMonth + "/" + quizEndYear + " " + quizEndHour + ":" + quizEndMinute);
+                holder.endTimeView.setText("End Time "+quizEndDay + "/" + quizEndMonth + "/" + quizEndYear + " " + quizEndHour + " : " + quizEndMinute);
             }
 
+//checks if the quiz is completed
+            if(quizDataModel.isQuizMarkedCompleted()) {
+                holder.joinQuizActionTextView.setText("Completed");
+                holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+
+                        //navigate to QuizActivity
+                        Intent intent = new Intent(context, QuizActivity.class);
+                        intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY,quizDataModel);
+                        intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,quizDataModel.getAuthorId());
+                        intent.putExtra(GlobalConfig.QUIZ_ID_KEY,quizDataModel.getQuizId());
+                        intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,false);
+                        context.startActivity(intent);
+
+                    }
+                });
+
+            }
 
             GlobalConfig.getFirebaseFirestoreInstance()
                     .collection(GlobalConfig.ALL_USERS_KEY)

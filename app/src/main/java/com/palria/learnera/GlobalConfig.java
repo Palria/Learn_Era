@@ -4857,7 +4857,7 @@ if(isUserLoggedIn()) {
             });
         }
     }
-    public static void createQuiz(Context context, String quizId, String quizTitle,String category, int totalQuestions,long totalQuizScore,long totalTheoryQuestions,long totalObjectiveQuestions, int totalTimeLimit, String quizDescription, int totalQuizFeeCoins, int totalQuizRewardCoins, ArrayList<ArrayList<String>> questionArrayList, ArrayList<Long> quizDateList, boolean isEdition, boolean isPublic, ActionCallback actionCallback){
+    public static void createQuiz(Context context, String quizId, String quizTitle,String category, int totalQuestions,long totalQuizScore,long totalTheoryQuestions,long totalObjectiveQuestions, int totalTimeLimit, String quizDescription, int totalQuizFeeCoins, int totalQuizRewardCoins, ArrayList<ArrayList<String>> questionArrayList, ArrayList<Long> quizStartDateList, ArrayList<Long> quizEndDateList, boolean isEdition, boolean isPublic, ActionCallback actionCallback){
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
         DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId);
         HashMap<String,Object> quizDetails = new HashMap<>();
@@ -4877,7 +4877,9 @@ if(isUserLoggedIn()) {
         quizDetails.put(GlobalConfig.IS_CLOSED_KEY,false);
         quizDetails.put(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY,totalQuizFeeCoins);
         quizDetails.put(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_KEY,totalQuizRewardCoins);
-        quizDetails.put(GlobalConfig.QUIZ_DATE_LIST_KEY,quizDateList);
+//        quizDetails.put(GlobalConfig.QUIZ_DATE_LIST_KEY,quizDateList);
+        quizDetails.put(GlobalConfig.QUIZ_START_DATE_LIST_KEY,quizStartDateList);
+        quizDetails.put(GlobalConfig.QUIZ_END_DATE_LIST_KEY,quizEndDateList);
         if(isEdition){
             quizDetails.put(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
 

@@ -118,16 +118,17 @@ public class QuizActivity extends AppCompatActivity {
     boolean isStarted;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if(GlobalConfig.recentlydeletedQuizList.contains(quizId)){
+            Toast.makeText(getApplicationContext(), "Error occurred: Quiz deleted", Toast.LENGTH_SHORT).show();
+            super.onBackPressed();
+            return;
+        }else {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
         fetchIntentData();
         initUI();
         setSupportActionBar(toolbar);
-        if(GlobalConfig.recentlydeletedQuizList.contains(quizId)){
-            Toast.makeText(getApplicationContext(), "Error occurred: Quiz deleted", Toast.LENGTH_SHORT).show();
-            super.onBackPressed();
 
-        }else {
             submitActionButton.setOnClickListener(view -> {
                 showQuizCompletionConfirmationDialog();
             });
@@ -147,10 +148,7 @@ public class QuizActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        if(countDownTimer!=null) {
-            countDownTimer.cancel();
-        }
+       createConfirmExitDialog();
     }
 
     @Override
@@ -166,15 +164,18 @@ public class QuizActivity extends AppCompatActivity {
 
         if(item.getItemId()==R.id.editId){
             if(quizDataModel.getParticipantsList().size()<1) {
+                //allow edit because no participant has joined
                 Intent intent = new Intent(QuizActivity.this, CreateQuizActivity.class);
                 intent.putExtra(GlobalConfig.IS_EDITION_KEY, true);
                 intent.putExtra(GlobalConfig.QUIZ_ID_KEY, quizId);
                 startActivity(intent);
             }else{
-                Toast.makeText(getApplicationContext(), "Can't take action: A user has already joined and can't be edited", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Can't take action: User has already joined and can't be edited", Toast.LENGTH_SHORT).show();
             }
         }else if(item.getItemId()==R.id.deleteId){
             if(quizDataModel.getParticipantsList().size()<1) {
+                //allow delete because no participant has joined
+
                 toggleProgress(true);
                 GlobalConfig.deleteQuiz(getApplicationContext(), quizId, new GlobalConfig.ActionCallback() {
                     @Override
@@ -251,6 +252,30 @@ public class QuizActivity extends AppCompatActivity {
         quizId = intent.getStringExtra(GlobalConfig.QUIZ_ID_KEY);
         isLoadFromOnline =intent.getBooleanExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,false);
     }
+    private void createConfirmExitDialog(){
+        AlertDialog confirmExitDialog;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Exit");
+        builder.setMessage("Click exit button to exit the screen");
+        builder.setCancelable(true);
+        builder.setIcon(R.drawable.baseline_error_outline_red_24);
+
+        builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                QuizActivity.super.onBackPressed();
+                if(countDownTimer!=null) {
+                    countDownTimer.cancel();
+                }
+            }
+        })
+                .setNegativeButton("Stay back", null);
+        confirmExitDialog = builder.create();
+        confirmExitDialog.show();
+
+    }
+
     private void showQuizCompletionConfirmationDialog(){
 
         AlertDialog confirmationDialog;
@@ -311,6 +336,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private void processAndSubmitAnswer() {
         toggleProgress(true);
+        //let's assume it's submitted to avoid some duplicate actions
         isSubmitted = true;
         if(GlobalConfig.getCurrentUserId().equalsIgnoreCase(authorId)){
         GlobalConfig.saveAuthorQuizAnswer(this, quizId, answersList, new GlobalConfig.ActionCallback() {
@@ -349,7 +375,8 @@ public class QuizActivity extends AppCompatActivity {
 
             }
         });
-    }else{
+    }
+        else{
         GlobalConfig.submitQuiz(this, quizId, answersList, new GlobalConfig.ActionCallback() {
             @Override
             public void onSuccess() {
@@ -388,9 +415,15 @@ public class QuizActivity extends AppCompatActivity {
 //                if(timeRemain == 0 && !isSubmitted && !isAuthor){
 //                    processAndSubmitAnswer();
 //                }
-                //count down time for updating single question
-                if (quizDataModel.isClosed()  || GlobalConfig.isQuizExpired(endYear,endMonth,endDay,endHour,endMinute)) {
+                //check if quiz is marked completed by author
+                if (quizDataModel.isQuizMarkedCompleted() || GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId)) {
                     submitActionButton.setVisibility(View.GONE);
+
+                } else {
+                    if ((GlobalConfig.isQuizExpired(endYear, endMonth, endDay, endHour, endMinute) || !GlobalConfig.isQuizStarted(startYear, startMonth, startDay, startHour, startMinute)) &&  !isAuthor) {
+                        submitActionButton.setVisibility(View.GONE);
+
+                    }
                 }
                     for(int i=0; i<viewedPositions.size();i++){
             if(timeRemainMap.get(i) != 0) {
@@ -418,18 +451,18 @@ if(timeRemainMap.get(activePosition) == 0) {
         activeQuestionTimeRemainTextView.setTextColor(ResourcesCompat.getColor(getResources(),R.color.error_red,getTheme()));
     }
 }
-                if(!isStarted && GlobalConfig.isQuizStarted(startYear,startMonth,startDay,startHour,startMinute)) {
+                if(!isStarted && GlobalConfig.isQuizStarted(startYear,startMonth,startDay,startHour,startMinute) && !isAuthor) {
                     displayQuestion(0);
                     renderParticipantInfo();
                     if (!isSubmitted) {
-//                    check if he has submitted, so if he has not submitted then start countdowntimer
-                        updateQuizCountDownTimer();
+//                    check if he has submitted
                         submitActionButton.setVisibility(View.VISIBLE);
 
                     } else {
                         submitActionButton.setVisibility(View.GONE);
                     }
                 }
+
             }
 
             @Override
@@ -442,45 +475,45 @@ if(timeRemainMap.get(activePosition) == 0) {
 
     }
 
-    private void renderQuiz(QuizDataModel quizDataModel){
+    private void renderQuiz(QuizDataModel quizDataModel) {
         this.quizDataModel = quizDataModel;
         toolbar.setTitle(quizDataModel.getQuizTitle());
         descriptionTextView.setText(quizDataModel.getQuizDescription());
-        regFeeTextView.setText(quizDataModel.getTotalQuizFeeCoins()+" COINS");
-        rewardTextView.setText(quizDataModel.getTotalQuizRewardCoins()+" COINS");
+        regFeeTextView.setText(quizDataModel.getTotalQuizFeeCoins() + " COINS");
+        rewardTextView.setText(quizDataModel.getTotalQuizRewardCoins() + " COINS");
 
         ArrayList<Long> startTime = quizDataModel.getStartDateList();
-        if(startTime.size()>=5) {
+        if (startTime.size() >= 5) {
             startDay = startTime.get(2);
-           startMonth = startTime.get(1) ;
-            startYear = startTime.get(0) ;
-           startHour = startTime.get(3);
+            startMonth = startTime.get(1);
+            startYear = startTime.get(0);
+            startHour = startTime.get(3);
             startMinute = startTime.get(4);
 
         }
 
-        startTimeTextView.setText(startYear + "/" + startMonth + "/" +startYear + " :" + startHour + ":" + startMinute);
- ArrayList<Long> endTime = quizDataModel.getEndDateList();
-        if(startTime.size()>=5) {
+        startTimeTextView.setText(startYear + "/" + startMonth + "/" + startYear + " :" + startHour + ":" + startMinute);
+        ArrayList<Long> endTime = quizDataModel.getEndDateList();
+        if (startTime.size() >= 5) {
             endDay = endTime.get(2);
-            endMonth = endTime.get(1) ;
-            endYear = endTime.get(0) ;
+            endMonth = endTime.get(1);
+            endYear = endTime.get(0);
             endHour = endTime.get(3);
             endMinute = endTime.get(4);
 
         }
-        endTimeTextView.setText(endYear + "/" + endMonth + "/" +endYear + " :" + endHour + ":" + endMinute);
+        endTimeTextView.setText(endYear + "/" + endMonth + "/" + endYear + " :" + endHour + ":" + endMinute);
 
 
-        if(isAuthor){
+        if (isAuthor) {
             joinActionTextView.setText("You are the author");
-        }else {
+        } else {
             if (quizDataModel.getParticipantsList().contains(GlobalConfig.getCurrentUserId()) || GlobalConfig.newlyJoinedQuizList.contains(quizId)) {
                 joinActionTextView.setText("Joined");
                 isJoined = true;
             } else {
                 joinActionTextView.setText("Join");
-                if (quizDataModel.isClosed()  || GlobalConfig.isQuizExpired(endYear,endMonth,endDay,endHour,endMinute)) {
+                if (quizDataModel.isClosed() || GlobalConfig.isQuizExpired(endYear, endMonth, endDay, endHour, endMinute)) {
                     joinActionTextView.setEnabled(false);
                     submitActionButton.setVisibility(View.GONE);
                     statusTextView.setText("Closed");
@@ -504,10 +537,10 @@ if(timeRemainMap.get(activePosition) == 0) {
             }
         }
 
-        if(quizDataModel.isClosed() || GlobalConfig.isQuizExpired(endYear,endMonth,endDay,endHour,endMinute)){
+        if (GlobalConfig.isQuizExpired(endYear, endMonth, endDay, endHour, endMinute)) {
             statusTextView.setText("Closed");
         }
-         isSubmitted = GlobalConfig.isQuizSubmitted(QuizActivity.this,quizId);
+        isSubmitted = GlobalConfig.isQuizSubmitted(QuizActivity.this, quizId);
         totalTimeLimit = quizDataModel.getTotalTimeLimit();
         timeRemain = totalTimeLimit;
 
@@ -529,18 +562,18 @@ if(timeRemainMap.get(activePosition) == 0) {
 //            }
 //        }.start();
 
-     if(quizDataModel.getAuthorId().equals(GlobalConfig.getCurrentUserId()) && (!quizDataModel.isQuizMarkedCompleted() ||  !GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId))) {
-         markQuizAsCompletedActionTextView.setVisibility(View.VISIBLE);
-     }
+        if (quizDataModel.getAuthorId().equals(GlobalConfig.getCurrentUserId()) && (!quizDataModel.isQuizMarkedCompleted() || !GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId))) {
+            markQuizAsCompletedActionTextView.setVisibility(View.VISIBLE);
+        }
 
-        participantCountTextView.setText(quizDataModel.getTotalParticipants()+"");
-        viewCountTextView.setText(quizDataModel.getTotalViews()+"");
-        datePostedTextView.setText(quizDataModel.getDateCreated()+"");
-        questionCountTextView.setText("Total "+quizDataModel.getTotalQuestions()+"");
+        participantCountTextView.setText(quizDataModel.getTotalParticipants() + "");
+        viewCountTextView.setText(quizDataModel.getTotalViews() + "");
+        datePostedTextView.setText(quizDataModel.getDateCreated() + "");
+        questionCountTextView.setText("Total " + quizDataModel.getTotalQuestions() + "");
 
         questionList = quizDataModel.getQuestionList();
         //Init answers list to be updated in future
-        for(int i=0; i<questionList.size();i++){
+        for (int i = 0; i < questionList.size(); i++) {
             //add two items
             ArrayList<String> answerItem = new ArrayList<>();
             //indicates the type of question, either theory or objective
@@ -548,7 +581,7 @@ if(timeRemainMap.get(activePosition) == 0) {
             //stores answer, using 0 as default value
             answerItem.add("0");
             //saves the question text
-            answerItem.add(questionList.size()>=4?questionList.get(3)+"":"Unknown error");
+            answerItem.add(questionList.size() >= 4 ? questionList.get(3) + "" : "Unknown error");
             //flags the answer as unmarked
             answerItem.add("UNMARKED");
             //stores the score of the answer
@@ -556,16 +589,22 @@ if(timeRemainMap.get(activePosition) == 0) {
             answersList.add(answerItem);
 
             //init time remain
-            timeRemainMap.put(i,i);
+            timeRemainMap.put(i, i);
         }
-        if(isAuthor){
+
+        if (quizDataModel.isQuizMarkedCompleted() ||  !GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId)) {
+            //display everything so long as the author has marked it as completed
+            displayQuestion(0);
+            renderParticipantInfo();
+        }else{
+        if (isAuthor) {
             displayQuestion(0);
             renderParticipantInfo();
             updateQuizCountDownTimer();
 
         }
         else {
-//        if user has joined then display the question, else hide
+//        if user has joined then display the question else hide
             if (isJoined) {
                 displayQuestion(0);
 
@@ -583,6 +622,7 @@ if(timeRemainMap.get(activePosition) == 0) {
                 submitActionButton.setVisibility(View.GONE);
             }
         }
+    }
 
 
         }
