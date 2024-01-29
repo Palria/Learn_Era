@@ -103,10 +103,10 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
         if(quizParticipantDataModel.isSubmitted()){
 
 //            holder.timeSubmittedView.setText("Answered : "+ GlobalHelpers.getTimeString(quizParticipantDataModel.getTimeSubmitted()));
-            holder.timeSubmittedView.setText("Date Answered : "+ quizParticipantDataModel.getTimeSubmitted());
+            holder.timeSubmittedView.setText("Answered : "+  GlobalHelpers.getTimeString(quizParticipantDataModel.getTimeSubmitted()));
 
         }else{
-            holder.timeSubmittedView.setText("Date Answered : Not submitted");
+            holder.timeSubmittedView.setText("Answered : Not submitted");
 
         }
         if(quizParticipantDataModel.isAuthorAnswer()) {

@@ -13,6 +13,12 @@
 <!--        />-->
 
     <item
+        android:id="@+id/wallet_item"
+        android:title="My Wallet"
+        android:icon="@drawable/baseline_attach_money_24"
+        />
+
+    <item
         android:icon="@drawable/ic_baseline_home_24"
         android:id="@+id/settings_item"
         android:title="Settings"

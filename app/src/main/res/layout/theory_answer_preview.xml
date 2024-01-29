@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="120pt"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:layout_marginEnd="5dp"
@@ -10,8 +10,8 @@
 
     <LinearLayout
         android:paddingHorizontal="10dp"
-        android:paddingVertical="10pt"
-        android:layout_width="match_parent"
+        android:paddingVertical="4pt"
+        android:layout_width="wrap_content"
         android:orientation="vertical"
         android:layout_height="wrap_content">
         <TextView
@@ -23,7 +23,7 @@
             android:textSize="10pt"
             android:textStyle="bold"
             android:textColor="@color/black"
-            android:layout_marginBottom="10pt"/>
+            android:layout_marginBottom="4pt"/>
         <TextView
             android:id="@+id/answerTextViewId"
             android:layout_width="match_parent"
@@ -32,10 +32,11 @@
             android:text="My name is..."
             android:textSize="10sp"
             android:textStyle="italic"
-            android:layout_marginBottom="10pt"/>
+            android:layout_marginBottom="0pt"/>
 
     </LinearLayout>
     <TextView
+
         android:textStyle="bold"
         android:textSize="8pt"
         android:maxLines="1"
@@ -66,6 +67,7 @@
             />
     </LinearLayout>
     <RadioGroup
+        android:visibility="gone"
         android:id="@+id/radioGroup"
         android:layout_marginTop="4pt"
         android:layout_width="wrap_content"

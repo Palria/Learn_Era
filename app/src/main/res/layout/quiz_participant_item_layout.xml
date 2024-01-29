@@ -26,17 +26,16 @@
             android:layout_height="30pt"/>
 
         <LinearLayout
-            android:paddingStart="15pt"
+            android:paddingStart="5pt"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
 
             <LinearLayout
-                android:gravity="center"
                 android:layout_gravity="start"
                 android:orientation="horizontal"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <!--    -->
                 <!--                <androidx.constraintlayout.widget.ConstraintLayout-->
@@ -59,7 +58,7 @@
         android:layout_height="wrap_content">
         <TextView
             android:textStyle="bold"
-            android:textSize="8pt"
+            android:textSize="9pt"
             android:maxLines="1"
             android:ellipsize="end"
             android:id="@+id/participantNameId"
@@ -91,6 +90,18 @@
         android:maxLines="2"
         android:id="@+id/timeSubmittedViewId"
         android:text="Time submitted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+    <TextView
+        android:textStyle="bold|italic"
+        android:visibility="gone"
+        android:textSize="8pt"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:id="@+id/positionViewId"
+        android:text="Position: 3rd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />
@@ -159,18 +170,10 @@
         </LinearLayout>
 
     </LinearLayout>
-    <TextView
-        android:visibility="gone"
-        android:textSize="8pt"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:id="@+id/positionViewId"
-        android:text="Position: 3rd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+
 
     <HorizontalScrollView
+        android:layout_marginTop="3pt"
         android:visibility="visible"
         android:id="@+id/answersHorizontalScrollViewId"
         android:layout_width="wrap_content"

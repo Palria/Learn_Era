@@ -611,23 +611,6 @@
 
                 </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/walletTextViewId"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="2pt"
-                    android:layout_marginTop="6pt"
-                    android:layout_weight="1"
-                    android:background="@drawable/default_outlined_button"
-                    android:foreground="@android:color/transparent"
-                    android:paddingHorizontal="5pt"
-                    android:paddingVertical="6pt"
-                    android:text="Wallet"
-                    android:textAlignment="center"
-                    android:textColor="@color/teal_700"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    />
 
                 <TextView
                     android:layout_marginTop="11pt"
@@ -651,6 +634,14 @@
                         android:paddingVertical="7pt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_marginBottom="2pt"
+                            app:tint="@color/white"
+                            android:src="@drawable/icon_library"
+                            android:layout_width="15pt"
+                            android:layout_height="15pt"
+                            android:contentDescription="TODO" />
 
                         <TextView
                             android:textColor="@color/white"
@@ -680,9 +671,14 @@
                         android:paddingVertical="7pt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@color/light_blue_900"
                         >
-
+                        <ImageView
+                            android:layout_marginBottom="2pt"
+                            app:tint="@color/white"
+                            android:src="@drawable/icon_tutorials"
+                            android:layout_width="15pt"
+                            android:layout_height="15pt"
+                            android:contentDescription="TODO" />
                         <TextView
                             android:textColor="@color/white"
                             android:textStyle="bold"
@@ -711,9 +707,14 @@
                         android:paddingVertical="7pt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@color/purple_500"
                         >
-
+                        <ImageView
+                            android:layout_marginBottom="2pt"
+                            app:tint="@color/white"
+                            android:src="@drawable/baseline_quiz_24"
+                            android:layout_width="15pt"
+                            android:layout_height="15pt"
+                            android:contentDescription="TODO" />
                         <TextView
                             android:id="@+id/myQuizTextViewId"
                             android:textColor="@color/white"
@@ -743,8 +744,14 @@
                         android:paddingVertical="7pt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@color/light_blue_600"
                         >
+                        <ImageView
+                            app:tint="@color/white"
+                            android:layout_marginBottom="2pt"
+                            android:src="@drawable/send"
+                            android:layout_width="15pt"
+                            android:layout_height="15pt"
+                            android:contentDescription="TODO" />
 
                         <TextView
                             android:id="@+id/joinedQuizTextViewId"

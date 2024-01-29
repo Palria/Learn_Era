@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         />
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/topBar"
@@ -40,7 +40,7 @@
         >
 
     </com.google.android.material.chip.ChipGroup>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/saveCategoryActionTextViewId"
@@ -48,7 +48,7 @@
         android:layout_width="match_parent"
         android:textColor="@color/white"
         android:text="Save Tabs"
-        android:background="@color/secondary_app_color"
+        android:background="@drawable/default_auth_btn"
         android:layout_margin="10dp"
         app:cornerRadius="30dp"
         android:layout_height="wrap_content"

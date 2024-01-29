@@ -359,6 +359,7 @@
                 <androidx.cardview.widget.CardView
                     android:layout_margin="2pt"
                     android:layout_height="wrap_content"
+                    app:cardCornerRadius="3pt"
                     android:layout_width="wrap_content"
                    android:layout_columnWeight="1"
                     app:contentPadding="5pt"
@@ -399,6 +400,7 @@
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="wrap_content"
+                    app:cardCornerRadius="3pt"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
                     android:layout_margin="2pt"
@@ -441,7 +443,119 @@
                 </androidx.cardview.widget.CardView>
             </GridLayout>
 
+            <GridLayout
+                android:layout_marginHorizontal="5pt"
+                android:layout_width="match_parent"
+                android:columnCount="2"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_columnWeight="1"
+                    app:contentPadding="3pt"
+                    app:cardCornerRadius="3pt"
+                    android:layout_margin="2pt"
+                    app:cardBackgroundColor="@color/error_red"
+                    >
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:textAlignment="center"
+                            android:text="Participation Fee"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:textAllCaps="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <LinearLayout
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_marginRight="2pt"
+                                android:id="@+id/feeIconId"
+                                app:tint="@color/white"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_baseline_attach_money_24"
+                                android:layout_width="15pt"
+                                android:layout_height="20pt"/>
+
+                            <TextView
+                                android:textColor="@color/white"
+                                android:id="@+id/regFeeValueTextViewId"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="2pt"
+                                android:layout_marginEnd="20dp"
+                                android:text="0"
+                                android:textSize="14pt"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_margin="2pt"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    app:contentPadding="3pt"
+                    app:cardCornerRadius="3pt"
+                    app:cardBackgroundColor="@color/success_green"
+                    >
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:textAlignment="center"
+                            android:text="Winner's Reward"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:textAllCaps="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <LinearLayout
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_marginRight="1pt"
+                                android:id="@+id/rewardIconId"
+                                app:tint="@color/white"
+                                android:layout_gravity="center"
+                                android:src="@drawable/baseline_cake_24"
+                                android:layout_width="15pt"
+                                android:layout_height="20pt"/>
+
+                            <TextView
+                                android:id="@+id/rewardValueTextViewId"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="1pt"
+                                android:layout_marginEnd="20dp"
+                                android:text="0"
+                                android:textColor="@color/white"
+                                android:textSize="14pt"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </GridLayout>
+
             <LinearLayout
+                android:paddingVertical="3pt"
                 android:gravity="center"
                 android:paddingHorizontal="5pt"
                 android:orientation="horizontal"
@@ -455,30 +569,19 @@
                     android:layout_marginLeft="2pt"
                     android:layout_marginStart="20dp"
                     android:textStyle="bold"
+                    android:gravity="center"
+
                     android:fontFamily="sans-serif-condensed-medium"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/joinQuizActionTextViewId"
-                android:paddingHorizontal="5pt"
-                android:text="Join Quiz"
-                android:layout_marginVertical="5pt"
-                android:textStyle="bold"
-                android:textColor="@color/teal_700"
-                android:background="@drawable/outlined_white_bg_button"
-                android:layout_marginHorizontal="5pt"
-                android:paddingVertical="5pt"
-                android:textAlignment="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:ignore="RtlCompat" />
 
 
         <LinearLayout
+            android:layout_marginVertical="3pt"
             android:paddingHorizontal="5pt"
             android:layout_width="match_parent"
             android:orientation="horizontal"
@@ -585,113 +688,7 @@
                 </LinearLayout>
 
             </LinearLayout>
-            <GridLayout
-                android:layout_marginHorizontal="5pt"
-                android:layout_width="match_parent"
-                android:columnCount="2"
-                android:layout_height="wrap_content">
 
-                <androidx.cardview.widget.CardView
-                    android:layout_margin="2pt"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:layout_columnWeight="1"
-                    app:contentPadding="5pt"
-                    app:cardBackgroundColor="@color/error_red"
-                    >
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:textAlignment="center"
-                            android:text="Participation Fee"
-                            android:textStyle="bold"
-                            android:textColor="@color/black"
-                            android:textAllCaps="true"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-                        <LinearLayout
-                            android:layout_gravity="center"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_marginRight="2pt"
-                                android:id="@+id/feeIconId"
-                                app:tint="@color/darkIcon"
-                                android:layout_gravity="center"
-                                android:src="@drawable/ic_baseline_attach_money_24"
-                                android:layout_width="15pt"
-                                android:layout_height="20pt"/>
-
-                            <TextView
-                                android:id="@+id/regFeeValueTextViewId"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="2pt"
-                                android:layout_marginEnd="20dp"
-                                android:text="0"
-                                android:textSize="14pt"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:layout_margin="2pt"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:layout_columnWeight="1"
-                    app:contentPadding="5pt"
-                    app:cardBackgroundColor="@color/success_green"
-                    >
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:textAlignment="center"
-                            android:text="Winner's Reward"
-                            android:textStyle="bold"
-                            android:textColor="@color/black"
-                            android:textAllCaps="true"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-                        <LinearLayout
-                            android:layout_gravity="center"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_marginRight="1pt"
-                                android:id="@+id/rewardIconId"
-                                app:tint="@color/darkIcon"
-                                android:layout_gravity="center"
-                                android:src="@drawable/baseline_cake_24"
-                                android:layout_width="15pt"
-                                android:layout_height="20pt"/>
-
-                            <TextView
-                                android:id="@+id/rewardValueTextViewId"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="1pt"
-                                android:layout_marginEnd="20dp"
-                                android:text="0"
-                                android:textSize="14pt"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
-            </GridLayout>
 
             <TextView
                 android:textColor="@color/grayDark"
@@ -705,193 +702,209 @@
                 android:text="QUIZ"
                 />
 
-<!--
-            <LinearLayout
-                android:background="@drawable/rounded_white_bg"
+            <TextView
+                android:id="@+id/joinQuizActionTextViewId"
+                android:paddingHorizontal="5pt"
+                android:text="Join Quiz"
+                android:layout_marginVertical="5pt"
+                android:textStyle="bold"
+                android:textColor="@color/teal_700"
+                android:background="@drawable/outlined_white_bg_button"
+                android:layout_marginHorizontal="5pt"
+                android:paddingVertical="5pt"
+                android:textAlignment="center"
                 android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:layout_height="match_parent"
-                android:visibility="gone"
-                >
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:paddingHorizontal="10pt"
-                    android:paddingVertical="15pt"
-                    android:layout_height="match_parent">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:orientation="horizontal"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:textStyle="bold"
-                            android:textColor="@color/grayDark"
-                            android:layout_marginBottom="1pt"
-                            android:text="Elapsed Time"
-                            android:layout_weight="1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-
-                        <TextView
-                            android:textColor="@color/grayDark"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="1pt"
-                            android:text="Max Time"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:orientation="horizontal"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:textStyle="bold"
-                            android:textColor="@color/teal_700"
-                            android:layout_marginBottom="7pt"
-                            android:text="00:14"
-                            android:textSize="10pt"
-                            android:layout_weight="1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-
-                        <TextView
-                            android:textColor="@color/teal_700"
-                            android:textStyle="bold"
-                            android:textSize="10pt"
-                            android:layout_marginBottom="7pt"
-                            android:text="00:30"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-                    </LinearLayout>
-
-                    <androidx.cardview.widget.CardView
-                        android:elevation="@dimen/cardview_default_elevation"
-                        android:layout_marginTop="10pt"
-                        app:cardCornerRadius="5pt"
-                        app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/gray"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                       <LinearLayout
-                           android:paddingHorizontal="10dp"
-                           android:paddingVertical="10pt"
-                           android:layout_width="match_parent"
-                           android:orientation="vertical"
-                           android:layout_height="wrap_content">
-                           <TextView
-                               android:textSize="10pt"
-                               android:textStyle="bold"
-                               android:layout_marginBottom="10pt"
-                               android:layout_width="match_parent"
-                               android:text="@string/what_the_use_of_the_substring_function_in_java_please_choose_the_option"
-                               android:layout_height="wrap_content"/>
-
-                           <RadioGroup
-                               android:layout_marginTop="4pt"
-                               android:layout_width="match_parent"
-                               android:layout_height="wrap_content"
-                               android:orientation="vertical">
-                               <RadioButton
-                                   android:textColor="@color/white"
-                                   android:id="@+id/xsfasd"
-                                   android:drawableTint="@color/white"
-                                   android:button="@null"
-                                   android:drawableStart="@drawable/baseline_radio_button_checked_24"
-                                   android:layout_marginBottom="4pt"
-                                   android:layout_width="match_parent"
-                                   android:layout_height="30pt"
-                                   android:paddingHorizontal="5pt"
-                                    android:background="@drawable/quiz_option_drawable"
-                                   android:checked="true"
-                                   android:drawablePadding="5pt"
-                                   android:text="Answer 1 "
-                                   />
-                               <RadioButton
-                                   android:drawablePadding="5pt"
-                                   android:textColor="@color/white"
-                                   android:id="@+id/xsfasdxsd"
-                                   android:button="@null"
-                                   android:paddingHorizontal="5pt"
-                                   android:drawableStart="@drawable/baseline_radio_button_checked_24"
-                                   android:layout_width="match_parent"
-                                   android:layout_height="30pt"
-                                   android:layout_marginBottom="4pt"
-                                   android:background="@drawable/quiz_option_drawable"
-                                   android:text="Answer 2"
-                                   />
-                               <RadioButton
-                                   android:drawablePadding="5pt"
-                                   android:textColor="@color/white"
-                                   android:id="@+id/xsfasdxsssd"
-                                   android:button="@null"
-                                   android:paddingHorizontal="5pt"
-                                   android:drawableStart="@drawable/baseline_radio_button_checked_24"
-                                   android:layout_width="match_parent"
-                                   android:layout_height="30pt"
-                                   android:layout_marginBottom="4pt"
-                                   android:background="@drawable/quiz_option_drawable"
-                                   android:text="Answer 3"
-                                   />
-                               <RadioButton
-                                   android:drawablePadding="5pt"
-                                   android:textColor="@color/white"
-                                   android:id="@+id/xsfasdxsdfsd"
-                                   android:button="@null"
-                                   android:paddingHorizontal="5pt"
-                                   android:drawableStart="@drawable/baseline_radio_button_checked_24"
-                                   android:layout_width="match_parent"
-                                   android:layout_height="30pt"
-                                   android:layout_marginBottom="4pt"
-                                   android:background="@drawable/quiz_option_drawable"
-                                   android:text="Answer 4"
-                                   />
-                           </RadioGroup>
-                       </LinearLayout>
-
-                    </androidx.cardview.widget.CardView>
+                android:layout_height="wrap_content"
+                tools:ignore="RtlCompat" />
 
 
-                    <LinearLayout
-                        android:layout_marginTop="15pt"
-                        android:paddingHorizontal="5pt"
-                        android:layout_alignParentBottom="true"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="?attr/actionBarSize">
+            <!--
+                        <LinearLayout
+                            android:background="@drawable/rounded_white_bg"
+                            android:layout_width="match_parent"
+                            android:orientation="vertical"
+                            android:layout_height="match_parent"
+                            android:visibility="gone"
+                            >
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:paddingHorizontal="10pt"
+                                android:paddingVertical="15pt"
+                                android:layout_height="match_parent">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:orientation="horizontal"
+                                    android:layout_height="wrap_content">
+                                    <TextView
+                                        android:textStyle="bold"
+                                        android:textColor="@color/grayDark"
+                                        android:layout_marginBottom="1pt"
+                                        android:text="Elapsed Time"
+                                        android:layout_weight="1"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"/>
+
+                                    <TextView
+                                        android:textColor="@color/grayDark"
+                                        android:textStyle="bold"
+                                        android:layout_marginBottom="1pt"
+                                        android:text="Max Time"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"/>
+                                </LinearLayout>
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:orientation="horizontal"
+                                    android:layout_height="wrap_content">
+                                    <TextView
+                                        android:textStyle="bold"
+                                        android:textColor="@color/teal_700"
+                                        android:layout_marginBottom="7pt"
+                                        android:text="00:14"
+                                        android:textSize="10pt"
+                                        android:layout_weight="1"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"/>
+
+                                    <TextView
+                                        android:textColor="@color/teal_700"
+                                        android:textStyle="bold"
+                                        android:textSize="10pt"
+                                        android:layout_marginBottom="7pt"
+                                        android:text="00:30"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"/>
+                                </LinearLayout>
+
+                                <androidx.cardview.widget.CardView
+                                    android:elevation="@dimen/cardview_default_elevation"
+                                    android:layout_marginTop="10pt"
+                                    app:cardCornerRadius="5pt"
+                                    app:cardElevation="0dp"
+                                    app:cardBackgroundColor="@color/gray"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                   <LinearLayout
+                                       android:paddingHorizontal="10dp"
+                                       android:paddingVertical="10pt"
+                                       android:layout_width="match_parent"
+                                       android:orientation="vertical"
+                                       android:layout_height="wrap_content">
+                                       <TextView
+                                           android:textSize="10pt"
+                                           android:textStyle="bold"
+                                           android:layout_marginBottom="10pt"
+                                           android:layout_width="match_parent"
+                                           android:text="@string/what_the_use_of_the_substring_function_in_java_please_choose_the_option"
+                                           android:layout_height="wrap_content"/>
+
+                                       <RadioGroup
+                                           android:layout_marginTop="4pt"
+                                           android:layout_width="match_parent"
+                                           android:layout_height="wrap_content"
+                                           android:orientation="vertical">
+                                           <RadioButton
+                                               android:textColor="@color/white"
+                                               android:id="@+id/xsfasd"
+                                               android:drawableTint="@color/white"
+                                               android:button="@null"
+                                               android:drawableStart="@drawable/baseline_radio_button_checked_24"
+                                               android:layout_marginBottom="4pt"
+                                               android:layout_width="match_parent"
+                                               android:layout_height="30pt"
+                                               android:paddingHorizontal="5pt"
+                                                android:background="@drawable/quiz_option_drawable"
+                                               android:checked="true"
+                                               android:drawablePadding="5pt"
+                                               android:text="Answer 1 "
+                                               />
+                                           <RadioButton
+                                               android:drawablePadding="5pt"
+                                               android:textColor="@color/white"
+                                               android:id="@+id/xsfasdxsd"
+                                               android:button="@null"
+                                               android:paddingHorizontal="5pt"
+                                               android:drawableStart="@drawable/baseline_radio_button_checked_24"
+                                               android:layout_width="match_parent"
+                                               android:layout_height="30pt"
+                                               android:layout_marginBottom="4pt"
+                                               android:background="@drawable/quiz_option_drawable"
+                                               android:text="Answer 2"
+                                               />
+                                           <RadioButton
+                                               android:drawablePadding="5pt"
+                                               android:textColor="@color/white"
+                                               android:id="@+id/xsfasdxsssd"
+                                               android:button="@null"
+                                               android:paddingHorizontal="5pt"
+                                               android:drawableStart="@drawable/baseline_radio_button_checked_24"
+                                               android:layout_width="match_parent"
+                                               android:layout_height="30pt"
+                                               android:layout_marginBottom="4pt"
+                                               android:background="@drawable/quiz_option_drawable"
+                                               android:text="Answer 3"
+                                               />
+                                           <RadioButton
+                                               android:drawablePadding="5pt"
+                                               android:textColor="@color/white"
+                                               android:id="@+id/xsfasdxsdfsd"
+                                               android:button="@null"
+                                               android:paddingHorizontal="5pt"
+                                               android:drawableStart="@drawable/baseline_radio_button_checked_24"
+                                               android:layout_width="match_parent"
+                                               android:layout_height="30pt"
+                                               android:layout_marginBottom="4pt"
+                                               android:background="@drawable/quiz_option_drawable"
+                                               android:text="Answer 4"
+                                               />
+                                       </RadioGroup>
+                                   </LinearLayout>
+
+                                </androidx.cardview.widget.CardView>
 
 
-                        <Button
-                            android:background="@drawable/default_auth_btn"
-                            style="@style/Widget.Material3.Button.ElevatedButton"
-                            android:layout_weight="1"
-                            android:backgroundTint="@null"
-                            android:id="@+id/cancelButton"
-                            android:text="Prev"
-                            android:paddingVertical="2pt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
+                                <LinearLayout
+                                    android:layout_marginTop="15pt"
+                                    android:paddingHorizontal="5pt"
+                                    android:layout_alignParentBottom="true"
+                                    android:orientation="horizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="?attr/actionBarSize">
 
 
-                        <Button
-                            android:background="@drawable/default_auth_btn"
-                            android:layout_marginLeft="3pt"
-                            android:layout_weight="1"
-                            android:id="@+id/update_button"
-                            android:text="Submit"
-                            android:paddingVertical="2pt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-                    </LinearLayout>
+                                    <Button
+                                        android:background="@drawable/default_auth_btn"
+                                        style="@style/Widget.Material3.Button.ElevatedButton"
+                                        android:layout_weight="1"
+                                        android:backgroundTint="@null"
+                                        android:id="@+id/cancelButton"
+                                        android:text="Prev"
+                                        android:paddingVertical="2pt"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"/>
 
 
-                </LinearLayout>
+                                    <Button
+                                        android:background="@drawable/default_auth_btn"
+                                        android:layout_marginLeft="3pt"
+                                        android:layout_weight="1"
+                                        android:id="@+id/update_button"
+                                        android:text="Submit"
+                                        android:paddingVertical="2pt"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"/>
+                                </LinearLayout>
 
 
-            </LinearLayout>
-    -->
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+                -->
         <LinearLayout
             android:id="@+id/containerLinearLayoutId"
             android:orientation="vertical"
@@ -923,7 +936,7 @@
                 />
 <View
     android:layout_width="wrap_content"
-    android:layout_height="100dp"
+    android:layout_height="10dp"
     />
         </LinearLayout>
 

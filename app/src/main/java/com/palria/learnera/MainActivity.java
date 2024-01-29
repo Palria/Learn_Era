@@ -487,7 +487,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //                            Toast.makeText(MainActivity.this, "Setting clicked", Toast.LENGTH_SHORT).show();
                             Intent intent =new Intent(MainActivity.this, SettingsActivity.class);
                             startActivity(intent);
-                        }else if(item.getItemId() == R.id.log_out_item){
+                        }else if(item.getItemId() == R.id.wallet_item) {
+                             //////navigate to wallet
+                             Intent i = new Intent(MainActivity.this, UserWalletActivity.class);
+                             startActivity(i);
+                         }else if(item.getItemId() == R.id.log_out_item){
                         //log out user code here 
                            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
                            builder.setTitle("Log out?")

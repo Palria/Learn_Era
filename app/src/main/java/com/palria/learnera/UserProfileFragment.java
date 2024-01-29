@@ -96,7 +96,6 @@ public class UserProfileFragment extends Fragment {
     TextView logButton;
     TextView verificationFlagTextView;
     TextView followActionTextView;
-    TextView walletTextView;
     ImageView bookmarkedIcon, ratedIcon;
     //learn era bottom sheet dialog
     LEBottomSheetDialog leBottomSheetDialog;
@@ -235,15 +234,7 @@ public class UserProfileFragment extends Fragment {
 
                 }
             });
-            walletTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
 
-                    Intent i = new Intent(getContext(), UserWalletActivity.class);
-                    startActivity(i);
-
-                }
-            });
 
             swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
@@ -558,7 +549,7 @@ public class UserProfileFragment extends Fragment {
             ratedIcon = parentView.findViewById(R.id.ratedIcon);
             bookmarkedIcon = parentView.findViewById(R.id.bookmarkedIcon);
             followActionTextView = parentView.findViewById(R.id.followActionTextViewId);
-            walletTextView = parentView.findViewById(R.id.walletTextViewId);
+
 
             noLibraryFoundView = parentView.findViewById(R.id.noLibraryFoundView);
             noTutorialFoundView = parentView.findViewById(R.id.noTutorialsFoundView);
@@ -1610,7 +1601,6 @@ libraryView.setOnClickListener(new View.OnClickListener() {
 
         if(authorId.equals(GlobalConfig.getCurrentUserId())){
             followActionTextView.setVisibility(View.GONE);
-            walletTextView.setVisibility(View.VISIBLE);
         }
         if(GlobalConfig.isFollowing(getContext(),authorId)){
             followActionTextView.setText("Following");

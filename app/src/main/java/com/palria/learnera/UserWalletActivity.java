@@ -194,7 +194,7 @@ void getWalletInfo(){
             String totalCoinEquity = ""+ documentSnapshot.get(GlobalConfig.TOTAL_COIN_EQUITY_KEY);
 
             availableCoinEquityTextView.setText(totalCoinEquity+" COINS");
-            withdrawableCoinsTextView.setText(withdrawableCoins+" COINS");
+            withdrawableCoinsTextView.setText(withdrawableCoins+" Coins");
 
             ArrayList<String> quizEarningsHistoryList =  documentSnapshot.get(GlobalConfig.QUIZ_EARNINGS_HISTORY_LIST_KEY)!=null? (ArrayList<String>) documentSnapshot.get(GlobalConfig.QUIZ_EARNINGS_HISTORY_LIST_KEY):new ArrayList<>();
             for(String history: quizEarningsHistoryList){

@@ -27,7 +27,7 @@
 
 
 <androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="13pt"
+    android:layout_width="16pt"
     android:layout_height="13pt"
     >
 
@@ -39,7 +39,7 @@
             android:layout_width="13pt"
             android:foregroundTint="@color/white"
             android:layout_height="13pt"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="15dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
