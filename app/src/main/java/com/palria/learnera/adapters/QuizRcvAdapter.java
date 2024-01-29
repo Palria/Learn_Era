@@ -140,7 +140,7 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
                 long quizEndMinute = quizEndDateList1.get(4);
 //checks if the quiz is expired.
                 if(GlobalConfig.isQuizExpired(quizEndYear,quizEndMonth,quizEndDay,quizEndHour,quizEndMinute)) {
-                    holder.joinQuizActionTextView.setText("Closed");
+                    holder.joinQuizActionTextView.setText("Expired");
                     holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -190,26 +190,6 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
                 holder.endTimeView.setText("End Time "+quizEndDay + "/" + quizEndMonth + "/" + quizEndYear + " " + quizEndHour + " : " + quizEndMinute);
             }
 
-//checks if the quiz is completed
-            if(quizDataModel.isQuizMarkedCompleted()) {
-                holder.joinQuizActionTextView.setText("Completed");
-                holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-
-                        //navigate to QuizActivity
-                        Intent intent = new Intent(context, QuizActivity.class);
-                        intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY,quizDataModel);
-                        intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,quizDataModel.getAuthorId());
-                        intent.putExtra(GlobalConfig.QUIZ_ID_KEY,quizDataModel.getQuizId());
-                        intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,false);
-                        context.startActivity(intent);
-
-                    }
-                });
-
-            }
 
             GlobalConfig.getFirebaseFirestoreInstance()
                     .collection(GlobalConfig.ALL_USERS_KEY)
@@ -250,6 +230,28 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
                         }
                     });
                 }
+
+//checks if the quiz is completed
+            if(quizDataModel.isQuizMarkedCompleted()) {
+                holder.joinQuizActionTextView.setText("Completed");
+                holder.isClosedView.setText("Completed");
+                holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+
+                        //navigate to QuizActivity
+                        Intent intent = new Intent(context, QuizActivity.class);
+                        intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY,quizDataModel);
+                        intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,quizDataModel.getAuthorId());
+                        intent.putExtra(GlobalConfig.QUIZ_ID_KEY,quizDataModel.getQuizId());
+                        intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,false);
+                        context.startActivity(intent);
+
+                    }
+                });
+
+            }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

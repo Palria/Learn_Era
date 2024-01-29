@@ -2,6 +2,7 @@ package com.palria.learnera;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -78,6 +79,7 @@ public class HomeFragment extends Fragment {
         LinearLayout libraryLinearLayout;
         LinearLayout tutorialLinearLayout;
 
+        TextView customizeTabTextView;
         TextView seeAllLibraryTextView;
         TextView seeAllQuizTextView;
         TextView seeAllAuthorTextView;
@@ -296,7 +298,13 @@ public class HomeFragment extends Fragment {
 
             }
         });
-        seeAllLibraryTextView.setOnClickListener(new View.OnClickListener() {
+        customizeTabTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(),CustomizeTabActivity.class);
+                startActivity(intent);
+            }
+        }); seeAllLibraryTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.LIBRARY_FRAGMENT_TYPE_KEY,null));
@@ -382,6 +390,7 @@ public class HomeFragment extends Fragment {
         booksItemRecyclerListView = parentView.findViewById(R.id.booksItemContainer);
         quizItemRecyclerListView = parentView.findViewById(R.id.quizItemContainer);
         popularAuthorRecyclerView = parentView.findViewById(R.id.popular_authors_listview);
+        customizeTabTextView = parentView.findViewById(R.id.customizeTabTextViewId);
         seeAllAuthorTextView = parentView.findViewById(R.id.seeAllAuthorTextViewId);
         seeAllLibraryTextView = parentView.findViewById(R.id.seeAllLibraryTextViewId);
         seeAllQuizTextView = parentView.findViewById(R.id.seeAllQuizTextViewId);
@@ -540,6 +549,12 @@ public class HomeFragment extends Fragment {
 
 //String[] categories = getResources().getStringArray(R.array.category);
 ArrayList<String> categories = GlobalConfig.getCategoryList(getContext());
+//check if user has customized his category
+if(GlobalConfig.isCustomizedCategorySaved(getContext())){
+    //display his custom category
+     categories = GlobalConfig.getCustomizedCategoryList(getContext());
+
+}
 for(int i=0; i<categories.size(); i++) {
     if(i==0) {
         TabLayout.Tab firstTabItem = tabLayout.newTab();
@@ -835,10 +850,10 @@ for(int i=0; i<categories.size(); i++) {
                                 authorSavedAnswersList.add(answerItem);
 
                             }
-                            ArrayList<String> savedParticipantScoresList =  documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) : new ArrayList();
-                            ArrayList startDateList =  documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) : new ArrayList();
-                            ArrayList endDateList =  documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) : new ArrayList();
-                            ArrayList participantsList =  documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) : new ArrayList();
+                            ArrayList<String> savedParticipantScoresList =  documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) : new ArrayList();
+                            ArrayList startDateList =  documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) : new ArrayList();
+                            ArrayList endDateList =  documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) : new ArrayList();
+                            ArrayList participantsList =  documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) : new ArrayList();
                             String dateCreated = documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY).toDate() : "Moment ago";
                             if (dateCreated.length() > 10) {
                                 dateCreated = dateCreated.substring(0, 10);

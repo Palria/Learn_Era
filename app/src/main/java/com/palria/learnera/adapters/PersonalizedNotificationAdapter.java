@@ -87,6 +87,14 @@ public class PersonalizedNotificationAdapter extends RecyclerView.Adapter<Person
                  intent1.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,true);
                  context.startActivity(intent1);
                  break;
+                 case GlobalConfig.NOTIFICATION_TYPE_QUIZ_ANSWER_SUBMITTED_KEY:
+                 String quizId2 = notificationDataModel.getNotification_model_info_list().get(0);
+                 Intent intent2 = new Intent(context, QuizActivity.class);
+                 intent2.putExtra(GlobalConfig.QUIZ_ID_KEY,quizId2);
+                 intent2.putExtra(GlobalConfig.AUTHOR_ID_KEY, notificationDataModel.getSenderId());
+                 intent2.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,true);
+                 context.startActivity(intent2);
+                 break;
          }
      }
  });

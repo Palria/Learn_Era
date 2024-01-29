@@ -69,9 +69,17 @@ public class UserProfileFragment extends Fragment {
     TextView currentCountryOfResidence;
     TextView joined_dateTextView;
 
+    LinearLayout libraryLayout;
     TextView numOfLibraryTextView;
+
     TextView numOfTutorialsTextView;
-    TextView numOfRatingsTextView;
+    LinearLayout tutorialsLayout;
+
+    TextView numOfMyQuizTextView;
+    LinearLayout myQuizLayout;
+
+    TextView numOfJoinedQuizTextView;
+    LinearLayout joinedQuizLayout;
 
     LinearLayout numOfLibraryTutorialRatingsLinearLayout;
 
@@ -306,7 +314,7 @@ public class UserProfileFragment extends Fragment {
 
                 }
             });
-            numOfLibraryTextView.setOnClickListener(new View.OnClickListener() {
+            libraryLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
@@ -314,23 +322,38 @@ public class UserProfileFragment extends Fragment {
 
                 }
             });
-            numOfTutorialsTextView.setOnClickListener(new View.OnClickListener() {
+            tutorialsLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     startActivity(GlobalConfig.getHostActivityIntent(getContext(), null, GlobalConfig.TUTORIAL_FRAGMENT_TYPE_KEY, authorId));
 
                 }
             });
-            numOfRatingsTextView.setOnClickListener(new View.OnClickListener() {
+            myQuizLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.USER_CREATED_QUIZ_FRAGMENT_TYPE_KEY,authorId));
 
-                    Intent intent = new Intent(getContext(), UserStatsActivity.class);
-                    intent.putExtra(GlobalConfig.USER_ID_KEY, authorId);
-                    startActivity(intent);
+                }
+            });
+            joinedQuizLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.JOINED_QUIZ_FRAGMENT_TYPE_KEY,authorId));
+
                 }
             });
 
+// numOfRatingsTextView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//
+//                    Intent intent = new Intent(getContext(), UserStatsActivity.class);
+//                    intent.putExtra(GlobalConfig.USER_ID_KEY, authorId);
+//                    startActivity(intent);
+//                }
+//            });
+//
 
             DocumentReference bookMarkOwnerReference = GlobalConfig.getFirebaseFirestoreInstance()
                     .collection(GlobalConfig.ALL_USERS_KEY)
@@ -418,7 +441,7 @@ public class UserProfileFragment extends Fragment {
     private void loadCurrentUserProfile(){
         getProfile(new OnUserProfileFetchListener() {
             @Override
-            public void onSuccess(String userDisplayName,String description,String birthdate, String userCountryOfResidence, String contactEmail, String webLink, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, String joined_date,String numOfLibraryCreated,String numOfTutorialCreated,String numOfRatings, boolean isUserBlocked, boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor) {
+            public void onSuccess(String userDisplayName,String description,String birthdate, String userCountryOfResidence, String contactEmail, String webLink, String contactPhoneNumber, String genderType, String userProfilePhotoDownloadUrl, String joined_date,String numOfLibraryCreated,String numOfTutorialCreated,String numOfMyQuiz,String numOfJoinedQuiz, boolean isUserBlocked, boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor) {
                 swipeRefreshLayout.setRefreshing(false);
                 isUserAuthor = isUserAnAuthor;
                 try {
@@ -440,7 +463,8 @@ public class UserProfileFragment extends Fragment {
 
                 numOfLibraryTextView.setText(numOfLibraryCreated);
                 numOfTutorialsTextView.setText(numOfTutorialCreated);
-                numOfRatingsTextView.setText(numOfRatings);
+                numOfJoinedQuizTextView.setText(numOfJoinedQuiz);
+                numOfMyQuizTextView.setText(numOfMyQuiz);
 
                 shimmerLayout.stopShimmer();
                 shimmerLayout.setVisibility(View.GONE);
@@ -547,7 +571,12 @@ public class UserProfileFragment extends Fragment {
 
             numOfLibraryTextView = parentView.findViewById(R.id.numOfLibraryCreatedTextView);
             numOfTutorialsTextView = parentView.findViewById(R.id.numOfTutorialCreatedTextView);
-            numOfRatingsTextView = parentView.findViewById(R.id.numOfRatingsCreatedTextView);
+            numOfJoinedQuizTextView = parentView.findViewById(R.id.numOfJoinedQuizTextViewId);
+            numOfMyQuizTextView = parentView.findViewById(R.id.numOfMyQuizTextViewId);
+            myQuizLayout = parentView.findViewById(R.id.myQuizLayoutId);
+            joinedQuizLayout = parentView.findViewById(R.id.joinedQuizLayoutId);
+            libraryLayout = parentView.findViewById(R.id.libraryLayoutId);
+            tutorialsLayout = parentView.findViewById(R.id.tutorialsLayoutId);
 
             swipeRefreshLayout = parentView.findViewById(R.id.swiperRefreshLayout);
             profileMoreIconButton = parentView.findViewById(R.id.profileMoreIcon);
@@ -1177,7 +1206,9 @@ public class UserProfileFragment extends Fragment {
                         }
                         long numOfLibraryCreated = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY):0L;
                         long numOfTutorialCreated = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_CREATED_KEY):0L;
-                        long numOfRatings = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY):0L;
+//                        long numOfRatings = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_AUTHOR_REVIEWS_KEY):0L;
+                        long numOfMyQuiz = documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUIZ_KEY):0L;
+                        long numberOfJoinedQuiz = documentSnapshot.get(GlobalConfig.TOTAL_QUIZ_JOINED_KEY)!=null ? documentSnapshot.getLong(GlobalConfig.TOTAL_QUIZ_JOINED_KEY):0L;
 
 
                         boolean isAccountSubmittedForVerification = documentSnapshot.get(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY):false;
@@ -1210,7 +1241,6 @@ public class UserProfileFragment extends Fragment {
 
                             //create the user wallet if he has not created yet
                             WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
-
                             DocumentReference walletReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId()).collection(GlobalConfig.USER_WALLET_KEY).document(GlobalConfig.USER_WALLET_KEY);
                             HashMap<String,Object>walletDetails = new HashMap<>();
                             walletDetails.put(GlobalConfig.WALLET_CREATED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
@@ -1222,6 +1252,14 @@ public class UserProfileFragment extends Fragment {
                             walletDetails.put(GlobalConfig.COIN_WITHDRAWAL_HISTORY_LIST_KEY,new ArrayList<>());
                             walletDetails.put(GlobalConfig.REFERAL_REWARD_HISTORY_LIST_KEY,new ArrayList<>());
                             writeBatch.set(walletReference,walletDetails, SetOptions.merge());
+
+                            //update the user profile to indicate that wallet has been created
+                            DocumentReference userReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
+                            HashMap<String,Object>userDetails = new HashMap<>();
+                            userDetails.put(GlobalConfig.IS_WALLET_CREATED_KEY,true);
+                            writeBatch.set(userReference,userDetails, SetOptions.merge());
+
+
                             writeBatch.commit();
                         }
 
@@ -1241,7 +1279,7 @@ public class UserProfileFragment extends Fragment {
 
                         }
 
-                        onUserProfileFetchListener.onSuccess( userDisplayName,description,birthdate, userCountryOfResidence, contactEmail,webLink, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl,joined_date,""+ numOfLibraryCreated,""+ numOfTutorialCreated,""+ numOfRatings, isUserBlocked, isUserProfilePhotoIncluded,isUserAnAuthor);
+                        onUserProfileFetchListener.onSuccess( userDisplayName,description,birthdate, userCountryOfResidence, contactEmail,webLink, contactPhoneNumber, genderType, userProfilePhotoDownloadUrl,joined_date,""+ numOfLibraryCreated,""+ numOfTutorialCreated,""+ numOfMyQuiz,""+ numberOfJoinedQuiz, isUserBlocked, isUserProfilePhotoIncluded,isUserAnAuthor);
 
 
                         }
@@ -1650,7 +1688,7 @@ libraryView.setOnClickListener(new View.OnClickListener() {
     }
 
     interface OnUserProfileFetchListener{
-        void onSuccess(String userDisplayName,String description,String birthdate,String userCountryOfResidence,String contactEmail,String webLink,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,String joined_date,String numOfLibraryCreated,String numOfTutorialCreated,String numberOfRatings,boolean isUserBlocked,boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor);
+        void onSuccess(String userDisplayName,String description,String birthdate,String userCountryOfResidence,String contactEmail,String webLink,String contactPhoneNumber,String genderType,String userProfilePhotoDownloadUrl,String joined_date,String numOfLibraryCreated,String numOfTutorialCreated,String numOfMyQuiz,String numberOfJoinedQuiz,boolean isUserBlocked,boolean isUserProfilePhotoIncluded, boolean isUserAnAuthor);
         void onFailed(String errorMessage);
     }
 }

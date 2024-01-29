@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
@@ -57,6 +59,8 @@ import java.util.HashMap;
 public class QuizActivity extends AppCompatActivity {
 
     ImageButton backButton;
+    NestedScrollView mainScrollView;
+    ShimmerFrameLayout shimmerLayout;
 
     Toolbar toolbar;
     String authorId;
@@ -153,7 +157,7 @@ public class QuizActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if(isAuthor) {
+        if(isAuthor || GlobalConfig.isLearnEraAccount()) {
             getMenuInflater().inflate(R.menu.quiz_action_menu, menu);
         }
         return true;
@@ -162,22 +166,24 @@ public class QuizActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        if(item.getItemId()==R.id.editId){
-            if(quizDataModel.getParticipantsList().size()<1) {
+        if (item.getItemId() == R.id.editId) {
+            if (quizDataModel.getParticipantsList().size() < 1) {
                 //allow edit because no participant has joined
                 Intent intent = new Intent(QuizActivity.this, CreateQuizActivity.class);
                 intent.putExtra(GlobalConfig.IS_EDITION_KEY, true);
                 intent.putExtra(GlobalConfig.QUIZ_ID_KEY, quizId);
                 startActivity(intent);
-            }else{
+            } else {
                 Toast.makeText(getApplicationContext(), "Can't take action: User has already joined and can't be edited", Toast.LENGTH_SHORT).show();
             }
-        }else if(item.getItemId()==R.id.deleteId){
-            if(quizDataModel.getParticipantsList().size()<1) {
+        }
+        else if (item.getItemId() == R.id.deleteId) {
+            //todo
+            if (quizDataModel.getParticipantsList().size() < 1 || GlobalConfig.isLearnEraAccount()) {
                 //allow delete because no participant has joined
 
                 toggleProgress(true);
-                GlobalConfig.deleteQuiz(getApplicationContext(), quizId, new GlobalConfig.ActionCallback() {
+                GlobalConfig.deleteQuiz(getApplicationContext(), authorId, quizId, new GlobalConfig.ActionCallback() {
                     @Override
                     public void onSuccess() {
                         toggleProgress(false);
@@ -194,10 +200,11 @@ public class QuizActivity extends AppCompatActivity {
 
                     }
                 });
-            } else{
+            } else {
                 Toast.makeText(getApplicationContext(), "Can't take action: A user has already joined and can't be deleted", Toast.LENGTH_SHORT).show();
             }
-        }else if(item.getItemId()==R.id.home){
+        }
+        else if(item.getItemId()==R.id.home){
             super.onBackPressed();
 
         }
@@ -208,6 +215,7 @@ public class QuizActivity extends AppCompatActivity {
 
         //init programmatically
 
+
          activeQuestionTimeRemainTextView = new TextView(this);
          activeQuestionTextView  = new TextView(this);
          activeAnswerInput  = new View(this);
@@ -215,6 +223,9 @@ public class QuizActivity extends AppCompatActivity {
         activeAnswerRadioOption2  = new RadioButton(this);
         activeAnswerRadioOption3  = new RadioButton(this);
         activeAnswerRadioOption4  = new RadioButton(this);
+
+        mainScrollView = findViewById(R.id.mainScrollViewId);
+        shimmerLayout = findViewById(R.id.shimmerLayoutId);
 
         backButton = findViewById(R.id.backButtonId);
         toolbar = findViewById(R.id.topBar);
@@ -380,6 +391,19 @@ public class QuizActivity extends AppCompatActivity {
         GlobalConfig.submitQuiz(this, quizId, answersList, new GlobalConfig.ActionCallback() {
             @Override
             public void onSuccess() {
+
+                String notificationId = GlobalConfig.getRandomString(100);
+                //carries the info about the quiz
+                ArrayList<String> modelInfo = new ArrayList<>();
+                modelInfo.add(quizId);
+
+
+ ArrayList<String> authorIdAsList = new ArrayList<>();
+                modelInfo.add(quizDataModel.getAuthorId());
+
+                //fires out the notification
+                GlobalConfig.sendNotificationToUsers(GlobalConfig.NOTIFICATION_TYPE_QUIZ_ANSWER_SUBMITTED_KEY,notificationId,authorIdAsList,modelInfo,quizDataModel.getQuizTitle(),"A participant has submitted an answer to your quiz. Check it out",null);
+
                 toggleProgress(false);
                 showQuizSuccessDialog();
                 isSubmitted = true;
@@ -481,6 +505,11 @@ if(timeRemainMap.get(activePosition) == 0) {
         descriptionTextView.setText(quizDataModel.getQuizDescription());
         regFeeTextView.setText(quizDataModel.getTotalQuizFeeCoins() + " COINS");
         rewardTextView.setText(quizDataModel.getTotalQuizRewardCoins() + " COINS");
+        submitActionButton.setVisibility(View.VISIBLE);
+
+        mainScrollView.setVisibility(View.VISIBLE);
+        shimmerLayout.setVisibility(View.GONE);
+        shimmerLayout.stopShimmer();
 
         ArrayList<Long> startTime = quizDataModel.getStartDateList();
         if (startTime.size() >= 5) {
@@ -1111,6 +1140,12 @@ if(timeRemainMap.get(activePosition) == 0) {
         }).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot==null || !documentSnapshot.exists()){
+                    Toast.makeText(QuizActivity.this, "Error: Quiz does not exist or may have been deleted", Toast.LENGTH_SHORT).show();
+                    QuizActivity.super.onBackPressed();
+
+                    return;
+                }
                     String quizId = ""+ documentSnapshot.getId();
                     String authorId = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
                     String quizTitle = ""+ documentSnapshot.get(GlobalConfig.QUIZ_TITLE_KEY);
@@ -1138,16 +1173,16 @@ if(timeRemainMap.get(activePosition) == 0) {
                         questionList.add(questionList1);
                     }
 
-                    ArrayList<String> savedParticipantScoresList =  documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) : new ArrayList();
+                    ArrayList<String> savedParticipantScoresList =  documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.PARTICIPANT_SCORES_LIST_KEY) : new ArrayList();
 
-                    ArrayList startDateList =  documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) : new ArrayList();
-                    ArrayList endDateList =  documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) : new ArrayList();
-                    ArrayList participantsList =  documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) : new ArrayList();
-                    String dateCreated = documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY).toDate() : "Moment ago";
+                    ArrayList startDateList =  documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_START_DATE_LIST_KEY) : new ArrayList();
+                    ArrayList endDateList =  documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUIZ_END_DATE_LIST_KEY) : new ArrayList();
+                    ArrayList participantsList =  documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.PARTICIPANTS_LIST_KEY) : new ArrayList();
+                    String dateCreated = documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY).toDate() : "Moment ago";
                     if (dateCreated.length() > 10) {
                         dateCreated = dateCreated.substring(0, 10);
                     }
-                    String dateEdited = documentSnapshot.get(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY).toDate() : "Moment ago";
+                    String dateEdited = documentSnapshot.get(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY).toDate() : "Moment ago";
                     if (dateEdited.length() > 10) {
                         dateEdited = dateEdited.substring(0, 10);
                     }
@@ -1201,7 +1236,7 @@ if(timeRemainMap.get(activePosition) == 0) {
     void renderParticipantInfo(){
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
-        quizParticipantRCVAdapter = new QuizParticipantRCVAdapter(quizParticipantDatamodels,this,quizDataModel.getAuthorSavedAnswersList(),quizId,quizDataModel,authorId,markQuizAsCompletedActionTextView);
+        quizParticipantRCVAdapter = new QuizParticipantRCVAdapter(quizParticipantDatamodels,this,quizDataModel.getAuthorSavedAnswersList(),quizId,quizDataModel,authorId,markQuizAsCompletedActionTextView,submitActionButton);
         participantRecyclerView.setHasFixedSize(false);
         participantRecyclerView.setAdapter(quizParticipantRCVAdapter);
         participantRecyclerView.setLayoutManager(linearLayoutManager);

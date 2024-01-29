@@ -26,18 +26,43 @@
         android:layout_height="wrap_content">
 
 
-
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="13pt"
+    android:layout_height="13pt"
+    >
 
         <Button
             android:layout_gravity="center"
-            android:elevation="0sp"
             android:gravity="center"
             android:id="@+id/notificationMenuButtonId"
             android:foreground="@drawable/baseline_notifications_24"
             android:layout_width="13pt"
             android:foregroundTint="@color/white"
             android:layout_height="13pt"
-            android:layout_marginEnd="10dp"/>
+            android:layout_marginEnd="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+        <Button
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:id="@+id/notificationIndicatorTextViewId"
+            android:foreground="@drawable/rounded_border_gray_bg"
+            android:layout_width="4pt"
+            android:foregroundTint="@color/error_red"
+            android:layout_height="4pt"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="invisible"
+            />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
             android:layout_gravity="center"

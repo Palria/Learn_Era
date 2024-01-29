@@ -19,6 +19,243 @@
         android:background="@color/teal_700"
         android:layout_height="wrap_content"
         />
+    <com.facebook.shimmer.ShimmerFrameLayout
+        app:shimmer_auto_start="true"
+        android:visibility="visible"
+        android:id="@+id/shimmerLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:scaleType="centerCrop"
+                android:src="@color/gray"
+                android:layout_width="match_parent"
+                android:layout_height="40pt"/>
+
+            <RelativeLayout
+                android:paddingHorizontal="5pt"
+                android:layout_marginTop="-35pt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+
+
+                <ImageView
+                    android:paddingVertical="3dp"
+                    android:paddingHorizontal="4pt"
+                    android:id="@+id/seditProfileIcon"
+                    android:layout_width="10pt"
+                    android:layout_height="10pt"
+                    android:layout_marginLeft="-17pt"
+                    android:layout_marginTop="-32pt"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/rounded_grey_bg"
+                    android:layout_marginBottom="10pt"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="3pt"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:textColor="@color/black"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:id="@+id/scurrent_name"
+                        android:text=""
+                        android:textAlignment="textStart"
+                        android:textStyle="bold"
+                        android:textSize="11pt"
+                        android:layout_width="100pt"
+                        android:layout_height="5pt"
+                        android:layout_marginBottom="5dp"
+                        />
+
+                    <com.makeramen.roundedimageview.RoundedImageView
+                        android:id="@+id/simageView1"
+                        android:layout_width="20pt"
+                        android:layout_height="20pt"
+                        android:src="@color/grayDark"
+                        app:riv_border_color="@color/teal_700"
+                        app:riv_corner_radius="30dip"
+                        app:riv_oval="true" />
+
+                    <TextView
+                        android:textColor="@color/black"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:text=""
+                        android:textAlignment="textStart"
+                        android:textStyle="bold"
+                        android:textSize="11pt"
+                        android:layout_width="60pt"
+                        android:layout_height="5pt"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        />
+
+                    <LinearLayout
+                        android:layout_marginTop="4pt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="wrap_content"
+                            android:layout_height="19pt"/>
+
+                        <TextView
+                            android:layout_marginHorizontal="4pt"
+                            android:layout_weight="1"
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="wrap_content"
+                            android:layout_height="19pt"/>
+
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_marginTop="8pt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="17pt"
+                            android:layout_height="5pt"/>
+                        <TextView
+                            android:layout_marginStart="4pt"
+                            android:width="70pt"
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="wrap_content"
+                            android:layout_height="5pt"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_marginTop="8pt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="17pt"
+                            android:layout_height="5pt"/>
+                        <TextView
+                            android:layout_marginStart="4pt"
+
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="80pt"
+                            android:layout_height="5pt"/>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_marginTop="8pt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="17pt"
+                            android:layout_height="5pt"/>
+                        <TextView
+                            android:layout_marginStart="4pt"
+
+                            android:background="@drawable/rounded_grey_bg"
+                            android:layout_width="110pt"
+                            android:layout_height="5pt"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+
+
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:background="@drawable/rounded_white_bg"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+
+
+                <LinearLayout
+
+                    android:background="@color/gray"
+                    android:layout_marginTop="6pt"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:paddingHorizontal="1pt"
+                    android:paddingVertical="7pt"
+                    android:layout_height="match_parent">
+
+
+
+                    <TextView
+                        android:layout_marginLeft="5pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="70pt"
+                        android:layout_height="100pt"/>
+
+                    <TextView
+                        android:layout_marginLeft="5pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="70pt"
+                        android:layout_height="100pt"/>
+
+                    <TextView
+                        android:layout_marginLeft="5pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="70pt"
+                        android:layout_height="100pt"/>
+
+                    <TextView
+                        android:layout_marginLeft="4pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="17pt"
+                        android:layout_height="70pt"/>
+
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_marginHorizontal="5pt"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="80pt"
+                        android:layout_marginBottom="3pt"
+                        android:layout_height="5pt"/>
+
+                    <TextView
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="match_parent"
+                        android:layout_height="70pt"/>
+
+                    <TextView
+                        android:layout_marginTop="3pt"
+                        android:background="@drawable/rounded_grey_bg"
+                        android:layout_width="match_parent"
+                        android:layout_height="70pt"/>
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -28,9 +265,12 @@
 
     </LinearLayout>
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/mainScrollViewId"
         android:layout_below="@id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        >
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -681,7 +921,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 />
-
+<View
+    android:layout_width="wrap_content"
+    android:layout_height="100dp"
+    />
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
@@ -697,6 +940,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:visibility="gone"
         />
 
     <com.google.android.material.button.MaterialButton

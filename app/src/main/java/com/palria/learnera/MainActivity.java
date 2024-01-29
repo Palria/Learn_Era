@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -83,12 +84,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     OnConfigurationLoadCallback onConfigurationLoadCallback;
     FloatingActionButton fab;
     Button notificationMenuButton;
+    Button notificationIndicatorTextView;
     Button menu_search_button;
     View loadingIndicator;
     //learn era bottom sheet dialog
     LEBottomSheetDialog leBottomSheetDialog;
     RoundedImageView currentUserProfile;
-
+    CountDownTimer countDownTimer;
     /**
      * loading alert dialog
      *
@@ -203,6 +205,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     startActivity(intent);
                 }
             });
+        notificationIndicatorTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent =new Intent(MainActivity.this, NotificationActivity.class);
+                    startActivity(intent);
+                }
+            });
         menu_search_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -243,6 +252,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         fab = findViewById(R.id.fab);
         notificationMenuButton = findViewById(R.id.notificationMenuButtonId);
+        notificationIndicatorTextView = findViewById(R.id.notificationIndicatorTextViewId);
         menu_search_button = findViewById(R.id.menu_search_button);
 
         bottomNavigationView.setBackground(null);
@@ -698,6 +708,7 @@ if(GlobalConfig.isUserLoggedIn()) {
                             boolean isAccountVerified = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY):false;
                             boolean isAccountSubmittedForVerification = documentSnapshot.get(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY):false;
 
+
                             ArrayList<String> usersFollowingList = documentSnapshot.get(GlobalConfig.USERS_FOLLOWING_LIST_KEY)!=null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.USERS_FOLLOWING_LIST_KEY):new ArrayList<>();
                             for(String userFollowingId : usersFollowingList){
                                 GlobalConfig.addToUsersFollowingList(MainActivity.this,userFollowingId);
@@ -723,7 +734,37 @@ if(GlobalConfig.isUserLoggedIn()) {
                                     .into(currentUserProfile);
                         }catch(Exception e){};
 
-                            new CurrentUserProfileDataModel(
+                        boolean thereIsNewPersonalisedNotification = documentSnapshot.get(GlobalConfig.THERE_IS_NEW_PERSONALIZED_NOTIFICATION_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.THERE_IS_NEW_PERSONALIZED_NOTIFICATION_KEY):false;
+//                        boolean thereIsNewPlatformNotification = documentSnapshot.get(GlobalConfig.THERE_IS_NEW_PLATFORM_NOTIFICATION_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.THERE_IS_NEW_PLATFORM_NOTIFICATION_KEY):false;
+                        int[] counter = new int[1];
+                        countDownTimer = new CountDownTimer(900000000000L,1) {
+                            @Override
+                            public void onTick(long millisUntilFinished) {
+                                if(thereIsNewPersonalisedNotification ){
+                                    if(counter[0]%2 == 0){
+                                        notificationIndicatorTextView.setVisibility(View.VISIBLE);
+                                    }else{
+                                        notificationIndicatorTextView.setVisibility(View.INVISIBLE);
+
+                                    }
+
+                                    counter[0]++;
+                                }else{
+                                    countDownTimer.cancel();
+                                }
+                            }
+
+                            @Override
+                            public void onFinish() {
+
+                            }
+                        };
+
+                        if(thereIsNewPersonalisedNotification){
+                            countDownTimer.start();
+                        }
+
+                        new CurrentUserProfileDataModel(
                                     userName,
                                     userId,
                                     userProfileImageDownloadUrl,
@@ -981,7 +1022,7 @@ void pastes(){
 //        app:layout_constraintEnd_toEndOf="parent"
 //        app:layout_constraintBottom_toBottomOf="parent"
 //        android:layout_height="wrap_content"/>
-//
+
 //
 //    <Switch
 //        android:id="@+id/visibilitySwitchId"

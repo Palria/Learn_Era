@@ -28,6 +28,11 @@
         android:theme="@style/Theme.App.Starting"
         android:windowSoftInputMode="adjustPan">
         <activity
+            android:name=".CustomizeTabActivity"
+            android:theme="@style/Theme.LearnEra"
+            android:exported="true" >
+        </activity>
+        <activity
             android:name=".EarnCoinActivity"
             android:theme="@style/Theme.LearnEra"
             android:exported="true" >

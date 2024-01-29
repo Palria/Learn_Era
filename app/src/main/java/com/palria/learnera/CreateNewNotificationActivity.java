@@ -16,8 +16,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.HashMap;
 
@@ -69,16 +71,23 @@ void notifyCustomer() {
     if (!(message.trim().isEmpty())){
     if (!(title.trim().isEmpty())){
         toggleProgress(true);
+        WriteBatch writeBatch =  GlobalConfig.getFirebaseFirestoreInstance().batch();
+        DocumentReference documentReference =  GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.PLATFORM_NOTIFICATIONS_KEY).document(notificationId) ;
         HashMap<String, Object> notDetails = new HashMap<>();
         notDetails.put(GlobalConfig.NOTIFICATION_ID_KEY, notificationId);
         notDetails.put(GlobalConfig.NOTIFICATION_TITLE_KEY, title);
         notDetails.put(GlobalConfig.NOTIFICATION_MESSAGE_KEY, message);
         notDetails.put(GlobalConfig.DATE_NOTIFIED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-        GlobalConfig.getFirebaseFirestoreInstance()
-                .collection(GlobalConfig.PLATFORM_NOTIFICATIONS_KEY)
-                .document(notificationId)
-                .set(notDetails, SetOptions.merge())
-                .addOnFailureListener(new OnFailureListener() {
+         writeBatch.set(documentReference,notDetails, SetOptions.merge());
+
+
+//        DocumentReference userReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(notificationId);
+//        HashMap<String,Object> userInfo = new HashMap<>();
+//        userInfo.put(GlobalConfig.DATE_PLATFORM_NOTIFICATION_LAST_SEEN_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+//        userInfo.put(GlobalConfig.THERE_IS_NEW_PLATFORM_NOTIFICATION_KEY,true);
+//        writeBatch.set(userReference,userInfo,SetOptions.merge());
+
+                writeBatch.commit().addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         toggleProgress(false);

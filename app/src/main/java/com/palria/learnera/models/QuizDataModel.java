@@ -187,12 +187,14 @@ public class QuizDataModel implements Serializable {
     }
 
     public ArrayList<String> getSavedParticipantScoresList() {
+if (savedParticipantScoresList!=null){
         savedParticipantScoresList.sort(new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
-                return o1.compareToIgnoreCase(o2)*-1;
+                return o1.compareToIgnoreCase(o2) * -1;
             }
         });
+    }
         return savedParticipantScoresList;
     }
 

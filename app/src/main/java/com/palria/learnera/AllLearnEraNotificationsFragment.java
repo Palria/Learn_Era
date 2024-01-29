@@ -14,9 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 import com.palria.learnera.adapters.FolderRcvAdapter;
 import com.palria.learnera.adapters.LearnEraNotificationAdapter;
 import com.palria.learnera.adapters.LearnEraNotificationAdapter;
@@ -24,6 +28,7 @@ import com.palria.learnera.models.FolderDataModel;
 import com.palria.learnera.models.LearnEraNotificationDataModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class AllLearnEraNotificationsFragment extends Fragment {
@@ -121,6 +126,14 @@ RecyclerView notificationRecyclerView;
                     notificationAdapter.notifyItemChanged(notificationDataModelArrayList.size());
 
                 }
+                WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+                DocumentReference userReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
+                HashMap<String,Object> userInfo = new HashMap<>();
+                userInfo.put(GlobalConfig.DATE_PLATFORM_NOTIFICATION_LAST_SEEN_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+                userInfo.put(GlobalConfig.THERE_IS_NEW_PLATFORM_NOTIFICATION_KEY,false);
+                writeBatch.set(userReference,userInfo, SetOptions.merge());
+                writeBatch.commit();
+
             }
         });
     }

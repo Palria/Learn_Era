@@ -109,6 +109,7 @@ public class GlobalConfig {
     private static ArrayList<String> BLOCKED_ITEM_LIST = new ArrayList<>();
     private static ArrayList<String> REPORTED_ITEM_LIST = new ArrayList<>();
     private static ArrayList<String> categoryList = new ArrayList<>();
+    private static ArrayList<String> customizedCategoryList = new ArrayList<>();
     public static ArrayList<String> recentlyMarkedCompletedQuizList = new ArrayList<>();
     public static ArrayList<String> newlyJoinedQuizList = new ArrayList<>();
     public static ArrayList<String> recentlydeletedQuizList = new ArrayList<>();
@@ -182,6 +183,8 @@ public class GlobalConfig {
     public static final String DISCUSSION_FRAGMENT_TYPE_KEY = "DISCUSSION_FRAGMENT_TYPE";
     public static final String QUIZ_FRAGMENT_TYPE_KEY = "QUIZ_FRAGMENT_TYPE";
     public static final String ANSWER_FRAGMENT_TYPE_KEY = "ANSWER_FRAGMENT_TYPE";
+    public static final String JOINED_QUIZ_FRAGMENT_TYPE_KEY = "JOINED_QUIZ_FRAGMENT_TYPE";
+    public static final String USER_CREATED_QUIZ_FRAGMENT_TYPE_KEY = "USER_CREATED_QUIZ_FRAGMENT_TYPE";
 
     public static final String OPEN_TYPE_ALL_QUESTIONS_KEY = "OPEN_TYPE_ALL_QUESTIONS";
     public static final String OPEN_TYPE_KEY = "OPEN_TYPE_KEY";
@@ -426,8 +429,10 @@ public class GlobalConfig {
 
     public static final String ALL_CATEGORY_KEY = "ALL_CATEGORY";
     public static final String CATEGORY_LIST_KEY = "CATEGORY_LIST";
+    public static final String CUSTOMIZED_CATEGORY_LIST_KEY = "CUSTOMIZED_CATEGORY_LIST";
     public static final String CATEGORY_KEY = "CATEGORY";
     public static final String IS_CATEGORY_LIST_SAVED_KEY = "IS_CATEGORY_LIST_SAVED";
+    public static final String IS_CUSTOMIZED_CATEGORY_LIST_SAVED_KEY = "IS_CUSTOMIZED_CATEGORY_LIST_SAVED";
 
 
     public static final String IS_FIRST_VIEW_KEY = "IS_FIRST_VIEW";
@@ -568,6 +573,10 @@ public class GlobalConfig {
 //    public static final String DATE_NOTIFIED_TIME_STAMP_KEY = "DATE_NOTIFIED_TIME_STAMP";
     public static final String NOTIFICATION_MESSAGE_KEY = "NOTIFICATION_MESSAGE";
     public static final String NOTIFICATION_TITLE_KEY = "NOTIFICATION_TITLE";
+    public static final String DATE_PERSONALIZED_NOTIFICATION_LAST_SEEN_TIME_STAMP_KEY = "DATE_PERSONALIZED_NOTIFICATION_LAST_SEEN_TIME_STAMP";
+    public static final String DATE_PLATFORM_NOTIFICATION_LAST_SEEN_TIME_STAMP_KEY = "DATE_PLATFORM_NOTIFICATION_LAST_SEEN_TIME_STAMP";
+    public static final String THERE_IS_NEW_PERSONALIZED_NOTIFICATION_KEY = "THERE_IS_NEW_PERSONALIZED_NOTIFICATION";
+    public static final String THERE_IS_NEW_PLATFORM_NOTIFICATION_KEY = "THERE_IS_NEW_PLATFORM_NOTIFICATION";
 
 
     public static final String NOTIFICATION_TYPE_KEY = "NOTIFICATION_TYPE";
@@ -577,6 +586,7 @@ public class GlobalConfig {
     public static final String IS_SEEN_KEY = "IS_SEEN";
     public static final String NOTIFICATION_TYPE_QUIZ_KEY = "NOTIFICATION_TYPE_QUIZ";
     public static final String NOTIFICATION_TYPE_QUIZ_COMPLETED_KEY = "NOTIFICATION_TYPE_QUIZ_COMPLETED";
+    public static final String NOTIFICATION_TYPE_QUIZ_ANSWER_SUBMITTED_KEY = "NOTIFICATION_TYPE_QUIZ_ANSWER_SUBMITTED";
 
 
     public static final String DISCUSSION_ID_KEY = "DISCUSSION_ID";
@@ -621,13 +631,15 @@ public class GlobalConfig {
     public static final String TOTAL_QUIZ_KEY = "TOTAL_QUIZ";
     public static final String QUESTION_LIST_KEY = "QUESTION_LIST";
     public static final String ALL_QUIZ_KEY = "ALL_QUIZ";
-    public static final String QUIZ_DATE_LIST_KEY = "QUIZ_DATE_LIST";
+//    public static final String QUIZ_DATE_LIST_KEY = "QUIZ_DATE_LIST";
 //    public static final String QUIZ_FEE_DESCRIPTION_KEY = "QUIZ_FEE_DESCRIPTION";
 //    public static final String QUIZ_REWARD_DESCRIPTION_KEY = "QUIZ_REWARD_DESCRIPTION";
 
     public static final String TOTAL_QUIZ_FEE_COINS_KEY = "TOTAL_QUIZ_FEE_COINS";
     public static final String TOTAL_QUIZ_REWARD_COINS_KEY = "TOTAL_QUIZ_REWARD_COINS";
 
+    public static final String IS_SHOW_USER_CREATED_QUIZ_KEY = "IS_SHOW_USER_CREATED_QUIZ";
+    public static final String IS_FROM_PARTICIPANT_PROFILE_KEY = "IS_FROM_PARTICIPANT_PROFILE";
     public static final String QUIZ_DATA_MODEL_KEY = "QUIZ_DATA_MODEL";
     public static final String SUBMITTED_QUIZ_LIST_KEY = "SUBMITTED_QUIZ_LIST";
     public static final String VIEWED_QUIZ_LIST_KEY = "VIEWED_QUIZ_LIST";
@@ -833,6 +845,58 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
        editor.apply();
     }
     /**
+     * Sets the list of the customized category
+     * */
+   static void setCustomizedCategoryList(ArrayList<String> categoryList,Context context){
+        GlobalConfig.customizedCategoryList = categoryList;
+        StringBuilder categoryConcattedString = new StringBuilder("");
+       for(int i=0; i<categoryList.size();i++){
+           if(i<(categoryList.size()-1)) {
+               categoryConcattedString.append(categoryList.get(i) + ",");
+           } else{
+                   categoryConcattedString.append(categoryList.get(i));
+               }
+       }
+       SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
+       SharedPreferences.Editor editor = sharedPreferences.edit();
+       editor.putString(GlobalConfig.CUSTOMIZED_CATEGORY_LIST_KEY,categoryConcattedString+"");
+       editor.putBoolean(GlobalConfig.IS_CUSTOMIZED_CATEGORY_LIST_SAVED_KEY,true);
+       editor.apply();
+    }
+    /**
+ * Returns the list of the customized category
+ * */
+   public static ArrayList<String> getCustomizedCategoryList(Context context){
+
+       SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
+       String categorySavedList = sharedPreferences.getString(GlobalConfig.CUSTOMIZED_CATEGORY_LIST_KEY,"ALL,Basic Education,How To,Technology,Business,Skills");
+       boolean isSaved = sharedPreferences.getBoolean(GlobalConfig.IS_CUSTOMIZED_CATEGORY_LIST_SAVED_KEY,false);
+
+//       if(GlobalConfig.categoryList == null){
+//           ArrayList<String> categoryList = new ArrayList<>();
+//           categoryList.add("ALL");
+//           categoryList.add("Basic Education");
+//           categoryList.add("How To");
+//           categoryList.add("Technology");
+//           categoryList.add("Business");
+//           categoryList.add("Skills");
+//           return categoryList;
+//       }
+       if(isSaved){
+//           categoryList.add(categorySavedList.split(",")[0]);
+           customizedCategoryList = new ArrayList<>();
+
+           for(String category : categorySavedList.split(",")){
+               if (!customizedCategoryList.contains(category)) {
+                   customizedCategoryList.add(category);
+//                   Toast.makeText(context, ""+category, Toast.LENGTH_SHORT).show();
+               }
+           }
+
+       }
+       return GlobalConfig.customizedCategoryList;
+    }
+ /**
  * Returns the list of the platform's category
  * */
    public static ArrayList<String> getCategoryList(Context context){
@@ -871,6 +935,14 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
 
         SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
         boolean isSaved = sharedPreferences.getBoolean(GlobalConfig.IS_CATEGORY_LIST_SAVED_KEY,false);
+
+        return isSaved;
+    }
+
+    public static boolean isCustomizedCategorySaved(Context context){
+
+        SharedPreferences sharedPreferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
+        boolean isSaved = sharedPreferences.getBoolean(GlobalConfig.IS_CUSTOMIZED_CATEGORY_LIST_SAVED_KEY,false);
 
         return isSaved;
     }
@@ -4916,13 +4988,13 @@ if(isUserLoggedIn()) {
                     }
                 });
     }
-    public static void deleteQuiz(Context context, String quizId, ActionCallback actionCallback){
+    public static void deleteQuiz(Context context,String authorId, String quizId, ActionCallback actionCallback){
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
         DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId);
 
         writeBatch.delete(documentReference1);
 
-            DocumentReference userReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId());
+            DocumentReference userReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId);
             HashMap<String, Object> userDetails = new HashMap<>();
             userDetails.put(GlobalConfig.TOTAL_QUIZ_KEY, FieldValue.increment(-1L));
             writeBatch.set(userReference, userDetails, SetOptions.merge());
@@ -5606,6 +5678,12 @@ if(isUserLoggedIn()) {
             notesInfo.put(DATE_NOTIFIED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
             notesInfo.put(IS_SEEN_KEY,false);
             writeBatch.set(notificationReference,notesInfo,SetOptions.merge());
+
+        DocumentReference userReference = getFirebaseFirestoreInstance().collection(ALL_USERS_KEY).document(receiversIdList.get(i));
+            HashMap<String,Object> userInfo = new HashMap<>();
+            userInfo.put(DATE_PERSONALIZED_NOTIFICATION_LAST_SEEN_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+            userInfo.put(THERE_IS_NEW_PERSONALIZED_NOTIFICATION_KEY,true);
+            writeBatch.set(userReference,userInfo,SetOptions.merge());
         }
         writeBatch.commit()
                 .addOnFailureListener(new OnFailureListener() {

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CustomizeTabActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        app:title="Customize Tabs"
+        app:navigationIconTint="@color/white"
+        app:navigationIcon="@drawable/baseline_arrow_back_24"
+        app:titleTextColor="@color/white"
+        android:theme="@style/ToolbarColoredBackArrow"
+        android:background="@color/teal_700"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingBottom="150dp"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        >
+    <com.google.android.material.chip.ChipGroup
+        android:paddingHorizontal="5pt"
+        app:itemSpacing="-4dp"
+        app:chipSpacingVertical="0dp"
+        app:lineSpacing="0dp"
+        android:id="@+id/categoriesChipGroup"
+        app:chipSpacing="0dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        >
+
+    </com.google.android.material.chip.ChipGroup>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/saveCategoryActionTextViewId"
+        android:enabled="false"
+        android:layout_width="match_parent"
+        android:textColor="@color/white"
+        android:text="Save Tabs"
+        android:background="@color/secondary_app_color"
+        android:layout_margin="10dp"
+        app:cornerRadius="30dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

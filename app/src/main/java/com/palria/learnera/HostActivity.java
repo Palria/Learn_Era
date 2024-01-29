@@ -162,6 +162,20 @@ public class HostActivity extends AppCompatActivity {
                 materialToolbar.setTitle("Join Ongoing Quiz");
                 initFragment(bundle, new AllQuizFragment());
                 break;
+            case GlobalConfig.JOINED_QUIZ_FRAGMENT_TYPE_KEY:
+                bundle = new Bundle();
+                materialToolbar.setTitle("Joined Quiz");
+                bundle.putBoolean(GlobalConfig.IS_FROM_PARTICIPANT_PROFILE_KEY,true);
+                bundle.putString(GlobalConfig.PARTICIPANT_ID_KEY,userId);
+                initFragment(bundle, new AllQuizFragment());
+                break;
+            case GlobalConfig.USER_CREATED_QUIZ_FRAGMENT_TYPE_KEY:
+                bundle = new Bundle();
+                materialToolbar.setTitle("My Quiz");
+                bundle.putBoolean(GlobalConfig.IS_SHOW_USER_CREATED_QUIZ_KEY,true);
+                bundle.putString(GlobalConfig.AUTHOR_ID_KEY,userId);
+                initFragment(bundle, new AllQuizFragment());
+                break;
         }
     }
 

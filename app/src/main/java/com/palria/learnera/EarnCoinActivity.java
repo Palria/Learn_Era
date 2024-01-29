@@ -68,6 +68,8 @@ try {
 
 if(isLoadImmediately){
     statusTextView.setText("Loading...");
+    watchAndEarnActionTextView.setText("Loading...");
+    watchAndEarnActionTextView.setEnabled(false);
 
 }
        }
@@ -123,6 +125,7 @@ if(isLoadImmediately){
                 Toast.makeText(getApplicationContext(), "Reward earned: "+rewardItem.getAmount(), Toast.LENGTH_SHORT).show();
                 statusTextView.setText("1-Coin earned;");
                 watchAndEarnActionTextView.setText("Earn more coin");
+                watchAndEarnActionTextView.setEnabled(true);
                 //Deposit the coins to his wallet
                 depositCoin();
                 //Let new activity be opened to avoid crashing due to some unfavourable configurations in admob ads
@@ -146,6 +149,8 @@ if(isLoadImmediately){
             @Override
             public void onClick(View v) {
                 statusTextView.setText("Loading..." );
+                watchAndEarnActionTextView.setText("Loading... Please wait");
+                watchAndEarnActionTextView.setEnabled(false);
 
                 if(isVideoAdsLoaded){
                     GlobalConfig.showVideoAd(EarnCoinActivity.this,EarnCoinActivity.this, rewardedAd, fullScreenContentCallback,onUserEarnedRewardListener );
@@ -158,6 +163,8 @@ if(isLoadImmediately){
                             GlobalConfig.loadVideoAd(EarnCoinActivity.this, "ca-app-pub-3940256099942544/5224354917", this);
                             statusTextView.setText("Error occurred. failed to load ads, please try again" );
 
+                            watchAndEarnActionTextView.setText("Retry");
+                            watchAndEarnActionTextView.setEnabled(true);
                         }
 
                         @Override
@@ -166,6 +173,8 @@ if(isLoadImmediately){
                             isVideoAdsLoaded = true;
                             GlobalConfig.showVideoAd(EarnCoinActivity.this,EarnCoinActivity.this, rewardedAd, fullScreenContentCallback,onUserEarnedRewardListener );
 
+                            watchAndEarnActionTextView.setText("Earn more coin");
+                            watchAndEarnActionTextView.setEnabled(true);
                         }
                     });
                 }

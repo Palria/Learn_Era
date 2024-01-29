@@ -641,20 +641,21 @@
                     android:layout_marginTop="6pt"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:paddingHorizontal="1pt"
-                    android:paddingVertical="7pt"
                     android:layout_height="match_parent">
 
                     <LinearLayout
+                        android:id="@+id/libraryLayoutId"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical"
+                        android:paddingVertical="7pt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
                         <TextView
                             android:textColor="@color/white"
                             android:text="Libraries"
+                            android:textStyle="bold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
 
@@ -672,15 +673,19 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/tutorialsLayoutId"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical"
+                        android:paddingVertical="7pt"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:background="@color/light_blue_900"
+                        >
 
                         <TextView
                             android:textColor="@color/white"
-
+                            android:textStyle="bold"
                             android:text="Tutorials"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
@@ -699,20 +704,58 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/myQuizLayoutId"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:orientation="vertical"
+                        android:paddingVertical="7pt"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:background="@color/purple_500"
+                        >
 
                         <TextView
+                            android:id="@+id/myQuizTextViewId"
                             android:textColor="@color/white"
-                            android:text="Ratings"
+                            android:text="My Quiz"
+                            android:textStyle="bold"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"/>
 
                         <TextView
-                            android:id="@+id/numOfRatingsCreatedTextView"
+                            android:id="@+id/numOfMyQuizTextViewId"
+                            android:textColor="@color/white"
+                            android:layout_marginTop="3pt"
+                            android:textSize="8pt"
+                            android:textStyle="bold"
+                            android:text="0"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/joinedQuizLayoutId"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingVertical="7pt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/light_blue_600"
+                        >
+
+                        <TextView
+                            android:id="@+id/joinedQuizTextViewId"
+                            android:textColor="@color/white"
+                            android:text="Joined Quiz"
+                            android:textStyle="bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/numOfJoinedQuizTextViewId"
                             android:textColor="@color/white"
                             android:layout_marginTop="3pt"
                             android:textSize="8pt"

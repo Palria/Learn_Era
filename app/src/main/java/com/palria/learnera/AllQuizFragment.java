@@ -29,8 +29,12 @@ ArrayList<QuizDataModel> quizDataModelArrayList = new ArrayList<>();
 RecyclerView recyclerView;
 
 
+    boolean isShowUserCreatedQuiz = false;
+    boolean isFromParticipantProfile = false;
     boolean isFromSearchContext = false;
     String searchKeyword = "";
+    String participantId = "";
+    String authorId = "";
 
     public AllQuizFragment() {
         // Required empty public constructor
@@ -40,8 +44,12 @@ RecyclerView recyclerView;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null){
+            isShowUserCreatedQuiz = getArguments().getBoolean(GlobalConfig.IS_SHOW_USER_CREATED_QUIZ_KEY,false);
+            isFromParticipantProfile = getArguments().getBoolean(GlobalConfig.IS_FROM_PARTICIPANT_PROFILE_KEY,false);
             isFromSearchContext = getArguments().getBoolean(GlobalConfig.IS_FROM_SEARCH_CONTEXT_KEY,false);
             searchKeyword = getArguments().getString(GlobalConfig.SEARCH_KEYWORD_KEY,"");
+            participantId = getArguments().getString(GlobalConfig.PARTICIPANT_ID_KEY,"");
+            authorId = getArguments().getString(GlobalConfig.AUTHOR_ID_KEY,"");
 
         }
 
@@ -87,7 +95,12 @@ private void initUI(View parentView){
 
          if (isFromSearchContext){
                 authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereArrayContains(GlobalConfig.QUIZ_SEARCH_ANY_MATCH_KEYWORD_KEY,searchKeyword);
-        }
+        }else if(isFromParticipantProfile){
+             authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereArrayContains(GlobalConfig.PARTICIPANTS_LIST_KEY,participantId);
+         }
+         else if(isShowUserCreatedQuiz){
+             authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.AUTHOR_ID_KEY,authorId);
+         }
 
 
             authorQuery.get()
