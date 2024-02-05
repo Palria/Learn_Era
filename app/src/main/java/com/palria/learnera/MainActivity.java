@@ -372,16 +372,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         }
                     }
                 }, 0)
-               .addOptionItem("Create Quiz", R.drawable.baseline_quiz_24, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (GlobalConfig.isUserLoggedIn()) {
-                            leBottomSheetDialog.hide();
-                            Intent intent = new Intent(MainActivity.this, CreateQuizActivity.class);
-                            startActivity(intent);
-                        }
-                    }
-                }, 0)
+
                .addOptionItem("Ask Question", R.drawable.baseline_quiz_24, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -402,6 +393,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     startActivity(intent);
                 }
             }
+        }, 0) .addOptionItem("Create Quiz", R.drawable.baseline_quiz_24, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (GlobalConfig.isUserLoggedIn()) {
+                    leBottomSheetDialog.hide();
+                    Intent intent = new Intent(MainActivity.this, CreateQuizActivity.class);
+                    startActivity(intent);
+                }
+            }
         }, 0)
                 .addOptionItem("Add Category", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
                     @Override
@@ -419,6 +419,18 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         if (GlobalConfig.isUserLoggedIn()) {
                             Intent i = new Intent(MainActivity.this, HostActivity.class);
                             i.putExtra(GlobalConfig.IS_ACCOUNT_VERIFICATION_KEY, true);
+                            startActivity(GlobalConfig.getHostActivityIntent(MainActivity.this, i, GlobalConfig.AUTHORS_FRAGMENT_TYPE_KEY, null));
+
+                            leBottomSheetDialog.hide();
+                        }
+                    }
+                }, 0)
+                .addOptionItem("Approve withdrawals", R.drawable.ic_baseline_success_circle_outline_24, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (GlobalConfig.isUserLoggedIn()) {
+                            Intent i = new Intent(MainActivity.this, HostActivity.class);
+                            i.putExtra(GlobalConfig.IS_WITHDRAWAL_REQUEST_APPROVAL_KEY, true);
                             startActivity(GlobalConfig.getHostActivityIntent(MainActivity.this, i, GlobalConfig.AUTHORS_FRAGMENT_TYPE_KEY, null));
 
                             leBottomSheetDialog.hide();
@@ -533,7 +545,7 @@ GlobalConfig.setFirebaseStorageInstance();
 if(GlobalConfig.isUserLoggedIn()) {
     GlobalConfig.setCurrentUserId(FirebaseAuth.getInstance().getCurrentUser().getUid());
     fetchToken();
-    initUserProfileData();
+    regularlyUpdateUserProfileData();
     GlobalConfig.setBlockedItemsList();
     GlobalConfig.setReportedItemsList();
 
@@ -671,7 +683,7 @@ if(GlobalConfig.isUserLoggedIn()) {
     }
 }
 
-    private void initUserProfileData(){
+    private void regularlyUpdateUserProfileData(){
     GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId())
             .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
@@ -713,6 +725,12 @@ if(GlobalConfig.isUserLoggedIn()) {
                             boolean isAccountSubmittedForVerification = documentSnapshot.get(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY):false;
 
 
+
+                        final ArrayList<String> withdrawalRequestsList = documentSnapshot.get(GlobalConfig.WITHDRAWAL_REQUESTS_LIST_KEY)!= null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.WITHDRAWAL_REQUESTS_LIST_KEY)  :new ArrayList<>() ;
+                        GlobalConfig.setWithdrawalRequestList(MainActivity.this,withdrawalRequestsList);
+
+
+
                             ArrayList<String> usersFollowingList = documentSnapshot.get(GlobalConfig.USERS_FOLLOWING_LIST_KEY)!=null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.USERS_FOLLOWING_LIST_KEY):new ArrayList<>();
                             for(String userFollowingId : usersFollowingList){
                                 GlobalConfig.addToUsersFollowingList(MainActivity.this,userFollowingId);
@@ -740,8 +758,11 @@ if(GlobalConfig.isUserLoggedIn()) {
 
                         boolean thereIsNewPersonalisedNotification = documentSnapshot.get(GlobalConfig.THERE_IS_NEW_PERSONALIZED_NOTIFICATION_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.THERE_IS_NEW_PERSONALIZED_NOTIFICATION_KEY):false;
 //                        boolean thereIsNewPlatformNotification = documentSnapshot.get(GlobalConfig.THERE_IS_NEW_PLATFORM_NOTIFICATION_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.THERE_IS_NEW_PLATFORM_NOTIFICATION_KEY):false;
+                        if(countDownTimer!=null){
+                            countDownTimer.cancel();
+                        }
                         int[] counter = new int[1];
-                        countDownTimer = new CountDownTimer(900000000000L,1) {
+                        countDownTimer = new CountDownTimer(900000000000L,1000) {
                             @Override
                             public void onTick(long millisUntilFinished) {
                                 if(thereIsNewPersonalisedNotification ){

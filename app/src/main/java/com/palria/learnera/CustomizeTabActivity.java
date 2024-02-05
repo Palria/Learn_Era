@@ -80,7 +80,7 @@ public class CustomizeTabActivity extends AppCompatActivity {
             chip.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(getApplicationContext(), chip.getText()+"", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(), chip.getText()+"", Toast.LENGTH_SHORT).show();
                 }
             });
             chip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

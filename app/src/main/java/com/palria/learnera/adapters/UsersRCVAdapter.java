@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +21,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.collect.HashBiMap;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.DeclineUserAccountVerificationActivity;
@@ -45,11 +47,13 @@ public class UsersRCVAdapter extends RecyclerView.Adapter<UsersRCVAdapter.ViewHo
         ArrayList<UsersDataModel> userDataModelsList;
         Context context;
         boolean isVerification;
+        boolean isRequestApproval;
 
-        public UsersRCVAdapter(ArrayList<UsersDataModel> userDataModelsList, Context context, boolean isVerification) {
+        public UsersRCVAdapter(ArrayList<UsersDataModel> userDataModelsList, Context context, boolean isVerification, boolean isRequestApproval) {
             this.userDataModelsList = userDataModelsList;
             this.context = context;
             this.isVerification = isVerification;
+            this.isRequestApproval = isRequestApproval;
         }
 
         @NonNull
@@ -183,6 +187,9 @@ public class UsersRCVAdapter extends RecyclerView.Adapter<UsersRCVAdapter.ViewHo
                 holder.verifyActionButton.setVisibility(View.VISIBLE);
                 holder.declineActionButton.setVisibility(View.VISIBLE);
             }
+            if(isRequestApproval && GlobalConfig.isLearnEraAccount()){
+                holder.withdrawalRequestLayout.setVisibility(View.VISIBLE);
+            }
             if(userDataModels.isAccountVerified()){
                 holder.verificationFlagImageView.setVisibility(View.VISIBLE);
             }
@@ -202,6 +209,76 @@ public class UsersRCVAdapter extends RecyclerView.Adapter<UsersRCVAdapter.ViewHo
                     context.startActivity(i);
                 }
             });
+
+            for (String withdrawalRequestInfo : userDataModels.getWithdrawalRequestsList()){
+                int coinsToWithdraw = Integer.parseInt(withdrawalRequestInfo.split("-ID-")[0]);
+
+                LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View requestView = layoutInflater.inflate(R.layout.withdarawal_request_view_layout,holder.withdrawalRequestLayout,false);
+                TextView requestInfo = requestView.findViewById(R.id.requestInfoId);
+                TextView approveRequest = requestView.findViewById(R.id.approveRequestId);
+
+                requestInfo.setText(withdrawalRequestInfo);
+
+
+                approveRequest.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        approveRequest.setEnabled(false);
+                        approveRequest.setText("Progress...");
+
+
+                        //update the withdrawal request list
+                        ArrayList<String> list = userDataModels.getWithdrawalRequestsList();
+                        //remove the already completed request
+                        list.remove(withdrawalRequestInfo);
+                        userDataModels.setWithdrawalRequestsList(list);
+
+                        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+
+                        DocumentReference userReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(userDataModels.getUserId());
+                        HashMap<String,Object>userDetails = new HashMap<>();
+                        userDetails.put(GlobalConfig.WITHDRAWAL_REQUESTS_LIST_KEY,FieldValue.arrayRemove(withdrawalRequestInfo));
+                        if(userDataModels.getWithdrawalRequestsList().size()<=0){
+                            userDetails.put(GlobalConfig.IS_WITHDRAWAL_REQUESTED_KEY,false);
+                        }
+                        writeBatch.set(userReference,userDetails, SetOptions.merge());
+
+
+                        writeBatch.commit()
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        approveRequest.setText("Retry");
+                                        approveRequest.setEnabled(true);
+                                    }
+                                })
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        approveRequest.setText("Paid");
+
+
+                                        String notificationId = GlobalConfig.getRandomString(100);
+                                        //carries the info about the withdrawal
+                                        ArrayList<String> modelInfo = new ArrayList<>();
+                                        modelInfo.add(withdrawalRequestInfo);
+
+                                        //carries the receipient id
+                                        ArrayList<String> recipientId = new ArrayList<>();
+                                        recipientId.add(userDataModels.getUserId());
+                                        //fires the notification
+                                        GlobalConfig.sendNotificationToUsers(GlobalConfig.NOTIFICATION_TYPE_WITHDRAWAL_COMPLETED_KEY,notificationId,recipientId,modelInfo,"Withdrawal completed",withdrawalRequestInfo,null);
+
+                                    }
+                                });
+
+
+                    }
+                });
+
+                holder.withdrawalRequestLayout.addView(requestView);
+            }
 
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -231,6 +308,7 @@ public class UsersRCVAdapter extends RecyclerView.Adapter<UsersRCVAdapter.ViewHo
             public Button verifyActionButton;
             public Button declineActionButton;
             public TextView followActionTextView;
+            public LinearLayout withdrawalRequestLayout;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -243,6 +321,7 @@ public class UsersRCVAdapter extends RecyclerView.Adapter<UsersRCVAdapter.ViewHo
                 declineActionButton = itemView.findViewById(R.id.declineActionButtonId);
                 verificationFlagImageView = itemView.findViewById(R.id.verificationFlagImageViewId);
                 followActionTextView = itemView.findViewById(R.id.followActionTextViewId);
+                withdrawalRequestLayout = itemView.findViewById(R.id.withdrawalRequestLayoutId);
 
             }
         }

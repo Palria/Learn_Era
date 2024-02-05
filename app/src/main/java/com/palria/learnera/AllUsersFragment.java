@@ -30,6 +30,7 @@ RecyclerView recyclerView;
 
     boolean isFromSearchContext = false;
     boolean isVerification = false;
+    boolean isRequestApproval = false;
     String searchKeyword = "";
 
     public AllUsersFragment() {
@@ -42,6 +43,7 @@ RecyclerView recyclerView;
         if(getArguments() != null){
             isAuthorOpenType = getArguments().getBoolean(GlobalConfig.IS_AUTHOR_OPEN_TYPE_KEY,false);
             isVerification = getArguments().getBoolean(GlobalConfig.IS_ACCOUNT_VERIFICATION_KEY,false);
+            isRequestApproval = getArguments().getBoolean(GlobalConfig.IS_WITHDRAWAL_REQUEST_APPROVAL_KEY,false);
             isFromSearchContext = getArguments().getBoolean(GlobalConfig.IS_FROM_SEARCH_CONTEXT_KEY,false);
             searchKeyword = getArguments().getString(GlobalConfig.SEARCH_KEYWORD_KEY,"");
 
@@ -75,7 +77,7 @@ RecyclerView recyclerView;
 //
 private void initUI(View parentView){
         recyclerView = parentView.findViewById(R.id.usersRecyclerListViewId);
-        usersRCVAdapter = new UsersRCVAdapter(usersDataModelArrayList,getContext(),isVerification);
+        usersRCVAdapter = new UsersRCVAdapter(usersDataModelArrayList,getContext(),isVerification,isRequestApproval);
     LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
     recyclerView.setAdapter(usersRCVAdapter);
     recyclerView.setLayoutManager(layoutManager);
@@ -99,6 +101,12 @@ private void initUI(View parentView){
             authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereEqualTo(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY,true);
             if(isFromSearchContext){
                 authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereEqualTo(GlobalConfig.IS_SUBMITTED_FOR_VERIFICATION_KEY,true).whereArrayContains(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,searchKeyword);
+            }
+        }
+        else if(isRequestApproval){
+            authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereEqualTo(GlobalConfig.IS_WITHDRAWAL_REQUESTED_KEY,true);
+            if(isFromSearchContext){
+                authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).whereEqualTo(GlobalConfig.IS_WITHDRAWAL_REQUESTED_KEY,true).whereArrayContains(GlobalConfig.USER_SEARCH_ANY_MATCH_KEYWORD_KEY,searchKeyword);
             }
         }
         else if (isFromSearchContext){
@@ -135,6 +143,9 @@ private void initUI(View parentView){
                             final boolean isAccountVerified =  documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY)!=null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) :false;
                             final String userProfilePhotoDownloadUrl = ""+ documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
                             final long totalNumberOfLibrary = documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)!= null ?documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_LIBRARY_CREATED_KEY)  :0L ;
+
+                            final ArrayList<String> withdrawalRequestsList = documentSnapshot.get(GlobalConfig.WITHDRAWAL_REQUESTS_LIST_KEY)!= null ? (ArrayList<String>) documentSnapshot.get(GlobalConfig.WITHDRAWAL_REQUESTS_LIST_KEY)  :new ArrayList<>() ;
+
                             long totalNumberOfProfileVisitor = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_USER_PROFILE_VISITORS_KEY) : 0L;
                             long totalNumberOfProfileReach = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_USER_PROFILE_REACH_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_USER_PROFILE_REACH_KEY) : 0L;
                             long totalNumberOfOneStarRate = (documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY) != null) ?  documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_ONE_STAR_RATE_KEY) : 0L;
@@ -161,7 +172,8 @@ private void initUI(View parentView){
                                     (int)totalNumberOfTwoStarRate,
                                     (int)totalNumberOfThreeStarRate,
                                     (int)totalNumberOfFourStarRate,
-                                    (int)totalNumberOfFiveStarRate
+                                    (int)totalNumberOfFiveStarRate,
+                                    withdrawalRequestsList
 //            DocumentSnapshot userDocumentSnapshot
 
 

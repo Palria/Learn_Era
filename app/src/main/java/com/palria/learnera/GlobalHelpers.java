@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
@@ -210,13 +211,14 @@ public class GlobalHelpers {
 
         try {
             // Define the format of your Firebase date string
-            @SuppressLint("SimpleDateFormat") SimpleDateFormat firebaseDateFormat = new SimpleDateFormat("MMM dd HH:mm:ss 'GMT+05:45' yyyy");
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat firebaseDateFormat = new SimpleDateFormat("MMM dd HH:mm:ss 'GMT+05:45' yyyy");
 
-            // Parse the date string to get a Date object
+//             Parse the date string to get a Date object
             Date firebaseDate = firebaseDateFormat.parse(time);
 
             // Get the time difference in milliseconds
-            long timeDifference = System.currentTimeMillis() - firebaseDate.getTime();
+//            long timeDifference = System.currentTimeMillis() - firebaseDate.getTime();
 
             // Convert the time difference to an "ago" format
             CharSequence agoString = DateUtils.getRelativeTimeSpanString(
@@ -228,6 +230,7 @@ public class GlobalHelpers {
             result= agoString.toString();
         } catch (ParseException e) {
             e.printStackTrace();
+            Log.e( "TIME-HELPER",e.getMessage());
         }
         return result;
     }

@@ -59,7 +59,7 @@
                     android:textStyle="bold"
                     android:textSize="10pt"
                     android:layout_marginBottom="7pt"
-                    android:text="30s"
+                    android:text="0s"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>

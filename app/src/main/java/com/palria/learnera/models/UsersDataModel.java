@@ -4,6 +4,8 @@ package com.palria.learnera.models;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**This class is the user's data model*/
 public class UsersDataModel implements Serializable {
@@ -62,6 +64,8 @@ public class UsersDataModel implements Serializable {
      * */
     int totalNumberOfFiveStarRate;
 
+    ArrayList<String> withdrawalRequestsList;
+
     private DocumentSnapshot userDocumentSnapshot;
 
 
@@ -92,7 +96,8 @@ public class UsersDataModel implements Serializable {
             int totalNumberOfTwoStarRate,
             int totalNumberOfThreeStarRate,
             int totalNumberOfFourStarRate,
-            int totalNumberOfFiveStarRate
+            int totalNumberOfFiveStarRate,
+            ArrayList<String> withdrawalRequestsList
 //            DocumentSnapshot userDocumentSnapshot
 
 
@@ -116,6 +121,7 @@ public class UsersDataModel implements Serializable {
         this.totalNumberOfFourStarRate = totalNumberOfFourStarRate;
         this.totalNumberOfFiveStarRate = totalNumberOfFiveStarRate;
         this.userDocumentSnapshot = userDocumentSnapshot;
+        this.withdrawalRequestsList = withdrawalRequestsList;
 
     }
 
@@ -260,6 +266,13 @@ public class UsersDataModel implements Serializable {
         this.totalNumberOfFiveStarRate = totalNumberOfFiveStarRate;
     }
 
+    public ArrayList<String> getWithdrawalRequestsList() {
+        return withdrawalRequestsList;
+    }
+
+    public void setWithdrawalRequestsList(ArrayList<String> withdrawalRequestsList) {
+        this.withdrawalRequestsList = withdrawalRequestsList;
+    }
 
     public DocumentSnapshot getUserDocumentSnapshot() {
         return userDocumentSnapshot;

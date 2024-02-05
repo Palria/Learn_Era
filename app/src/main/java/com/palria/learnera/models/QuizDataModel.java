@@ -26,6 +26,7 @@ public class QuizDataModel implements Serializable {
     private long totalViews;
     private boolean isPublic;
     private boolean isClosed;
+    private boolean isStarted;
     ArrayList<ArrayList> questionList;
     ArrayList<Long> startDateList;
     ArrayList<Long> endDateList;
@@ -55,6 +56,7 @@ public class QuizDataModel implements Serializable {
              long totalViews,
              boolean isPublic,
              boolean isClosed,
+             boolean isStarted,
              ArrayList<ArrayList> questionList,
              ArrayList<Long> startDateList,
              ArrayList<Long> endDateList,
@@ -82,6 +84,7 @@ public class QuizDataModel implements Serializable {
         this.totalViews = totalViews;
         this.isPublic = isPublic;
         this.isClosed = isClosed;
+        this.isStarted = isStarted;
         this.questionList = questionList;
         this.startDateList = startDateList;
         this.endDateList = endDateList;
@@ -150,6 +153,9 @@ public class QuizDataModel implements Serializable {
 
     public boolean isClosed() {
         return isClosed;
+    }
+    public boolean isStarted() {
+        return isStarted;
     }
 
     public ArrayList<ArrayList> getQuestionList() {

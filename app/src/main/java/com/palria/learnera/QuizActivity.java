@@ -103,6 +103,7 @@ public class QuizActivity extends AppCompatActivity {
     boolean isJoined = false;
     boolean isAuthor = false;
     boolean isLoadFromOnline = false;
+    boolean isClosed = false;
     MaterialButton markQuizAsCompletedActionTextView;
     RecyclerView participantRecyclerView;
     QuizParticipantRCVAdapter quizParticipantRCVAdapter;
@@ -120,6 +121,7 @@ public class QuizActivity extends AppCompatActivity {
     long endHour = 0L;
     long endMinute = 0L;
     boolean isStarted;
+    boolean isJustMarkedAsStarted = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if(GlobalConfig.recentlydeletedQuizList.contains(quizId)){
@@ -136,6 +138,12 @@ public class QuizActivity extends AppCompatActivity {
             submitActionButton.setOnClickListener(view -> {
                 showQuizCompletionConfirmationDialog();
             });
+            //check if quiz is closed and update the isClosed boolean variable
+           isClosed = quizDataModel.isClosed();
+           //check if the user has viewed the quiz so it can be marked as closed and then disable all quizz collaboration feature
+           if(GlobalConfig.isQuizViewed(this,quizId)){
+               isClosed = true;
+           }
             if (authorId.equalsIgnoreCase(GlobalConfig.getCurrentUserId())) {
                 isAuthor = true;
             } else {
@@ -267,8 +275,9 @@ public class QuizActivity extends AppCompatActivity {
         AlertDialog confirmExitDialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setTitle("Exit");
-        builder.setMessage("Click exit button to exit the screen");
+        builder.setTitle("Exit Warning!");
+        builder.setMessage("WARNING: If quiz has started, Per our implementation, you will not be permitted to participate in this current quiz again once you exit. " +
+                "Therefore if you exit, the quiz will be closed for you. Click exit button to confirm exit the screen");
         builder.setCancelable(true);
         builder.setIcon(R.drawable.baseline_error_outline_red_24);
 
@@ -281,7 +290,7 @@ public class QuizActivity extends AppCompatActivity {
                 }
             }
         })
-                .setNegativeButton("Stay back", null);
+                .setNegativeButton("Continue", null);
         confirmExitDialog = builder.create();
         confirmExitDialog.show();
 
@@ -325,7 +334,7 @@ public class QuizActivity extends AppCompatActivity {
         AlertDialog successDialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Congrats, quiz submitted successfully");
-        String message = "We will notify you when your answer is marked by the author. We encourage your participation, join other open quizzes to participate";
+        String message = "We will notify you when your answer is marked by the author. We encourage your participation, join other open quizzes to participate and earn";
         if(isAuthor){
             message = "Answer is saved and ready to view";
         }
@@ -466,8 +475,10 @@ if(timeRemainMap.get(activePosition) == 0) {
     activeAnswerRadioOption3.setEnabled(false);
     activeAnswerRadioOption4.setEnabled(false);
 
-    activeQuestionTimeRemainTextView.setText(timeRemainMap.get(activePosition) + "s");
 }
+    activeQuestionTimeRemainTextView.setText(timeRemainMap.get(activePosition) + "s");
+    activeQuestionTimeRemainTextView.setTextColor(ResourcesCompat.getColor(getResources(),R.color.error_red,getTheme()));
+
 }else{
     activeQuestionTimeRemainTextView.setText(timeRemainMap.get(activePosition)+"s");
 
@@ -475,6 +486,7 @@ if(timeRemainMap.get(activePosition) == 0) {
         activeQuestionTimeRemainTextView.setTextColor(ResourcesCompat.getColor(getResources(),R.color.error_red,getTheme()));
     }
 }
+//check if the quiz has started
                 if(!isStarted && GlobalConfig.isQuizStarted(startYear,startMonth,startDay,startHour,startMinute) && !isAuthor) {
                     displayQuestion(0);
                     renderParticipantInfo();
@@ -485,6 +497,12 @@ if(timeRemainMap.get(activePosition) == 0) {
                     } else {
                         submitActionButton.setVisibility(View.GONE);
                     }
+
+
+                }
+                if(GlobalConfig.isQuizStarted(startYear,startMonth,startDay,startHour,startMinute) && !quizDataModel.isStarted() && !isJustMarkedAsStarted){
+                    GlobalConfig.markQuizAsStarted(QuizActivity.this,quizId,null);
+                    isJustMarkedAsStarted = true;
                 }
 
             }
@@ -542,7 +560,7 @@ if(timeRemainMap.get(activePosition) == 0) {
                 isJoined = true;
             } else {
                 joinActionTextView.setText("Join");
-                if (quizDataModel.isClosed() || GlobalConfig.isQuizExpired(endYear, endMonth, endDay, endHour, endMinute)) {
+                if (isClosed || GlobalConfig.isQuizExpired(endYear, endMonth, endDay, endHour, endMinute)) {
                     joinActionTextView.setEnabled(false);
                     submitActionButton.setVisibility(View.GONE);
                     statusTextView.setText("Closed");
@@ -591,7 +609,7 @@ if(timeRemainMap.get(activePosition) == 0) {
 //            }
 //        }.start();
 
-        if (quizDataModel.getAuthorId().equals(GlobalConfig.getCurrentUserId()) && (!quizDataModel.isQuizMarkedCompleted() || !GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId))) {
+        if (quizDataModel.getAuthorId().equals(GlobalConfig.getCurrentUserId()) && (!quizDataModel.isQuizMarkedCompleted() && !GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId))) {
             markQuizAsCompletedActionTextView.setVisibility(View.VISIBLE);
         }
 
@@ -603,14 +621,16 @@ if(timeRemainMap.get(activePosition) == 0) {
         questionList = quizDataModel.getQuestionList();
         //Init answers list to be updated in future
         for (int i = 0; i < questionList.size(); i++) {
+            ArrayList questionItem = (ArrayList) questionList.get(i);
+
             //add two items
             ArrayList<String> answerItem = new ArrayList<>();
             //indicates the type of question, either theory or objective
-            answerItem.add("");
+            answerItem.add(questionItem.get(0)+"");
             //stores answer, using 0 as default value
             answerItem.add("0");
             //saves the question text
-            answerItem.add(questionList.size() >= 4 ? questionList.get(3) + "" : "Unknown error");
+            answerItem.add(questionItem.size() >= 4 ? questionItem.get(3) + "" : "Unknown error");
             //flags the answer as unmarked
             answerItem.add("UNMARKED");
             //stores the score of the answer
@@ -621,7 +641,7 @@ if(timeRemainMap.get(activePosition) == 0) {
             timeRemainMap.put(i, i);
         }
 
-        if (quizDataModel.isQuizMarkedCompleted() ||  !GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId)) {
+        if (quizDataModel.isQuizMarkedCompleted() ||  GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId)) {
             //display everything so long as the author has marked it as completed
             displayQuestion(0);
             renderParticipantInfo();
@@ -1167,6 +1187,7 @@ if(timeRemainMap.get(activePosition) == 0) {
                     long totalViews =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) : 0L;
                     boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) != null && documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY) : true;
                     boolean isClosed =  documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) != null && documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_CLOSED_KEY) : false;
+                    boolean isStarted =  documentSnapshot.get(GlobalConfig.IS_STARTED_KEY) != null && documentSnapshot.get(GlobalConfig.IS_STARTED_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_STARTED_KEY) : false;
                     ArrayList<ArrayList> questionList = new ArrayList();
                     for(int i=0;i<totalQuestions;i++) {
                         ArrayList questionList1 = documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-" + i) != null && documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-"+ i) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-"+ i) : new ArrayList();
@@ -1213,6 +1234,7 @@ if(timeRemainMap.get(activePosition) == 0) {
                             totalViews,
                             isPublic,
                             isClosed,
+                            isStarted,
                             questionList,
                             startDateList,
                             endDateList,

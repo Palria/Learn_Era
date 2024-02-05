@@ -15,9 +15,12 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.palria.learnera.GlobalConfig;
+import com.palria.learnera.HostActivity;
+import com.palria.learnera.MainActivity;
 import com.palria.learnera.PersonalizedNotificationDataModel;
 import com.palria.learnera.QuizActivity;
 import com.palria.learnera.R;
+import com.palria.learnera.UserWalletActivity;
 import com.palria.learnera.models.LearnEraNotificationDataModel;
 
 import java.util.ArrayList;
@@ -95,6 +98,18 @@ public class PersonalizedNotificationAdapter extends RecyclerView.Adapter<Person
                  intent2.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,true);
                  context.startActivity(intent2);
                  break;
+                 case GlobalConfig.NOTIFICATION_TYPE_WITHDRAWAL_COMPLETED_KEY:
+                 String withdrawalInfo = notificationDataModel.getNotification_model_info_list().get(0);
+                 Intent intent3 = new Intent(context, UserWalletActivity.class);
+                  context.startActivity(intent3);
+                 break;
+                 case GlobalConfig.NOTIFICATION_TYPE_WITHDRAWAL_REQUEST_KEY:
+//                 String requestInfo = notificationDataModel.getNotification_model_info_list().get(0);
+                     Intent i = new Intent(context, HostActivity.class);
+                     i.putExtra(GlobalConfig.IS_WITHDRAWAL_REQUEST_APPROVAL_KEY, true);
+                     context.startActivity(GlobalConfig.getHostActivityIntent(context, i, GlobalConfig.AUTHORS_FRAGMENT_TYPE_KEY, null));
+
+                     break;
          }
      }
  });

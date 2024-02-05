@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
@@ -102,6 +103,7 @@ RecyclerView notificationRecyclerView;
                 .collection(GlobalConfig.ALL_USERS_KEY)
                 .document(GlobalConfig.getCurrentUserId())
                 .collection(GlobalConfig.PERSONALIZED_NOTIFICATIONS_KEY)
+                .orderBy(GlobalConfig.DATE_NOTIFIED_TIME_STAMP_KEY, Query.Direction.DESCENDING)
                 .get().addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
@@ -126,13 +128,22 @@ RecyclerView notificationRecyclerView;
                     notificationAdapter.notifyItemChanged(notificationDataModelArrayList.size());
 
                 }
-                WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
-                DocumentReference userReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
-                HashMap<String,Object> userInfo = new HashMap<>();
-                userInfo.put(GlobalConfig.DATE_PERSONALIZED_NOTIFICATION_LAST_SEEN_TIME_STAMP_KEY, FieldValue.serverTimestamp());
-                userInfo.put(GlobalConfig.THERE_IS_NEW_PERSONALIZED_NOTIFICATION_KEY,false);
-                writeBatch.set(userReference,userInfo, SetOptions.merge());
-                writeBatch.commit();
+                if(!queryDocumentSnapshots.getMetadata().isFromCache()) {
+                    WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+                    DocumentReference userReference = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(GlobalConfig.getCurrentUserId());
+                    HashMap<String, Object> userInfo = new HashMap<>();
+                    userInfo.put(GlobalConfig.DATE_PERSONALIZED_NOTIFICATION_LAST_SEEN_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+                    userInfo.put(GlobalConfig.THERE_IS_NEW_PERSONALIZED_NOTIFICATION_KEY, false);
+                    writeBatch.set(userReference, userInfo, SetOptions.merge());
+                    writeBatch.commit();
+//                    GlobalConfig.getFirebaseFirestoreInstance().terminate();
+//                    GlobalConfig.getFirebaseFirestoreInstance().clearPersistence();
+//                    GlobalConfig.getFirebaseFirestoreInstance().disableNetwork();
+//                    GlobalConfig.getFirebaseFirestoreInstance().enableNetwork();
+//                    GlobalConfig.getFirebaseFirestoreInstance().waitForPendingWrites();
+//                    GlobalConfig.getFirebaseFirestoreInstance().setFirestoreSettings();
+
+                }
 
             }
         });

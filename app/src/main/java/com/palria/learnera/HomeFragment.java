@@ -314,8 +314,9 @@ public class HomeFragment extends Fragment {
         seeAllQuizTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.QUIZ_FRAGMENT_TYPE_KEY,null));
-
+//                startActivity(GlobalConfig.getHostActivityIntent(getContext(),null,GlobalConfig.QUIZ_FRAGMENT_TYPE_KEY,null));
+Intent intent = new Intent(getContext(),AllQuizViewerActivity.class);
+startActivity(intent);
             }
         });
         seeAllAuthorTextView.setOnClickListener(new View.OnClickListener() {
@@ -800,7 +801,7 @@ for(int i=0; i<categories.size(); i++) {
                 });
     }
     private void fetchQuiz(String categoryTag,QuizFetchListener quizFetchListener){
-        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.CATEGORY_KEY,categoryTag).limit(20L);
+        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.CATEGORY_KEY,categoryTag).whereEqualTo(GlobalConfig.IS_STARTED_KEY,false).limit(20L);
         libraryQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -837,6 +838,7 @@ for(int i=0; i<categories.size(); i++) {
                             long totalViews =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) : 0L;
                             boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) != null && documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY) : true;
                             boolean isClosed =  documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) != null && documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_CLOSED_KEY) : false;
+                            boolean isStarted =  documentSnapshot.get(GlobalConfig.IS_STARTED_KEY) != null && documentSnapshot.get(GlobalConfig.IS_STARTED_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_STARTED_KEY) : false;
 
                             ArrayList<ArrayList> questionList = new ArrayList();
                             for(int i=0;i<totalQuestions;i++) {
@@ -881,6 +883,7 @@ for(int i=0; i<categories.size(); i++) {
                                         totalViews,
                                         isPublic,
                                         isClosed,
+                                        isStarted,
                                         questionList,
                                         startDateList,
                                         endDateList,

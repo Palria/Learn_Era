@@ -110,6 +110,7 @@ public class GlobalConfig {
     private static ArrayList<String> REPORTED_ITEM_LIST = new ArrayList<>();
     private static ArrayList<String> categoryList = new ArrayList<>();
     private static ArrayList<String> customizedCategoryList = new ArrayList<>();
+    private static ArrayList<String> withdrawalRequestList = new ArrayList<>();
     public static ArrayList<String> recentlyMarkedCompletedQuizList = new ArrayList<>();
     public static ArrayList<String> newlyJoinedQuizList = new ArrayList<>();
     public static ArrayList<String> recentlydeletedQuizList = new ArrayList<>();
@@ -167,6 +168,8 @@ public class GlobalConfig {
     public static final String IS_NIGHT_MODE_KEY = "IS_NIGHT_MODE";
     public static final String SEARCH_KEYWORD_KEY = "SEARCH_KEYWORD";
     public static final String IS_FROM_SEARCH_CONTEXT_KEY = "IS_FROM_SEARCH_CONTEXT";
+    public static final String IS_OPEN_STARTED_QUIZ_KEY = "IS_OPEN_STARTED_QUIZ";
+    public static final String IS_OPEN_COMPLETED_QUIZ_KEY = "IS_OPEN_COMPLETED_QUIZ";
 
 
 
@@ -587,6 +590,8 @@ public class GlobalConfig {
     public static final String NOTIFICATION_TYPE_QUIZ_KEY = "NOTIFICATION_TYPE_QUIZ";
     public static final String NOTIFICATION_TYPE_QUIZ_COMPLETED_KEY = "NOTIFICATION_TYPE_QUIZ_COMPLETED";
     public static final String NOTIFICATION_TYPE_QUIZ_ANSWER_SUBMITTED_KEY = "NOTIFICATION_TYPE_QUIZ_ANSWER_SUBMITTED";
+    public static final String NOTIFICATION_TYPE_WITHDRAWAL_COMPLETED_KEY = "NOTIFICATION_TYPE_WITHDRAWAL_COMPLETED";
+    public static final String NOTIFICATION_TYPE_WITHDRAWAL_REQUEST_KEY = "NOTIFICATION_TYPE_WITHDRAWAL_REQUEST";
 
 
     public static final String DISCUSSION_ID_KEY = "DISCUSSION_ID";
@@ -657,6 +662,7 @@ public class GlobalConfig {
     public static final String QUIZ_SEARCH_VERBATIM_KEYWORD_KEY = "QUIZ_SEARCH_VERBATIM_KEYWORD";
     public static final String QUIZ_SEARCH_ANY_MATCH_KEYWORD_KEY = "QUIZ_SEARCH_ANY_MATCH_KEYWORD";
 
+    public static final String IS_STARTED_KEY = "IS_STARTED";
     public static final String IS_CLOSED_KEY = "IS_CLOSED";
     public static final String TOTAL_PARTICIPANTS_KEY = "TOTAL_PARTICIPANTS";
     public static final String PARTICIPANTS_LIST_KEY = "PARTICIPANTS_LIST";
@@ -729,6 +735,9 @@ public class GlobalConfig {
     public static final String COIN_WITHDRAWAL_HISTORY_LIST_KEY = "COIN_WITHDRAWAL_HISTORY_LIST";
     public static final String REFERAL_REWARD_HISTORY_LIST_KEY = "REFERAL_REWARD_HISTORY_LIST";
     public static final String IS_REWARD_CLAIMED_KEY = "IS_REWARD_CLAIMED";
+    public static final String IS_WITHDRAWAL_REQUESTED_KEY = "IS_WITHDRAWAL_REQUESTED";
+    public static final String WITHDRAWAL_REQUESTS_LIST_KEY = "WITHDRAWAL_REQUESTS_LIST";
+    public static final String IS_WITHDRAWAL_REQUEST_APPROVAL_KEY = "IS_WITHDRAWAL_REQUEST_APPROVAL";
 
     public static final String IS_LOAD_IMMEDIATELY_KEY = "IS_LOAD_IMMEDIATELY";
 
@@ -750,6 +759,10 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
     return true;
 }
         return false;
+    }
+
+    public static String getLearnEraId(){
+        return "vnC7yVCJw1X6rp7bik7BSJHk6xC3";
     }
 
 /**
@@ -4947,6 +4960,8 @@ if(isUserLoggedIn()) {
 //      quizDetails.put(GlobalConfig.SINGLE_QUESTION_TIME_LIMIT_KEY,singleQuestionTimeLimit);
         quizDetails.put(GlobalConfig.IS_PUBLIC_KEY,isPublic);
         quizDetails.put(GlobalConfig.IS_CLOSED_KEY,false);
+        quizDetails.put(GlobalConfig.IS_STARTED_KEY,false);
+        quizDetails.put(GlobalConfig.IS_QUIZ_MARKED_COMPLETED_KEY,false);
         quizDetails.put(GlobalConfig.TOTAL_QUIZ_FEE_COINS_KEY,totalQuizFeeCoins);
         quizDetails.put(GlobalConfig.TOTAL_QUIZ_REWARD_COINS_KEY,totalQuizRewardCoins);
 //        quizDetails.put(GlobalConfig.QUIZ_DATE_LIST_KEY,quizDateList);
@@ -5161,7 +5176,34 @@ if(isUserLoggedIn()) {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                           recordSubmittedQuiz(context,quizId);
+                        //todo check the use of this command
+                          // recordSubmittedQuiz(context,quizId);
+
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+
+    public static void markQuizAsStarted(Context context, String quizId, ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference participantReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).document(quizId);
+        HashMap<String,Object> participantDetails = new HashMap<>();
+        participantDetails.put(GlobalConfig.IS_STARTED_KEY,true);
+        writeBatch.set(participantReference1,participantDetails,SetOptions.merge());
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        if(actionCallback!=null) {
+                            actionCallback.onFailed(e.getMessage());
+                        }
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
 
                         actionCallback.onSuccess();
                     }
@@ -5715,6 +5757,15 @@ if(isUserLoggedIn()) {
 
     public static void withdrawCoinsFromWallet(){
 
+    }
+
+    public static ArrayList<String> getWithdrawalRequestList(){
+
+        return withdrawalRequestList;
+    }
+ public static void setWithdrawalRequestList(Context context,ArrayList<String> withdrawalRequestList1 ){
+
+        GlobalConfig.withdrawalRequestList = withdrawalRequestList1;
     }
 
 

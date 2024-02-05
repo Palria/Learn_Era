@@ -36,6 +36,9 @@ RecyclerView recyclerView;
     String participantId = "";
     String authorId = "";
 
+    boolean isOpenStartedQuiz = false;
+    boolean isOpenCompletedQuiz = false;
+
     public AllQuizFragment() {
         // Required empty public constructor
     }
@@ -47,6 +50,8 @@ RecyclerView recyclerView;
             isShowUserCreatedQuiz = getArguments().getBoolean(GlobalConfig.IS_SHOW_USER_CREATED_QUIZ_KEY,false);
             isFromParticipantProfile = getArguments().getBoolean(GlobalConfig.IS_FROM_PARTICIPANT_PROFILE_KEY,false);
             isFromSearchContext = getArguments().getBoolean(GlobalConfig.IS_FROM_SEARCH_CONTEXT_KEY,false);
+            isOpenStartedQuiz = getArguments().getBoolean(GlobalConfig.IS_OPEN_STARTED_QUIZ_KEY,false);
+            isOpenCompletedQuiz = getArguments().getBoolean(GlobalConfig.IS_OPEN_COMPLETED_QUIZ_KEY,false);
             searchKeyword = getArguments().getString(GlobalConfig.SEARCH_KEYWORD_KEY,"");
             participantId = getArguments().getString(GlobalConfig.PARTICIPANT_ID_KEY,"");
             authorId = getArguments().getString(GlobalConfig.AUTHOR_ID_KEY,"");
@@ -95,13 +100,67 @@ private void initUI(View parentView){
 
          if (isFromSearchContext){
                 authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereArrayContains(GlobalConfig.QUIZ_SEARCH_ANY_MATCH_KEYWORD_KEY,searchKeyword);
-        }else if(isFromParticipantProfile){
+                if(isOpenStartedQuiz){
+                    authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.IS_STARTED_KEY,true).whereArrayContains(GlobalConfig.QUIZ_SEARCH_ANY_MATCH_KEYWORD_KEY,searchKeyword);
+
+                }
+//                else if(!isOpenStartedQuiz){
+//                    authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.IS_STARTED_KEY,false).whereArrayContains(GlobalConfig.QUIZ_SEARCH_ANY_MATCH_KEYWORD_KEY,searchKeyword);
+//
+//                }
+             else if(isOpenCompletedQuiz){
+                 authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.IS_QUIZ_MARKED_COMPLETED_KEY,true).whereArrayContains(GlobalConfig.QUIZ_SEARCH_ANY_MATCH_KEYWORD_KEY,searchKeyword);
+
+             }
+
+        }
+         else if(isFromParticipantProfile){
              authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereArrayContains(GlobalConfig.PARTICIPANTS_LIST_KEY,participantId);
+
+//             if(isOpenStartedQuiz){
+//                 authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.IS_STARTED_KEY,true).whereArrayContains(GlobalConfig.PARTICIPANTS_LIST_KEY,participantId);
+//
+//             }
+//             else if(!isOpenStartedQuiz){
+//                 authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.IS_STARTED_KEY,false).whereArrayContains(GlobalConfig.PARTICIPANTS_LIST_KEY,participantId);
+//
+//             }
+//             else if(isOpenCompletedQuiz){
+//                 authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.IS_QUIZ_MARKED_COMPLETED_KEY,true).whereArrayContains(GlobalConfig.PARTICIPANTS_LIST_KEY,participantId);
+//
+//             }
          }
          else if(isShowUserCreatedQuiz){
              authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.AUTHOR_ID_KEY,authorId);
-         }
 
+             if(isOpenStartedQuiz){
+                 authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.IS_STARTED_KEY,true).whereEqualTo(GlobalConfig.AUTHOR_ID_KEY,authorId);
+
+             }
+             else if(!isOpenStartedQuiz){
+                 authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.IS_STARTED_KEY,false).whereEqualTo(GlobalConfig.AUTHOR_ID_KEY,authorId);
+
+             }
+             else if(isOpenCompletedQuiz){
+                 authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.IS_QUIZ_MARKED_COMPLETED_KEY,true).whereEqualTo(GlobalConfig.AUTHOR_ID_KEY,authorId);
+
+             }
+         }
+         else{
+  if(isOpenCompletedQuiz){
+                 authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.IS_QUIZ_MARKED_COMPLETED_KEY,true).whereEqualTo(GlobalConfig.IS_PUBLIC_KEY,true);
+
+             }
+  else if(isOpenStartedQuiz){
+                  authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.IS_STARTED_KEY,true).whereEqualTo(GlobalConfig.IS_CLOSED_KEY,false).whereEqualTo(GlobalConfig.IS_PUBLIC_KEY,true);
+
+             }
+  else if(!isOpenStartedQuiz){
+                 authorQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_QUIZ_KEY).whereEqualTo(GlobalConfig.IS_STARTED_KEY,false).whereEqualTo(GlobalConfig.IS_PUBLIC_KEY,true);
+
+             }
+
+         }
 
             authorQuery.get()
                 .addOnFailureListener(new OnFailureListener() {
@@ -135,6 +194,7 @@ private void initUI(View parentView){
                             long totalViews =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) : 0L;
                             boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) != null && documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY) : true;
                             boolean isClosed =  documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) != null && documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_CLOSED_KEY) : false;
+                            boolean isStarted =  documentSnapshot.get(GlobalConfig.IS_STARTED_KEY) != null && documentSnapshot.get(GlobalConfig.IS_STARTED_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_STARTED_KEY) : false;
                             ArrayList<ArrayList> questionList = new ArrayList();
                             for(int i=0;i<totalQuestions;i++) {
                                 ArrayList questionList1 = documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-" + i) != null && documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-"+ i) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.QUESTION_LIST_KEY+"-"+ i) : new ArrayList();
@@ -179,6 +239,7 @@ private void initUI(View parentView){
                                     totalViews,
                                     isPublic,
                                     isClosed,
+                                    isStarted,
                                     questionList,
                                     quizStartDateList1,
                                     quizEndDateList1,

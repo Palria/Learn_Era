@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <TextView
+        android:id="@+id/titleId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="2pt"
+        android:layout_weight="1"
+        android:paddingHorizontal="3pt"
+        android:paddingVertical="3pt"
+        android:text="Are you ready to request?"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        />
+    <TextView
+        android:id="@+id/introId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="2pt"
+        android:layout_weight="1"
+        android:paddingHorizontal="3pt"
+        android:paddingVertical="3pt"
+        android:text="You are about to request for withdrawal.
+ Enter number of coins you intend to withdraw and click confirm.
+ You will be notified when your withdrawal is completed. Meanwhile, check your notifications often"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/titleId"
+        />
+ <EditText
+        android:id="@+id/coinInputId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+     android:layout_marginTop="20dp"
+        android:layout_marginRight="2pt"
+        android:paddingHorizontal="3pt"
+        android:paddingVertical="3pt"
+        android:inputType="number"
+        android:hint="Enter number of coins to withdraw"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/introId"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        android:gravity="end"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/coinInputId"
+        >
+ <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+       android:layout_weight="1"
+        />
+
+
+        <TextView
+            android:id="@+id/cancelId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2pt"
+            android:background="@drawable/default_outlined_button"
+            android:foreground="@android:color/transparent"
+            android:paddingHorizontal="3pt"
+            android:paddingVertical="3pt"
+            android:text="Cancel"
+            android:textColor="@color/teal_700"
+            android:textStyle="bold"
+            android:layout_gravity="end"
+
+            />
+        <TextView
+            android:id="@+id/confirmId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2pt"
+            android:background="@drawable/default_outlined_button"
+            android:foreground="@android:color/transparent"
+            android:paddingHorizontal="3pt"
+            android:paddingVertical="3pt"
+            android:text="Confirm"
+            android:textColor="@color/success_green"
+            android:textStyle="bold"
+            android:layout_gravity="end"
+            />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

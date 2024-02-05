@@ -167,5 +167,23 @@ android:paddingVertical="4pt"
         android:layout_marginLeft="3dp"
         />
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/withdrawalRequestLayoutId"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        >
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+          android:text="Withdrawal Requests"
+          android:textColor="@color/black"
+          android:textSize="13sp"
+          />
+
+
+
+    </LinearLayout>
 
 </LinearLayout>

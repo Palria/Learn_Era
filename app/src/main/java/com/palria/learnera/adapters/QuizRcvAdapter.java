@@ -126,7 +126,10 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
 
                         }
                     });
+                    if(!quizDataModel.isStarted()){
+                        GlobalConfig.markQuizAsStarted(context, quizDataModel.getQuizId(), null);
 
+                    }
                 }
             }
 
@@ -163,21 +166,21 @@ public class QuizRcvAdapter extends RecyclerView.Adapter<QuizRcvAdapter.ViewHold
                             @Override
                             public void onSuccess() {
                                 holder.joinQuizActionTextView.setText("Closed");
-                                holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-
-
-                                        //navigate to QuizActivity
-                                        Intent intent = new Intent(context, QuizActivity.class);
-                                        intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY,quizDataModel);
-                                        intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,quizDataModel.getAuthorId());
-                                        intent.putExtra(GlobalConfig.QUIZ_ID_KEY,quizDataModel.getQuizId());
-                                        intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,false);
-                                        context.startActivity(intent);
-
-                                    }
-                                });
+//                                holder.joinQuizActionTextView.setOnClickListener(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View view) {
+//
+//
+//                                        //navigate to QuizActivity
+//                                        Intent intent = new Intent(context, QuizActivity.class);
+//                                        intent.putExtra(GlobalConfig.QUIZ_DATA_MODEL_KEY,quizDataModel);
+//                                        intent.putExtra(GlobalConfig.AUTHOR_ID_KEY,quizDataModel.getAuthorId());
+//                                        intent.putExtra(GlobalConfig.QUIZ_ID_KEY,quizDataModel.getQuizId());
+//                                        intent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,false);
+//                                        context.startActivity(intent);
+//
+//                                    }
+//                                });
                             }
 
                             @Override

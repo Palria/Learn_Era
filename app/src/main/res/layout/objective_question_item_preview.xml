@@ -47,7 +47,7 @@
                     android:textStyle="bold"
                     android:textColor="@color/success_green"
                     android:layout_marginBottom="7pt"
-                    android:text=""
+                    android:text="0s"
                     android:textSize="10pt"
                     android:layout_weight="1"
                     android:layout_width="wrap_content"

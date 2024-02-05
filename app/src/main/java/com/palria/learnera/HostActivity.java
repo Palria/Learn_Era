@@ -81,6 +81,12 @@ public class HostActivity extends AppCompatActivity {
                     bundle.putBoolean(GlobalConfig.IS_AUTHOR_OPEN_TYPE_KEY, false);
                     bundle.putBoolean(GlobalConfig.IS_ACCOUNT_VERIFICATION_KEY, getIntent().getBooleanExtra(GlobalConfig.IS_ACCOUNT_VERIFICATION_KEY,false));
 
+                }else if(getIntent().getBooleanExtra(GlobalConfig.IS_WITHDRAWAL_REQUEST_APPROVAL_KEY,false)) {
+                    materialToolbar.setTitle("Approve Withdrawals");
+
+                    bundle.putBoolean(GlobalConfig.IS_AUTHOR_OPEN_TYPE_KEY, false);
+                    bundle.putBoolean(GlobalConfig.IS_WITHDRAWAL_REQUEST_APPROVAL_KEY, getIntent().getBooleanExtra(GlobalConfig.IS_WITHDRAWAL_REQUEST_APPROVAL_KEY,false));
+
                 }else{
                     materialToolbar.setTitle("Authors");
                 }

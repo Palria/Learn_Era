@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AllQuizViewerActivity">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        app:title="Quiz Title"
+        app:navigationIconTint="@color/white"
+        app:navigationIcon="@drawable/baseline_arrow_back_24"
+        app:titleTextColor="@color/white"
+        android:theme="@style/ToolbarColoredBackArrow"
+        android:background="@color/teal_700"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <HorizontalScrollView
+        android:id="@+id/tabScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        >
+        <com.google.android.material.chip.ChipGroup
+            android:paddingHorizontal="5pt"
+            android:paddingStart="30dp"
+            app:itemSpacing="-4dp"
+            app:chipSpacingVertical="0dp"
+            app:lineSpacing="0dp"
+            app:singleLine="true"
+            app:singleSelection="true"
+            android:id="@+id/categoriesChipGroup"
+            app:chipSpacing="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scrollbarAlwaysDrawHorizontalTrack="false"
+            android:layout_gravity="center_horizontal"
+            >
+            <com.google.android.material.chip.Chip
+                android:id="@+id/openChipId"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Open"
+                app:chipCornerRadius="5dp"
+                android:textAlignment="center"
+                android:checkable="true"
+                />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/startedChipId"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Started"
+                app:chipCornerRadius="5dp"
+                android:textAlignment="center"
+                android:checkable="true"
+
+                />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/completedChipId"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Completed"
+                app:chipCornerRadius="5dp"
+                android:textAlignment="center"
+                android:checkable="true"
+
+                />
+
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+
+    <!-- Fragments Container -->
+
+    <FrameLayout
+        android:layout_marginTop="19pt"
+        android:id="@+id/openQuizFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@id/tabScroll"
+
+        />
+    <FrameLayout
+        android:layout_marginTop="19pt"
+        android:id="@+id/startedQuizFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@id/tabScroll"/>
+    <FrameLayout
+        android:layout_marginTop="19pt"
+        android:id="@+id/completedQuizFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@id/tabScroll"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

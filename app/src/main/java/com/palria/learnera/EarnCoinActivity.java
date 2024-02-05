@@ -51,7 +51,7 @@ public class EarnCoinActivity extends AppCompatActivity {
     OnUserEarnedRewardListener onUserEarnedRewardListener;
 //    TextView numberOfCoinsTextView;
     TextView statusTextView;
-    boolean isLoadImmediately = false;
+    boolean isLoadImmediately = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +87,7 @@ if(isLoadImmediately){
 
     void fetchIntentData(){
        Intent intent = getIntent();
-       isLoadImmediately = intent.getBooleanExtra(GlobalConfig.IS_LOAD_IMMEDIATELY_KEY,false);
+       isLoadImmediately = intent.getBooleanExtra(GlobalConfig.IS_LOAD_IMMEDIATELY_KEY,true);
     }
 
 
