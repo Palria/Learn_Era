@@ -52,6 +52,7 @@ public class EarnCoinActivity extends AppCompatActivity {
 //    TextView numberOfCoinsTextView;
     TextView statusTextView;
     boolean isLoadImmediately = true;
+    String testAdId = "ca-app-pub-3940256099942544/5224354917";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -155,13 +156,13 @@ if(isLoadImmediately){
                 if(isVideoAdsLoaded){
                     GlobalConfig.showVideoAd(EarnCoinActivity.this,EarnCoinActivity.this, rewardedAd, fullScreenContentCallback,onUserEarnedRewardListener );
                 }else{
-                    GlobalConfig.loadVideoAd(EarnCoinActivity.this, "ca-app-pub-3940256099942544/5224354917", new RewardedAdLoadCallback() {
+                    GlobalConfig.loadVideoAd(EarnCoinActivity.this, "ca-app-pub-3296946983872591/3315322962", new RewardedAdLoadCallback() {
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                             super.onAdFailedToLoad(loadAdError);
                             isVideoAdsLoaded = false;
-                            GlobalConfig.loadVideoAd(EarnCoinActivity.this, "ca-app-pub-3940256099942544/5224354917", this);
-                            statusTextView.setText("Error occurred. failed to load ads, please try again" );
+                            GlobalConfig.loadVideoAd(EarnCoinActivity.this, "ca-app-pub-3296946983872591/3315322962", this);
+                            statusTextView.setText("Error occurred. failed to load ads, please try again "+loadAdError.getResponseInfo() );
 
                             watchAndEarnActionTextView.setText("Retry");
                             watchAndEarnActionTextView.setEnabled(true);

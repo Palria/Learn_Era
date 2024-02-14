@@ -28,11 +28,17 @@
         android:theme="@style/Theme.App.Starting"
         android:windowSoftInputMode="adjustPan">
         <activity
+            android:name=".EditBankAccountDetailsActivity"
+            android:theme="@style/Theme.LearnEra"
+            android:exported="true" >
+        </activity>
+        <activity
             android:name=".AllQuizViewerActivity"
             android:theme="@style/Theme.LearnEra"
             android:exported="true" >
 
-        </activity> <activity
+        </activity>
+        <activity
             android:name=".CustomizeTabActivity"
             android:theme="@style/Theme.LearnEra"
             android:exported="true" >

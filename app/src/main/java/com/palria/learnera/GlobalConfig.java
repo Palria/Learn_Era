@@ -741,6 +741,12 @@ public class GlobalConfig {
 
     public static final String IS_LOAD_IMMEDIATELY_KEY = "IS_LOAD_IMMEDIATELY";
 
+    public static final String BANK_NAME_KEY = "BANK_NAME";
+    public static final String ACCOUNT_NAME_KEY = "ACCOUNT_NAME";
+    public static final String ACCOUNT_NUMBER_KEY = "ACCOUNT_NUMBER";
+    public static final String DATE_ACCOUNT_DETAILS_EDITED_TIME_STAMP_KEY = "DATE_ACCOUNT_DETAILS_EDITED_TIME_STAMP";
+    public static final String COUNTRY_KEY = "COUNTRY";
+
     private static FirebaseFirestore firebaseFirestoreInstance;
     private static FirebaseStorage firebaseStorageInstance;
 
@@ -3056,8 +3062,6 @@ if(isUserLoggedIn()) {
 
         }
         writeBatch.delete(bookMarkReference);
-
-
         DocumentReference numOfBookMarkReference = null;
         switch (type) {
             case AUTHOR_TYPE_KEY:
@@ -4269,6 +4273,7 @@ if(isUserLoggedIn()) {
         editor.apply();
 
     }
+
     public static void discuss(PageDiscussionDataModel pageDiscussionDataModel, ActionCallback actionCallback ){
         WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
         DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(pageDiscussionDataModel.getAuthorId()).collection(GlobalConfig.MY_PAGES_DISCUSSION_KEY).document(pageDiscussionDataModel.getDiscussionId());
@@ -4566,7 +4571,9 @@ if(isUserLoggedIn()) {
         editor.apply();
 
     }
-//    public static void dislikePage(String pageId,boolean isIncreaseCount, String tutorialId,String folderId, boolean isTutorialPage, ActionCallback actionCallback ){
+
+
+    //    public static void dislikePage(String pageId,boolean isIncreaseCount, String tutorialId,String folderId, boolean isTutorialPage, ActionCallback actionCallback ){
 //        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
 //        if(isTutorialPage) {
 //            DocumentReference documentReference3 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).document(tutorialId).collection(GlobalConfig.ALL_TUTORIAL_PAGES_KEY).document(pageId);
@@ -4899,41 +4906,42 @@ if(isUserLoggedIn()) {
     });
     }
     public static void showVideoAd(Context context, Activity activity, @NonNull RewardedAd rewardedAd, FullScreenContentCallback fullScreenContentCallback, OnUserEarnedRewardListener onUserEarnedRewardListener ){
-        rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
-            @Override
-            public void onAdClicked() {
-                super.onAdClicked();
-                fullScreenContentCallback.onAdClicked();
-            }
-
-            @Override
-            public void onAdDismissedFullScreenContent() {
-                super.onAdDismissedFullScreenContent();
-                fullScreenContentCallback.onAdDismissedFullScreenContent();
-
-            }
-
-            @Override
-            public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
-                super.onAdFailedToShowFullScreenContent(adError);
-                fullScreenContentCallback.onAdFailedToShowFullScreenContent(adError);
-            }
-
-            @Override
-            public void onAdImpression() {
-                super.onAdImpression();
-                fullScreenContentCallback.onAdImpression();
-            }
-
-            @Override
-            public void onAdShowedFullScreenContent() {
-                super.onAdShowedFullScreenContent();
-                fullScreenContentCallback.onAdShowedFullScreenContent();
-            }
-
-        });
 
         if(rewardedAd!=null){
+            rewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                @Override
+                public void onAdClicked() {
+                    super.onAdClicked();
+                    fullScreenContentCallback.onAdClicked();
+                }
+
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    super.onAdDismissedFullScreenContent();
+                    fullScreenContentCallback.onAdDismissedFullScreenContent();
+
+                }
+
+                @Override
+                public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                    super.onAdFailedToShowFullScreenContent(adError);
+                    fullScreenContentCallback.onAdFailedToShowFullScreenContent(adError);
+                }
+
+                @Override
+                public void onAdImpression() {
+                    super.onAdImpression();
+                    fullScreenContentCallback.onAdImpression();
+                }
+
+                @Override
+                public void onAdShowedFullScreenContent() {
+                    super.onAdShowedFullScreenContent();
+                    fullScreenContentCallback.onAdShowedFullScreenContent();
+                }
+
+            });
+
             rewardedAd.show(activity, new OnUserEarnedRewardListener() {
                 @Override
                 public void onUserEarnedReward(@NonNull RewardItem rewardItem) {

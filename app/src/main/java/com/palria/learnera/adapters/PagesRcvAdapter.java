@@ -131,7 +131,8 @@ public class PagesRcvAdapter extends RecyclerView.Adapter<PagesRcvAdapter.ViewHo
 
             if(GlobalConfig.isPageLiked(context,pageDataModel.getPageId())){
                 holder.likeActionButton.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_baseline_thumb_up_24,context.getTheme()));
-            }else{
+            }
+            else{
                 holder.likeActionButton.setImageResource(R.drawable.ic_outline_thumb_up_24);
             }
 

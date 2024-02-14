@@ -474,7 +474,7 @@
                     android:drawablePadding="2pt"
                     android:drawableTint="@color/teal_700"
                     android:drawableRight="@drawable/ic_baseline_keyboard_arrow_right_24"
-                    android:text="See open quiz"
+                    android:text="See all quiz"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-condensed-medium"
                     android:textColor="@color/teal_700"

@@ -295,6 +295,8 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
                 addAnswerView(quizParticipantDataModel, holder);
 //            }
 //            }
+
+
 holder.participantName.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View v) {

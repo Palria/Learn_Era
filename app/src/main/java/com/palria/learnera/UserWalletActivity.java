@@ -62,6 +62,9 @@ public class UserWalletActivity extends AppCompatActivity {
     TextView withdrawActionTextView;
     TextView getMoreCoinActionTextView;
 int totalWithdrawableCoins = 0;
+
+TextView bankNameTextView,accountNumberTextView,accountNameTextView,editAccountActionTextView,countryTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +127,16 @@ getWalletInfo();
                 showRequestConfirmationDialog();
             }
         });
+
+        editAccountActionTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //navigate to EditBankAccountDetailsActivity
+                Intent intent = new Intent(UserWalletActivity.this, EditBankAccountDetailsActivity.class);
+
+                startActivity(intent);
+            }
+        });
         getMoreCoinActionTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -152,6 +165,11 @@ getWalletInfo();
         referralRewardLinearLayout = findViewById(R.id.referralRewardLinearLayoutId);
         withdrawalRequestLayout = findViewById(R.id.withdrawalRequestLayoutId);
 
+        bankNameTextView = findViewById(R.id.bankNameTextViewId);
+        accountNumberTextView = findViewById(R.id.accountNumberTextViewId);
+        accountNameTextView = findViewById(R.id.accountNameTextViewId);
+        editAccountActionTextView = findViewById(R.id.editAccountActionTextViewId);
+        countryTextView = findViewById(R.id.countryNameTextViewId);
 
         setSupportActionBar(materialToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -270,9 +288,20 @@ void getWalletInfo(){
             String totalCoinsEarned = ""+ documentSnapshot.get(GlobalConfig.TOTAL_COINS_EARNED_KEY);
             String totalCoinEquity = ""+ documentSnapshot.get(GlobalConfig.TOTAL_COIN_EQUITY_KEY);
 
-            availableCoinEquityTextView.setText(totalCoinEquity+" COINS");
+            String bankName = ""+ documentSnapshot.get(GlobalConfig.BANK_NAME_KEY);
+            String accountName = ""+ documentSnapshot.get(GlobalConfig.ACCOUNT_NAME_KEY);
+            String accountNumber = ""+ documentSnapshot.get(GlobalConfig.ACCOUNT_NUMBER_KEY);
+            String country = ""+ documentSnapshot.get(GlobalConfig.COUNTRY_KEY);
+
+            availableCoinEquityTextView.setText(totalCoinEquity+" Coins");
             withdrawableCoinsTextView.setText(withdrawableCoins+" Coins");
             totalWithdrawableCoins =(int) withdrawableCoins;
+
+            bankNameTextView.setText("Bank Name : " +bankName);
+            accountNumberTextView.setText("Account Number : " +accountNumber);
+            accountNameTextView.setText("Account Name : " +accountName);
+            countryTextView.setText("Country : " +country);
+
 
             ArrayList<String> quizEarningsHistoryList =  documentSnapshot.get(GlobalConfig.QUIZ_EARNINGS_HISTORY_LIST_KEY)!=null? (ArrayList<String>) documentSnapshot.get(GlobalConfig.QUIZ_EARNINGS_HISTORY_LIST_KEY):new ArrayList<>();
             for(String history: quizEarningsHistoryList){

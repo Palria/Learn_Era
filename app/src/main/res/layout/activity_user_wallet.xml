@@ -214,7 +214,116 @@
                 android:background="@drawable/default_outlined_button"
                 android:paddingHorizontal="5pt"
                 android:paddingVertical="5pt"
-                android:text="Request Withdraw"
+                android:text="Request Withdrawal"
+                android:textColor="@color/teal_700"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+    <androidx.cardview.widget.CardView
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/transparent"
+        android:layout_marginTop="2pt"
+        android:layout_marginHorizontal="5pt"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:textAlignment="center"
+                android:text="Bank Account Details"
+                android:textStyle="bold"
+                android:textSize="10pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+
+           <androidx.cardview.widget.CardView
+               android:layout_marginVertical="2pt"
+               app:cardBackgroundColor="@color/black"
+               android:layout_width="match_parent"
+               app:cardCornerRadius="4pt"
+               android:background="@color/success_green"
+               android:padding="4pt"
+               android:layout_height="wrap_content">
+
+               <LinearLayout
+                 android:padding="3pt"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:orientation="vertical">
+
+
+                   <TextView
+                       android:id="@+id/bankNameTextViewId"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Bank name : Opay"
+                       android:textSize="8pt"
+                       android:textColor="@color/white"
+                       android:textStyle="bold" />
+                   <TextView
+                       android:id="@+id/accountNumberTextViewId"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Account number : 1234567890"
+                       android:textSize="8pt"
+                       android:textColor="@color/white"
+                       android:textStyle="bold" />
+                   <TextView
+                       android:id="@+id/accountNameTextViewId"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Account name : Saugat Henry"
+                       android:textSize="8pt"
+                       android:textColor="@color/white"
+                       android:textStyle="bold" />
+
+                   <TextView
+                       android:id="@+id/countryNameTextViewId"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Country : Nigeria"
+                       android:textSize="8pt"
+                       android:textColor="@color/white"
+                       android:textStyle="bold" />
+
+               </LinearLayout>
+
+           </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:layout_marginBottom="5pt"
+                    android:textColor="@color/grayDark"
+                    android:layout_width="match_parent"
+                    android:justificationMode="inter_word"
+                    android:inputType="textMultiLine"
+                    android:id="@+id/accountTipsTextViewId"
+                    android:text="This is your bank account details. It's an account where you
+ receive payments whenever you request for payment. Save correct account details to avoid errors during payment.
+We only accept Opay, Paypal, MoniePoint"
+                    android:enabled="false"
+                    android:layout_height="match_parent"/>
+
+            <TextView
+                android:drawablePadding="2pt"
+                android:drawableTint="@color/teal_700"
+                android:drawableEnd="@drawable/ic_baseline_edit_24"
+                android:id="@+id/editAccountActionTextViewId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_marginVertical="1pt"
+                android:background="@drawable/default_outlined_button"
+                android:paddingHorizontal="5pt"
+                android:paddingVertical="5pt"
+                android:text="Edit Details"
                 android:textColor="@color/teal_700"
                 android:textStyle="bold" />
 
