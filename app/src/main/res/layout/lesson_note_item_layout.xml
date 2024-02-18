@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="visible"
+        >
+
+        <LinearLayout
+            android:layout_gravity="start"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:layout_width="30pt"
+        android:id="@+id/senderIcon"
+        app:riv_corner_radius="9pt"
+        app:riv_oval="true"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        android:src="@drawable/placeholder"
+        android:layout_height="30pt"/>
+
+
+
+
+    <LinearLayout
+
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textStyle="bold"
+            android:textSize="9pt"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:id="@+id/senderNameId"
+            android:text="Nnamdi Henry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLength="30"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+        <ImageView
+            android:layout_marginLeft="3pt"
+            android:id="@+id/verificationFlagImageViewId"
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:src="@drawable/ic_baseline_stars_24"
+            app:tint="@color/secondary_app_color"
+            android:layout_gravity="center"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@id/title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+    </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:textStyle="bold|italic"
+                android:textSize="8pt"
+                android:layout_marginEnd="100dp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textColor="@color/secondary_app_color"
+                android:id="@+id/userTypeViewId"
+                android:text="Teacher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+    <TextView
+        android:ellipsize="end"
+        android:textSize="8pt"
+        android:maxLines="2"
+        android:id="@+id/dateSentViewId"
+        android:text="Date sent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+    </LinearLayout>
+    </LinearLayout>
+
+
+    </LinearLayout>
+        <RelativeLayout
+            android:id="@+id/lessonNoteImageViewRelativeLayoutId"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:visibility="gone"
+            >
+            <ImageView
+                android:id="@+id/imageLessonNoteImageViewId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxHeight="700dp"
+                android:minWidth="600dp"
+                android:minHeight="500dp"
+                android:background="@color/transparent"
+                android:scaleType="fitXY"
+                android:src="@drawable/book_cover"
+                />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/startUploadButtonId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:fabSize="mini"
+                android:backgroundTint="@color/purple_200"
+                android:src="@drawable/send"
+                android:layout_centerInParent="true"
+                />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/successImageViewId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:fabSize="mini"
+                android:backgroundTint="@color/transparent"
+                android:src="@drawable/ic_baseline_success_circle_outline_24"
+                android:layout_centerInParent="true"
+                />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/pauseUploadButtonId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:fabSize="mini"
+                android:backgroundTint="@color/light_blue_900"
+                android:src="@drawable/ic_outline_cancel_24"
+                android:layout_centerInParent="true"
+                />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/resumeUploadButtonId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:fabSize="mini"
+                android:backgroundTint="@color/secondary_app_color"
+                android:src="@android:drawable/ic_menu_upload_you_tube"
+                android:layout_centerInParent="true"
+                />
+
+            <ProgressBar
+                android:id="@+id/progressIndicatorId"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:visibility="gone"
+                android:progressTint="@color/secondary_app_color"
+                android:layout_centerInParent="true"
+                android:indeterminate="true"
+                />
+        </RelativeLayout>
+
+
+        <TextView
+            android:textStyle="bold|italic"
+            android:textSize="8pt"
+            android:padding="10dp"
+            android:id="@+id/lessonNotePlainTextViewId"
+            android:text="Java is a programming language for developing android apps"
+            android:background="@drawable/rounded_border_gray_bg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+        <ImageView
+            android:id="@+id/lessonNoteStateIndicatorImageViewId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_sending_12"
+            android:background="@color/transparent"
+            android:layout_gravity="bottom"
+            android:visibility="gone"
+            />
+
+
+        <!--for storing the id of the lesson note for future use-->
+        <TextView
+            android:id="@+id/lessonNoteIdHolderDummyTextViewId"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
