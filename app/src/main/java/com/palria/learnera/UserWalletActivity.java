@@ -61,6 +61,7 @@ public class UserWalletActivity extends AppCompatActivity {
     TextView withdrawableCoinsTextView;
     TextView withdrawActionTextView;
     TextView getMoreCoinActionTextView;
+    TextView editPaypalAccountActionTextViewId;
 int totalWithdrawableCoins = 0;
 
 TextView bankNameTextView,accountNumberTextView,accountNameTextView,editAccountActionTextView,countryTextView;
@@ -149,6 +150,15 @@ getWalletInfo();
 
             }
         });
+
+        editPaypalAccountActionTextViewId.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent  intent1 = new Intent(UserWalletActivity.this, PaypalEditActivity.class);
+                startActivity(intent1);
+
+            }
+        });
     }
 
 
@@ -170,6 +180,8 @@ getWalletInfo();
         accountNameTextView = findViewById(R.id.accountNameTextViewId);
         editAccountActionTextView = findViewById(R.id.editAccountActionTextViewId);
         countryTextView = findViewById(R.id.countryNameTextViewId);
+
+        editPaypalAccountActionTextViewId = findViewById(R.id.editPaypalAccountActionTextViewId);
 
         setSupportActionBar(materialToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

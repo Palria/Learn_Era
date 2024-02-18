@@ -15,7 +15,8 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <uses-permission android:name="android.permission.BIND_JOB_SERVICE"
+    <uses-permission
+        android:name="android.permission.BIND_JOB_SERVICE"
         tools:ignore="ProtectedPermissions" />
 
     <application
@@ -28,62 +29,54 @@
         android:theme="@style/Theme.App.Starting"
         android:windowSoftInputMode="adjustPan">
         <activity
-            android:name=".EditBankAccountDetailsActivity"
             android:theme="@style/Theme.LearnEra"
-            android:exported="true" >
-        </activity>
+            android:name=".PaypalEditActivity"
+            android:exported="true" />
+        <activity
+            android:name=".EditBankAccountDetailsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".AllQuizViewerActivity"
-            android:theme="@style/Theme.LearnEra"
-            android:exported="true" >
-
-        </activity>
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".CustomizeTabActivity"
-            android:theme="@style/Theme.LearnEra"
-            android:exported="true" >
-        </activity>
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".EarnCoinActivity"
-            android:theme="@style/Theme.LearnEra"
-            android:exported="true" >
-        </activity>
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".UserWalletActivity"
-            android:theme="@style/Theme.LearnEra"
-            android:exported="true" >
-        </activity>
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".JoinQuizActivity"
-            android:theme="@style/Theme.LearnEra"
-            android:exported="true" >
-        </activity>
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".SingleQuestionActivity"
-            android:theme="@style/Theme.LearnEra"
-            android:exported="true" >
-        </activity>
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".SinglePostActivity"
-            android:theme="@style/Theme.LearnEra"
-            android:exported="true" >
-        </activity>
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".AskNewQuestionActivity"
-            android:theme="@style/Theme.LearnEra"
+            android:exported="true"
             android:parentActivityName=".MainActivity"
-            android:exported="true" >
-        </activity>
+            android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".AddNewPostActivity"
-            android:theme="@style/Theme.LearnEra"
-            android:exported="true" >
-        </activity>
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".QuizActivity"
-            android:theme="@style/Theme.LearnEra"
-            android:exported="true" >
-        </activity>
+            android:exported="true"
+            android:theme="@style/Theme.LearnEra" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
@@ -93,7 +86,6 @@
             android:name=".CreateQuizActivity"
             android:exported="true"
             android:theme="@style/Theme.LearnEra" />
-       
         <activity
             android:name=".DeclineUserAccountVerificationActivity"
             android:exported="true"
@@ -120,8 +112,8 @@
             android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".PageActivity"
-            android:exported="true"
             android:configChanges="orientation|screenSize"
+            android:exported="true"
             android:theme="@style/Theme.LearnEra" />
         <activity
             android:name=".HostActivity"
@@ -241,10 +233,9 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
-    
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-        
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
