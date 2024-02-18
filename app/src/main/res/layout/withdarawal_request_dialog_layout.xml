@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="8pt"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <TextView
         android:id="@+id/titleId"
@@ -10,6 +11,7 @@
         android:layout_marginRight="2pt"
         android:layout_weight="1"
         android:paddingHorizontal="3pt"
+        android:textSize="8pt"
         android:paddingVertical="3pt"
         android:text="Are you ready to request?"
         android:textColor="@color/black"
@@ -26,7 +28,6 @@
         android:text="You are about to request for withdrawal.
  Enter number of coins you intend to withdraw and click confirm.
  You will be notified when your withdrawal is completed. Meanwhile, check your notifications often"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/titleId"
         />
@@ -36,7 +37,8 @@
         android:layout_height="wrap_content"
      android:layout_marginTop="20dp"
         android:layout_marginRight="2pt"
-        android:paddingHorizontal="3pt"
+        android:paddingHorizontal="7pt"
+     android:background="@drawable/default_input_bg"
         android:paddingVertical="3pt"
         android:inputType="number"
         android:hint="Enter number of coins to withdraw"
@@ -68,8 +70,8 @@
             android:layout_marginRight="2pt"
             android:background="@drawable/default_outlined_button"
             android:foreground="@android:color/transparent"
-            android:paddingHorizontal="3pt"
-            android:paddingVertical="3pt"
+            android:paddingHorizontal="7pt"
+            android:paddingVertical="5pt"
             android:text="Cancel"
             android:textColor="@color/teal_700"
             android:textStyle="bold"
@@ -77,16 +79,17 @@
 
             />
         <TextView
+
             android:id="@+id/confirmId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="2pt"
-            android:background="@drawable/default_outlined_button"
+            android:layout_marginEnd="2pt"
+            android:background="@drawable/default_auth_btn"
             android:foreground="@android:color/transparent"
-            android:paddingHorizontal="3pt"
-            android:paddingVertical="3pt"
+            android:paddingHorizontal="8pt"
+            android:paddingVertical="5pt"
             android:text="Confirm"
-            android:textColor="@color/success_green"
+            android:textColor="@color/white"
             android:textStyle="bold"
             android:layout_gravity="end"
             />

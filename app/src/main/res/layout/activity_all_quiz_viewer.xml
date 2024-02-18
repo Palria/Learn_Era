@@ -21,6 +21,7 @@
         />
 
     <HorizontalScrollView
+        android:layout_marginTop="2pt"
         android:id="@+id/tabScroll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,8 +29,8 @@
         app:layout_constraintTop_toBottomOf="@id/topBar"
         >
         <com.google.android.material.chip.ChipGroup
-            android:paddingHorizontal="5pt"
-            android:paddingStart="30dp"
+            android:paddingHorizontal="0pt"
+            android:paddingStart="5pt"
             app:itemSpacing="-4dp"
             app:chipSpacingVertical="0dp"
             app:lineSpacing="0dp"
@@ -59,7 +60,6 @@
                 app:chipCornerRadius="5dp"
                 android:textAlignment="center"
                 android:checkable="true"
-
                 />
             <com.google.android.material.chip.Chip
                 android:id="@+id/completedChipId"
@@ -69,7 +69,6 @@
                 app:chipCornerRadius="5dp"
                 android:textAlignment="center"
                 android:checkable="true"
-
                 />
 
         </com.google.android.material.chip.ChipGroup>
@@ -79,7 +78,7 @@
     <!-- Fragments Container -->
 
     <FrameLayout
-        android:layout_marginTop="19pt"
+        android:layout_marginTop="4pt"
         android:id="@+id/openQuizFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -88,14 +87,14 @@
 
         />
     <FrameLayout
-        android:layout_marginTop="19pt"
+        android:layout_marginTop="4pt"
         android:id="@+id/startedQuizFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="invisible"
         app:layout_constraintTop_toBottomOf="@id/tabScroll"/>
     <FrameLayout
-        android:layout_marginTop="19pt"
+        android:layout_marginTop="4pt"
         android:id="@+id/completedQuizFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

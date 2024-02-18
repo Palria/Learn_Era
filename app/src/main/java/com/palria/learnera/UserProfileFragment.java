@@ -1599,19 +1599,36 @@ libraryView.setOnClickListener(new View.OnClickListener() {
 
     private void manageFollowActions(){
 
-        if(authorId.equals(GlobalConfig.getCurrentUserId())){
-            followActionTextView.setVisibility(View.GONE);
-        }
-        if(GlobalConfig.isFollowing(getContext(),authorId)){
-            followActionTextView.setText("Following");
 
+        if(GlobalConfig.isFollowing(getContext(),authorId)){
+            if(authorId.equals(GlobalConfig.getCurrentUserId())){
+                followActionTextView.setText("My Wallet");
+
+            }else {
+                followActionTextView.setText("Following");
+            }
         }else{
-            followActionTextView.setText("Follow");
+            if(authorId.equals(GlobalConfig.getCurrentUserId())){
+                followActionTextView.setText("My Wallet");
+
+            }else {
+                followActionTextView.setText("Follow");
+            }
         }
         followActionTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 followActionTextView.setEnabled(false);
+
+                String currentText = followActionTextView.getText().toString().trim();
+
+                if(authorId.equals(GlobalConfig.getCurrentUserId()) || currentText.equals("My Wallet")){
+                    Intent intent = new Intent(getContext(),UserWalletActivity.class);
+                    startActivity(intent);
+                    followActionTextView.setEnabled(true);
+                    return;
+                }
+
                 if(GlobalConfig.isFollowing(getContext(),authorId)){
                     GlobalConfig.unFollowUser(getContext(), authorId, new GlobalConfig.ActionCallback() {
                         @Override

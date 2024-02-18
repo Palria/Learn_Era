@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PaypalEditActivity">
+
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        app:title="Update Paypal Info"
+
+        app:navigationIconTint="@color/white"
+        app:titleTextColor="@color/white"
+        android:theme="@style/ToolbarColoredBackArrow"
+        android:background="@color/teal_700"
+        android:layout_height="?attr/actionBarSize"/>
+
+
+    <ScrollView
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:paddingBottom="5pt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:paddingHorizontal="10pt"
+                    android:paddingVertical="15pt"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_marginBottom="10pt"
+                        android:src="@drawable/paypal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30pt"/>
+
+
+                    <TextView
+                        android:textStyle="bold"
+                        android:layout_marginBottom="7pt"
+                        android:text="Paypal Info"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:hint="Paypal email"
+                            android:inputType="text"
+                            android:textSize="16sp"
+                            android:id="@+id/paypalEmail"
+                            android:background="@drawable/default_input_bg"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:paddingHorizontal="3pt"
+                            android:textSize="5pt"
+                            android:text="Enter a valid paypal email."
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                       android:layout_marginTop="9pt"
+                        android:layout_width="match_parent"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:hint="Confirm paypal email"
+                            android:inputType="text"
+                            android:textSize="16sp"
+                            android:id="@+id/confirmPaypalInput"
+                            android:background="@drawable/default_input_bg"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:paddingHorizontal="3pt"
+                            android:textSize="5pt"
+                            android:text="Type same email address as above"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+ </LinearLayout>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:paddingHorizontal="10pt"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize">
+
+
+                <Button
+                    android:background="@drawable/default_auth_btn"
+                    style="@style/Widget.Material3.Button.ElevatedButton"
+                    android:layout_weight="1"
+                    android:backgroundTint="@null"
+                    android:id="@+id/cancelButton"
+                    android:text="@string/cancel"
+                    android:paddingVertical="2pt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+
+                <Button
+                    android:background="@drawable/default_auth_btn"
+                    android:layout_marginLeft="3pt"
+                    android:layout_weight="1"
+                    android:id="@+id/createActionButton"
+                    android:text="Save"
+                    android:paddingVertical="2pt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+
+
+</RelativeLayout>
