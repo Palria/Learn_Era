@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="5dp"
+    android:layout_margin="5dp"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageButton
+        android:id="@+id/handIcon"
+        android:layout_width="50dp"
+        android:layout_height="20dp"
+        android:backgroundTint="@color/transparent"
+        android:src="@drawable/ic_outline_touch_app_24"
+        android:layout_gravity="bottom"
+        android:foregroundTint="@color/black"
+        android:tint="@color/black" />
+    <TextView
+        android:id="@+id/handRaiserNameTextViewId"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:text="Saugat Henry"
+        android:textSize="8sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:gravity="center_horizontal"
+        app:tint="@color/white" />
+    <TextView
+        android:id="@+id/handRaisingCaptionTextViewId"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:text="Raising hand"
+        android:textSize="6sp"
+        android:textColor="@color/black"
+        android:gravity="center_horizontal"
+        app:tint="@color/white" />
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_border_gray_bg"
+        >
+        <ImageButton
+            android:id="@+id/declineActionButtonId"
+            android:layout_width="25dp"
+            android:layout_height="20dp"
+            android:backgroundTint="@color/transparent"
+            android:src="@drawable/ic_outline_cancel_24"
+            android:layout_gravity="bottom"
+            />
+        <ImageButton
+            android:id="@+id/permitActionButtonId"
+            android:layout_width="25dp"
+            android:layout_height="20dp"
+            android:backgroundTint="@color/transparent"
+            android:src="@drawable/ic_baseline_success_circle_outline_24"
+            android:layout_gravity="bottom"
+            />
+    </LinearLayout>
+    </LinearLayout>

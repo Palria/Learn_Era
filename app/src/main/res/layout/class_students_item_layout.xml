@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginVertical="10dp"
+    android:layout_marginHorizontal="2dp"
+    android:paddingHorizontal="5pt"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        >
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:layout_width="30pt"
+            android:id="@+id/studentIcon"
+            app:riv_corner_radius="9pt"
+            app:riv_oval="true"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder"
+            android:layout_height="30pt"/>
+
+        <LinearLayout
+            android:paddingStart="5pt"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <LinearLayout
+                android:layout_gravity="start"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+<LinearLayout
+
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textStyle="bold"
+            android:textSize="9pt"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:id="@+id/studentNameId"
+            android:text="..."
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLength="30"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+        <ImageView
+            android:layout_marginLeft="3pt"
+            android:id="@+id/verificationFlagImageViewId"
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:src="@drawable/ic_baseline_stars_24"
+            app:tint="@color/secondary_app_color"
+            android:layout_gravity="center"
+            android:visibility="invisible"
+            app:layout_constraintStart_toEndOf="@id/title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+    </LinearLayout>
+
+</LinearLayout>
+
+
+
+
+
+
+<!--                android:src="@drawable/baseline_check_circle_24"-->
+
+
+                <ImageButton
+                    android:id="@+id/moreActionButtonId"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:background="@drawable/ic_baseline_error_outline_24"
+                    android:backgroundTint="@color/error_red"
+                    android:layout_gravity="top"
+                    android:visibility="gone"
+                    />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/saveResultButtonId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        app:cornerRadius="10dp"
+        android:text="Save Result"
+        android:visibility="gone"
+        />
+</LinearLayout>

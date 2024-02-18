@@ -52,7 +52,7 @@ Chip completedChip;
         startedChip = findViewById(R.id.startedChipId);
         completedChip = findViewById(R.id.completedChipId);
         openQuizFrameLayout = findViewById(R.id.openQuizFragment);
-        startedQuizFrameLayout = findViewById(R.id.openQuizFragment);
+        startedQuizFrameLayout = findViewById(R.id.startedQuizFragment);
         completedQuizFrameLayout = findViewById(R.id.completedQuizFragment);
     }
 

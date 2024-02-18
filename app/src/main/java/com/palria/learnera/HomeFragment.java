@@ -45,11 +45,13 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.palria.learnera.adapters.ClassRcvAdapter;
 import com.palria.learnera.adapters.HomeAuthorListViewAdapter;
 import com.palria.learnera.adapters.HomeBooksRecyclerListViewAdapter;
 import com.palria.learnera.adapters.PopularTutorialsListViewAdapter;
 import com.palria.learnera.adapters.QuizRcvAdapter;
 import com.palria.learnera.models.AuthorDataModel;
+import com.palria.learnera.models.ClassDataModel;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
 import com.palria.learnera.models.LibraryDataModel;
 import com.palria.learnera.models.QuizDataModel;
@@ -80,6 +82,7 @@ public class HomeFragment extends Fragment {
         LinearLayout tutorialLinearLayout;
 
         TextView customizeTabTextView;
+        TextView seeAllClassTextView;
         TextView seeAllLibraryTextView;
         TextView seeAllQuizTextView;
         TextView seeAllAuthorTextView;
@@ -90,6 +93,7 @@ public class HomeFragment extends Fragment {
 
         RecyclerView popularAuthorRecyclerView;
         RecyclerView booksItemRecyclerListView;
+        RecyclerView classItemRecyclerListView;
         RecyclerView quizItemRecyclerListView;
         RecyclerView popularTutorialsContainerRcv;
         TabLayout tabLayout;
@@ -112,6 +116,9 @@ public class HomeFragment extends Fragment {
     QuizRcvAdapter quizRecyclerListViewAdapter ;
     ArrayList<TutorialDataModel> tutorialDataModels = new ArrayList<>();
     PopularTutorialsListViewAdapter popularTutorialsListViewAdapter;
+    ArrayList<ClassDataModel> classArrayList = new ArrayList<>();
+    ClassRcvAdapter classRecyclerListViewAdapter ;
+
     //test categories
     final String[] categories = {"Java", "Android Dev", "Python", "Data Learning", "OOPs Concept", "Artificial Intelligence"};
 
@@ -230,6 +237,22 @@ public class HomeFragment extends Fragment {
 
                     }
                 });
+                fetchClass(categoryName, new ClassFetchListener() {
+                    @Override
+                    public void onSuccess(ClassDataModel classDataModel) {
+                        if(classDataModel.isPublic() || (GlobalConfig.getCurrentUserId().equals(classDataModel.getAuthorId()+""))) {
+                            classArrayList.add(classDataModel);
+                            classRecyclerListViewAdapter.notifyItemChanged(classArrayList.size());
+                        Toast.makeText(getContext(), "class gotten", Toast.LENGTH_SHORT).show();
+                        }
+                        toggleContentsVisibility(true);
+
+                    }
+                    @Override
+                    public void onFailed(String errorMessage) {
+
+                    }
+                });
                 fetchTutorial(categoryName, new TutorialFetchListener() {
                     @Override
                     public void onSuccess(TutorialDataModel tutorialDataModel) {
@@ -319,6 +342,13 @@ Intent intent = new Intent(getContext(),AllQuizViewerActivity.class);
 startActivity(intent);
             }
         });
+        seeAllClassTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+Intent intent = new Intent(getContext(),AllClassViewerActivity.class);
+startActivity(intent);
+            }
+        });
         seeAllAuthorTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -390,10 +420,12 @@ startActivity(intent);
         helloUserTextView = parentView.findViewById(R.id.helloUserTextViewId);
         booksItemRecyclerListView = parentView.findViewById(R.id.booksItemContainer);
         quizItemRecyclerListView = parentView.findViewById(R.id.quizItemContainer);
+        classItemRecyclerListView = parentView.findViewById(R.id.classItemContainer);
         popularAuthorRecyclerView = parentView.findViewById(R.id.popular_authors_listview);
         customizeTabTextView = parentView.findViewById(R.id.customizeTabTextViewId);
         seeAllAuthorTextView = parentView.findViewById(R.id.seeAllAuthorTextViewId);
         seeAllLibraryTextView = parentView.findViewById(R.id.seeAllLibraryTextViewId);
+        seeAllClassTextView = parentView.findViewById(R.id.seeAllClassesTextViewId);
         seeAllQuizTextView = parentView.findViewById(R.id.seeAllQuizTextViewId);
         seeAllTutorialTextView = parentView.findViewById(R.id.seeAllTutorialTextViewId);
         popularTutorialsContainerRcv = parentView.findViewById(R.id.popularTutorialsContainer);
@@ -401,6 +433,7 @@ startActivity(intent);
         popularAuthorAdapter = new HomeAuthorListViewAdapter(modelArrayList,getContext());
         homeBooksRecyclerListViewAdapter = new HomeBooksRecyclerListViewAdapter(libraryArrayList,getContext());
         quizRecyclerListViewAdapter = new QuizRcvAdapter(quizArrayList,getContext(),true);
+        classRecyclerListViewAdapter = new ClassRcvAdapter(classArrayList,getContext(),true);
         popularTutorialsListViewAdapter = new PopularTutorialsListViewAdapter(tutorialDataModels,getContext());
 
 
@@ -435,6 +468,10 @@ startActivity(intent);
 
         quizItemRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
         quizItemRecyclerListView.setAdapter(quizRecyclerListViewAdapter);
+
+
+        classItemRecyclerListView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false));
+        classItemRecyclerListView.setAdapter(classRecyclerListViewAdapter);
 
 
 /**
@@ -904,6 +941,72 @@ for(int i=0; i<categories.size(); i++) {
                     }
                 });
     }
+    private void fetchClass(String categoryTag,ClassFetchListener classFetchListener){
+        Query classQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).whereEqualTo(GlobalConfig.CATEGORY_KEY,categoryTag).whereEqualTo(GlobalConfig.IS_CLOSED_KEY,false).limit(20L);
+        classQuery.get()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        classFetchListener.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                       classArrayList.clear();
+                        classRecyclerListViewAdapter.notifyDataSetChanged();
+
+
+                        for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                            String classId = ""+ documentSnapshot.getId();
+                            String authorId = ""+ documentSnapshot.get(GlobalConfig.AUTHOR_ID_KEY);
+                            String classTitle = ""+ documentSnapshot.get(GlobalConfig.CLASS_TITLE_KEY);
+                            String classDescription = ""+ documentSnapshot.get(GlobalConfig.CLASS_DESCRIPTION_KEY);
+                            long totalClassFeeCoins =  documentSnapshot.get(GlobalConfig.TOTAL_CLASS_FEE_COINS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_CLASS_FEE_COINS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_CLASS_FEE_COINS_KEY) : 0L;
+                            long totalStudents =  documentSnapshot.get(GlobalConfig.TOTAL_STUDENTS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_STUDENTS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_STUDENTS_KEY) : 0L;
+                            long totalViews =  documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) != null && documentSnapshot.get(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) instanceof Long ? documentSnapshot.getLong(GlobalConfig.TOTAL_NUMBER_OF_VIEWS_KEY) : 0L;
+                            boolean isPublic =  documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) != null && documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY) : true;
+                            boolean isClosed =  documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) != null && documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_CLOSED_KEY) : false;
+                            boolean isStarted =  documentSnapshot.get(GlobalConfig.IS_STARTED_KEY) != null && documentSnapshot.get(GlobalConfig.IS_STARTED_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_STARTED_KEY) : false;
+
+                            ArrayList startDateList =  documentSnapshot.get(GlobalConfig.CLASS_START_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.CLASS_START_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.CLASS_START_DATE_LIST_KEY) : new ArrayList();
+                            ArrayList endDateList =  documentSnapshot.get(GlobalConfig.CLASS_END_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.CLASS_END_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.CLASS_END_DATE_LIST_KEY) : new ArrayList();
+                            ArrayList studentsList =  documentSnapshot.get(GlobalConfig.STUDENTS_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.STUDENTS_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.STUDENTS_LIST_KEY) : new ArrayList();
+                            String dateCreated = documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY).toDate() : "Moment ago";
+                            if (dateCreated.length() > 10) {
+                                dateCreated = dateCreated.substring(0, 10);
+                            }
+                            String dateEdited = documentSnapshot.get(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY) != null && documentSnapshot.get(GlobalConfig.LIBRARY_DATE_CREATED_TIME_STAMP_KEY) instanceof Timestamp ? "" + documentSnapshot.getTimestamp(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY).toDate() : "Moment ago";
+                            if (dateEdited.length() > 10) {
+                                dateEdited = dateEdited.substring(0, 10);
+                            }
+//                            boolean isClassMarkedCompleted = documentSnapshot.get(GlobalConfig.IS_QUIZ_MARKED_COMPLETED_KEY)!=null? documentSnapshot.getBoolean(GlobalConfig.IS_QUIZ_MARKED_COMPLETED_KEY) :false;
+
+                                classFetchListener.onSuccess(new ClassDataModel(
+                                        classId,
+                                        authorId,
+                                        classTitle,
+                                        classDescription,
+                                        (int)totalClassFeeCoins,
+                                        dateCreated,
+                                        dateEdited,
+                                        totalStudents,
+                                        totalViews,
+                                        isPublic,
+                                        isClosed,
+                                        isStarted,
+                                        startDateList,
+                                        endDateList,
+                                        studentsList
+            ));
+
+                        }
+                        toggleContentsVisibility(true);
+
+                    }
+                });
+    }
 
     private void fetchTutorial(String tutorialCategoryTag,TutorialFetchListener tutorialFetchListener){
 //        Query libraryQuery = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_TUTORIAL_KEY).whereEqualTo(GlobalConfig.TUTORIAL_CATEGORY_KEY,tutorialCategoryTag).orderBy(GlobalConfig.TOTAL_NUMBER_OF_TUTORIAL_VISITOR_KEY);
@@ -1094,6 +1197,10 @@ for(int i=0; i<categories.size(); i++) {
     }
     interface QuizFetchListener{
         void onSuccess(QuizDataModel quizDataModel);
+        void onFailed(String errorMessage);
+    }
+    interface ClassFetchListener{
+        void onSuccess(ClassDataModel classDataModel);
         void onFailed(String errorMessage);
     }
 

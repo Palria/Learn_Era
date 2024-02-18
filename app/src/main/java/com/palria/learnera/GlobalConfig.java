@@ -67,6 +67,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.palria.learnera.models.AnswerDataModel;
+import com.palria.learnera.models.ClassDataModel;
 import com.palria.learnera.models.CurrentUserProfileDataModel;
 import com.palria.learnera.models.PageDataModel;
 import com.palria.learnera.models.PageDiscussionDataModel;
@@ -116,7 +117,12 @@ public class GlobalConfig {
     public static ArrayList<String> recentlydeletedQuizList = new ArrayList<>();
     public static ArrayList<String> authorRecentlySavedQuizAnswerIdList = new ArrayList<>();
     public static HashMap<String,ArrayList<ArrayList<String>>> authorRecentlySavedAnswersListMap = new HashMap<>();
-//    public static boolean isAnswerRecentlySaved = false;
+
+    public static ArrayList<String> recentlydeletedClassList = new ArrayList<>();
+    public static ArrayList<String> recentlyClosedClassList = new ArrayList<>();
+    public static ArrayList<String> newlyJoinedClassList = new ArrayList<>();
+
+    //    public static boolean isAnswerRecentlySaved = false;
     private static boolean isCurrentUserAccountVerified = false;
     private static boolean isCurrentUserAccountVerificationDeclined = false;
     private static boolean isAccountSubmittedForVerification = false;
@@ -592,6 +598,8 @@ public class GlobalConfig {
     public static final String NOTIFICATION_TYPE_QUIZ_ANSWER_SUBMITTED_KEY = "NOTIFICATION_TYPE_QUIZ_ANSWER_SUBMITTED";
     public static final String NOTIFICATION_TYPE_WITHDRAWAL_COMPLETED_KEY = "NOTIFICATION_TYPE_WITHDRAWAL_COMPLETED";
     public static final String NOTIFICATION_TYPE_WITHDRAWAL_REQUEST_KEY = "NOTIFICATION_TYPE_WITHDRAWAL_REQUEST";
+    public static final String NOTIFICATION_TYPE_USER_JOINED_QUIZ_KEY = "NOTIFICATION_TYPE_USER_JOINED_QUIZ";
+    public static final String NOTIFICATION_TYPE_USER_JOINED_CLASS_KEY = "NOTIFICATION_TYPE_USER_JOINED_CLASS";
 
 
     public static final String DISCUSSION_ID_KEY = "DISCUSSION_ID";
@@ -746,6 +754,44 @@ public class GlobalConfig {
     public static final String ACCOUNT_NUMBER_KEY = "ACCOUNT_NUMBER";
     public static final String DATE_ACCOUNT_DETAILS_EDITED_TIME_STAMP_KEY = "DATE_ACCOUNT_DETAILS_EDITED_TIME_STAMP";
     public static final String COUNTRY_KEY = "COUNTRY";
+
+
+
+    public static final String CLASS_TITLE_KEY = "CLASS_TITLE";
+    public static final String CLASS_DESCRIPTION_KEY = "CLASS_DESCRIPTION";
+    public static final String TOTAL_CLASS_FEE_COINS_KEY = "TOTAL_CLASS_FEE_COINS";
+    public static final String TOTAL_STUDENTS_KEY = "TOTAL_STUDENTS";
+    public static final String STUDENTS_LIST_KEY = "STUDENTS_LIST";
+    public static final String ALL_CLASS_KEY = "ALL_CLASS";
+    public static final String CLASS_DATA_MODEL_KEY = "CLASS_DATA_MODEL";
+    public static final String CLASS_ID_KEY = "CLASS_ID";
+    public static final String TOTAL_CLASS_KEY = "TOTAL_CLASS";
+    public static final String CLASS_START_DATE_LIST_KEY = "CLASS_START_DATE_LIST";
+    public static final String CLASS_END_DATE_LIST_KEY = "CLASS_END_DATE_LIST";
+    public static final String IS_SHOW_USER_CREATED_CLASS_KEY = "IS_SHOW_USER_CREATED_CLASS";
+    public static final String IS_FROM_STUDENT_PROFILE_KEY = "IS_FROM_STUDENT_PROFILE";
+    public static final String IS_OPEN_STARTED_CLASS_KEY = "IS_OPEN_STARTED_CLASS";
+    public static final String IS_OPEN_CLOSED_CLASS_KEY = "IS_OPEN_CLOSED_CLASS";
+    public static final String STUDENT_ID_KEY = "STUDENT_ID";
+    public static final String ALL_STUDENTS_KEY = "ALL_STUDENTS";
+    public static final String CLASS_SEARCH_ANY_MATCH_KEYWORD_KEY = "CLASS_SEARCH_ANY_MATCH_KEYWORD";
+    public static final String TOTAL_CLASS_JOINED_KEY = "TOTAL_CLASS_JOINED";
+    public static final String CLASS_JOINED_LIST_KEY = "CLASS_JOINED_LIST";
+
+    public static final String ALL_LESSON_ID_LIST_KEY = "ALL_LESSON_ID_LIST";
+    public static final String TOTAL_LESSONS_KEY = "TOTAL_LESSONS";
+    public static final String IS_PLAIN_TEXT_LESSON_NOTE_TYPE_KEY = "IS_PLAIN_TEXT_LESSON_TYPE_NOTE";
+    public static final String IS_IMAGE_LESSON_NOTE_TYPE_KEY = "IS_IMAGE_LESSON_NOTE_TYPE";
+    public static final String IS_VIDEO_LESSON_NOTE_TYPE_KEY = "IS_VIDEO_LESSON_NOTE_TYPE";
+    public static final String IS_AUDIO_LESSON_NOTE_TYPE_KEY = "IS_AUDIO_LESSON_NOTE_TYPE";
+    public static final String LESSON_NOTE_IMAGES_KEY = "LESSON_NOTE_IMAGES";
+    public static final String MEDIA_URL_KEY = "-MEDIA_URL-";
+    public static final String DATE_SENT_KEY = "-DATE_SENT";
+
+    public static final String HAND_RAISERS_LIST_KEY = "HAND_RAISERS_LIST";
+    public static final String PERMITTED_HAND_RAISERS_LIST_KEY = "PERMITTED_HAND_RAISERS_LIST";
+    public static final String IS_DISCUSSION_LOCKED_KEY = "IS_DISCUSSION_LOCKED";
+    public static final String IS_TEACHER_TYPING_KEY = "IS_TEACHER_TYPING";
 
     private static FirebaseFirestore firebaseFirestoreInstance;
     private static FirebaseStorage firebaseStorageInstance;
@@ -2579,6 +2625,28 @@ if(getCurrentUserId().equals("vnC7yVCJw1X6rp7bik7BSJHk6xC3")) {
     }
 
     public static boolean isQuizStarted(long startYear, long startMonth,long startDay, long startHour,long startMinute){
+
+
+            if(getEventYear()>=startYear &&getEventMonth()>=startMonth &&getEventDay()>=startDay &&getEventHour(true)>=startHour &&getEventMinute()>=startMinute){
+                return true;
+            }
+
+
+            return false;
+    }
+
+    public static boolean isClassExpired(long endYear, long endMonth,long endDay, long endHour,long endMinute){
+
+
+            if(getEventYear()>=endYear &&getEventMonth()>=endMonth &&getEventDay()>=endDay &&getEventHour(true)>=endHour &&getEventMinute()>endMinute){
+                return true;
+            }
+
+
+            return false;
+    }
+
+    public static boolean isClassStarted(long startYear, long startMonth,long startDay, long startHour,long startMinute){
 
 
             if(getEventYear()>=startYear &&getEventMonth()>=startMonth &&getEventDay()>=startDay &&getEventHour(true)>=startHour &&getEventMinute()>=startMinute){
@@ -5081,6 +5149,15 @@ if(isUserLoggedIn()) {
                     public void onSuccess(Void unused) {
                         actionCallback.onSuccess();
                         GlobalConfig.newlyJoinedQuizList.add(quizDataModel.getQuizId());
+                        //carries the info about the quiz
+                        ArrayList<String> modelInfo = new ArrayList<>();
+                        modelInfo.add(quizDataModel.getQuizId());
+
+                        ArrayList<String> recipientIds = new ArrayList<>();
+                        recipientIds.add(quizDataModel.getAuthorId());
+
+                        //fires out the notification
+                        GlobalConfig.sendNotificationToUsers(GlobalConfig.NOTIFICATION_TYPE_USER_JOINED_QUIZ_KEY,getRandomString(60),recipientIds,modelInfo,quizDataModel.getQuizTitle(),"New participant has joined your quiz",null);
 
                     }
                 });
@@ -5777,6 +5854,219 @@ if(isUserLoggedIn()) {
     }
 
 
+
+
+
+    public static void createClass(Context context, String classId, String classTitle,String category, String classDescription, int totalClassFeeCoins, ArrayList<Long> classStartDateList, ArrayList<Long> classEndDateList, boolean isEdition, boolean isPublic, ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).document(classId);
+        HashMap<String,Object> quizDetails = new HashMap<>();
+        quizDetails.put(GlobalConfig.CLASS_ID_KEY,classId);
+        quizDetails.put(GlobalConfig.AUTHOR_ID_KEY,getCurrentUserId());
+        quizDetails.put(GlobalConfig.CLASS_DESCRIPTION_KEY,classDescription);
+        quizDetails.put(GlobalConfig.CLASS_TITLE_KEY,classTitle);
+        quizDetails.put(GlobalConfig.CATEGORY_KEY,category);
+        quizDetails.put(GlobalConfig.IS_PUBLIC_KEY,isPublic);
+        quizDetails.put(GlobalConfig.IS_CLOSED_KEY,false);
+        quizDetails.put(GlobalConfig.IS_STARTED_KEY,false);
+        quizDetails.put(GlobalConfig.TOTAL_CLASS_FEE_COINS_KEY,totalClassFeeCoins);
+        quizDetails.put(GlobalConfig.CLASS_START_DATE_LIST_KEY,classStartDateList);
+        quizDetails.put(GlobalConfig.CLASS_END_DATE_LIST_KEY,classEndDateList);
+        if(isEdition){
+            quizDetails.put(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+
+        }else {
+            quizDetails.put(GlobalConfig.DATE_EDITED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+            quizDetails.put(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY, FieldValue.serverTimestamp());
+        }
+
+
+        writeBatch.set(documentReference1,quizDetails,SetOptions.merge());
+
+        if (!isEdition) {
+            DocumentReference userReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId());
+            HashMap<String, Object> userDetails = new HashMap<>();
+            userDetails.put(GlobalConfig.TOTAL_CLASS_KEY, FieldValue.increment(1L));
+            writeBatch.set(userReference, userDetails, SetOptions.merge());
+        }
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+
+
+    public static void markClassAsClosed(Context context, String classId, ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference classReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).document(classId);
+        HashMap<String,Object> classDetails = new HashMap<>();
+        classDetails.put(GlobalConfig.IS_CLOSED_KEY,true);
+        classDetails.put(GlobalConfig.DATE_CLOSED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+
+        writeBatch.set(classReference1,classDetails,SetOptions.merge());
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        //todo check the use of this command
+                        // recordSubmittedQuiz(context,quizId);
+
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+
+    public static void markClassAsStarted(Context context, String classId, ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference classReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).document(classId);
+        HashMap<String,Object> classDetails = new HashMap<>();
+        classDetails.put(GlobalConfig.IS_STARTED_KEY,true);
+        writeBatch.set(classReference1,classDetails,SetOptions.merge());
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        if(actionCallback!=null) {
+                            actionCallback.onFailed(e.getMessage());
+                        }
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+    public static void getClass(Context context,String classId,ClassCallback classCallback){
+        getFirebaseFirestoreInstance()
+                .collection(GlobalConfig.ALL_CLASS_KEY).document(classId)
+                .get()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        classCallback.onFailed(e.getMessage());
+
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        classCallback.onSuccess(documentSnapshot);
+
+                    }
+                });
+
+    }
+
+
+    public static void deleteClass(Context context,String authorId, String classId, ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference documentReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).document(classId);
+
+        writeBatch.delete(documentReference1);
+
+        DocumentReference userReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(authorId);
+        HashMap<String, Object> userDetails = new HashMap<>();
+        userDetails.put(GlobalConfig.TOTAL_CLASS_KEY, FieldValue.increment(-1L));
+        writeBatch.set(userReference, userDetails, SetOptions.merge());
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                    }
+                });
+    }
+
+    public static void joinClass(Context context, ClassDataModel classDataModel, ActionCallback actionCallback){
+        WriteBatch writeBatch = getFirebaseFirestoreInstance().batch();
+        DocumentReference participantReference1 = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).document(classDataModel.getClassId()).collection(GlobalConfig.ALL_STUDENTS_KEY).document(getCurrentUserId());
+        HashMap<String,Object> participantDetails = new HashMap<>();
+        participantDetails.put(GlobalConfig.CLASS_ID_KEY,classDataModel.getClassId());
+        participantDetails.put(GlobalConfig.STUDENT_ID_KEY,getCurrentUserId());
+        participantDetails.put(GlobalConfig.DATE_CREATED_TIME_STAMP_KEY,FieldValue.serverTimestamp());
+        writeBatch.set(participantReference1,participantDetails,SetOptions.merge());
+
+        DocumentReference quizReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).document(classDataModel.getClassId());
+        HashMap<String,Object> quizDetails = new HashMap<>();
+        quizDetails.put(GlobalConfig.TOTAL_STUDENTS_KEY, FieldValue.increment(1L));
+        quizDetails.put(GlobalConfig.STUDENTS_LIST_KEY, FieldValue.arrayUnion(getCurrentUserId()));
+        writeBatch.set(quizReference,quizDetails,SetOptions.merge());
+
+
+        DocumentReference userReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId());
+        HashMap<String,Object> userDetails = new HashMap<>();
+        userDetails.put(GlobalConfig.TOTAL_CLASS_JOINED_KEY, FieldValue.increment(1L));
+        userDetails.put(GlobalConfig.CLASS_JOINED_LIST_KEY, FieldValue.arrayUnion(classDataModel.getClassId()));
+        writeBatch.set(userReference,userDetails,SetOptions.merge());
+
+//Deduct coin fee from wallet
+        DocumentReference walletReference = getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_USERS_KEY).document(getCurrentUserId()).collection(GlobalConfig.USER_WALLET_KEY).document(GlobalConfig.USER_WALLET_KEY);
+        HashMap<String,Object> walletDetails = new HashMap<>();
+        walletDetails.put(GlobalConfig.TOTAL_COIN_EQUITY_KEY, FieldValue.increment(-classDataModel.getTotalClassFeeCoins()));
+        walletDetails.put(GlobalConfig.QUIZ_EARNINGS_HISTORY_LIST_KEY,FieldValue.arrayUnion("COIN-"+classDataModel.getTotalClassFeeCoins()+"-DESC-was deducted from your wallet for joining class"+"-DATE-"+GlobalConfig.getDate()));
+        writeBatch.set(walletReference,walletDetails,SetOptions.merge());
+
+
+        writeBatch.commit()
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        actionCallback.onFailed(e.getMessage());
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        actionCallback.onSuccess();
+                        GlobalConfig.newlyJoinedQuizList.add(classDataModel.getClassId());
+                        //carries the info about the quiz
+                        ArrayList<String> modelInfo = new ArrayList<>();
+                        modelInfo.add(classDataModel.getClassId());
+
+                        ArrayList<String> recipientIds = new ArrayList<>();
+                        recipientIds.add(classDataModel.getAuthorId());
+                        //fires out the notification
+                        GlobalConfig.sendNotificationToUsers(GlobalConfig.NOTIFICATION_TYPE_USER_JOINED_CLASS_KEY,getRandomString(60),recipientIds,modelInfo,classDataModel.getClassTitle(),"New Student has joined your class",null);
+
+                    }
+                });
+    }
+
+
+    //todo create interfaces down below
+
      //
     //INTERFACES
     //
@@ -5812,6 +6102,10 @@ if(isUserLoggedIn()) {
             void onFailed(String errorMessage);
     }
     public interface QuizCallback{
+            void onSuccess(DocumentSnapshot documentSnapshot);
+            void onFailed(String errorMessage);
+    }
+    public interface ClassCallback{
             void onSuccess(DocumentSnapshot documentSnapshot);
             void onFailed(String errorMessage);
     }

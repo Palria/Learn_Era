@@ -402,6 +402,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     startActivity(intent);
                 }
             }
+        }, 0) .addOptionItem("Create Class", R.drawable.baseline_quiz_24, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (GlobalConfig.isUserLoggedIn()) {
+                    leBottomSheetDialog.hide();
+                    Intent intent = new Intent(MainActivity.this, CreateClassActivity.class);
+                    startActivity(intent);
+                }
+            }
         }, 0)
                 .addOptionItem("Add Category", R.drawable.ic_baseline_post_add_24, new View.OnClickListener() {
                     @Override

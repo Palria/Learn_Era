@@ -14,6 +14,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
+import com.palria.learnera.ClassActivity;
 import com.palria.learnera.GlobalConfig;
 import com.palria.learnera.HostActivity;
 import com.palria.learnera.MainActivity;
@@ -90,6 +91,14 @@ public class PersonalizedNotificationAdapter extends RecyclerView.Adapter<Person
                  intent1.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,true);
                  context.startActivity(intent1);
                  break;
+                 case GlobalConfig.NOTIFICATION_TYPE_USER_JOINED_QUIZ_KEY:
+                 String quizId11 = notificationDataModel.getNotification_model_info_list().get(0);
+                 Intent intent11 = new Intent(context, QuizActivity.class);
+                 intent11.putExtra(GlobalConfig.QUIZ_ID_KEY,quizId11);
+                 intent11.putExtra(GlobalConfig.AUTHOR_ID_KEY, notificationDataModel.getSenderId());
+                 intent11.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,true);
+                 context.startActivity(intent11);
+                 break;
                  case GlobalConfig.NOTIFICATION_TYPE_QUIZ_ANSWER_SUBMITTED_KEY:
                  String quizId2 = notificationDataModel.getNotification_model_info_list().get(0);
                  Intent intent2 = new Intent(context, QuizActivity.class);
@@ -108,8 +117,16 @@ public class PersonalizedNotificationAdapter extends RecyclerView.Adapter<Person
                      Intent i = new Intent(context, HostActivity.class);
                      i.putExtra(GlobalConfig.IS_WITHDRAWAL_REQUEST_APPROVAL_KEY, true);
                      context.startActivity(GlobalConfig.getHostActivityIntent(context, i, GlobalConfig.AUTHORS_FRAGMENT_TYPE_KEY, null));
-
                      break;
+
+             case GlobalConfig.NOTIFICATION_TYPE_USER_JOINED_CLASS_KEY:
+                 String classId11 = notificationDataModel.getNotification_model_info_list().get(0);
+                 Intent classIntent = new Intent(context, ClassActivity.class);
+                 classIntent.putExtra(GlobalConfig.CLASS_ID_KEY,classId11);
+                 classIntent.putExtra(GlobalConfig.AUTHOR_ID_KEY, notificationDataModel.getSenderId());
+                 classIntent.putExtra(GlobalConfig.IS_LOAD_FROM_ONLINE_KEY,true);
+                 context.startActivity(classIntent);
+                 break;
          }
      }
  });

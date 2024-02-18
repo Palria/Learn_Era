@@ -393,7 +393,7 @@
                     android:layout_marginTop="7pt"
                     android:textColor="@color/black"
                     android:paddingHorizontal="8pt"
-                    android:text="Libraries"
+                    android:text="Classes"
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-condensed-medium"
                     android:layout_width="wrap_content"
@@ -405,7 +405,7 @@
                     android:layout_height="wrap_content">
     
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/booksItemContainer"
+                    android:id="@+id/classItemContainer"
                     android:layout_marginTop="5pt"
                     tools:listitem="@layout/home_single_library_item_layout"
                     android:layout_width="wrap_content"
@@ -436,9 +436,9 @@
                     android:textStyle="bold"
                     android:fontFamily="sans-serif-condensed-medium"
                     android:textColor="@color/teal_700"
-                    android:id="@+id/seeAllLibraryTextViewId"
+                    android:id="@+id/seeAllClassesTextViewId"
                     android:paddingHorizontal="8pt"
-                    android:text="See all Library"
+                    android:text="See all Classes"
                     android:layout_gravity="end"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -480,6 +480,63 @@
                     android:textColor="@color/teal_700"
                     android:id="@+id/seeAllQuizTextViewId"
                     android:paddingHorizontal="8pt"
+                    android:layout_gravity="end"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+
+                <TextView
+                    android:paddingVertical="2pt"
+                    android:textSize="10pt"
+                    android:layout_marginTop="7pt"
+                    android:textColor="@color/black"
+                    android:paddingHorizontal="8pt"
+                    android:text="Libraries"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:layout_marginTop="0pt"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/booksItemContainer"
+                        android:layout_marginTop="5pt"
+                        tools:listitem="@layout/home_single_library_item_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <!--<FrameLayout
+                        android:id="@+id/seeAllLibraryFrameId"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        >
+                        <TextView
+                            android:textSize="9pt"
+                            android:textColor="@color/teal_700"
+                            android:textStyle="bold"
+                            android:paddingHorizontal="8pt"
+                            android:text="See all"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </FrameLayout>-->
+                </LinearLayout>
+                <TextView
+                    android:paddingVertical="5pt"
+                    android:textSize="7pt"
+                    android:drawablePadding="2pt"
+                    android:drawableTint="@color/teal_700"
+                    android:drawableRight="@drawable/ic_baseline_keyboard_arrow_right_24"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:textColor="@color/teal_700"
+                    android:id="@+id/seeAllLibraryTextViewId"
+                    android:paddingHorizontal="8pt"
+                    android:text="See all Library"
                     android:layout_gravity="end"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>

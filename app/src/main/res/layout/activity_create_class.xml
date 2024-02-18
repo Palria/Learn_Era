@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CreateClassActivity">
+    
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:orientation="horizontal"
+        android:background="@color/secondary_app_color"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        >
+    <ImageButton
+        android:id="@+id/backButtonId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_arrow_back_24"
+        android:backgroundTint="@color/transparent"
+        app:tint="@color/white"
+        />
+        <TextView
+        android:id="@+id/textHeaderTextViewId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:text="Compose Class"
+        />
+    
+        <ImageButton
+            android:id="@+id/menuButtonId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_more_vert_24"
+            android:backgroundTint="@color/transparent"
+            app:tint="@color/white"
+            />
+    </LinearLayout>
+    <Switch
+        android:id="@+id/publishIndicatorSwitchId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Publish"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:paddingVertical="3pt"
+        android:fontFamily="sans-serif-condensed-medium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        tools:ignore="UseSwitchCompatOrMaterialXml"
+        android:checked="true"
+        android:paddingHorizontal="20dp"
+        />
+    
+    <LinearLayout
+        android:id="@+id/categoryLinearLayoutId"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:paddingHorizontal="5pt"
+        android:paddingVertical="5pt"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/publishIndicatorSwitchId"
+        >
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Category: "
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:drawableTint="@color/grayDark"
+            />
+        <Spinner
+            android:id="@+id/categorySelectorSpinnerId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/categoryLinearLayoutId"
+        >
+ <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+     <com.google.android.material.textfield.TextInputLayout
+         android:layout_width="match_parent"
+         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+         android:layout_height="wrap_content"
+         app:counterEnabled="true"
+         app:helperText="max 60 chars"
+         android:layout_marginHorizontal="5pt"
+         android:layout_marginVertical="5pt"
+         >
+        
+         <com.google.android.material.textfield.TextInputEditText
+             android:layout_width="match_parent"
+             android:hint="Class title"
+             android:inputType="textPersonName"
+             android:maxLength="60"
+             android:textSize="15sp"
+             android:id="@+id/classTitleInput1Id"
+             android:gravity="start|top"
+             android:layout_height="wrap_content"/>
+    
+     </com.google.android.material.textfield.TextInputLayout>
+
+     <com.google.android.material.textfield.TextInputLayout
+         android:layout_width="match_parent"
+         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+         android:layout_height="wrap_content"
+         android:layout_marginHorizontal="5pt"
+         android:layout_marginVertical="5pt"
+         app:helperText="Set start date"
+         >
+        
+         <com.google.android.material.textfield.TextInputEditText
+             android:layout_width="match_parent"
+             android:hint="Set start date"
+             android:inputType="textPersonName"
+             android:maxLength="60"
+             android:textSize="15sp"
+             android:drawablePadding="4pt"
+             android:focusable="false"
+             android:longClickable="false"
+             android:id="@+id/classStartDateInputId"
+             android:drawableStart="@drawable/ic_baseline_access_time_filled_24"
+             android:drawableTint="@color/black"
+             android:gravity="start|top"
+             android:layout_height="wrap_content"
+
+             />
+    
+     </com.google.android.material.textfield.TextInputLayout>
+    
+
+     <com.google.android.material.textfield.TextInputLayout
+         android:layout_width="match_parent"
+         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+         android:layout_height="wrap_content"
+         android:layout_marginHorizontal="5pt"
+         android:layout_marginVertical="5pt"
+         app:helperText="Set end date"
+         >
+
+         <com.google.android.material.textfield.TextInputEditText
+             android:layout_width="match_parent"
+             android:hint="Set end date"
+             android:inputType="textPersonName"
+             android:maxLength="60"
+             android:textSize="15sp"
+             android:drawablePadding="4pt"
+             android:focusable="false"
+             android:longClickable="false"
+             android:id="@+id/classEndDateInputId"
+             android:drawableStart="@drawable/ic_baseline_access_time_filled_24"
+             android:drawableTint="@color/black"
+             android:gravity="start|top"
+             android:layout_height="wrap_content"/>
+
+     </com.google.android.material.textfield.TextInputLayout>
+
+
+     <LinearLayout
+         android:layout_marginVertical="5pt"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="4pt"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+         >
+    
+    
+         <com.google.android.material.textfield.TextInputLayout
+             android:layout_width="match_parent"
+             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+             app:counterEnabled="true"
+             app:helperText="max 99 coins"
+             android:layout_weight="1"
+             android:layout_marginHorizontal="5dp"
+             android:layout_height="wrap_content">
+        
+             <com.google.android.material.textfield.TextInputEditText
+                 android:layout_width="match_parent"
+                 android:hint="Describe fee: Enter number of coins"
+                 android:inputType="number"
+                 android:textSize="15sp"
+                 android:maxLength="2"
+                 android:id="@+id/classFeeInputId"
+                 android:gravity="start|top"
+                 android:layout_height="wrap_content"/>
+    
+         </com.google.android.material.textfield.TextInputLayout>
+    
+
+     </LinearLayout>
+     <com.google.android.material.textfield.TextInputLayout
+         android:layout_width="match_parent"
+         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+         app:counterEnabled="true"
+         app:helperText="max 150 chars"
+         android:layout_marginHorizontal="5pt"
+         android:layout_height="wrap_content">
+        
+         <com.google.android.material.textfield.TextInputEditText
+             android:layout_width="match_parent"
+             android:hint="Describe the class in short terms"
+             android:inputType="textMultiLine"
+             android:textSize="15sp"
+             android:maxLength="150"
+             android:id="@+id/classDescriptionInput1Id"
+             android:gravity="start|top"
+             android:layout_height="wrap_content"/>
+    
+     </com.google.android.material.textfield.TextInputLayout>
+    
+     <LinearLayout
+        android:id="@+id/containerLinearLayoutId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+     
+     
+ </LinearLayout>
+    
+     <View
+         android:layout_width="match_parent"
+         android:layout_height="200dp"/>
+ </LinearLayout>
+ </ScrollView>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:id="@+id/saveClassActionButtonId"
+        android:layout_marginHorizontal="10pt"
+        android:layout_marginVertical="30pt"
+        android:tint="@color/teal_700"
+        android:backgroundTint="@color/teal_700"
+        android:src="@drawable/baseline_check_circle_outline_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"/>
+    
+    
+</androidx.constraintlayout.widget.ConstraintLayout>

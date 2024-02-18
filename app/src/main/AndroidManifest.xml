@@ -28,6 +28,23 @@
         android:theme="@style/Theme.App.Starting"
         android:windowSoftInputMode="adjustPan">
         <activity
+            android:name=".AllClassViewerActivity"
+            android:theme="@style/Theme.LearnEra"
+            android:exported="true" >
+        </activity>   <activity
+            android:name=".ClassActivity"
+            android:theme="@style/Theme.LearnEra"
+            android:exported="true" >
+        </activity>   <activity
+            android:name=".JoinClassActivity"
+            android:theme="@style/Theme.LearnEra"
+            android:exported="true" >
+        </activity>
+        <activity
+            android:name=".CreateClassActivity"
+            android:theme="@style/Theme.LearnEra"
+            android:exported="true" >
+        </activity> <activity
             android:name=".EditBankAccountDetailsActivity"
             android:theme="@style/Theme.LearnEra"
             android:exported="true" >
