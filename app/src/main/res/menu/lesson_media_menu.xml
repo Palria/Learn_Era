@@ -9,11 +9,21 @@
 
     <item
         android:id="@+id/openImageGalleryId"
-        android:title="Gallery"
+        android:title="Select Photo"
         />
     <item
         android:id="@+id/openImageCameraId"
-        android:title="Camera"
+        android:title="Capture camera"
+        />
+
+    <item
+        android:id="@+id/openAudioId"
+        android:title="Select audio files"
+        />
+
+    <item
+        android:id="@+id/openVideoId"
+        android:title="Select video files"
         />
 
 </menu>

@@ -53,6 +53,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5pt"
+                android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5pt"
                 android:orientation="horizontal">
 
                 <TextView
@@ -83,6 +89,67 @@
 
 
             </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5pt"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/onlineFlagViewId"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Online"
+                        android:textColor="@color/white"
+                        android:textSize="8sp"
+                        android:textStyle="bold"
+                        />
+                <TextView
+                        android:id="@+id/typingFlagViewId"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Typing"
+                        android:textColor="@color/white"
+                        android:textSize="8sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                    />
+                <TextView
+                    android:id="@+id/sendingImageFlagViewId"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Sending photo"
+                        android:textColor="@color/white"
+                        android:textSize="8sp"
+                        android:textStyle="bold"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/sendingVideoFlagViewId"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Sending video"
+                        android:textColor="@color/white"
+                        android:textSize="8sp"
+                        android:textStyle="bold"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/sendingAudioFlagViewId"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Sending audio"
+                        android:textColor="@color/white"
+                        android:textSize="8sp"
+                        android:textStyle="bold"
+                    android:visibility="gone"/>
+
+                </LinearLayout>
+
+                </LinearLayout>
+
         </LinearLayout>
 
 
@@ -772,6 +839,7 @@
         >
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/lessonNoteCardViewId"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -780,6 +848,7 @@
             android:layout_marginBottom="5dp"
             app:cardCornerRadius="5dp"
             app:cardBackgroundColor="@color/secondary_app_color"
+            android:visibility="visible"
             >
 
             <EditText
@@ -800,6 +869,94 @@
                 android:layout_marginBottom="1dp"
                 />
 
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/recordAudioCardViewId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="5dp"
+            app:cardCornerRadius="5dp"
+            app:cardBackgroundColor="@color/black"
+            android:visibility="gone"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <ImageButton
+                    android:id="@+id/deleteAudioActionImageButtonId"
+                    android:layout_width="17dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="5dp"
+                    android:backgroundTint="@color/transparent"
+                    android:src="@drawable/ic_baseline_delete_forever_24"
+                    app:tint="@color/white"
+                    />
+                 <ImageButton
+                    android:id="@+id/resumePauseActionImageButtonId"
+                    android:layout_width="17dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="5dp"
+                    android:backgroundTint="@color/transparent"
+                    android:src="@drawable/ic_baseline_pause_24"
+                    app:tint="@color/white"
+                    />
+
+                <ImageButton
+                    android:id="@+id/waveSymbolId"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/transparent"
+                    android:src="@drawable/ic_baseline_mic_24"
+                    app:tint="@color/white"
+                    android:layout_gravity="bottom"
+                    android:visibility="invisible"
+                    />
+                <ImageButton
+                    android:layout_width="17dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:backgroundTint="@color/transparent"
+                    android:src="@drawable/ic_baseline_mic_24"
+                    app:tint="@color/white"
+                    android:layout_gravity="bottom"
+                    />
+                <TextView
+                    android:id="@+id/recordedTimeTextViewId"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:layout_marginTop="12dp"
+                    android:backgroundTint="@color/success_green"
+                    android:layout_gravity="bottom"
+                    android:textColor="@color/white"
+                    android:text="00:02:00"
+                    />
+            </LinearLayout>
+            <ImageButton
+                android:id="@+id/playPauseRecordedAudioActionImageButtonId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/transparent"
+                android:src="@drawable/ic_baseline_play_arrow_24"
+                app:tint="@color/white"
+                android:layout_gravity="center_horizontal"
+                android:visibility="gone"
+                />
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
 
         <ImageButton
@@ -911,6 +1068,37 @@
             android:textColor="@color/white"
             android:gravity="center_horizontal"
             app:tint="@color/white" />
+    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/recordAudioActionLayoutId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_border_gray_bg"
+            android:backgroundTint="@color/gold"
+            android:padding="5dp"
+            android:layout_margin="5dp"
+            android:orientation="vertical"
+            >
+
+        <ImageButton
+            android:id="@+id/recordAudioActionImageButtonId"
+            android:layout_width="50dp"
+            android:layout_height="20dp"
+            android:backgroundTint="@color/transparent"
+            android:src="@drawable/ic_baseline_mic_24"
+            android:layout_gravity="bottom"
+            app:tint="@color/black" />
+        <TextView
+            android:id="@+id/recordAudioCaptionId"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="Record Audio"
+            android:textSize="8sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:gravity="center_horizontal"
+            app:tint="@color/white"
+            />
     </LinearLayout>
 
     </LinearLayout>

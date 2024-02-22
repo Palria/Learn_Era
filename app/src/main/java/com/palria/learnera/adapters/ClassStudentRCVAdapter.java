@@ -55,9 +55,11 @@ public class ClassStudentRCVAdapter extends RecyclerView.Adapter<ClassStudentRCV
 //    FloatingActionButton submitClassActionButton;
 
     HashMap<String,String> studentsName = new HashMap<>();
-    HashMap<String, Bitmap> studentsIconBitmaps = new HashMap<>();
+    HashMap<String, ImageView> studentsIconImages = new HashMap<>();
+    HashMap<String, Boolean> studentsVerifiedFlagsMap = new HashMap<>();
+    ArrayList<String> fetchedOwnerDetailsIdList = new ArrayList<>();
 
-    public ClassStudentRCVAdapter(ArrayList<ClassStudentDatamodel> classStudentDataModels, Context context, String classId, ClassDataModel classDataModel, String authorId, MaterialButton markClassAsClosedActionTextView, HashMap<String,String> studentsName,HashMap<String, Bitmap> studentsIconBitmaps) {
+    public ClassStudentRCVAdapter(ArrayList<ClassStudentDatamodel> classStudentDataModels, Context context, String classId, ClassDataModel classDataModel, String authorId, MaterialButton markClassAsClosedActionTextView, HashMap<String,String> studentsName,HashMap<String, ImageView> studentsIconImages,HashMap<String, Boolean> studentsVerifiedFlagsMap, ArrayList<String> fetchedOwnerDetailsIdList ) {
         this.classStudentDataModels = classStudentDataModels;
         this.context = context;
         this.classId = classId;
@@ -66,7 +68,7 @@ public class ClassStudentRCVAdapter extends RecyclerView.Adapter<ClassStudentRCV
         this.markClassAsClosedActionTextView = markClassAsClosedActionTextView;
 //        this.submitClassActionButton = submitClassActionButton;
         this.studentsName = studentsName;
-        this.studentsIconBitmaps = studentsIconBitmaps;
+        this.studentsIconImages = studentsIconImages;
     }
 
     @NonNull
@@ -131,7 +133,7 @@ public class ClassStudentRCVAdapter extends RecyclerView.Adapter<ClassStudentRCV
                                     ImageView icon = holder.studentIcon;
                                     icon.setDrawingCacheEnabled(true);
                                     icon.buildDrawingCache(true);
-                                    studentsIconBitmaps.put(classStudentDataModel.getStudentId(),((BitmapDrawable)icon.getDrawable()).getBitmap());
+                                    studentsIconImages.put(classStudentDataModel.getStudentId(),(icon));
 
                                 } catch (Exception ignored) {
                                 }
@@ -147,6 +149,8 @@ public class ClassStudentRCVAdapter extends RecyclerView.Adapter<ClassStudentRCV
                                     holder.verificationFlagImageView.setVisibility(View.INVISIBLE);
 
                                 }
+                                studentsVerifiedFlagsMap.put(classStudentDataModel.getStudentId(),isVerified);
+                                fetchedOwnerDetailsIdList.add(classStudentDataModel.getStudentId());
                             }
                         });
 

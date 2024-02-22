@@ -151,6 +151,7 @@ public class QuizParticipantRCVAdapter extends RecyclerView.Adapter<QuizParticip
                             markQuizAsCompletedActionTextView.setOnClickListener(null);
                             markQuizAsCompletedActionTextView.setText("Completed");
                             submitQuizActionButton.setEnabled(false);
+                            submitQuizActionButton.setVisibility(View.GONE);
                             GlobalConfig.recentlyMarkedCompletedQuizList.add(quizId);
                         }
 

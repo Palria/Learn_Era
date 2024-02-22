@@ -64,7 +64,7 @@ public class UserWalletActivity extends AppCompatActivity {
     TextView editPaypalAccountActionTextViewId;
 int totalWithdrawableCoins = 0;
 
-TextView bankNameTextView,accountNumberTextView,accountNameTextView,editAccountActionTextView,countryTextView;
+TextView bankNameTextView,accountNumberTextView,accountNameTextView,paypalEmailTextView,editAccountActionTextView,countryTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,6 +178,7 @@ getWalletInfo();
         bankNameTextView = findViewById(R.id.bankNameTextViewId);
         accountNumberTextView = findViewById(R.id.accountNumberTextViewId);
         accountNameTextView = findViewById(R.id.accountNameTextViewId);
+        paypalEmailTextView = findViewById(R.id.paypalEmailTextViewId);
         editAccountActionTextView = findViewById(R.id.editAccountActionTextViewId);
         countryTextView = findViewById(R.id.countryNameTextViewId);
 
@@ -303,6 +304,7 @@ void getWalletInfo(){
             String bankName = ""+ documentSnapshot.get(GlobalConfig.BANK_NAME_KEY);
             String accountName = ""+ documentSnapshot.get(GlobalConfig.ACCOUNT_NAME_KEY);
             String accountNumber = ""+ documentSnapshot.get(GlobalConfig.ACCOUNT_NUMBER_KEY);
+            String paypalEmail = ""+ documentSnapshot.get(GlobalConfig.PAYPAL_ACCOUNT_EMAIL_KEY);
             String country = ""+ documentSnapshot.get(GlobalConfig.COUNTRY_KEY);
 
             availableCoinEquityTextView.setText(totalCoinEquity+" Coins");
@@ -312,6 +314,7 @@ void getWalletInfo(){
             bankNameTextView.setText("Bank Name : " +bankName);
             accountNumberTextView.setText("Account Number : " +accountNumber);
             accountNameTextView.setText("Account Name : " +accountName);
+            paypalEmailTextView.setText("Email : " +paypalEmail);
             countryTextView.setText("Country : " +country);
 
 

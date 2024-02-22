@@ -15,8 +15,9 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
-    <uses-permission android:name="android.permission.BIND_JOB_SERVICE"
-        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.BIND_JOB_SERVICE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"
+        />
 
     <application
         android:allowBackup="true"
@@ -26,7 +27,15 @@
         android:roundIcon="@drawable/learn_era_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting"
-        android:windowSoftInputMode="adjustPan">
+        android:windowSoftInputMode="adjustPan"
+        android:requestLegacyExternalStorage="true"
+        >
+
+        <activity
+            android:theme="@style/Theme.LearnEra"
+            android:name=".PaypalEditActivity"
+            android:exported="true" />
+
         <activity
             android:name=".AllClassViewerActivity"
             android:theme="@style/Theme.LearnEra"

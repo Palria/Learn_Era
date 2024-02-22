@@ -417,10 +417,10 @@ We only accept Opay, Paypal, MoniePoint"
 
 
                         <TextView
-                            android:id="@+id/paypalIdName"
+                            android:id="@+id/paypalEmailTextViewId"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Email : testemail@gmail.com"
+                            android:text="Email : ? :"
                             android:textSize="8pt"
                             android:textColor="@color/white"
                             android:textStyle="bold" />

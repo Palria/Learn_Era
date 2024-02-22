@@ -99,6 +99,8 @@ dependencies {
 
     implementation 'com.paypal.sdk:paypal-android-sdk:2.16.0'
 
+    implementation 'com.github.republicofgavin:pauseresumeaudiorecorder:1.0'
+
 //    implementation 'com.github.Inconnu08:android-ratingreviews:1.2.0'
 
 }

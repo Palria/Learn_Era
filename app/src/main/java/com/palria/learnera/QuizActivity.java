@@ -448,16 +448,19 @@ public class QuizActivity extends AppCompatActivity {
 //                if(timeRemain == 0 && !isSubmitted && !isAuthor){
 //                    processAndSubmitAnswer();
 //                }
+
+                    if ((GlobalConfig.isQuizExpired(endYear, endMonth, endDay, endHour, endMinute) || !GlobalConfig.isQuizStarted(startYear, startMonth, startDay, startHour, startMinute)) &&  !isAuthor) {
+                        submitActionButton.setVisibility(View.GONE);
+                        statusTextView.setText("Closed");
+
+                    }
                 //check if quiz is marked completed by author
                 if (quizDataModel.isQuizMarkedCompleted() || GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId)) {
                     submitActionButton.setVisibility(View.GONE);
+                    statusTextView.setText("Completed");
 
-                } else {
-                    if ((GlobalConfig.isQuizExpired(endYear, endMonth, endDay, endHour, endMinute) || !GlobalConfig.isQuizStarted(startYear, startMonth, startDay, startHour, startMinute)) &&  !isAuthor) {
-                        submitActionButton.setVisibility(View.GONE);
-
-                    }
                 }
+
                     for(int i=0; i<viewedPositions.size();i++){
             if(timeRemainMap.get(i) != 0) {
                 timeRemainMap.put(i, (timeRemainMap.get(i) - 1));
@@ -479,7 +482,8 @@ if(timeRemainMap.get(activePosition) == 0) {
     activeQuestionTimeRemainTextView.setText(timeRemainMap.get(activePosition) + "s");
     activeQuestionTimeRemainTextView.setTextColor(ResourcesCompat.getColor(getResources(),R.color.error_red,getTheme()));
 
-}else{
+}
+else{
     activeQuestionTimeRemainTextView.setText(timeRemainMap.get(activePosition)+"s");
 
     if(timeRemainMap.get(activePosition) == 5){
@@ -488,10 +492,11 @@ if(timeRemainMap.get(activePosition) == 0) {
 }
 //check if the quiz has started
                 if(!isStarted && GlobalConfig.isQuizStarted(startYear,startMonth,startDay,startHour,startMinute) && !isAuthor) {
-                    displayQuestion(0);
-                    renderParticipantInfo();
-                    if (!isSubmitted) {
+
+                    if (!isSubmitted && isJoined) {
 //                    check if he has submitted
+                        displayQuestion(0);
+                        renderParticipantInfo();
                         submitActionButton.setVisibility(View.VISIBLE);
 
                     } else {
@@ -523,7 +528,7 @@ if(timeRemainMap.get(activePosition) == 0) {
         descriptionTextView.setText(quizDataModel.getQuizDescription());
         regFeeTextView.setText(quizDataModel.getTotalQuizFeeCoins() + " COINS");
         rewardTextView.setText(quizDataModel.getTotalQuizRewardCoins() + " COINS");
-        submitActionButton.setVisibility(View.VISIBLE);
+//        submitActionButton.setVisibility(View.VISIBLE);
 
         mainScrollView.setVisibility(View.VISIBLE);
         shimmerLayout.setVisibility(View.GONE);
@@ -554,11 +559,13 @@ if(timeRemainMap.get(activePosition) == 0) {
 
         if (isAuthor) {
             joinActionTextView.setText("You are the author");
-        } else {
+        }
+        else {
             if (quizDataModel.getParticipantsList().contains(GlobalConfig.getCurrentUserId()) || GlobalConfig.newlyJoinedQuizList.contains(quizId)) {
                 joinActionTextView.setText("Joined");
                 isJoined = true;
-            } else {
+            }
+            else {
                 joinActionTextView.setText("Join");
                 if (isClosed || GlobalConfig.isQuizExpired(endYear, endMonth, endDay, endHour, endMinute)) {
                     joinActionTextView.setEnabled(false);
@@ -609,7 +616,7 @@ if(timeRemainMap.get(activePosition) == 0) {
 //            }
 //        }.start();
 
-        if (quizDataModel.getAuthorId().equals(GlobalConfig.getCurrentUserId()) && (!quizDataModel.isQuizMarkedCompleted() && !GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId))) {
+        if (isAuthor && (!quizDataModel.isQuizMarkedCompleted() && !GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId))) {
             markQuizAsCompletedActionTextView.setVisibility(View.VISIBLE);
         }
 
@@ -641,11 +648,13 @@ if(timeRemainMap.get(activePosition) == 0) {
             timeRemainMap.put(i, i);
         }
 
-        if (quizDataModel.isQuizMarkedCompleted() ||  GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId)) {
+        if (!isJoined && !isAuthor && (quizDataModel.isQuizMarkedCompleted() ||  GlobalConfig.recentlyMarkedCompletedQuizList.contains(quizId))) {
             //display everything so long as the author has marked it as completed
             displayQuestion(0);
             renderParticipantInfo();
-        }else{
+            submitActionButton.setVisibility(View.GONE);
+
+        }
         if (isAuthor) {
             displayQuestion(0);
             renderParticipantInfo();
@@ -667,11 +676,12 @@ if(timeRemainMap.get(activePosition) == 0) {
                     updateQuizCountDownTimer();
                     submitActionButton.setVisibility(View.VISIBLE);
                 }
-            } else {
+            }
+            else {
                 submitActionButton.setVisibility(View.GONE);
             }
         }
-    }
+
 
 
         }
@@ -1000,6 +1010,7 @@ if(timeRemainMap.get(activePosition) == 0) {
         GlobalConfig.incrementQuizViews(this,quizId);
         GlobalConfig.recordViewedQuiz(this,quizId);
     }
+    /*
     private void joinQuiz(){
         joinActionTextView.setText("Joining...");
         //set the onclicklistener to do nothing
@@ -1046,6 +1057,7 @@ if(timeRemainMap.get(activePosition) == 0) {
             }
         });
     }
+    */
 
     void getAuthorInfo(){
         GlobalConfig.getFirebaseFirestoreInstance()

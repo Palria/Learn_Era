@@ -4,19 +4,27 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.AudioFormat;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -55,7 +63,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.github.republicofgavin.pauseresumeaudiorecorder.PauseResumeAudioRecorder;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
+import com.google.android.exoplayer2.util.Util;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -74,23 +88,34 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.palria.learnera.adapters.ClassStudentRCVAdapter;
 import com.palria.learnera.models.ClassDataModel;
 import com.palria.learnera.models.ClassStudentDatamodel;
+import com.skydoves.colorpickerview.flag.FlagView;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClassActivity extends AppCompatActivity {
 
@@ -151,10 +176,12 @@ public class ClassActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> openGalleryLauncher;
     ActivityResultLauncher<Intent> openVideoGalleryLauncher;
     ActivityResultLauncher<Intent> openCameraLauncher;
+    ActivityResultLauncher<Intent> openAudioGalleryLauncher;
 
 
     private final int CAMERA_PERMISSION_REQUEST_CODE = 2002;
     private final int GALLERY_PERMISSION_REQUEST_CODE = 23;
+    private final int AUDIO_PERMISSION_REQUEST_CODE = 01;
     private final int VIDEO_PERMISSION_REQUEST_CODE = 20;
 
     LinearLayout infoLinearLayout;
@@ -162,12 +189,14 @@ public class ClassActivity extends AppCompatActivity {
     LinearLayout lessonLinearLayout;
     LinearLayout handRaisersLinearLayout;
     LinearLayout composeMessageLinearLayout;
+    CardView lessonNoteCardView;
     EditText lessonNoteEditText;
 
 //    LinearLayout sendChatActionLayout;
     LinearLayout mediaActionActionLayout;
     LinearLayout raiseHandActionLayout;
     LinearLayout lockDiscussionActionLayout;
+    LinearLayout recordAudioActionLayout;
 
     ImageButton sendChatActionImageButton;
     ImageButton mediaActionImageButton;
@@ -180,7 +209,52 @@ public class ClassActivity extends AppCompatActivity {
     ArrayList<String> renderedLessonNoteIds = new ArrayList<>();
     ArrayList<String> renderedHandRaisersIds = new ArrayList<>();
     HashMap<String,String> studentsName = new HashMap<>();
-    HashMap<String,Bitmap> studentsIconBitmaps = new HashMap<>();
+    HashMap<String,ImageView> studentsIconImages = new HashMap<>();
+    HashMap<String, Boolean> userVerifiedFlagsMap = new HashMap<>();
+    ArrayList<String> fetchedOwnerDetailsIdList = new ArrayList<>();
+
+    HashMap<String, Boolean> userDetailsInFetchingProgress = new HashMap<>();
+
+
+    CardView recordAudioCardView;
+    ImageButton deleteAudioActionImageButton;
+    ImageButton resumePauseActionImageButton;
+    TextView recordedTimeTextView;
+    ImageButton playPauseRecordedAudioActionImageButton;
+
+    PauseResumeAudioRecorder pauseResumeAudioRecorder;
+    Uri recordedAudioLocalUri;
+    String audioRecordingPath;
+    boolean isSendAudio = false;
+
+    MediaPlayer mediaPlayer;
+
+    ArrayList<CountDownTimer> countDownTimerList = new ArrayList<>();
+    ArrayList<ExoPlayer> activeExoplayerList = new ArrayList<>();
+    ArrayList<File> copiedFileList = new ArrayList<>();
+    ArrayList<File> recordedFileList = new ArrayList<>();
+    ArrayList<String> recentlyHiddenLessonNoteList = new ArrayList<>();
+
+    CountDownTimer countDownTimerFlag;
+
+    boolean isTypingFlagNotifiedRecently = false;
+    boolean isImageSendingFlagNotifiedRecently = false;
+    boolean isVideoSendingFlagNotifiedRecently = false;
+    boolean isAudioSendingFlagNotifiedRecently = false;
+
+
+    boolean isCheckedTypingFlagRecently = false;
+    boolean isCheckedSendingImageFlagRecently = false;
+    boolean isCheckedSendingVideoFlagRecently = false;
+    boolean isCheckedSendingAudioFlagRecently = false;
+
+    TextView onlineFlagView ;
+    TextView typingFlagView ;
+    TextView sendingImageFlagView ;
+    TextView sendingVideoFlagView ;
+    TextView sendingAudioFlagView ;
+
+    ListenerRegistration listenerRegistration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,11 +283,11 @@ public class ClassActivity extends AppCompatActivity {
                 renderClass(classDataModel);
 
             }
-
+            startFlagCountDownTimers();
             listenToLessonUpdates();
         }
         createTabLayout();
-
+        configureAudioRecordImplementation();
 
         openGalleryLauncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
 
@@ -237,7 +311,11 @@ public class ClassActivity extends AppCompatActivity {
             @Override
             public void onActivityResult(ActivityResult result) {
                 if (result.getData() != null) {
+                    String lessonNoteId = GlobalConfig.getRandomString(60);
+
                     Intent data=result.getData();
+                    Uri videoUri = data.getData();
+                    displayLessonNote(false, false,true, false, new ArrayList<>(), lessonNoteId, "", videoUri, null, "now");
 
 
                 }
@@ -267,58 +345,120 @@ public class ClassActivity extends AppCompatActivity {
                 }
             }
         });
+        openAudioGalleryLauncher=  registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if(result.getResultCode()==RESULT_OK) {
 
+//                    if(android.os.Build.VERSION.SDK_INT >= 29) {
+//                        handleCameraResult();
+//                    }else {
+                    if (result.getData() != null) {
+                        String lessonNoteId = GlobalConfig.getRandomString(60);
 
+                        Intent data = result.getData();
+                        Uri audioUri = data.getData();
+                        displayLessonNote(false, false,false, true, new ArrayList<>(), lessonNoteId, "", audioUri, null, "now");
+//                        }
+
+                    }
+                    // }
+                }else{
+                    Toast.makeText(getApplicationContext(), "No image captured!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        lessonNoteEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                notifyStudentsWhetherTeacherIsTyping(true);
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         View.OnClickListener sendChatClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-String lessonNoteId = GlobalConfig.getRandomString(60);
-ArrayList<Object> lessonInfoList = new ArrayList<>();
-String lessonNote = lessonNoteEditText.getText()+"";
+                recordAudioActionLayout.setVisibility(View.VISIBLE);
+                if (isSendAudio) {
+
+                    String lessonNoteId = GlobalConfig.getRandomString(60);
+                    pauseResumeAudioRecorder.stopRecording();
+                    recordedAudioLocalUri = Uri.parse(audioRecordingPath+".wav");
+                    displayLessonNote(false, false,false, true, new ArrayList<>(), lessonNoteId, "", recordedAudioLocalUri, null, "now");
+                    recordAudioCardView.setVisibility(View.GONE);
+                    lessonNoteCardView.setVisibility(View.VISIBLE);
+                    if(mediaPlayer!=null){
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
+                    }
+                    //add this for future deletion when activity is destroyed
+                    recordedFileList.add(new File(String.valueOf(recordedAudioLocalUri)));
+                    isSendAudio = false;
+                }
+                else {
+                    String lessonNote = lessonNoteEditText.getText() + "";
+                    if (!lessonNote.isEmpty()) {
+                        String lessonNoteId = GlobalConfig.getRandomString(60);
+                        ArrayList<Object> lessonInfoList = new ArrayList<>();
 
 //displayLessonNote(false, new ArrayList<>(),lessonNoteId,lessonNote,Uri.parse(""), null);
 
 
-
 //the type of lesson whether it's plain,image,video, or other types.
-lessonInfoList.add(0,GlobalConfig.IS_PLAIN_TEXT_LESSON_NOTE_TYPE_KEY);
+                        lessonInfoList.add(0, GlobalConfig.IS_PLAIN_TEXT_LESSON_NOTE_TYPE_KEY);
 //the lesson note id
-lessonInfoList.add(1,lessonNoteId);
+                        lessonInfoList.add(1, lessonNoteId);
 //the lesson note itself
-lessonInfoList.add(2,lessonNote);
+                        lessonInfoList.add(2, lessonNote);
 //sender id
-lessonInfoList.add(3,GlobalConfig.getCurrentUserId());
+                        lessonInfoList.add(3, GlobalConfig.getCurrentUserId());
 
 ////date sent
 //lessonInfoList.add(4,FieldValue.serverTimestamp());
-
-                //display it instantly
-displayLessonNote(true,false,lessonInfoList,lessonNoteId,lessonNote,null,null,"now");
-                lessonNoteEditText.setText("");
-                notifyStudentsWhetherTeacherIsTyping(false);
-            postLessonNote(lessonNoteId, lessonInfoList, new GlobalConfig.ActionCallback() {
-                @Override
-                public void onSuccess() {
+                        //display it instantly
+                        displayLessonNote(true, false, false, false, lessonInfoList, lessonNoteId, lessonNote, null, null, "now");
+                        lessonNoteEditText.setText("");
+                        notifyStudentsWhetherTeacherIsTyping(false);
+                        postLessonNote(lessonNoteId, lessonInfoList, new GlobalConfig.ActionCallback() {
+                            @Override
+                            public void onSuccess() {
 //                    Toast.makeText(getApplicationContext(), "lesson note: "+lessonNote+" posted", Toast.LENGTH_SHORT).show();
 
-                    for(int i=0;i<lessonLinearLayout.getChildCount(); i++) {
-                        View lessonNoteView = lessonLinearLayout.getChildAt(i);
-                        ImageView lessonNoteStateIndicatorImageView = lessonNoteView.findViewById(R.id.lessonNoteStateIndicatorImageViewId);
-                        TextView lessonNoteIdHolderDummyTextView = lessonNoteView.findViewById(R.id.lessonNoteIdHolderDummyTextViewId);
+                                for (int i = 0; i < lessonLinearLayout.getChildCount(); i++) {
+                                    View lessonNoteView = lessonLinearLayout.getChildAt(i);
+                                    ImageView lessonNoteStateIndicatorImageView = lessonNoteView.findViewById(R.id.lessonNoteStateIndicatorImageViewId);
+                                    TextView lessonNoteIdHolderDummyTextView = lessonNoteView.findViewById(R.id.lessonNoteIdHolderDummyTextViewId);
 
-                        if(lessonNoteId.equals(lessonNoteIdHolderDummyTextView.getText()+"")){
-                            lessonNoteStateIndicatorImageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_baseline_sent_12,getTheme()));
-                        }
+                                    if (lessonNoteId.equals(lessonNoteIdHolderDummyTextView.getText() + "")) {
+                                        lessonNoteStateIndicatorImageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_baseline_sent_12, getTheme()));
+                                    }
+
+                                }
+                            }
+
+                            @Override
+                            public void onFailed(String errorMessage) {
+
+                            }
+                        });
 
                     }
+                    else{
+                        lessonNoteEditText.setHint("Please enter lesson note");
+                        Toast.makeText(getApplicationContext(), "Please enter lesson note before sending", Toast.LENGTH_SHORT).show();
+                    }
                 }
-
-                @Override
-                public void onFailed(String errorMessage) {
-
-                }
-            });
-
             }
         };
         sendChatActionImageButton.setOnClickListener(sendChatClickListener);
@@ -336,6 +476,13 @@ displayLessonNote(true,false,lessonInfoList,lessonNoteId,lessonNote,null,null,"n
                         }
                         if(item.getItemId() == R.id.openImageCameraId){
                             openCamera();
+
+                        }
+                        if(item.getItemId() == R.id.openAudioId){
+                            openAudio();
+
+                        } if(item.getItemId() == R.id.openVideoId){
+                            openVideoGallery();
 
                         }
 
@@ -418,11 +565,96 @@ displayLessonNote(true,false,lessonInfoList,lessonNoteId,lessonNote,null,null,"n
         lockDiscussionActionImageButton.setOnClickListener(lockDiscussionActionClickListener);
         lockDiscussionActionLayout.setOnClickListener(lockDiscussionActionClickListener);
 
+        //todo remove this listener later
+//        recordAudioActionLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(true)return;
+//                if(checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
+//                    MediaRecorder mediaRecorder = new MediaRecorder();
+//                    mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+//                    mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_2_TS);
+//                    File file = new File( getCacheDir(),"RECORDED_AUDIO");
+//                    mediaRecorder.setOutputFile(file);
+//                    mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+//                    try {
+//                        mediaRecorder.prepare();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                    mediaRecorder.start();
+//                    new CountDownTimer(10000, 1000) {
+//                        /**
+//                         * Callback fired on regular interval.
+//                         *
+//                         * @param millisUntilFinished The amount of time until finished.
+//                         */
+//                        @Override
+//                        public void onTick(long millisUntilFinished) {
+//
+//                        }
+//
+//                        /**
+//                         * Callback fired when the time is up.
+//                         */
+//                        @Override
+//                        public void onFinish() {
+//                            mediaRecorder.stop();
+//                            mediaRecorder.release();
+//
+//                        }
+//                    }.start();
+//
+//                }else{
+//                    requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},3333);
+//                }
+//            }
+//        });
+
     }
 
     @Override
     public void onBackPressed() {
        createConfirmExitDialog();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+//        notifyStudentsWhetherTeacherIsOnline(false);
+if(listenerRegistration!=null){
+    listenerRegistration.remove();
+}
+        for (ExoPlayer exoPlayer : activeExoplayerList) {
+            if (exoPlayer != null) {
+                exoPlayer.release();
+            }
+        }
+        for (File copiedFile : copiedFileList) {
+            if (copiedFile != null && copiedFile.exists()) {
+                try {
+                    copiedFile.delete();
+                }catch (Exception e){};
+            }
+        }
+        for (File recordedFile : recordedFileList) {
+            if (recordedFile != null && recordedFile.exists()) {
+                try {
+                    recordedFile.delete();
+                }catch (Exception e){};
+            }
+        }
+        for (CountDownTimer countDownTimer : countDownTimerList) {
+            if (countDownTimer != null) {
+                countDownTimer.cancel();
+            }
+        }
+        if(countDownTimer!=null){
+            countDownTimer.cancel();
+        }
+        if(countDownTimerFlag!=null){
+            countDownTimerFlag.cancel();
+        }
     }
 
     @Override
@@ -444,7 +676,7 @@ displayLessonNote(true,false,lessonInfoList,lessonNoteId,lessonNote,null,null,"n
                 intent.putExtra(GlobalConfig.CLASS_ID_KEY, classId);
                 startActivity(intent);
             } else {
-                Toast.makeText(getApplicationContext(), "Can't take action: User has already joined and can't be edited", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Can't take action: Student has already joined and can't be edited", Toast.LENGTH_SHORT).show();
             }
         }
         else if (item.getItemId() == R.id.deleteId) {
@@ -520,6 +752,7 @@ displayLessonNote(true,false,lessonInfoList,lessonNoteId,lessonNote,null,null,"n
         handRaisersLinearLayout = findViewById(R.id.handRaisersLinearLayoutId);
         lessonLinearLayout = findViewById(R.id.lessonLinearLayoutId);
         composeMessageLinearLayout = findViewById(R.id.composeMessageLinearLayoutId);
+        lessonNoteCardView = findViewById(R.id.lessonNoteCardViewId);
         lessonNoteEditText = findViewById(R.id.lessonEditTextId);
 
         mediaActionActionLayout = findViewById(R.id.mediaActionActionLayoutId);
@@ -532,9 +765,25 @@ displayLessonNote(true,false,lessonInfoList,lessonNoteId,lessonNote,null,null,"n
         lockDiscussionActionImageButton = findViewById(R.id.lockDiscussionActionImageButtonId);
         lockDiscussionActionLayout = findViewById(R.id.lockDiscussionActionLayoutId);
 
+        recordAudioActionLayout = findViewById(R.id.recordAudioActionLayoutId);
+
 //        sendChatActionLayout = findViewById(R.id.sendChatActionLayoutId);
         sendChatActionImageButton = findViewById(R.id.sendLessonActionImageButtonId);
 
+
+
+        recordAudioCardView = findViewById(R.id.recordAudioCardViewId);
+        deleteAudioActionImageButton = findViewById(R.id.deleteAudioActionImageButtonId);
+        resumePauseActionImageButton = findViewById(R.id.resumePauseActionImageButtonId);
+        recordedTimeTextView = findViewById(R.id.recordedTimeTextViewId);
+        playPauseRecordedAudioActionImageButton = findViewById(R.id.playPauseRecordedAudioActionImageButtonId);
+
+
+        onlineFlagView = findViewById(R.id.onlineFlagViewId);
+        typingFlagView = findViewById(R.id.typingFlagViewId);
+        sendingImageFlagView = findViewById(R.id.sendingImageFlagViewId);
+        sendingVideoFlagView = findViewById(R.id.sendingVideoFlagViewId);
+        sendingAudioFlagView = findViewById(R.id.sendingAudioFlagViewId);
 
         alertDialog = new AlertDialog.Builder(ClassActivity.this)
                 .setCancelable(false)
@@ -561,10 +810,45 @@ displayLessonNote(true,false,lessonInfoList,lessonNoteId,lessonNote,null,null,"n
         builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ClassActivity.super.onBackPressed();
-                if(countDownTimer!=null) {
+
+                if(listenerRegistration!=null){
+                    listenerRegistration.remove();
+                }
+                notifyStudentsWhetherTeacherIsOnline(false);
+
+                for (ExoPlayer exoPlayer : activeExoplayerList) {
+                    if (exoPlayer != null) {
+                        exoPlayer.release();
+                    }
+                }
+                for (File copiedFile : copiedFileList) {
+                    if (copiedFile != null && copiedFile.exists()) {
+                        try {
+                            copiedFile.delete();
+                        }catch (Exception e){};
+                    }
+                }
+                for (File recordedFile : recordedFileList) {
+                    if (recordedFile != null && recordedFile.exists()) {
+                        try {
+                            recordedFile.delete();
+                        }catch (Exception e){};
+                    }
+                }
+                for (CountDownTimer countDownTimer : countDownTimerList) {
+                    if (countDownTimer != null) {
+                        countDownTimer.cancel();
+                    }
+                }
+                if(countDownTimer!=null){
                     countDownTimer.cancel();
                 }
+                if(countDownTimerFlag!=null){
+                    countDownTimerFlag.cancel();
+                }
+
+                ClassActivity.super.onBackPressed();
+
             }
         })
                 .setNegativeButton("Continue", null);
@@ -642,8 +926,12 @@ displayLessonNote(true,false,lessonInfoList,lessonNoteId,lessonNote,null,null,"n
 
         //helps keep name of students at runtime to avoid frequent queries for the server
 for(String studentId : classDataModel.getStudentsList()){
-    studentsName.put(studentId,"Student");
-    studentsIconBitmaps.put(studentId,null);
+    studentsName.put(studentId,"Sender");
+    studentsIconImages.put(studentId,null);
+    userVerifiedFlagsMap.put(studentId,false);
+    if(!studentId.equals(authorId)) {
+        userDetailsInFetchingProgress.put(studentId, false);
+    }
 }
         mainScrollView.setVisibility(View.VISIBLE);
         classInfo.setVisibility(View.VISIBLE);
@@ -727,6 +1015,8 @@ for(String studentId : classDataModel.getStudentsList()){
 
 
     void getAuthorInfo(){
+        userDetailsInFetchingProgress.put(authorId, true);
+
         GlobalConfig.getFirebaseFirestoreInstance()
                 .collection(GlobalConfig.ALL_USERS_KEY)
                 .document(authorId)
@@ -756,6 +1046,44 @@ for(String studentId : classDataModel.getStudentsList()){
                             verificationFlagImageView.setVisibility(View.INVISIBLE);
 
                         }
+
+                        for(int i=0; i<lessonLinearLayout.getChildCount(); i++) {
+                            View lessonNoteView = lessonLinearLayout.getChildAt(i);
+
+                            RoundedImageView senderIcon = lessonNoteView.findViewById(R.id.senderIcon);
+                            ImageView senderVerificationFlagImageView = lessonNoteView.findViewById(R.id.verificationFlagImageViewId);
+                            TextView messageSenderDisplayNameTextView = lessonNoteView.findViewById(R.id.senderNameId);
+                            TextView lessonNoteIdHolderDummyTextView = lessonNoteView.findViewById(R.id.lessonNoteIdHolderDummyTextViewId);
+                            if(authorId.equals(lessonNoteIdHolderDummyTextView.getText()+"")){
+                            try {
+                                Glide.with(ClassActivity.this)
+                                        .load(userProfilePhotoDownloadUrl)
+                                        .centerCrop()
+                                        .placeholder(R.drawable.default_profile)
+                                        .into(senderIcon);
+
+                                ImageView icon = senderIcon;
+                                studentsIconImages.put(authorId, icon);
+
+                            } catch (Exception ignored) {
+                            }
+
+                            String senderDisplayName = "" + documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                            messageSenderDisplayNameTextView.setText(senderDisplayName);
+                            studentsName.put(authorId, senderDisplayName);
+
+                            if (isVerified) {
+                                senderVerificationFlagImageView.setVisibility(View.VISIBLE);
+                            } else {
+                                senderVerificationFlagImageView.setVisibility(View.INVISIBLE);
+
+                            }
+                        }
+                        }
+
+
+                        userVerifiedFlagsMap.put(authorId, isVerified);
+                        fetchedOwnerDetailsIdList.add(authorId);
                     }
                 });
 
@@ -809,7 +1137,7 @@ for(String studentId : classDataModel.getStudentsList()){
     void listenToLessonUpdates(){
       FirebaseFirestore f = GlobalConfig.getFirebaseFirestoreInstance();
 
-      f.collection(GlobalConfig.ALL_CLASS_KEY).document(classId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        listenerRegistration = f.collection(GlobalConfig.ALL_CLASS_KEY).document(classId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
                 if(error != null){
@@ -834,6 +1162,13 @@ for(String studentId : classDataModel.getStudentsList()){
                     boolean isPublic = documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) != null && documentSnapshot.get(GlobalConfig.IS_PUBLIC_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_PUBLIC_KEY) : true;
                     boolean isClosed = documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) != null && documentSnapshot.get(GlobalConfig.IS_CLOSED_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_CLOSED_KEY) : false;
                     boolean isStarted = documentSnapshot.get(GlobalConfig.IS_STARTED_KEY) != null && documentSnapshot.get(GlobalConfig.IS_STARTED_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_STARTED_KEY) : false;
+
+                    boolean isTeacherOnline = documentSnapshot.get(GlobalConfig.IS_TEACHER_ONLINE_KEY) != null && documentSnapshot.get(GlobalConfig.IS_TEACHER_ONLINE_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_TEACHER_ONLINE_KEY) : false;
+                    if(isTeacherOnline){
+                        onlineFlagView.setText("Online");
+                    }else{
+                        onlineFlagView.setText("Offline");
+                    }
 
                     ArrayList startDateList = documentSnapshot.get(GlobalConfig.CLASS_START_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.CLASS_START_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.CLASS_START_DATE_LIST_KEY) : new ArrayList();
                     ArrayList endDateList = documentSnapshot.get(GlobalConfig.CLASS_END_DATE_LIST_KEY) != null && documentSnapshot.get(GlobalConfig.CLASS_END_DATE_LIST_KEY) instanceof ArrayList ? (ArrayList) documentSnapshot.get(GlobalConfig.CLASS_END_DATE_LIST_KEY) : new ArrayList();
@@ -885,6 +1220,7 @@ for(String studentId : classDataModel.getStudentsList()){
 
                     renderHandRaisers(documentSnapshot);
                     analyseAndRenderLessonNotes(documentSnapshot);
+                    analyseAndRenderLessonNoteFlags(documentSnapshot);
 
                 }
             }
@@ -893,7 +1229,7 @@ for(String studentId : classDataModel.getStudentsList()){
     void renderStudentInfo(){
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
-        classStudentRCVAdapter = new ClassStudentRCVAdapter(classStudentDatamodels,this,classId,classDataModel,authorId,markClassAsClosedActionTextView,studentsName,studentsIconBitmaps);
+        classStudentRCVAdapter = new ClassStudentRCVAdapter(classStudentDatamodels,this,classId,classDataModel,authorId,markClassAsClosedActionTextView,studentsName,studentsIconImages,userVerifiedFlagsMap,fetchedOwnerDetailsIdList);
         studentRecyclerView.setHasFixedSize(false);
         studentRecyclerView.setAdapter(classStudentRCVAdapter);
         studentRecyclerView.setLayoutManager(linearLayoutManager);
@@ -931,10 +1267,14 @@ for(String studentId : classDataModel.getStudentsList()){
         infoTabItem.setText("Info");
         viewTabLayout.addTab(infoTabItem,0,true);
 
+//        check if user has joined class before adding lesson tab
+if( isAuthor || classDataModel.getStudentsList().contains(GlobalConfig.getCurrentUserId())){
 
-        TabLayout.Tab lessonTabItem= viewTabLayout.newTab();
+      TabLayout.Tab lessonTabItem= viewTabLayout.newTab();
         lessonTabItem.setText("Lesson");
         viewTabLayout.addTab(lessonTabItem,1);
+
+}
 
     }
 
@@ -975,6 +1315,9 @@ for(String studentId : classDataModel.getStudentsList()){
 //        isVisible = false;
         requestForPermission(CAMERA_PERMISSION_REQUEST_CODE);
     }
+ public void openAudio(){
+        requestForPermission(AUDIO_PERMISSION_REQUEST_CODE);
+    }
 
     public void fireGalleryIntent(){
         Intent galleryIntent = new Intent();
@@ -989,6 +1332,13 @@ for(String studentId : classDataModel.getStudentsList()){
         videoGalleryIntent.setAction(Intent.ACTION_PICK);
         videoGalleryIntent.setType("video/*");
         openVideoGalleryLauncher.launch(videoGalleryIntent);
+    }
+    public void fireAudioIntent(){
+        Intent audioGalleryIntent = new Intent();
+//        audioGalleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
+        audioGalleryIntent.setAction(Intent.ACTION_PICK);
+        audioGalleryIntent.setData(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+        openAudioGalleryLauncher.launch(audioGalleryIntent);
     }
     public void fireCameraIntent(){
         Intent cameraIntent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -1016,7 +1366,10 @@ for(String studentId : classDataModel.getStudentsList()){
             }
             if(requestCode == GALLERY_PERMISSION_REQUEST_CODE) {
                 fireGalleryIntent();
-            } if(requestCode == VIDEO_PERMISSION_REQUEST_CODE) {
+            } if(requestCode == AUDIO_PERMISSION_REQUEST_CODE) {
+                fireAudioIntent();
+            }
+            if(requestCode == VIDEO_PERMISSION_REQUEST_CODE) {
                 fireVideoIntent();
             }
         }
@@ -1080,7 +1433,7 @@ for(String studentId : classDataModel.getStudentsList()){
             public void onClick(View view) {
                 String lessonNoteId = GlobalConfig.getRandomString(60);
                 String textMessage = imageCaptionMessageEditText.getText().toString();
-                displayLessonNote(false,true,new ArrayList<>(),lessonNoteId,textMessage,Uri.parse(imageDownloadUrl), bitmap,"now");
+                displayLessonNote(false,true,false,false,new ArrayList<>(),lessonNoteId,textMessage,Uri.parse(imageDownloadUrl), bitmap,"now");
 
                 messageImageViewDialog.cancel();
             }
@@ -1090,479 +1443,43 @@ for(String studentId : classDataModel.getStudentsList()){
         messageImageViewDialog.show();
     }
 
-    /*
-    static void displayLessonNote(Context context, ViewGroup viewGroup, DocumentReference allMessagesDocumentDirectoryReference, DocumentReference messageDocumentReference, String messageId, String textMessage, String imageDownloadUrl, String videoDownloadUrl, String currentSenderId, String senderDisplayName, String senderId, String recipientId, String dateSent, boolean isTextIncluded, boolean isImageIncluded, boolean isSendImage, ImageView  sendingImageView, boolean isVideoIncluded, boolean isCurrentUserTheSender, boolean isLoadFromSnapshot, boolean isLoadFromCache, boolean hasPendingWrites, boolean isDeliveredToRecipient, boolean isSeenByRecipient, boolean isDeliveredToCurrentUser, boolean isSeenByCurrentUser, OnMessageImageUploadListener onMessageImageUploadListener){
-        if(sendingImageView != null){
-            sendingImageView.setDrawingCacheEnabled(true);
-        }
-        String[] messageIdArray = new String[1];
-        messageIdArray[0] = messageId;
 
-        if(isSendImage){
-            if(messageId == null){
-                messageId = getRandomString(60);
-                messageIdArray[0] = messageId;
-                if(messageDocumentReference ==  null){
-                    messageDocumentReference = allMessagesDocumentDirectoryReference.collection("MESSAGES").document(messageId);
-                }
-            }
-        }
 
-        if(messageDocumentReference ==  null){
-            messageDocumentReference = allMessagesDocumentDirectoryReference.collection("MESSAGES").document(messageId);
-        }
-
-        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View lessonNoteView =  layoutInflater.inflate(R.layout.plain_message_view_holder_layout,viewGroup,false);
-        CardView bodyMessageMainCardView = lessonNoteView.findViewById(R.id.bodyMessageMainCardViewId);
-        LinearLayout mainLinearLayout = lessonNoteView.findViewById(R.id.mainLinearLayoutId);
-        LinearLayout bodyMessageMainLinearLayout = lessonNoteView.findViewById(R.id.bodyMessageMainLinearLayoutId);
-        View leftDummyView = lessonNoteView.findViewById(R.id.leftDummyViewId);
-        View rightDummyView = lessonNoteView.findViewById(R.id.rightDummyViewId);
-
-        TextView messageSenderDisplayNameTextView = lessonNoteView.findViewById(R.id.messageSenderDisplayNameTextViewId);
-        TextView textMessageTextView = lessonNoteView.findViewById(R.id.textMessageTextViewId);
-        TextView dateSentTextView = lessonNoteView.findViewById(R.id.dateSentTextViewId);
-
-        ImageView messageStateIndicatorImageView = lessonNoteView.findViewById(R.id.messageStateIndicatorImageViewId);
-
-        TextView recipientIdHolderDummyTextView = lessonNoteView.findViewById(R.id.recipientIdHolderDummyTextViewId);
-        TextView senderIdHolderDummyTextView = lessonNoteView.findViewById(R.id.senderIdHolderDummyTextViewId);
-        TextView messageIdHolderDummyTextView = lessonNoteView.findViewById(R.id.messageIdHolderDummyTextViewId);
-
-
-        RelativeLayout messageImageViewRelativeLayout = lessonNoteView.findViewById(R.id.messageImageViewRelativeLayoutId);
-        ImageView imageMessageImageView = lessonNoteView.findViewById(R.id.imageMessageImageViewId);
-        StyledPlayerView videoMessageStyledPlayerView = lessonNoteView.findViewById(R.id.videoMessageStyledPlayerViewId);
-
-
-
-        FloatingActionButton startUploadImageView = lessonNoteView.findViewById(R.id.startUploadButtonId);
-        FloatingActionButton successImageView = lessonNoteView.findViewById(R.id.successImageViewId);
-
-        FloatingActionButton pauseUploadImageView = lessonNoteView.findViewById(R.id.pauseUploadButtonId);
-
-        FloatingActionButton resumeUploadImageView = lessonNoteView.findViewById(R.id.resumeUploadButtonId);
-
-        ProgressBar progressBar = lessonNoteView.findViewById(R.id.progressIndicatorId);
-
-        lessonNoteView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if(senderId.equals(currentSenderId)) {
-                    createPopUpMenu(context, R.menu.message_menu_action, messageStateIndicatorImageView, new OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClicked(MenuItem item) {
-
-                            if(!textMessage.equals("-MESSAGE DELETED-")) {
-                                if (isConnectedOnline(context)) {
-                                    if (item.getItemId() == R.id.deleteMessageId) {
-                                        deleteMessage(allMessagesDocumentDirectoryReference, messageIdHolderDummyTextView.getText().toString(), isTextIncluded, isImageIncluded, isVideoIncluded);
-                                        textMessageTextView.setText("-MESSAGE DELETED-");
-                                        messageImageViewRelativeLayout.setVisibility(View.GONE);
-                                        videoMessageStyledPlayerView.setVisibility(View.GONE);
-                                        messageStateIndicatorImageView.setImageResource(R.drawable.ic_baseline_sending_12);
-
-//                viewGroup.removeView(lessonNoteView);
-//              viewGroup.indexOfChild(lessonNoteView);
-                                    }
-                                } else {
-                                    Toast.makeText(context, "No network, please try and connect!", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-//            else{
-//    Toast.makeText(context, "No network, please try and connect!", Toast.LENGTH_SHORT).show();
-//}
-
-
-                            return true;
-                        }
-                    });
-
-                }
-                return true;
-            }
-        });
-
-        messageSenderDisplayNameTextView.setText(senderDisplayName);
-        dateSentTextView.setText(getFormattedDate(dateSent));
-        textMessageTextView.setText(textMessage);
-        imageMessageImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                viewImagePreview(context,imageMessageImageView, imageDownloadUrl);
-            }
-        });
-
-        imageMessageImageView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                createPopUpMenu(context, R.menu.image_message_menu_action, imageMessageImageView, new OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClicked(MenuItem item) {
-
-                        if (item.getItemId() == R.id.saveImageId) {
-                            saveImageToLocalStorage(context, imageMessageImageView.getDrawingCache(true), textMessage, new ActionCallback() {
-                                @Override
-                                public void onSuccess() {
-                                    Toast.makeText(context, "Image saved", Toast.LENGTH_SHORT).show();
-                                }
-
-                                @Override
-                                public void onFailed(String message) {
-
-                                }
-                            });
-
-                        }
-
-
-                        return true;
-                    }
-                });
-
-
-                return true;
-            }
-        });
-
-        if(isTextIncluded){
-            textMessageTextView.setVisibility(View.VISIBLE);
-        }
-
-        if(isImageIncluded){
-            messageImageViewRelativeLayout.setVisibility(View.VISIBLE);
-            imageMessageImageView.setVisibility(View.VISIBLE);
-            if(imageDownloadUrl != null  && !isSendImage) {
-//                Glide.with(context).load(imageDownloadUrl).into(imageMessageImageView);
-
-                Picasso.get().load(imageDownloadUrl).error(R.drawable.ic_baseline_image_24).into(imageMessageImageView);
-            }
-        }
-        if(isSendImage){
-            if(sendingImageView != null) {
-                sendingImageView.setDrawingCacheEnabled(true);
-                sendingImageView.buildDrawingCache();
-                imageMessageImageView.setImageBitmap(((BitmapDrawable) sendingImageView.getDrawable()).getBitmap());
-            }else {
-                if (imageDownloadUrl != null) {
-//                Glide.with(context).load(imageDownloadUrl).into(imageMessageImageView);
-//                    imageMessageImageView.setImageURI(Uri.parse(imageDownloadUrl));
-                }
-            }
-            String imageId = getRandomString(60);
-
-            messageImageViewRelativeLayout.setVisibility(View.VISIBLE);
-            imageMessageImageView.setVisibility(View.VISIBLE);
-            pauseUploadImageView.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.VISIBLE);
-//            if(sendingImageView != null) {
-//                imageMessageImageView.setImageBitmap(sendingImageView.getDrawingCache());
-//            }
-
-            StorageReference sentMessageImageStorageReference = FirebaseStorage.getInstance().getReference().child("ALL_MESSAGES/"+currentSenderId+"/MESSAGE_IMAGES/"+imageId+".PNG");
-            imageMessageImageView.setDrawingCacheEnabled(true);
-
-            imageMessageImageView.setDrawingCacheEnabled(true);
-            imageMessageImageView.buildDrawingCache();
-
-            Bitmap messageImageBitmap = null;
-            if(sendingImageView != null) {
-                messageImageBitmap = ((BitmapDrawable) sendingImageView.getDrawable()).getBitmap();
-            }else{
-                messageImageBitmap = ((BitmapDrawable) imageMessageImageView.getDrawable()).getBitmap();
-
-            }
-
-
-//            Bitmap messageImageBitmap = imageMessageImageView.getDrawingCache();
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            messageImageBitmap.compress(Bitmap.CompressFormat.PNG, 20, byteArrayOutputStream);
-            byte[] bytes = byteArrayOutputStream.toByteArray();
-
-            UploadTask messageImageUploadTask = sentMessageImageStorageReference.putBytes(bytes);
-
-            pauseUploadImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    messageImageUploadTask.pause();
-                    progressBar.setVisibility(View.GONE);
-                    pauseUploadImageView.setVisibility(View.GONE);
-                    resumeUploadImageView.setVisibility(View.VISIBLE);
-                }
-            });
-
-            resumeUploadImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    messageImageUploadTask.resume();
-                    progressBar.setVisibility(View.VISIBLE);
-                    resumeUploadImageView.setVisibility(View.GONE);
-                    pauseUploadImageView.setVisibility(View.VISIBLE);
-                }
-            });
-
-
-            messageImageUploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(context, "failed to upload", Toast.LENGTH_SHORT).show();
-                            startUploadImageView.setVisibility(View.VISIBLE);
-                            progressBar.setVisibility(View.GONE);
-                            pauseUploadImageView.setVisibility(View.GONE);
-                            resumeUploadImageView.setVisibility(View.GONE);
-
-                        }
-                    });
-
-                }
-            })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-//                            deleteVideoButton.setVisibility(View.GONE);
-                            double uploadSize = snapshot.getTotalByteCount();
-                            double uploadedSize = snapshot.getBytesTransferred();
-                            double remainingSize = uploadSize - uploadedSize;
-                            int uploadProgress = (int) ((100 * uploadedSize) / uploadSize);
-                            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressBar.setProgress(uploadProgress);
-
-                                }
-                            });
-
-
-                            // Toast.makeText(context, "progressing..." + uploadProgress, Toast.LENGTH_SHORT).show();
-
-                        }
-                    })
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                            //Toast.makeText(context, "image uploaded", Toast.LENGTH_SHORT).show();
-
-                            messageImageUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                                @Override
-                                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                    if (!(task.isSuccessful())) {
-                                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Toast.makeText(context, ""+ task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-
-                                            }
-                                        });
-                                    }
-
-                                    return sentMessageImageStorageReference.getDownloadUrl();
-                                }
-                            })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-
-                                            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    Toast.makeText(context, "failed to upload", Toast.LENGTH_SHORT).show();
-                                                    startUploadImageView.setVisibility(View.VISIBLE);
-                                                    progressBar.setVisibility(View.GONE);
-                                                    pauseUploadImageView.setVisibility(View.GONE);
-                                                    resumeUploadImageView.setVisibility(View.GONE);
-
-                                                }
-                                            });
-
-
-                                        }
-                                    })
-                                    .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Uri> task) {
-                                            // Toast.makeText(context, "Task completed", Toast.LENGTH_SHORT).show();
-
-
-                                            String sentMessageImageDownloadUrl = String.valueOf(task.getResult());
-                                            onMessageImageUploadListener.onUploadSuccess(messageIdArray[0] ,sentMessageImageDownloadUrl, sentMessageImageStorageReference.getPath() );
-                                            startUploadImageView.setVisibility(View.GONE);
-                                            progressBar.setVisibility(View.GONE);
-                                            pauseUploadImageView.setVisibility(View.GONE);
-                                            resumeUploadImageView.setVisibility(View.GONE);
-                                            successImageView.setVisibility(View.VISIBLE);
-
-
-                                        }
-                                    });
-
-                        }
-                    });
-        }
-
-        if(isVideoIncluded){
-            videoMessageStyledPlayerView.setVisibility(View.VISIBLE);
-//            displayE
-        }
-
-        senderIdHolderDummyTextView.setText(senderId);
-        recipientIdHolderDummyTextView.setText(recipientId);
-        messageIdHolderDummyTextView.setText(messageId);
-
-        if(isCurrentUserTheSender){
-//            LinearLayout.LayoutParams bodyMainCardViewMessageLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-//            bodyMainCardViewMessageLayoutParams.setMargins(100,10,10,10);
-//            bodyMessageMainCardView.setLayoutParams(bodyMainCardViewMessageLayoutParams);
-            leftDummyView.setVisibility(View.VISIBLE);
-            messageStateIndicatorImageView.setVisibility(View.VISIBLE);
-            rightDummyView.setVisibility(View.GONE);
-            bodyMessageMainLinearLayout.setBackgroundColor(Color.RED);
-//            LinearLayout.LayoutParams textMessageLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-//            LinearLayout.LayoutParams imageMessageLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,170);
-//            LinearLayout.LayoutParams videoMessageLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,200);
-//
-//            textMessageLayoutParams.setMarginStart(100);
-//            imageMessageLayoutParams.setMarginStart(100);
-//            videoMessageLayoutParams.setMarginStart(100);
-
-            messageSenderDisplayNameTextView.setGravity(Gravity.END);
-            messageSenderDisplayNameTextView.setTextColor(Color.BLUE);
-            textMessageTextView.setForegroundGravity(Gravity.END);
-
-
-//            textMessageTextView.setLayoutParams(textMessageLayoutParams);
-//            imageMessageImageView.setLayoutParams(imageMessageLayoutParams);
-//            videoMessageStyledPlayerView.setLayoutParams(videoMessageLayoutParams);
-
-            dateSentTextView.setGravity(Gravity.END);
-            dateSentTextView.setTextColor(Color.BLACK);
-//            mainLinearLayout.setPadding(100,10,10,10);
-
-
-            if(!isLoadFromSnapshot) {
-                if (!hasPendingWrites) {
-                    messageStateIndicatorImageView.setImageResource(R.drawable.ic_baseline_sent_12);
-
-
-                    if (isDeliveredToRecipient) {
-                        messageStateIndicatorImageView.setImageResource(R.drawable.ic_baseline_delivered_12);
-                        if (isSeenByRecipient) {
-                            messageStateIndicatorImageView.setImageResource(R.drawable.ic_baseline_seen_blue_eye_12);
-                        }
-                    }
-                }
-            }
-
-            //Listen to when the message is delivered and or seen
-            if(!isSeenByRecipient && !hasPendingWrites){
-                messageDocumentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                        boolean[] isDeliveredToRecipient = new boolean[1];
-                        boolean[] isSeenByRecipient = new boolean[1];
-
-                        isDeliveredToRecipient[0] = false;
-                        isSeenByRecipient[0] = false;
-                        if(value != null ) {
-                            if(value.exists()) {
-
-                                if (value.get("IS_DELIVERED_" +recipientId) != null) {
-                                    isDeliveredToRecipient[0] = value.getBoolean("IS_DELIVERED_" + recipientId);
-                                }
-                                if (value.get("IS_SEEN_" +recipientId) != null) {
-                                    isSeenByRecipient[0] = value.getBoolean("IS_SEEN_" + recipientId);
-                                }
-
-                                if(isDeliveredToRecipient[0]){
-                                    messageStateIndicatorImageView.setImageResource(R.drawable.ic_baseline_delivered_12);
-                                }
-                                if(isSeenByRecipient[0]){
-                                    messageStateIndicatorImageView.setImageResource(R.drawable.ic_baseline_seen_blue_eye_12);
-                                }
-                            }else{
-                                messageStateIndicatorImageView.setImageResource(R.drawable.ic_baseline_error_12);
-
-                            }}
-
-                    }
-                });
-            }
-
-
-        }
-        else{
-            //set the left separator visible to indicator that it was the current user who sent the message
-            leftDummyView.setVisibility(View.GONE);
-            rightDummyView.setVisibility(View.VISIBLE);
-        }
-
-
-        //the tag is not useful right now
-        lessonNoteView.setTag(viewGroup.getChildCount());
-        if(isLoadFromSnapshot || isSendImage) {
-            viewGroup.addView(lessonNoteView);
-
-            if(ChatRoomActivity.topScrollView != null){
-                ChatRoomActivity.topScrollView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        ChatRoomActivity.topScrollView.fullScroll(View.FOCUS_DOWN);
-                    }
-                });
-            }
-        }else{
-            viewGroup.addView(lessonNoteView,0);
-
-        }
-
-
-        if(!isDeliveredToCurrentUser){
-            //message has not delivered to current user and also it has not been seen by current user
-            setIsAlreadyDeliveredAndReadFlag(context,allMessagesDocumentDirectoryReference,messageDocumentReference,currentSenderId);
-        }
-        else{
-            if(!isSeenByCurrentUser){
-                //message has delivered to current user but  it has not been seen by current user
-                setIsAlreadySeenFlag(context,allMessagesDocumentDirectoryReference,messageDocumentReference,currentSenderId);
-            }
-        }
-
-    }
-*/
-
-
-    void displayLessonNote(boolean isSendPlainText,boolean isSendImage, ArrayList<Object> lessonNoteInfo, String lessonNoteId, String lessonNotePlainText,@Nullable Uri localImageUriToSend,@Nullable Bitmap bitmapToSend, String dateSent ) {
+    void displayLessonNote(boolean isSendPlainText,boolean isSendImage,boolean isSendVideo,boolean isSendAudio, ArrayList<Object> lessonNoteInfo, String lessonNoteId, String lessonNotePlainText,@Nullable Uri localMediaUriToSend,@Nullable Bitmap bitmapToSend, String dateSent ) {
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View lessonNoteView = layoutInflater.inflate(R.layout.lesson_note_item_layout, lessonLinearLayout, false);
 
         RoundedImageView senderIcon = lessonNoteView.findViewById(R.id.senderIcon);
+        ImageView verificationFlagImageView = lessonNoteView.findViewById(R.id.verificationFlagImageViewId);
         TextView messageSenderDisplayNameTextView = lessonNoteView.findViewById(R.id.senderNameId);
         TextView lessonNotePlainTextView = lessonNoteView.findViewById(R.id.lessonNotePlainTextViewId);
         TextView dateSentTextView = lessonNoteView.findViewById(R.id.dateSentViewId);
+        TextView userTypeView = lessonNoteView.findViewById(R.id.userTypeViewId);
 
 
         RelativeLayout lessonNoteImageViewRelativeLayout = lessonNoteView.findViewById(R.id.lessonNoteImageViewRelativeLayoutId);
         ImageView imageLessonNoteImageView = lessonNoteView.findViewById(R.id.imageLessonNoteImageViewId);
 
-        FloatingActionButton startUploadImageView = lessonNoteView.findViewById(R.id.startUploadButtonId);
-        FloatingActionButton successImageView = lessonNoteView.findViewById(R.id.successImageViewId);
+        StyledPlayerView mediaPlayerView = lessonNoteView.findViewById(R.id.mediaPlayerViewId);
 
-        FloatingActionButton pauseUploadImageView = lessonNoteView.findViewById(R.id.pauseUploadButtonId);
 
-        FloatingActionButton resumeUploadImageView = lessonNoteView.findViewById(R.id.resumeUploadButtonId);
+        ImageButton successImageView = lessonNoteView.findViewById(R.id.successImageViewId);
+
+        ImageButton pauseUploadImageView = lessonNoteView.findViewById(R.id.pauseUploadButtonId);
+
+        ImageButton resumeUploadImageView = lessonNoteView.findViewById(R.id.resumeUploadButtonId);
 
         ProgressBar progressBar = lessonNoteView.findViewById(R.id.progressIndicatorId);
 
         ImageView lessonNoteStateIndicatorImageView = lessonNoteView.findViewById(R.id.lessonNoteStateIndicatorImageViewId);
 
         TextView lessonNoteIdHolderDummyTextView = lessonNoteView.findViewById(R.id.lessonNoteIdHolderDummyTextViewId);
-
-        if(isSendPlainText){
+        if(authorId.equals(GlobalConfig.getCurrentUserId())){
+            userTypeView.setText("Teacher");
+        }else{
+            userTypeView.setText("Student");
+        }
+            if(isSendPlainText){
             lessonNoteStateIndicatorImageView.setVisibility(View.VISIBLE);
             lessonNotePlainTextView.setText(lessonNotePlainText);
             lessonNoteIdHolderDummyTextView.setText(lessonNoteId);
@@ -1576,7 +1493,7 @@ for(String studentId : classDataModel.getStudentsList()){
             if (bitmapToSend != null) {
                 imageLessonNoteImageView.setImageBitmap(bitmapToSend);
             } else {
-                imageLessonNoteImageView.setImageURI(localImageUriToSend);
+                imageLessonNoteImageView.setImageURI(localMediaUriToSend);
 
             }
             lessonNotePlainTextView.setText(lessonNotePlainText);
@@ -1589,7 +1506,7 @@ for(String studentId : classDataModel.getStudentsList()){
             pauseUploadImageView.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.VISIBLE);
 
-            StorageReference sentMessageImageStorageReference = FirebaseStorage.getInstance().getReference().child(GlobalConfig.ALL_CLASS_KEY + "/" + GlobalConfig.getCurrentUserId() + "/" + GlobalConfig.LESSON_NOTE_IMAGES_KEY + "/" + imageId + ".PNG");
+            StorageReference sentMessageImageStorageReference = FirebaseStorage.getInstance().getReference().child(GlobalConfig.ALL_USERS_KEY + "/" + GlobalConfig.getCurrentUserId() + "/" + imageId + ".PNG");
             imageLessonNoteImageView.setDrawingCacheEnabled(true);
             imageLessonNoteImageView.buildDrawingCache();
 
@@ -1604,20 +1521,28 @@ for(String studentId : classDataModel.getStudentsList()){
             pauseUploadImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    messageImageUploadTask.pause();
-                    progressBar.setVisibility(View.GONE);
-                    pauseUploadImageView.setVisibility(View.GONE);
-                    resumeUploadImageView.setVisibility(View.VISIBLE);
+                    if(messageImageUploadTask.pause()) {
+
+                        progressBar.setVisibility(View.GONE);
+                        pauseUploadImageView.setVisibility(View.GONE);
+                        resumeUploadImageView.setVisibility(View.VISIBLE);
+                    } else{
+                        Toast.makeText(getApplicationContext(), "Failed to pause", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
             resumeUploadImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    messageImageUploadTask.resume();
-                    progressBar.setVisibility(View.VISIBLE);
-                    resumeUploadImageView.setVisibility(View.GONE);
-                    pauseUploadImageView.setVisibility(View.VISIBLE);
+                    if(messageImageUploadTask.resume()){
+                        progressBar.setVisibility(View.VISIBLE);
+                        resumeUploadImageView.setVisibility(View.GONE);
+                        pauseUploadImageView.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(), "Failed to resume", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
@@ -1630,13 +1555,13 @@ for(String studentId : classDataModel.getStudentsList()){
                         @Override
                         public void run() {
                             Toast.makeText(getApplicationContext(), "failed to upload", Toast.LENGTH_SHORT).show();
-                            startUploadImageView.setVisibility(View.VISIBLE);
+                            resumeUploadImageView.setVisibility(View.VISIBLE);
                             progressBar.setVisibility(View.GONE);
                             pauseUploadImageView.setVisibility(View.GONE);
-                            resumeUploadImageView.setVisibility(View.GONE);
 
                         }
                     });
+                    notifyStudentsWhetherTeacherIsSendingImage(false);
 
                 }
             })
@@ -1656,7 +1581,7 @@ for(String studentId : classDataModel.getStudentsList()){
                                 }
                             });
 
-
+notifyStudentsWhetherTeacherIsSendingImage(true);
                             // Toast.makeText(context, "progressing..." + uploadProgress, Toast.LENGTH_SHORT).show();
 
                         }
@@ -1691,14 +1616,14 @@ for(String studentId : classDataModel.getStudentsList()){
                                                 @Override
                                                 public void run() {
                                                     Toast.makeText(ClassActivity.this, "failed to upload", Toast.LENGTH_SHORT).show();
-                                                    startUploadImageView.setVisibility(View.VISIBLE);
+                                                    resumeUploadImageView.setVisibility(View.VISIBLE);
                                                     progressBar.setVisibility(View.GONE);
                                                     pauseUploadImageView.setVisibility(View.GONE);
-                                                    resumeUploadImageView.setVisibility(View.GONE);
 
                                                 }
                                             });
 
+                                            notifyStudentsWhetherTeacherIsSendingImage(false);
 
                                         }
                                     })
@@ -1710,7 +1635,7 @@ for(String studentId : classDataModel.getStudentsList()){
 
                                             String sentMessageImageDownloadUrl = String.valueOf(task.getResult());
 //                                    onMessageImageUploadListener.onUploadSuccess(messageIdArray[0], sentMessageImageDownloadUrl, sentMessageImageStorageReference.getPath());
-                                            startUploadImageView.setVisibility(View.GONE);
+//                                            startUploadImageView.setVisibility(View.GONE);
                                             progressBar.setVisibility(View.GONE);
                                             pauseUploadImageView.setVisibility(View.GONE);
                                             resumeUploadImageView.setVisibility(View.GONE);
@@ -1744,6 +1669,7 @@ for(String studentId : classDataModel.getStudentsList()){
 
                                                 }
                                             });
+                                            notifyStudentsWhetherTeacherIsSendingImage(false);
 
 
                                         }
@@ -1752,8 +1678,438 @@ for(String studentId : classDataModel.getStudentsList()){
                     });
 
         }
+        if(isSendVideo){
+            lessonNoteStateIndicatorImageView.setVisibility(View.VISIBLE);
 
-        else {
+            String videoId = GlobalConfig.getRandomString(70);
+
+            ExoPlayer exoplayer = new ExoPlayer.Builder(this).build();
+            mediaPlayerView.setPlayer(exoplayer);
+            MediaItem mediaItem = MediaItem.fromUri(localMediaUriToSend);
+            exoplayer.setMediaItem(mediaItem);
+            exoplayer.prepare();
+            exoplayer.addListener(new Player.Listener() {
+                @Override
+                public void onEvents(Player player, Player.Events events) {
+                    if(player.isPlaying()){
+                        for(ExoPlayer activeExoplayer:activeExoplayerList){
+                            if(activeExoplayer!=null && !activeExoplayer.equals(exoplayer)){
+                                activeExoplayer.pause();
+                            }
+                        }
+                    }
+                }
+            });
+
+            lessonNotePlainTextView.setText(lessonNotePlainText);
+            lessonNoteIdHolderDummyTextView.setText(lessonNoteId);
+
+            dateSentTextView.setText("Now");
+
+            lessonNoteImageViewRelativeLayout.setVisibility(View.VISIBLE);
+            imageLessonNoteImageView.setVisibility(View.GONE);
+            mediaPlayerView.setVisibility(View.VISIBLE);
+
+            pauseUploadImageView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+
+            StorageReference sentMessageImageStorageReference = FirebaseStorage.getInstance().getReference().child(GlobalConfig.ALL_USERS_KEY + "/" + GlobalConfig.getCurrentUserId() + "/" + videoId +"mp4");
+
+
+            StorageMetadata storageMetaData = new StorageMetadata.Builder().setContentType("video/mp4").build();
+            UploadTask messageImageUploadTask = sentMessageImageStorageReference.putFile(localMediaUriToSend,storageMetaData);
+
+            pauseUploadImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(messageImageUploadTask.pause()) {
+
+                        progressBar.setVisibility(View.GONE);
+                        pauseUploadImageView.setVisibility(View.GONE);
+                        resumeUploadImageView.setVisibility(View.VISIBLE);
+                    } else{
+                        Toast.makeText(getApplicationContext(), "Failed to pause", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            resumeUploadImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(messageImageUploadTask.resume()){
+                        progressBar.setVisibility(View.VISIBLE);
+                        resumeUploadImageView.setVisibility(View.GONE);
+                        pauseUploadImageView.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(), "Failed to resume", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            });
+
+
+            messageImageUploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "failed to upload "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                           lessonNoteEditText.setText("error video upload : "+e.getStackTrace());
+                            resumeUploadImageView.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
+                            pauseUploadImageView.setVisibility(View.GONE);
+
+                        }
+                    });
+                    notifyStudentsWhetherTeacherIsSendingVideo(false);
+
+                }
+            })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+//                            deleteVideoButton.setVisibility(View.GONE);
+                            double uploadSize = snapshot.getTotalByteCount();
+                            double uploadedSize = snapshot.getBytesTransferred();
+                            double remainingSize = uploadSize - uploadedSize;
+                            int uploadProgress = (int) ((100 * uploadedSize) / uploadSize);
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressBar.setProgress(uploadProgress);
+
+                                }
+                            });
+
+
+                            // Toast.makeText(context, "progressing..." + uploadProgress, Toast.LENGTH_SHORT).show();
+                            notifyStudentsWhetherTeacherIsSendingVideo(true);
+
+                        }
+                    })
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            //Toast.makeText(context, "image uploaded", Toast.LENGTH_SHORT).show();
+
+                            messageImageUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                @Override
+                                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                    if (!(task.isSuccessful())) {
+                                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(ClassActivity.this, "" + task.getException().getStackTrace(), Toast.LENGTH_LONG).show();
+
+                                            }
+                                        });
+                                    }
+
+                                    return sentMessageImageStorageReference.getDownloadUrl();
+                                }
+                            })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Toast.makeText(getApplicationContext(), "failed to upload "+e.getStackTrace(), Toast.LENGTH_LONG).show();
+                                                    resumeUploadImageView.setVisibility(View.VISIBLE);
+                                                    progressBar.setVisibility(View.GONE);
+                                                    pauseUploadImageView.setVisibility(View.GONE);
+
+                                                }
+                                            });
+                                            notifyStudentsWhetherTeacherIsSendingVideo(false);
+
+
+                                        }
+                                    })
+                                    .addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Uri> task) {
+                                            // Toast.makeText(context, "Task completed", Toast.LENGTH_SHORT).show();
+
+
+                                            String sentMessageImageDownloadUrl = String.valueOf(task.getResult());
+//                                    onMessageImageUploadListener.onUploadSuccess(messageIdArray[0], sentMessageImageDownloadUrl, sentMessageImageStorageReference.getPath());
+                                            resumeUploadImageView.setVisibility(View.GONE);
+                                            progressBar.setVisibility(View.GONE);
+                                            pauseUploadImageView.setVisibility(View.GONE);
+                                            successImageView.setVisibility(View.VISIBLE);
+
+
+                                            ArrayList<Object> lessonInfoList = new ArrayList<>();
+
+//the type of lesson whether it's plain,image,video, or other types.
+                                            lessonInfoList.add(0, GlobalConfig.IS_VIDEO_LESSON_NOTE_TYPE_KEY);
+//the lesson note id
+                                            lessonInfoList.add(1, lessonNoteId);
+//the lesson note itself
+                                            lessonInfoList.add(2, lessonNotePlainText + GlobalConfig.MEDIA_URL_KEY+ sentMessageImageDownloadUrl);
+//sender id
+                                            lessonInfoList.add(3, GlobalConfig.getCurrentUserId());
+////date sent
+//                                    lessonInfoList.add(4,FieldValue.serverTimestamp());
+
+
+                                            postLessonNote(lessonNoteId, lessonInfoList, new GlobalConfig.ActionCallback() {
+                                                @Override
+                                                public void onSuccess() {
+//                                                    Toast.makeText(getApplicationContext(), "lesson note: " + lessonNotePlainText + " posted", Toast.LENGTH_SHORT).show();
+                                                    lessonNoteStateIndicatorImageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_baseline_sent_12,getTheme()));
+
+                                                }
+
+                                                @Override
+                                                public void onFailed(String errorMessage) {
+
+                                                }
+                                            });
+                                            notifyStudentsWhetherTeacherIsSendingVideo(false);
+
+
+                                        }
+                                    });
+                        }
+                    });
+
+        }
+        if(isSendAudio){
+            lessonNoteStateIndicatorImageView.setVisibility(View.VISIBLE);
+
+            String audioId = GlobalConfig.getRandomString(70);
+
+            ExoPlayer exoplayer = new ExoPlayer.Builder(this).build();
+            mediaPlayerView.setPlayer(exoplayer);
+            mediaPlayerView.setControllerHideOnTouch(false);
+            MediaItem mediaItem = MediaItem.fromUri(localMediaUriToSend);
+            exoplayer.setMediaItem(mediaItem);
+            exoplayer.prepare();
+            exoplayer.addListener(new Player.Listener() {
+                @Override
+                public void onEvents(Player player, Player.Events events) {
+                    if(player.isPlaying()){
+                        for(ExoPlayer activeExoplayer:activeExoplayerList){
+                            if(activeExoplayer!=null && !activeExoplayer.equals(exoplayer)){
+                                activeExoplayer.pause();
+                            }
+                        }
+                    }
+                }
+            });
+
+            lessonNotePlainTextView.setText(lessonNotePlainText);
+            lessonNoteIdHolderDummyTextView.setText(lessonNoteId);
+
+            dateSentTextView.setText("Now");
+
+            lessonNoteImageViewRelativeLayout.setVisibility(View.VISIBLE);
+            imageLessonNoteImageView.setVisibility(View.GONE);
+            mediaPlayerView.setVisibility(View.VISIBLE);
+
+            pauseUploadImageView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
+
+            StorageReference sentMessageImageStorageReference = FirebaseStorage.getInstance().getReference().child(GlobalConfig.ALL_USERS_KEY + "/" + GlobalConfig.getCurrentUserId() + "/" + audioId + ".wav");
+
+
+//            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            File copiedFile = new File(getCacheDir(),GlobalConfig.getRandomString(10));
+
+            //add this for future deletion when activity is destroyed
+            copiedFileList.add(copiedFile);
+            File recordedFile = new File(String.valueOf(localMediaUriToSend));
+             try {
+                    ParcelFileDescriptor parcelFileDescriptor = getContentResolver().openFileDescriptor(Uri.fromFile(recordedFile),"r");
+                     FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+                     FileInputStream fileInputStream = new FileInputStream(fileDescriptor);
+                    FileOutputStream fileOutputStream = new FileOutputStream(copiedFile);
+                    FileChannel inChannel = fileInputStream.getChannel();
+                    FileChannel outChannel = fileOutputStream.getChannel();
+
+                inChannel.transferTo(0,inChannel.size(),outChannel);
+                fileInputStream.close();
+                fileOutputStream.close();
+                Toast.makeText(getApplicationContext(), "copy success", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                 Toast.makeText(getApplicationContext(), "copy error caught", Toast.LENGTH_SHORT).show();
+
+             }
+
+            StorageMetadata storageMetaData = new StorageMetadata.Builder().setContentType("audio/wav").build();
+            UploadTask messageImageUploadTask = sentMessageImageStorageReference.putFile(Uri.fromFile(copiedFile),storageMetaData);
+
+            pauseUploadImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(messageImageUploadTask.pause()) {
+
+                        progressBar.setVisibility(View.GONE);
+                        pauseUploadImageView.setVisibility(View.GONE);
+                        resumeUploadImageView.setVisibility(View.VISIBLE);
+                    } else{
+                        Toast.makeText(getApplicationContext(), "Failed to pause, please try again", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            resumeUploadImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(messageImageUploadTask.resume()){
+                        progressBar.setVisibility(View.VISIBLE);
+                        resumeUploadImageView.setVisibility(View.GONE);
+                        pauseUploadImageView.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(), "Failed to resume", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            });
+
+
+            messageImageUploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "failed to upload "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                           lessonNoteEditText.setText("error audio upload : "+e.getStackTrace());
+                            resumeUploadImageView.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
+                            pauseUploadImageView.setVisibility(View.GONE);
+
+                        }
+                    });
+                    notifyStudentsWhetherTeacherIsSendingAudio(false);
+
+                }
+            })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+//                            deleteVideoButton.setVisibility(View.GONE);
+                            double uploadSize = snapshot.getTotalByteCount();
+                            double uploadedSize = snapshot.getBytesTransferred();
+                            double remainingSize = uploadSize - uploadedSize;
+                            int uploadProgress = (int) ((100 * uploadedSize) / uploadSize);
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressBar.setProgress(uploadProgress);
+
+                                }
+                            });
+
+                            notifyStudentsWhetherTeacherIsSendingAudio(true);
+
+                            // Toast.makeText(context, "progressing..." + uploadProgress, Toast.LENGTH_SHORT).show();
+
+                        }
+                    })
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            //Toast.makeText(context, "image uploaded", Toast.LENGTH_SHORT).show();
+
+                            messageImageUploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                @Override
+                                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                    if (!(task.isSuccessful())) {
+                                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(ClassActivity.this, "" + task.getException().getStackTrace(), Toast.LENGTH_LONG).show();
+
+                                            }
+                                        });
+                                    }
+
+                                    return sentMessageImageStorageReference.getDownloadUrl();
+                                }
+                            })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Toast.makeText(getApplicationContext(), "failed to upload "+e.getStackTrace(), Toast.LENGTH_LONG).show();
+                                                    resumeUploadImageView.setVisibility(View.VISIBLE);
+                                                    progressBar.setVisibility(View.GONE);
+                                                    pauseUploadImageView.setVisibility(View.GONE);
+
+                                                }
+                                            });
+
+                                            notifyStudentsWhetherTeacherIsSendingAudio(false);
+
+                                        }
+                                    })
+                                    .addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Uri> task) {
+                                            // Toast.makeText(context, "Task completed", Toast.LENGTH_SHORT).show();
+
+
+                                            String sentMessageImageDownloadUrl = String.valueOf(task.getResult());
+//                                    onMessageImageUploadListener.onUploadSuccess(messageIdArray[0], sentMessageImageDownloadUrl, sentMessageImageStorageReference.getPath());
+                                            resumeUploadImageView.setVisibility(View.GONE);
+                                            progressBar.setVisibility(View.GONE);
+                                            pauseUploadImageView.setVisibility(View.GONE);
+                                            successImageView.setVisibility(View.VISIBLE);
+
+
+                                            ArrayList<Object> lessonInfoList = new ArrayList<>();
+
+//the type of lesson whether it's plain,image,video, or other types.
+                                            lessonInfoList.add(0, GlobalConfig.IS_AUDIO_LESSON_NOTE_TYPE_KEY);
+//the lesson note id
+                                            lessonInfoList.add(1, lessonNoteId);
+//the lesson note itself
+                                            lessonInfoList.add(2, lessonNotePlainText + GlobalConfig.MEDIA_URL_KEY+ sentMessageImageDownloadUrl);
+//sender id
+                                            lessonInfoList.add(3, GlobalConfig.getCurrentUserId());
+////date sent
+//                                    lessonInfoList.add(4,FieldValue.serverTimestamp());
+
+
+                                            postLessonNote(lessonNoteId, lessonInfoList, new GlobalConfig.ActionCallback() {
+                                                @Override
+                                                public void onSuccess() {
+//                                                    Toast.makeText(getApplicationContext(), "lesson note: " + lessonNotePlainText + " posted", Toast.LENGTH_SHORT).show();
+                                                    lessonNoteStateIndicatorImageView.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_baseline_sent_12,getTheme()));
+
+                                                }
+
+                                                @Override
+                                                public void onFailed(String errorMessage) {
+
+                                                }
+                                            });
+                                            notifyStudentsWhetherTeacherIsSendingAudio(false);
+
+
+                                        }
+                                    });
+                        }
+                    });
+
+        }
+        if(!isSendPlainText && !isSendImage && !isSendVideo && !isSendAudio) {
             String lessonNoteType = lessonNoteInfo.get(0) + "";
             //the lesson note id
             String lessonNoteId1 = lessonNoteInfo.get(1) + "";
@@ -1761,34 +2117,192 @@ for(String studentId : classDataModel.getStudentsList()){
             String lessonNote = lessonNoteInfo.get(2) + "";
             //sender id
             String senderId = lessonNoteInfo.get(3) + "";
-            if(dateSent.length()>=10){
+            if(authorId.equals(senderId)){
+                userTypeView.setText("Teacher");
+            }else{
+                userTypeView.setText("Student");
+            }
+
+            if(senderId.equals(GlobalConfig.getCurrentUserId())){
+                //he's the sender
+                messageSenderDisplayNameTextView.setText("You");
+            }else {
+                if(fetchedOwnerDetailsIdList.contains(senderId)) {
+                    messageSenderDisplayNameTextView.setText(studentsName.get(senderId));
+                    if (studentsIconImages.get(senderId) != null) {
+                       try {
+                           Glide.with(ClassActivity.this)
+                                   .load(studentsIconImages.get(senderId))
+                                   .centerCrop()
+                                   .placeholder(R.drawable.default_profile)
+                                   .into(senderIcon);
+                       }catch(Exception e){}
+                        if (userVerifiedFlagsMap.get(senderId)) {
+                            verificationFlagImageView.setVisibility(View.VISIBLE);
+                        } else {
+                            verificationFlagImageView.setVisibility(View.INVISIBLE);
+
+                        }
+                    }
+                }else{
+if(!userDetailsInFetchingProgress.get(senderId)){
+    userDetailsInFetchingProgress.put(senderId,true);
+                GlobalConfig.getFirebaseFirestoreInstance()
+                        .collection(GlobalConfig.ALL_USERS_KEY)
+                        .document(senderId)
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                                String userProfilePhotoDownloadUrl = "" + documentSnapshot.get(GlobalConfig.USER_PROFILE_PHOTO_DOWNLOAD_URL_KEY);
+                                boolean isVerified = documentSnapshot.get(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) != null ? documentSnapshot.getBoolean(GlobalConfig.IS_ACCOUNT_VERIFIED_KEY) : false;
+
+                                for(int i=0; i<lessonLinearLayout.getChildCount(); i++) {
+                                    View lessonNoteView = lessonLinearLayout.getChildAt(i);
+
+                                    RoundedImageView senderIcon = lessonNoteView.findViewById(R.id.senderIcon);
+                                    ImageView verificationFlagImageView = lessonNoteView.findViewById(R.id.verificationFlagImageViewId);
+                                    TextView messageSenderDisplayNameTextView = lessonNoteView.findViewById(R.id.senderNameId);
+                                    if (senderId.equals(lessonNoteIdHolderDummyTextView.getText() + "")) {
+
+                                        try {
+                                            Glide.with(ClassActivity.this)
+                                                    .load(userProfilePhotoDownloadUrl)
+                                                    .centerCrop()
+                                                    .placeholder(R.drawable.default_profile)
+                                                    .into(senderIcon);
+
+                                            ImageView icon = senderIcon;
+//                                    icon.setDrawingCacheEnabled(true);
+//                                    icon.buildDrawingCache(true);
+                                            studentsIconImages.put(senderId, icon);
+
+                                        } catch (Exception ignored) {
+                                        }
+
+                                        String userDisplayName = "" + documentSnapshot.get(GlobalConfig.USER_DISPLAY_NAME_KEY);
+                                        messageSenderDisplayNameTextView.setText(userDisplayName);
+                                        studentsName.put(senderId, userDisplayName);
+
+                                        if (isVerified) {
+                                            verificationFlagImageView.setVisibility(View.VISIBLE);
+                                        } else {
+                                            verificationFlagImageView.setVisibility(View.INVISIBLE);
+
+                                        }
+                                    }
+                                }
+                                    userVerifiedFlagsMap.put(senderId, isVerified);
+
+                                fetchedOwnerDetailsIdList.add(senderId);
+                            }
+                        });
+            }
+            }
+
+            }
+
+                       if (dateSent.length() >= 10) {
                 dateSent = dateSent.substring(10);
             }
             dateSentTextView.setText(dateSent);
             lessonNoteIdHolderDummyTextView.setText(lessonNoteId1);
+            boolean isHidden = lessonNote.contains(GlobalConfig.LESSON_NOTE_IS_HIDDEN_KEY);
+
+            if (!lessonNote.contains(GlobalConfig.LESSON_NOTE_IS_HIDDEN_KEY) && !recentlyHiddenLessonNoteList.contains(lessonNoteId1)) {
+
+                lessonNoteView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                      if(senderId.equals(GlobalConfig.getCurrentUserId())){
+                        GlobalConfig.createPopUpMenu(ClassActivity.this, R.menu.lesson_note_menu , lessonNoteView, new GlobalConfig.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClicked(MenuItem item) {
+                                markAsHidden(lessonNoteInfo);
+                                return true;
+                            }
+                        });
+                        }
+
+                        return true;
+                    }
+                });
+            }
+
             switch (lessonNoteType) {
                 case GlobalConfig.IS_PLAIN_TEXT_LESSON_NOTE_TYPE_KEY:
-                    lessonNotePlainTextView.setText(lessonNote);
+                    if(isHidden){
+                        lessonNotePlainTextView.setText("HIDDEN");
+
+                    }else{
+                        lessonNotePlainTextView.setText(lessonNote);
+
+                    }
                     break;
                 case GlobalConfig.IS_IMAGE_LESSON_NOTE_TYPE_KEY:
+                    if(isHidden){
+                        lessonNotePlainTextView.setText("HIDDEN");
 
+                    }else {
                     lessonNoteImageViewRelativeLayout.setVisibility(View.VISIBLE);
                     String lessonNotePlainText1 = lessonNote.split(GlobalConfig.MEDIA_URL_KEY)[0];
                     lessonNotePlainTextView.setText(lessonNotePlainText1);
 
                     String lessonNoteImageDownloadUrl = lessonNote.split(GlobalConfig.MEDIA_URL_KEY)[1];
                     imageLessonNoteImageView.setVisibility(View.VISIBLE);
+                    mediaPlayerView.setVisibility(View.GONE);
+try{
                     Glide.with(ClassActivity.this)
                             .load(lessonNoteImageDownloadUrl)
                             .centerCrop()
                             .placeholder(R.drawable.learn_era_logo)
                             .into(imageLessonNoteImageView);
+                }catch(Exception e){}
+                }
                     break;
                 case GlobalConfig.IS_VIDEO_LESSON_NOTE_TYPE_KEY:
+                    if(isHidden){
+                        lessonNotePlainTextView.setText("HIDDEN");
 
+                    }else {
+
+                        lessonNoteImageViewRelativeLayout.setVisibility(View.VISIBLE);
+                        String lessonNotePlainText3 = lessonNote.split(GlobalConfig.MEDIA_URL_KEY)[0];
+                        lessonNotePlainTextView.setText(lessonNotePlainText3);
+                        String lessonNoteVideoDownloadUrl = lessonNote.split(GlobalConfig.MEDIA_URL_KEY)[1];
+
+                        ExoPlayer videoExoplayer = new ExoPlayer.Builder(this).build();
+                        mediaPlayerView.setPlayer(videoExoplayer);
+                        MediaItem videoMediaItem = MediaItem.fromUri(Uri.parse(lessonNoteVideoDownloadUrl));
+                        videoExoplayer.setMediaItem(videoMediaItem);
+                        videoExoplayer.prepare();
+                        imageLessonNoteImageView.setVisibility(View.GONE);
+                        mediaPlayerView.setVisibility(View.VISIBLE);
+
+                        activeExoplayerList.add(videoExoplayer);
+                    }
                     break;
                 case GlobalConfig.IS_AUDIO_LESSON_NOTE_TYPE_KEY:
+                    if(isHidden){
+                        lessonNotePlainTextView.setText("HIDDEN");
 
+                    }else {
+                        lessonNoteImageViewRelativeLayout.setVisibility(View.VISIBLE);
+                        String lessonNotePlainText2 = lessonNote.split(GlobalConfig.MEDIA_URL_KEY)[0];
+                        lessonNotePlainTextView.setText(lessonNotePlainText2);
+                        String lessonNoteAudioDownloadUrl = lessonNote.split(GlobalConfig.MEDIA_URL_KEY)[1];
+
+                        ExoPlayer exoplayer = new ExoPlayer.Builder(this).build();
+                        mediaPlayerView.setPlayer(exoplayer);
+                        MediaItem mediaItem = MediaItem.fromUri(Uri.parse(lessonNoteAudioDownloadUrl));
+                        exoplayer.setMediaItem(mediaItem);
+                        exoplayer.prepare();
+                        imageLessonNoteImageView.setVisibility(View.GONE);
+                        mediaPlayerView.setVisibility(View.VISIBLE);
+
+                        activeExoplayerList.add(exoplayer);
+                    }
                     break;
             }
         }
@@ -1808,13 +2322,12 @@ for(String studentId : classDataModel.getStudentsList()){
 
             ArrayList<Object> lessonNoteInfo =  documentSnapshot.get(lessonNoteId) != null && documentSnapshot.get(lessonNoteId) instanceof ArrayList ? (ArrayList) documentSnapshot.get(lessonNoteId) : new ArrayList();
             String dateSent =  documentSnapshot.get(lessonNoteId+GlobalConfig.DATE_SENT_KEY) != null && documentSnapshot.get(lessonNoteId+GlobalConfig.DATE_SENT_KEY) instanceof Timestamp ?  documentSnapshot.getTimestamp(lessonNoteId+GlobalConfig.DATE_SENT_KEY).toDate()+"" : "Undefined";
-            displayLessonNote(false,false,lessonNoteInfo,lessonNoteId,"",null,null,dateSent);
+            displayLessonNote(false,false,false,false,lessonNoteInfo,lessonNoteId,"",null,null,dateSent);
 
 //            Toast.makeText(ClassActivity.this, lessonNoteId, Toast.LENGTH_SHORT).show();
 
         }
         }
-
         void raiseHand(GlobalConfig.ActionCallback actionCallback){
            WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
            DocumentReference documentReference1 = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).document(classId);
@@ -1933,16 +2446,81 @@ for(String studentId : classDataModel.getStudentsList()){
                        });
         }
 
-        void notifyStudentsWhetherTeacherIsTyping(boolean isTeacherTyping){
+        void notifyStudentsWhetherTeacherIsOnline(boolean isTeacherOnline){
            WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
            DocumentReference documentReference1 = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).document(classId);
            HashMap<String,Object> quizDetails = new HashMap<>();
-           quizDetails.put(GlobalConfig.IS_TEACHER_TYPING_KEY,isTeacherTyping);
+           quizDetails.put(GlobalConfig.IS_TEACHER_ONLINE_KEY,isTeacherOnline);
+           quizDetails.put(GlobalConfig.ONLINE_FLAG_ID_KEY,GlobalConfig.getRandomString(60));
 
 
            writeBatch.set(documentReference1,quizDetails,SetOptions.merge());
 
-           writeBatch.commit();
+               writeBatch.commit();
+    }
+
+    void notifyStudentsWhetherTeacherIsTyping(boolean isTeacherTyping){
+           WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+           DocumentReference documentReference1 = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).document(classId);
+           HashMap<String,Object> quizDetails = new HashMap<>();
+           quizDetails.put(GlobalConfig.IS_TEACHER_TYPING_KEY,isTeacherTyping);
+           quizDetails.put(GlobalConfig.TYPING_FLAG_ID_KEY,GlobalConfig.getRandomString(60));
+
+
+           writeBatch.set(documentReference1,quizDetails,SetOptions.merge());
+
+           if(!isTypingFlagNotifiedRecently && !isTeacherTyping){
+               writeBatch.commit();
+               isTypingFlagNotifiedRecently = true;
+           }
+
+    }
+        void notifyStudentsWhetherTeacherIsSendingImage(boolean isSendingImage){
+           WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+           DocumentReference documentReference1 = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).document(classId);
+           HashMap<String,Object> quizDetails = new HashMap<>();
+           quizDetails.put(GlobalConfig.IS_TEACHER_SENDING_IMAGE_KEY,isSendingImage);
+           quizDetails.put(GlobalConfig.SENDING_IMAGE_FLAG_ID_KEY,GlobalConfig.getRandomString(60));
+
+
+           writeBatch.set(documentReference1,quizDetails,SetOptions.merge());
+
+           if(!isImageSendingFlagNotifiedRecently && !isSendingImage){
+               writeBatch.commit();
+               isImageSendingFlagNotifiedRecently = true;
+           }
+
+    }
+        void notifyStudentsWhetherTeacherIsSendingVideo(boolean isSendingVideo){
+           WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+           DocumentReference documentReference1 = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).document(classId);
+           HashMap<String,Object> quizDetails = new HashMap<>();
+           quizDetails.put(GlobalConfig.IS_TEACHER_SENDING_VIDEO_KEY,isSendingVideo);
+           quizDetails.put(GlobalConfig.SENDING_VIDEO_FLAG_ID_KEY,GlobalConfig.getRandomString(60));
+
+
+           writeBatch.set(documentReference1,quizDetails,SetOptions.merge());
+
+           if(!isVideoSendingFlagNotifiedRecently && !isSendingVideo){
+               writeBatch.commit();
+               isVideoSendingFlagNotifiedRecently = true;
+           }
+
+    }
+        void notifyStudentsWhetherTeacherIsSendingAudio(boolean isSendingAudio){
+           WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+           DocumentReference documentReference1 = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).document(classId);
+           HashMap<String,Object> quizDetails = new HashMap<>();
+           quizDetails.put(GlobalConfig.IS_TEACHER_SENDING_AUDIO_KEY,isSendingAudio);
+           quizDetails.put(GlobalConfig.SENDING_AUDIO_FLAG_ID_KEY,GlobalConfig.getRandomString(60));
+
+
+           writeBatch.set(documentReference1,quizDetails,SetOptions.merge());
+
+           if(!isAudioSendingFlagNotifiedRecently && !isSendingAudio){
+               writeBatch.commit();
+               isAudioSendingFlagNotifiedRecently = true;
+           }
 
     }
 
@@ -2014,6 +2592,349 @@ for(String studentId : classDataModel.getStudentsList()){
         }
 
 
+        void configureAudioRecordImplementation(){
+    recordAudioActionLayout.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+boolean[] isRecordingPaused = {false};
+            if(checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED){
+                isSendAudio = true;
+
+                lessonNoteCardView.setVisibility(View.GONE);
+                recordAudioActionLayout.setVisibility(View.GONE);
+                recordAudioCardView.setVisibility(View.VISIBLE);
+
+
+
+//                String path = getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath() + "Learn Era Records\\"+System.currentTimeMillis();
+//
+////                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+////                    path = getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath();
+////                }
+////                File file = new File(path);
+////                try {
+////                    file.createNewFile();
+////                } catch (IOException e) {
+////                    e.printStackTrace();
+////                }
+////                file.mkdir();
+////                Uri uriPath = MediaStore.Audio.Media.getContentUriForPath(path);
+//
+////
+//                ContentValues contentValues = new ContentValues();
+////                contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+////                contentValues.put(MediaStore.Images.Media.DISPLAY_NAME,"Palria Inc Media ");
+////                contentValues.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+////                contentValues.put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis());
+////
+////
+////                contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures");
+////                contentValues.put(MediaStore.Images.Media.IS_PENDING, true);
+//
+//                Uri uri = getContentResolver().insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, contentValues);
+////                contentValues.put(MediaStore.Images.Media.IS_PENDING, false);
+////
+//                 audioRecordingPath = "/storage/emulated/Download/AudioRecord1";
+                 audioRecordingPath = Environment.getExternalStorageDirectory()+"/"+GlobalConfig.getRandomString(10);
+                pauseResumeAudioRecorder = new PauseResumeAudioRecorder();
+                pauseResumeAudioRecorder.setAudioEncoding(AudioFormat.ENCODING_PCM_16BIT);
+                if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    pauseResumeAudioRecorder.setAudioFile(audioRecordingPath);
+//                    Toast.makeText(getApplicationContext(), "yes granted", Toast.LENGTH_SHORT).show();
+                }else{
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},6666);
+                    return;
+                }
+                pauseResumeAudioRecorder.startRecording();
+
+
+                int[] i={0};
+                CountDownTimer countDownTimer =    new CountDownTimer(100000000L, 1000) {
+                    /**
+                     * Callback fired on regular interval.
+                     *
+                     * @param millisUntilFinished The amount of time until finished.
+                     */
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        i[0]++;
+                        recordedTimeTextView.setText("00:00:"+i[0]);
+                    }
+
+                    /**
+                     * Callback fired when the time is up.
+                     */
+                    @Override
+                    public void onFinish() {
+
+                    }
+                }.start();
+                countDownTimerList.add(countDownTimer);
+                resumePauseActionImageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                          //check if recording is paused
+                          if(isRecordingPaused[0]){
+                              //if it's paused then resume
+                              pauseResumeAudioRecorder.resumeRecording();
+
+                              resumePauseActionImageButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_baseline_pause_24,getTheme()));
+                              playPauseRecordedAudioActionImageButton.setVisibility(View.GONE);
+                              isRecordingPaused[0] = false;
+                          }else{
+                              //if it's not paused then pause
+                              pauseResumeAudioRecorder.pauseRecording();
+
+                              resumePauseActionImageButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_baseline_play_arrow_24,getTheme()));
+//                              playPauseRecordedAudioActionImageButton.setVisibility(View.VISIBLE);
+                              isRecordingPaused[0] = true;
+                          }
+
+                    }
+                });
+                deleteAudioActionImageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                    recordAudioActionLayout.setVisibility(View.VISIBLE);
+                    recordAudioCardView.setVisibility(View.GONE);
+                    lessonNoteCardView.setVisibility(View.VISIBLE);
+                    //STOP EVERY RECORDING PROCESSES
+                        pauseResumeAudioRecorder.stopRecording();
+                        if(mediaPlayer!=null){
+                            mediaPlayer.stop();
+                            mediaPlayer.release();
+                        }
+                        //add this for future deletion when activity is destroyed
+                        recordedFileList.add(new File(audioRecordingPath+".wav"));
+                        isSendAudio = false;
+                    }
+                });
+
+                final boolean[] isPlaying = {false};
+                playPauseRecordedAudioActionImageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                       mediaPlayer = MediaPlayer.create(ClassActivity.this, Uri.parse(audioRecordingPath+".wav"));
+
+                        if(isPlaying[0]){
+                            mediaPlayer.pause();
+                            playPauseRecordedAudioActionImageButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_baseline_play_arrow_24,getTheme()));
+                            isPlaying[0] = false;
+                        }else{
+                            mediaPlayer.start();
+                            playPauseRecordedAudioActionImageButton.setImageDrawable(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_baseline_pause_24,getTheme()));
+                            isPlaying[0] = true;
+
+                        }
+
+                    }
+                });
+
+            }else{
+                requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},3333);
+            }
+        }
+    });
+
+}
+
+void startFlagCountDownTimers(){
+    countDownTimerFlag = new CountDownTimer(9000000000L, 10000L) {
+        /**
+         * Callback fired on regular interval.
+         *
+         * @param millisUntilFinished The amount of time until finished.
+         */
+        @Override
+        public void onTick(long millisUntilFinished) {
+            isTypingFlagNotifiedRecently = false;
+            isImageSendingFlagNotifiedRecently = false;
+            isVideoSendingFlagNotifiedRecently = false;
+            isAudioSendingFlagNotifiedRecently = false;
+
+            notifyStudentsWhetherTeacherIsOnline(true);
+        }
+
+        /**
+         * Callback fired when the time is up.
+         */
+        @Override
+        public void onFinish() {
+
+        }
+    }.start();
+}
+    void analyseAndRenderLessonNoteFlags(DocumentSnapshot documentSnapshot){
+        boolean isTeacherTyping = documentSnapshot.get(GlobalConfig.IS_TEACHER_TYPING_KEY) != null && documentSnapshot.get(GlobalConfig.IS_TEACHER_TYPING_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_TEACHER_TYPING_KEY) : false;
+        String typingFlag = documentSnapshot.get(GlobalConfig.TYPING_FLAG_ID_KEY)+"";
+
+        if(isTeacherTyping){
+            if(!isFlagExists(GlobalConfig.TYPING_FLAG_ID_KEY,typingFlag)){
+                if(!isCheckedTypingFlagRecently){
+                    typingFlagView.setVisibility(View.VISIBLE);
+                    isCheckedTypingFlagRecently = true;
+
+                    CountDownTimer countDownTimer =    new CountDownTimer(10000L,10000L){
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+
+                        }
+                        @Override
+                        public void onFinish() {
+                            isCheckedTypingFlagRecently = false;
+
+                        }
+                    }.start();
+                    countDownTimerList.add(countDownTimer);
+
+                }
+            }
+            else{
+                typingFlagView.setVisibility(View.GONE);
+            }
+        }
+        else{
+            typingFlagView.setVisibility(View.GONE);
+        }
+
+        boolean isTeacherSendingImage = documentSnapshot.get(GlobalConfig.IS_TEACHER_SENDING_IMAGE_KEY) != null && documentSnapshot.get(GlobalConfig.IS_TEACHER_SENDING_IMAGE_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_TEACHER_SENDING_IMAGE_KEY) : false;
+        String sendingImageFlag = documentSnapshot.get(GlobalConfig.SENDING_IMAGE_FLAG_ID_KEY)+"";
+
+        if(isTeacherSendingImage){
+            if(!isFlagExists(GlobalConfig.SENDING_IMAGE_FLAG_ID_KEY,sendingImageFlag)){
+                if(!isCheckedSendingImageFlagRecently){
+                    sendingImageFlagView.setVisibility(View.VISIBLE);
+                    isCheckedSendingImageFlagRecently = true;
+
+                    CountDownTimer countDownTimer =    new CountDownTimer(10000L,10000L){
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+
+                        }
+                        @Override
+                        public void onFinish() {
+                            isCheckedSendingImageFlagRecently = false;
+
+                        }
+                    }.start();
+                    countDownTimerList.add(countDownTimer);
+
+                } else{
+                    sendingImageFlagView.setVisibility(View.GONE);
+                }
+            }
+            else{
+                sendingImageFlagView.setVisibility(View.GONE);
+            }
+        }
+
+        boolean isTeacherSendingVideo = documentSnapshot.get(GlobalConfig.IS_TEACHER_SENDING_VIDEO_KEY) != null && documentSnapshot.get(GlobalConfig.IS_TEACHER_SENDING_VIDEO_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_TEACHER_SENDING_VIDEO_KEY) : false;
+        String sendingVideoFlag = documentSnapshot.get(GlobalConfig.SENDING_VIDEO_FLAG_ID_KEY)+"";
+
+        if(isTeacherSendingVideo){
+            if(!isFlagExists(GlobalConfig.SENDING_VIDEO_FLAG_ID_KEY,sendingVideoFlag)){
+                if(!isCheckedSendingVideoFlagRecently){
+                    sendingVideoFlagView.setVisibility(View.VISIBLE);
+                    isCheckedSendingVideoFlagRecently = true;
+
+                    CountDownTimer countDownTimer =   new CountDownTimer(10000L,10000L){
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+
+                        }
+                        @Override
+                        public void onFinish() {
+                            isCheckedSendingVideoFlagRecently = false;
+
+                        }
+                    }.start();
+                    countDownTimerList.add(countDownTimer);
+
+                }
+            }
+            else{
+                sendingVideoFlagView.setVisibility(View.GONE);
+            }
+        }
+
+        else{
+            sendingVideoFlagView.setVisibility(View.GONE);
+        }
+
+        boolean isTeacherSendingAudio = documentSnapshot.get(GlobalConfig.IS_TEACHER_SENDING_AUDIO_KEY) != null && documentSnapshot.get(GlobalConfig.IS_TEACHER_SENDING_AUDIO_KEY) instanceof Boolean ? documentSnapshot.getBoolean(GlobalConfig.IS_TEACHER_SENDING_AUDIO_KEY) : false;
+        String sendingAudioFlag = documentSnapshot.get(GlobalConfig.SENDING_AUDIO_FLAG_ID_KEY)+"";
+
+        if(isTeacherSendingAudio){
+            if(!isFlagExists(GlobalConfig.SENDING_AUDIO_FLAG_ID_KEY,sendingAudioFlag)){
+                if(!isCheckedSendingAudioFlagRecently){
+//set Flag View visible
+                    sendingAudioFlagView.setVisibility(View.VISIBLE);
+                    isCheckedSendingAudioFlagRecently = true;
+
+                    CountDownTimer countDownTimer =      new CountDownTimer(10000L,10000L){
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+
+                        }
+                        @Override
+                        public void onFinish() {
+                            isCheckedSendingAudioFlagRecently = false;
+
+                        }
+                    }.start();
+                    countDownTimerList.add(countDownTimer);
+                }
+            } else{
+                sendingAudioFlagView.setVisibility(View.GONE);
+            }
+        }
+
+        else{
+            sendingAudioFlagView.setVisibility(View.GONE);
+        }
+
+
+
+        saveFlag(GlobalConfig.TYPING_FLAG_ID_KEY,typingFlag);
+        saveFlag(GlobalConfig.SENDING_IMAGE_FLAG_ID_KEY,sendingImageFlag);
+        saveFlag(GlobalConfig.SENDING_VIDEO_FLAG_ID_KEY,sendingVideoFlag);
+        saveFlag(GlobalConfig.SENDING_AUDIO_FLAG_ID_KEY,sendingAudioFlag);
+    }
+
+    void saveFlag(String flagKey,String newFlag){
+        SharedPreferences sharedPreferences = getSharedPreferences(getPackageName()+GlobalConfig.getCurrentUserId(),MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(flagKey,newFlag);
+        editor.apply();
+    }
+
+    boolean isFlagExists(String flagKey,String newFlag){
+        SharedPreferences sharedPreferences = getSharedPreferences(getPackageName()+GlobalConfig.getCurrentUserId(),MODE_PRIVATE);
+        String oldFlags = sharedPreferences.getString(flagKey,"-");
+
+        return oldFlags.contains(newFlag);
+    }
+
+
+
+    void markAsHidden(ArrayList<Object> lessonNoteInfo){
+        String lessonNoteType = lessonNoteInfo.get(0) + "";
+        //the lesson note id
+        String lessonNoteId = lessonNoteInfo.get(1) + "";
+        //the lesson note itself
+        String lessonNote = lessonNoteInfo.get(2) + "-LESSON_NOTE_IS_HIDDEN-";
+
+        WriteBatch writeBatch = GlobalConfig.getFirebaseFirestoreInstance().batch();
+        DocumentReference documentReference1 = GlobalConfig.getFirebaseFirestoreInstance().collection(GlobalConfig.ALL_CLASS_KEY).document(classId);
+        HashMap<String,Object> quizDetails = new HashMap<>();
+        quizDetails.put(lessonNoteId,lessonNoteInfo);
+
+
+        writeBatch.set(documentReference1,quizDetails,SetOptions.merge()).commit();
+        recentlyHiddenLessonNoteList.add(lessonNoteId);
+
 
     }
+
+          }
 

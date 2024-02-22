@@ -752,6 +752,7 @@ public class GlobalConfig {
     public static final String BANK_NAME_KEY = "BANK_NAME";
     public static final String ACCOUNT_NAME_KEY = "ACCOUNT_NAME";
     public static final String ACCOUNT_NUMBER_KEY = "ACCOUNT_NUMBER";
+    public static final String PAYPAL_ACCOUNT_EMAIL_KEY = "PAYPAL_ACCOUNT_EMAIL";
     public static final String DATE_ACCOUNT_DETAILS_EDITED_TIME_STAMP_KEY = "DATE_ACCOUNT_DETAILS_EDITED_TIME_STAMP";
     public static final String COUNTRY_KEY = "COUNTRY";
 
@@ -787,11 +788,22 @@ public class GlobalConfig {
     public static final String LESSON_NOTE_IMAGES_KEY = "LESSON_NOTE_IMAGES";
     public static final String MEDIA_URL_KEY = "-MEDIA_URL-";
     public static final String DATE_SENT_KEY = "-DATE_SENT";
+    public static final String LESSON_NOTE_IS_HIDDEN_KEY = "-LESSON_NOTE_IS_HIDDEN-";
 
     public static final String HAND_RAISERS_LIST_KEY = "HAND_RAISERS_LIST";
     public static final String PERMITTED_HAND_RAISERS_LIST_KEY = "PERMITTED_HAND_RAISERS_LIST";
     public static final String IS_DISCUSSION_LOCKED_KEY = "IS_DISCUSSION_LOCKED";
     public static final String IS_TEACHER_TYPING_KEY = "IS_TEACHER_TYPING";
+    public static final String IS_TEACHER_SENDING_IMAGE_KEY = "IS_TEACHER_SENDING_IMAGE";
+    public static final String IS_TEACHER_SENDING_VIDEO_KEY = "IS_TEACHER_SENDING_VIDEO";
+    public static final String IS_TEACHER_SENDING_AUDIO_KEY = "IS_TEACHER_SENDING_AUDIO";
+    public static final String TYPING_FLAG_ID_KEY = "TYPING_FLAG_ID";
+    public static final String SENDING_IMAGE_FLAG_ID_KEY = "SENDING_IMAGE_FLAG_ID";
+    public static final String SENDING_VIDEO_FLAG_ID_KEY = "SENDING_VIDEO_FLAG_ID";
+    public static final String SENDING_AUDIO_FLAG_ID_KEY = "SENDING_AUDIO_FLAG_ID";
+    public static final String LESSON_NOTE_FLAG_KEY = "LESSON_NOTE_FLAG";
+    public static final String IS_TEACHER_ONLINE_KEY = "IS_TEACHER_ONLINE";
+    public static final String ONLINE_FLAG_ID_KEY = "ONLINE_FLAG_ID";
 
     private static FirebaseFirestore firebaseFirestoreInstance;
     private static FirebaseStorage firebaseStorageInstance;
