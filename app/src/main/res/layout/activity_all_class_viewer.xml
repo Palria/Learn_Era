@@ -29,8 +29,8 @@
         >
         <com.google.android.material.chip.ChipGroup
             android:paddingHorizontal="5pt"
-            android:paddingStart="30dp"
             app:itemSpacing="-4dp"
+            android:layout_marginTop="3pt"
             app:chipSpacingVertical="0dp"
             app:lineSpacing="0dp"
             app:singleLine="true"
@@ -79,7 +79,7 @@
     <!-- Fragments Container -->
 
     <FrameLayout
-        android:layout_marginTop="19pt"
+        android:layout_marginTop="7pt"
         android:id="@+id/openClassFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -88,14 +88,14 @@
 
         />
     <FrameLayout
-        android:layout_marginTop="19pt"
+        android:layout_marginTop="7pt"
         android:id="@+id/startedClassFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="invisible"
         app:layout_constraintTop_toBottomOf="@id/tabScroll"/>
     <FrameLayout
-        android:layout_marginTop="19pt"
+        android:layout_marginTop="7pt"
         android:id="@+id/closedClassFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
