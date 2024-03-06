@@ -337,7 +337,6 @@ public class ClassActivity extends AppCompatActivity {
 //                        if(bitmapFromCamera != null) {
                         displayAndConfigureSendingImage(String.valueOf(data.getData()), bitmapFromCamera);
 //                        }
-
                     }
                     // }
                 }else{
@@ -2469,7 +2468,7 @@ try{
 
            writeBatch.set(documentReference1,quizDetails,SetOptions.merge());
 
-           if(!isTypingFlagNotifiedRecently && !isTeacherTyping){
+           if(!isTypingFlagNotifiedRecently ){
                writeBatch.commit();
                isTypingFlagNotifiedRecently = true;
            }
@@ -2485,7 +2484,7 @@ try{
 
            writeBatch.set(documentReference1,quizDetails,SetOptions.merge());
 
-           if(!isImageSendingFlagNotifiedRecently && !isSendingImage){
+           if(!isImageSendingFlagNotifiedRecently){
                writeBatch.commit();
                isImageSendingFlagNotifiedRecently = true;
            }
@@ -2501,7 +2500,7 @@ try{
 
            writeBatch.set(documentReference1,quizDetails,SetOptions.merge());
 
-           if(!isVideoSendingFlagNotifiedRecently && !isSendingVideo){
+           if(!isVideoSendingFlagNotifiedRecently ){
                writeBatch.commit();
                isVideoSendingFlagNotifiedRecently = true;
            }
@@ -2517,7 +2516,7 @@ try{
 
            writeBatch.set(documentReference1,quizDetails,SetOptions.merge());
 
-           if(!isAudioSendingFlagNotifiedRecently && !isSendingAudio){
+           if(!isAudioSendingFlagNotifiedRecently ){
                writeBatch.commit();
                isAudioSendingFlagNotifiedRecently = true;
            }
